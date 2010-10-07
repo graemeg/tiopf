@@ -15,6 +15,8 @@ type
   TTestTIPersistenceLayersFBL = class(TTestTIPersistenceLayers)
   public
     class function PersistenceLayerName: string; override;
+  published
+    procedure   ThreadedDBConnectionPool; override;
   end;
 
   TTestTIDatabaseFBL = class(TTestTIDatabase)
@@ -35,17 +37,25 @@ type
   TTestTIAutoMapOperationFBL = class(TTestTIAutoMapOperation)
   public
     class function PersistenceLayerName: string; override;
+  published
+    procedure CollectionReadPKThreaded; override;
   end;
 
 
   TTestTIOIDPersistentGUIDFBL = class(TTestTIOIDPersistentGUID)
   public
     class function PersistenceLayerName: string; override;
+  published
+    procedure TtiNextOIDGeneratorAssignNextOIDThreaded; override;
+    procedure TtiNextOIDGeneratorAssignNextOIDMultiUser; override;
   end;
 
   TTestTIOIDPersistentIntegerFBL = class(TTestTIOIDPersistentInteger)
   public
     class function PersistenceLayerName: string; override;
+  published
+    procedure TtiNextOIDGeneratorAssignNextOIDThreaded; override;
+    procedure TtiNextOIDGeneratorAssignNextOIDMultiUser; override;
   end;
 
 
@@ -143,6 +153,15 @@ begin
   Result := cTIPersistFBL;
 end;
 
+procedure TTestTIPersistenceLayersFBL.ThreadedDBConnectionPool;
+begin
+  {$IFDEF FPC}
+  Fail('This freezes up under FPC compiler.');
+  {$ELSE}
+  inherited ThreadedDBConnectionPool;
+  {$ENDIF}
+end;
+
 { TTestTIQueryFBL }
 
 class function TTestTIQueryFBL.PersistenceLayerName: string;
@@ -157,6 +176,15 @@ begin
   Result := cTIPersistFBL;
 end;
 
+procedure TTestTIAutoMapOperationFBL.CollectionReadPKThreaded;
+begin
+  {$IFDEF FPC}
+  Fail('This freezes up under FPC compiler.');
+  {$ELSE}
+  inherited CollectionReadPKThreaded;
+  {$ENDIF}
+end;
+
 { TTestTIOIDPersistentGUIDFBL }
 
 class function TTestTIOIDPersistentGUIDFBL.PersistenceLayerName: string;
@@ -164,11 +192,47 @@ begin
   Result := cTIPersistFBL;
 end;
 
+procedure TTestTIOIDPersistentGUIDFBL.TtiNextOIDGeneratorAssignNextOIDThreaded;
+begin
+  {$IFDEF FPC}
+  Fail('This freezes up under FPC compiler.');
+  {$ELSE}
+  inherited TtiNextOIDGeneratorAssignNextOIDThreaded;
+  {$ENDIF}
+end;
+
+procedure TTestTIOIDPersistentGUIDFBL.TtiNextOIDGeneratorAssignNextOIDMultiUser;
+begin
+  {$IFDEF FPC}
+  Fail('This freezes up under FPC compiler.');
+  {$ELSE}
+  inherited TtiNextOIDGeneratorAssignNextOIDMultiUser;
+  {$ENDIF}
+end;
+
 { TTestTIOIDPersistentIntegerFBL }
 
 class function TTestTIOIDPersistentIntegerFBL.PersistenceLayerName: string;
 begin
   Result := cTIPersistFBL;
+end;
+
+procedure TTestTIOIDPersistentIntegerFBL.TtiNextOIDGeneratorAssignNextOIDThreaded;
+begin
+  {$IFDEF FPC}
+  Fail('This freezes up under FPC compiler.');
+  {$ELSE}
+  inherited TtiNextOIDGeneratorAssignNextOIDThreaded;
+  {$ENDIF}
+end;
+
+procedure TTestTIOIDPersistentIntegerFBL.TtiNextOIDGeneratorAssignNextOIDMultiUser;
+begin
+  {$IFDEF FPC}
+  Fail('This freezes up under FPC compiler.');
+  {$ELSE}
+  inherited TtiNextOIDGeneratorAssignNextOIDMultiUser;
+  {$ENDIF}
 end;
 
 end.

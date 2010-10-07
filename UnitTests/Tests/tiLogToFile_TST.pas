@@ -256,10 +256,6 @@ begin
  // ToDo: Implement
 end;
 
-{ TThreadWriteToLog }
-
-{ TThrdTestCritSect }
-
 end.
 
 

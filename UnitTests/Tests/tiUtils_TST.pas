@@ -15,7 +15,7 @@ uses
 
 const
   {$IFDEF MSWINDOWS}
-  CLocalINISettingsMessage1 = ' Edit the file for Expected value "%s"';
+  CLocalINISettingsMessage = ' Edit the file for Expected value "%s"';
   {$ENDIF}
   {$IFDEF UNIX}
   CLocalINISettingsMessage = ' Edit the file for Expected value "%s"';
@@ -2086,7 +2086,7 @@ end;
 
 function TTestTIUtils.LocalINISettingErrorMessage: string;
 begin
-  result:= Format(CLocalINISettingsMessage1, [FLocalINISettings.FileName]);
+  result:= Format(CLocalINISettingsMessage, [FLocalINISettings.FileName]);
 end;
 
 procedure TTestTIUtils.Cr;

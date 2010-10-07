@@ -36,7 +36,7 @@
         <PackageName Value="tiOPF"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="10">
+    <Units Count="12">
       <Unit0>
         <Filename Value="textrunner.pas"/>
         <IsPartOfProject Value="True"/>
@@ -87,6 +87,14 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiQuery_TST"/>
       </Unit9>
+      <Unit10>
+        <Filename Value="../Common/FPCUnitHelper_impl.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="../Common/FPCUnitHelper_intf.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit11>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

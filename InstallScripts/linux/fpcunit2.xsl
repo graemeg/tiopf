@@ -30,19 +30,19 @@
 <xsl:template match="/">
   <html>
   <head>
-    <title>FPCUnit Results</title>
+    <title>DUnit2 Results</title>
       <link href="{$param-scripts-directory}fpcunit.css" rel="stylesheet" type="text/css"/>
       <script src="{$param-scripts-directory}treeview.js" language="javascript" type="text/javascript"/>
   </head>
   <body>
 
   <a name="Summary"/>
-  <h2>FPCUnit Results</h2>
+  <h2>DUnit2 Results</h2>
   <xsl:apply-templates/>
 
   
   <address>
-    <a href="http://opensoft.homeip.net">FPCUnit Report</a> 0.4.0 [beta3] &#169; 2006-2007 by 
+    <a href="http://opensoft.homeip.net:8080">DUnit2 Report</a> 0.4.1 &#169; 2006-2010 by 
     <a href="mailto:graemeg@gmail.com?subject=Comments about FPCUnit Report">Graeme Geldenhuys</a>.<br/>
     Licensed under the <a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a>.<br/>
   </address>
@@ -356,7 +356,7 @@ unexpected results.</p>
         <xsl:attribute name="style">display:block;</xsl:attribute>
       </xsl:if>
 
-      <table border="0">
+      <table border="0" cellspacing="1">
         <!--  Error Table Body  -->
         <TR>
           <td width="{$param-shift-width}">&#160;</td>
@@ -399,8 +399,8 @@ unexpected results.</p>
         <xsl:attribute name="style">display:block;</xsl:attribute>
       </xsl:if>
 
-      <table border="0">
-        <!--  Error Table Body  -->
+      <table border="0" cellspacing="1">
+        <!--  Failure Table Body  -->
         <tr>
           <td width="{$param-shift-width}">&#160;</td>
           <td width="200" valign="top" class="title">Message:</td>

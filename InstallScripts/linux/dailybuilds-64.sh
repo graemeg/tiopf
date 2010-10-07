@@ -7,6 +7,7 @@
 
 TIOPF="/opt/dailybuilds/tiopf"              # tiOPF root directory
 SCRIPTS="$TIOPF/InstallScripts/linux"       # linux scripts directory
+FPC="/opt/fpc-2.4.3/x86_64-linux/bin/ppcx64"
 
 if [ -f $TIOPF/halt.tests ]; then
   echo "Remove the file 'halt.tests' if you want the tests to continue."
@@ -23,31 +24,32 @@ $SCRIPTS/opf_package-64.run
 
 # compile Text Test Runner application
 /bin/rm -f $TIOPF/UnitTests/Text/textrunner
-$SCRIPTS/textrunner-64.run
+$SCRIPTS/textrunner_dunit2-64.run
+#$SCRIPTS/textrunner-64.run
 
 # run the tests
 #./fpcUnitTIOPFText.exe -a > results.xml
 #./fpcUnitTIOPFText.exe -a --file=results.xml
 #rm ./results.xml
 cd $TIOPF/UnitTests/Text/
-./textrunner64 -a --format=xml
+./textrunner64 -xml
 
 # Do we have test results?
-if ! [ -f ./results.xml ]; then
+if ! [ -f ./textrunner64.xml ]; then
   exit 0
 fi
 
 # generate the result in text and html format
-cp results.xml /opt/dailybuilds/results/results64.xml
+cp textrunner64.xml /opt/dailybuilds/results/results64.xml
 cd /opt/dailybuilds/results/
 /usr/bin/xsltproc -o index.html $SCRIPTS/fpcunit2.xsl results64.xml
 /usr/bin/xsltproc -o msg.txt $SCRIPTS/summarypost.xsl results64.xml
 
 # inject the SVN revision
 REV=`svnversion -n $TIOPF/`
-FPCVER=`/opt/fpc_2.3.1/bin/ppcx64 -iV`
-FPCCPU=`/opt/fpc_2.3.1/bin/ppcx64 -iTP`
-FPCHOST=`/opt/fpc_2.3.1/bin/ppcx64 -iTO`
+FPCVER=`$FPC -iV`
+FPCCPU=`$FPC -iTP`
+FPCHOST=`$FPC -iTO`
 sed "s/#REV/$REV/g" msg.txt > msg1.txt
 sed "s/#FPCVER/$FPCVER/g" msg1.txt > msg2.txt
 sed "s/#FPCCPU/$FPCCPU-$FPCHOST/g" msg2.txt > msg3.txt

@@ -21,6 +21,7 @@ type
     FDateInFileName: boolean;
     FFileCreateAttemptInterval: integer;
     FFileCreateAttempts: integer;
+    FMaxFileSize: Int64;
     function  GetDefaultFileName : TFileName;
     function  GetFileName : TFileName;
     procedure ForceLogDirectory;
@@ -34,12 +35,16 @@ type
     // Require param to control max size of file
     constructor Create; override;
     constructor CreateOverwriteOld;
-    constructor CreateWithFileName(const AFilePath: string; AFileName: string; AOverwriteOldFile: Boolean);
+    constructor CreateWithFileName(const AFilePath: string; AFileName: string; AOverwriteOldFile: Boolean); overload;
+    constructor CreateWithFileName(const AFilePath: string; AFileName: string; AOverwriteOldFile: Boolean; AMaxFileSize : Int64); Overload;
     constructor CreateWithDateInFileName(const APath: string); overload;
     constructor CreateWithDateInFileName(AUpDirectoryTree: Byte); overload;
     constructor CreateWithDateInFileName; overload;
     destructor  Destroy; override;
     procedure   Terminate; override;
+    {: The maximum size (in bytes) of the log file. If this size is exceeded,
+      the current log is renamed with a '~.log' extension and a new file created.}
+    property    MaxFileSize : Int64 Read FMaxFileSize Write FMaxFileSize;
     property    FileName : TFileName read GetFileName;
     property    OverwriteOldFile : boolean read FOverwriteOldFile;
     property    DateInFileName : boolean read FDateInFileName;
@@ -81,6 +86,7 @@ var
 begin
   inherited Create;
   FDateInFileName    := False;
+  MaxFileSize := 0;
   if AFilePath = '' then
     LFilePath:= ExtractFilePath(GetDefaultFileName)
   else
@@ -190,7 +196,7 @@ var
   LFileCreateCount: Integer;
   LFileName: string;
   LFileOpenMode: word;
-
+  LOldFileName : String;
 begin
   Result := false;
   LFileName := GetFileName;
@@ -214,6 +220,15 @@ begin
         LFileOpenMode := LFileOpenMode or fmCreate;
 
       AFileStream := TFileStream.Create(LFileName, LFileOpenMode);
+      If ((FMaxFileSize > 0) And (AFileStream.Size >= FMaxFileSize)) Then
+      Begin
+        AFileStream.Free;
+        lOldFileName := ChangeFileExt(lFilename,'.~log');
+        If FileExists(lOldFileName) Then
+          DeleteFile(PWideChar(lOldFileName));
+        RenameFile(lFileName, lOldFileName);
+        AFileStream := TFileStream.Create(lFileName, lFileOpenMode);
+      End;
       Result := true;
     except
       on EFOpenError do ;
@@ -273,6 +288,31 @@ begin
     ForceDirectories(LLogPath);
   if not DirectoryExists(LLogPath) then
     raise Exception.CreateFmt(cErrorCanNotCreateLogDirectory, [LLogPath]);
+end;
+
+constructor TtiLogToFile.CreateWithFileName(const AFilePath: string;
+  AFileName: string; AOverwriteOldFile: Boolean; AMaxFileSize: Int64);
+var
+  LFilePath: string;
+  LFileName: string;
+begin
+  inherited Create;
+  FDateInFileName    := False;
+  MaxFileSize := AMaxFileSize;
+  if AFilePath = '' then
+    LFilePath:= ExtractFilePath(GetDefaultFileName)
+  else
+    LFilePath:= AFilePath;
+  if AFileName = '' then
+    LFileName:= ExtractFileName(GetDefaultFileName)
+  else
+    LFileName:= AFileName;
+  FFileName:= ExpandFileName(tiAddTrailingSlash(LFilePath) + LFileName);
+  FOverwriteOldFile :=  AOverwriteOldFile;
+  DeleteOldFileIfRequired;
+  FFileCreateAttempts := CDefaultFileCreateAttempts;
+  FFileCreateAttemptInterval := CDefaultFileCreateAttemptInterval; //ms
+  ThrdLog.Start;
 end;
 
 end.

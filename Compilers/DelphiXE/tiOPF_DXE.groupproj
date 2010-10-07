@@ -33,55 +33,55 @@
 			<MSBuild Projects="tiOPFCore.dproj"/>
 		</Target>
 		<Target Name="tiOPFCore:Clean">
-			<MSBuild Targets="Clean" Projects="tiOPFCore.dproj"/>
+			<MSBuild Projects="tiOPFCore.dproj" Targets="Clean"/>
 		</Target>
 		<Target Name="tiOPFCore:Make">
-			<MSBuild Targets="Make" Projects="tiOPFCore.dproj"/>
+			<MSBuild Projects="tiOPFCore.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="tiOPFOptions">
 			<MSBuild Projects="tiOPFOptions.dproj"/>
 		</Target>
 		<Target Name="tiOPFOptions:Clean">
-			<MSBuild Targets="Clean" Projects="tiOPFOptions.dproj"/>
+			<MSBuild Projects="tiOPFOptions.dproj" Targets="Clean"/>
 		</Target>
 		<Target Name="tiOPFOptions:Make">
-			<MSBuild Targets="Make" Projects="tiOPFOptions.dproj"/>
+			<MSBuild Projects="tiOPFOptions.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="tiOPFGUI">
 			<MSBuild Projects="tiOPFGUI.dproj"/>
 		</Target>
 		<Target Name="tiOPFGUI:Clean">
-			<MSBuild Targets="Clean" Projects="tiOPFGUI.dproj"/>
+			<MSBuild Projects="tiOPFGUI.dproj" Targets="Clean"/>
 		</Target>
 		<Target Name="tiOPFGUI:Make">
-			<MSBuild Targets="Make" Projects="tiOPFGUI.dproj"/>
+			<MSBuild Projects="tiOPFGUI.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="tiOPFGUIDsgn">
 			<MSBuild Projects="tiOPFGUIDsgn.dproj"/>
 		</Target>
 		<Target Name="tiOPFGUIDsgn:Clean">
-			<MSBuild Targets="Clean" Projects="tiOPFGUIDsgn.dproj"/>
+			<MSBuild Projects="tiOPFGUIDsgn.dproj" Targets="Clean"/>
 		</Target>
 		<Target Name="tiOPFGUIDsgn:Make">
-			<MSBuild Targets="Make" Projects="tiOPFGUIDsgn.dproj"/>
+			<MSBuild Projects="tiOPFGUIDsgn.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="tiOPFUnitTestsGUI">
 			<MSBuild Projects="tiOPFUnitTestsGUI.dproj"/>
 		</Target>
 		<Target Name="tiOPFUnitTestsGUI:Clean">
-			<MSBuild Targets="Clean" Projects="tiOPFUnitTestsGUI.dproj"/>
+			<MSBuild Projects="tiOPFUnitTestsGUI.dproj" Targets="Clean"/>
 		</Target>
 		<Target Name="tiOPFUnitTestsGUI:Make">
-			<MSBuild Targets="Make" Projects="tiOPFUnitTestsGUI.dproj"/>
+			<MSBuild Projects="tiOPFUnitTestsGUI.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="tiOPFUnitTestsText">
 			<MSBuild Projects="tiOPFUnitTestsText.dproj"/>
 		</Target>
 		<Target Name="tiOPFUnitTestsText:Clean">
-			<MSBuild Targets="Clean" Projects="tiOPFUnitTestsText.dproj"/>
+			<MSBuild Projects="tiOPFUnitTestsText.dproj" Targets="Clean"/>
 		</Target>
 		<Target Name="tiOPFUnitTestsText:Make">
-			<MSBuild Targets="Make" Projects="tiOPFUnitTestsText.dproj"/>
+			<MSBuild Projects="tiOPFUnitTestsText.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="Build">
 			<CallTarget Targets="tiOPFCore;tiOPFOptions;tiOPFGUI;tiOPFGUIDsgn;tiOPFUnitTestsGUI;tiOPFUnitTestsText"/>
@@ -92,5 +92,5 @@
 		<Target Name="Make">
 			<CallTarget Targets="tiOPFCore:Make;tiOPFOptions:Make;tiOPFGUI:Make;tiOPFGUIDsgn:Make;tiOPFUnitTestsGUI:Make;tiOPFUnitTestsText:Make"/>
 		</Target>
-		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" Project="$(BDS)\Bin\CodeGear.Group.Targets"/>
 	</Project>

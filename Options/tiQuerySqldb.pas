@@ -307,7 +307,12 @@ begin
     begin
       // Assumes tiOPF's "databasehost:databasename" format.
       FDatabase.HostName      := tiToken(DatabaseName, ':', 1);
-      FDatabase.DatabaseName  := tiToken(DatabaseName, ':', 2);
+      { we can't use tiToken(x,y,2) because Windows paths contain a : after the drive letter }
+      FDatabase.DatabaseName  := Copy(DatabaseName, Length(FDatabase.HostName)+2, Length(DatabaseName));
+      //writeln('*************');
+      //writeln('DEBUG:  TtiDatabaseSQLDB.SetConnected ', FDatabase.HostName);
+      //writeln('DEBUG:  TtiDatabaseSQLDB.SetConnected ', FDatabase.DatabaseName);
+      //writeln('-------------');
     end
     else
       FDatabase.DatabaseName := DatabaseName;

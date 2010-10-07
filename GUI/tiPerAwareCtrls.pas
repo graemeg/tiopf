@@ -348,8 +348,6 @@ type
 
   // A wrapper for the TComboBox control that has items entered at design time
   TtiPerAwareComboBoxStatic = class(TtiPerAwareComboBoxAbs)
-  private
-  published
   protected
     function    GetValue: String; virtual;
     procedure   SetValue(const AValue: String); virtual;
