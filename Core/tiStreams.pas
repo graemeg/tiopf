@@ -592,7 +592,7 @@ begin
 
     OutPtr^.b1 := 13;
     OutPtr^.b2 := 10;
-    Inc(Cardinal(OutPtr), 2);
+    Inc(OutPtr, 2);   // was:  Inc(Cardinal(OutPtr), 2) but that doesn't compile under FPC
 
     Inc(InnerLimit, MIME_DECODED_LINE_BREAK);
   until InnerLimit > OuterLimit;
