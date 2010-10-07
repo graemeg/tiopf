@@ -5,7 +5,7 @@
 unit tiTextTestRunner;
 
 {$I tiDefines.inc}
-{$I DUnit.inc}
+{.$I DUnit.inc}  // there is no DUnit.inc
 
 interface
 uses
