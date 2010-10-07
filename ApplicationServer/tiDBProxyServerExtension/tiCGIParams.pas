@@ -21,11 +21,17 @@ type
     procedure   SetValues(const pName, Value: string);
     function    GetCompressedEncodedAsString: string;
     procedure   SetCompressedEncodedAsString(const Value: string);
-    function GetCount: integer;
+    function    GetCount: integer;
+    function    GetParam(const Index: integer): string;
+    function    GetParamName(const Index: integer): string;
+    function    GetParamValue(const Index: integer): string;
   public
     constructor Create;
     destructor  Destroy; override ;
     property    Values[const pName: string]: string read GetValues Write SetValues;
+    property    Params[const Index: integer]: string read GetParam; default;
+    property    ParamNames[const Index: integer]: string read GetParamName;
+    property    ParamValues[const Index: integer]: string read GetParamValue;
     property    AsString: string read GetAsString Write SetAsString;
     property    AsCompressedEncodedString: string read GetCompressedEncodedAsString Write SetCompressedEncodedAsString;
     property    Count: integer read GetCount;
@@ -75,6 +81,21 @@ end;
 function TtiCGIParams.GetCount: integer;
 begin
   result:= FStrings.Count;
+end;
+
+function TtiCGIParams.GetParam(const Index: integer): string;
+begin
+ Result := FStrings[Index];
+end;
+
+function TtiCGIParams.GetParamName(const Index: integer): string;
+begin
+  Result := FStrings.Names[Index];
+end;
+
+function TtiCGIParams.GetParamValue(const Index: integer): string;
+begin
+  Result := FStrings.Values[GetParamName(Index)];
 end;
 
 function TtiCGIParams.GetValues(const pName: string): string;

@@ -272,8 +272,9 @@ begin
     if ButtonsVisible = btnVisReadWrite then
     begin
       LFormIsDirty := FormIsDirty;
-      FaUndo.Enabled := (FFormData is TtiDataFormClonedData) and LFormIsDirty;
-      FaSaveClose.Enabled := LFormIsValid and LFormIsDirty;
+      FaUndo.Enabled := ContextActionsEnabled and (FFormData is TtiDataFormClonedData) and LFormIsDirty;
+      FaSaveClose.Enabled := ContextActionsEnabled and LFormIsValid and LFormIsDirty;
+      FaCancelClose.Enabled := ContextActionsEnabled;
       if LFormIsDirty then
         FaCancelClose.Caption := cCaptionCancelClose
       else

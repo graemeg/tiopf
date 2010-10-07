@@ -54,6 +54,7 @@ begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
   APersistenceLayerDefaults.PersistenceLayerName:= cTIPersistZeosMySQL50;;
   APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseName;
+  APersistenceLayerDefaults.IsDatabaseNameFilePath:= False;
   APersistenceLayerDefaults.Username:= 'root';
   APersistenceLayerDefaults.Password:= '';
   APersistenceLayerDefaults.CanDropDatabase:= False;

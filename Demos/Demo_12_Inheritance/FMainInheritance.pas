@@ -169,8 +169,8 @@ begin
   lTableMetaData:= TtiDBMetaDataTable.Create;
   try
     lTableMetaData.Name:= 'Client_Abs';
-    lTableMetaData.AddField('OID',               qfkString,  36); // Using GUID OIDs
-    lTableMetaData.AddField('Client_ID',         qfkString,   9);
+    lTableMetaData.AddInstance('OID',               qfkString,  36); // Using GUID OIDs
+    lTableMetaData.AddInstance('Client_ID',         qfkString,   9);
     GTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
@@ -179,8 +179,8 @@ begin
   lTableMetaData:= TtiDBMetaDataTable.Create;
   try
     lTableMetaData.Name:= 'Client_Company';
-    lTableMetaData.AddField('OID',                 qfkString,  36); // Using GUID OIDs
-    lTableMetaData.AddField('Company_Name',         qfkString, 200);
+    lTableMetaData.AddInstance('OID',                 qfkString,  36); // Using GUID OIDs
+    lTableMetaData.AddInstance('Company_Name',         qfkString, 200);
     GTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
@@ -189,9 +189,9 @@ begin
   lTableMetaData:= TtiDBMetaDataTable.Create;
   try
     lTableMetaData.Name:= 'Client_Person';
-    lTableMetaData.AddField('OID',                 qfkString,  36); // Using GUID OIDs
-    lTableMetaData.AddField('Given_Name',          qfkString,  40);
-    lTableMetaData.AddField('Family_Name',         qfkString,  40);
+    lTableMetaData.AddInstance('OID',                 qfkString,  36); // Using GUID OIDs
+    lTableMetaData.AddInstance('Given_Name',          qfkString,  40);
+    lTableMetaData.AddInstance('Family_Name',         qfkString,  40);
     GTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;

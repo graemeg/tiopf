@@ -1,5 +1,7 @@
 unit tiStructuredCSVWriter;
 
+{$I tiDefines.inc}
+
 interface
 
 uses

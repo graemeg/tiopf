@@ -50,7 +50,7 @@ type
     procedure Dirty;
     procedure Dirty_And_OID;
     procedure Index;
-    procedure Equals;
+    procedure tiObject_Equals;
     procedure ObjectStateAsString;
     procedure FindByOID;
     procedure FindWithMethod;
@@ -61,6 +61,7 @@ type
     procedure AssignList;
     procedure AssignCompound;
     procedure AssignCaptions;
+    procedure AssignCaptionsAndObjects;
     procedure CloneFlat;
     procedure CloneList;
     procedure CloneCompound;
@@ -83,6 +84,8 @@ type
     procedure FieldCurrency;
     procedure FieldCurrency_Equals;
     procedure FieldCurrency_Assign;
+    procedure FieldCurrency_Inc1;
+    procedure FieldCurrency_Inc2;
 
     procedure FieldDate;
     procedure FieldDate_Fail;
@@ -491,8 +494,38 @@ begin
     LObjectList.AssignCaptions(LStringList);
     CheckEquals(3, LStringList.Count);
     CheckEquals('0', LStringList.Strings[0]);
+    CheckNull(LStringList.Objects[0]);
     CheckEquals('1', LStringList.Strings[1]);
+    CheckNull(LStringList.Objects[1]);
     CheckEquals('2', LStringList.Strings[2]);
+    CheckNull(LStringList.Objects[2]);
+  finally
+    LObjectList.Free;
+    LStringList.Free;
+  end;
+end;
+
+procedure TtiObjectTestCase.AssignCaptionsAndObjects;
+var
+  LObjectList: TtiObjectList;
+  LStringList: TStringList;
+begin
+  LObjectList:= nil;
+  LStringList:= nil;
+  try
+    LObjectList := TtiObjectList.Create;
+    LStringList:= TStringList.Create;
+    LObjectList.Add(TtiObjectForTestingAssignCaptions.Create);
+    LObjectList.Add(TtiObjectForTestingAssignCaptions.Create);
+    LObjectList.Add(TtiObjectForTestingAssignCaptions.Create);
+    LObjectList.AssignCaptionsAndObjects(LStringList);
+    CheckEquals(3, LStringList.Count);
+    CheckEquals('0', LStringList.Strings[0]);
+    CheckSame(LObjectList.Items[0], LStringList.Objects[0]);
+    CheckEquals('1', LStringList.Strings[1]);
+    CheckSame(LObjectList.Items[1], LStringList.Objects[1]);
+    CheckEquals('2', LStringList.Strings[2]);
+    CheckSame(LObjectList.Items[2], LStringList.Objects[2]);
   finally
     LObjectList.Free;
     LStringList.Free;
@@ -910,7 +943,7 @@ begin
 end;
 
 
-procedure TtiObjectTestCase.Equals;
+procedure TtiObjectTestCase.tiObject_Equals;
 var
   lObj1     : TtiObjectForTesting;
   lObj2     : TtiObjectForTesting;
@@ -2398,6 +2431,57 @@ begin
     end;
   finally
     lF1.Free;
+  end;
+end;
+
+procedure TtiObjectTestCase.FieldCurrency_Inc1;
+var
+  LObj: TtiObject;
+  LField1:  TtiFieldCurrency;
+  LField2:  TtiFieldCurrency;
+begin
+  LObj := TtiObject.Create;
+  try
+    LField1:= nil;
+    LField2:= nil;
+    try
+      LField1:= TtiFieldCurrency.Create(LObj);
+      LField2:= TtiFieldCurrency.Create(LObj);
+      LField1.AsInteger:= 100;
+      LField2.AsInteger:= 1;
+      LField1.Inc(LField2);
+      CheckEquals(101, LField1.AsInteger);
+      LField2.AsInteger:= -1;
+      LField1.Inc(LField2);
+      CheckEquals(100, LField1.AsInteger);
+    finally
+      LField1.Free;
+      LField2.Free;
+    end;
+  finally
+    LObj.Free;
+  end;
+end;
+
+procedure TtiObjectTestCase.FieldCurrency_Inc2;
+var
+  LObj: TtiObject;
+  LField1:  TtiFieldCurrency;
+begin
+  LObj := TtiObject.Create;
+  try
+    LField1:= TtiFieldCurrency.Create(LObj);
+    try
+      LField1.AsInteger:= 100;
+      LField1.Inc(1);
+      CheckEquals(101, LField1.AsInteger);
+      LField1.Inc(-1);
+      CheckEquals(100, LField1.AsInteger);
+    finally
+      LField1.Free;
+    end;
+  finally
+    LObj.Free;
   end;
 end;
 

@@ -1130,6 +1130,7 @@ begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
   APersistenceLayerDefaults.PersistenceLayerName:= CTIPersistDOA;
   APersistenceLayerDefaults.DatabaseName:= 'ocrl';
+  APersistenceLayerDefaults.IsDatabaseNameFilePath:= False;
   APersistenceLayerDefaults.Username:= 'scott';
   APersistenceLayerDefaults.Password:= 'tiger';
   APersistenceLayerDefaults.CanDropDatabase:= False;

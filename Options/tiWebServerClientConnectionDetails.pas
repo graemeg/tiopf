@@ -29,7 +29,7 @@ type
     property RetryLimit: byte read FRetryLimit write FRetryLimit;
 
     procedure Assign(const ASource: TtiWebServerClientConnectionDetails);
-    function  Equals(const ACompareWith: TtiWebServerClientConnectionDetails): boolean;
+    function  Equals(const ACompareWith: TtiWebServerClientConnectionDetails): boolean; reintroduce;
 
   end;
 

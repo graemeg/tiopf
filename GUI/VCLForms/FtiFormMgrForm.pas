@@ -47,6 +47,7 @@ type
     FaDummy: TtiAMSAction;
     FFormCaption: string;
     FButtonsVisible: TtiButtonsVisible;
+    FContextActionsEnabled: Boolean;
     FIsModal: boolean;
     FOnFormMessageEvent: TtiOnFormMessageEvent;
     FFormErrorMessage: string;
@@ -56,6 +57,7 @@ type
 
     procedure SetFormErrorMessage(const AValue: string);
     procedure SetFormInfoMessage(const AValue: string);
+    procedure SetContextActionsEnabled(const AValue: Boolean);
   protected
     FUpdateButtons : boolean;
 
@@ -86,6 +88,7 @@ type
 
     property  ButtonsVisible: TtiButtonsVisible read FButtonsVisible write SetButtonsVisible;
     property  UpdateButtons: boolean read FUpdateButtons write FUpdateButtons;
+    property  ContextActionsEnabled: Boolean read FContextActionsEnabled write SetContextActionsEnabled;
     property  LastActiveControl: TWinControl read FLastActiveControl Write FLastActiveControl;
   public
     procedure AssignActions(const AList: TList);
@@ -222,6 +225,7 @@ begin
   FIsModal := false;
   FButtonsVisible := btnVisNone;
   FUpdateButtons := true;
+  FContextActionsEnabled := true;
 end;
 
 procedure TtiFormMgrForm.FormDestroy(Sender: TObject);
@@ -260,6 +264,7 @@ end;
 
 procedure TtiFormMgrForm.DoALUpdate(Action: TBasicAction; var Handled: Boolean);
 begin
+  FaClose.Enabled := ContextActionsEnabled;
   Handled := True;
 end;
 
@@ -307,6 +312,19 @@ procedure TtiFormMgrForm.SetButtonsVisible(const AValue: TtiButtonsVisible);
 begin
   FButtonsVisible := AValue;
   FaClose.Visible := FButtonsVisible = btnVisReadOnly;
+end;
+
+procedure TtiFormMgrForm.SetContextActionsEnabled(const AValue: Boolean);
+var
+  LHandled: Boolean;
+begin
+  if AValue <> FContextActionsEnabled then
+  begin
+    FContextActionsEnabled := AValue;
+    // Trigger an OnUpdate
+    if Assigned(FAL.OnUpdate) and (FAL.ActionCount > 0) then
+      FAL.OnUpdate(FAL.Actions[0], LHandled);
+  end;
 end;
 
 procedure TtiFormMgrForm.SetEscapeKeyEnabled(const AValue: boolean);

@@ -1,6 +1,6 @@
-//TODO:
-//ShowDataPointHint - CrossHairs not being redrawn properly when mousing over datapoints too quickly
 unit tiChart;
+
+{$I tiDefines.inc}
 
 interface
 

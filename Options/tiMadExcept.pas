@@ -1,5 +1,7 @@
 unit tiMadExcept;
 
+{$I tiDefines.inc}
+
 interface
 uses
   SysUtils

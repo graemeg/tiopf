@@ -48,7 +48,6 @@ begin
   tiRegisterNonPersistentTest(TTestTISyncObjs);
 end;
 
-
 { TTestTISyncObjs }
 
 procedure TTestTISyncObjs.tiObjectLockList_MultiThread;
@@ -99,11 +98,10 @@ end;
 
 constructor TThreadTestObjectLockList.Create(AOLL: TtiObjectLockList; AO: TtiObject);
 begin
-  inherited Create(True);
+  inherited Create(False);
   FreeOnTerminate:= True;
   FOLL:= AOLL;
   FO:= AO;
-  Resume;
 end;
 
 

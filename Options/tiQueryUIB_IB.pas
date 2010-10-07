@@ -153,6 +153,7 @@ begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
   APersistenceLayerDefaults.PersistenceLayerName := cTIPersistUIB_IB;
   APersistenceLayerDefaults.DatabaseName := CDefaultDatabaseDirectory + CDefaultDatabaseName + '.gdb';
+  APersistenceLayerDefaults.IsDatabaseNameFilePath:= True;
   APersistenceLayerDefaults.Username := 'SYSDBA';
   APersistenceLayerDefaults.Password := 'masterkey';
   APersistenceLayerDefaults.CanDropDatabase:= False;

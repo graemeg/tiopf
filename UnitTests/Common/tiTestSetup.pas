@@ -1,5 +1,7 @@
 unit tiTestSetup;
 
+{$i tiDefines.inc}
+
 interface
 uses
   tiBaseObject,
@@ -19,6 +21,8 @@ type
     constructor Create(const ATestCase : TtiTestCase); virtual ;
     destructor  Destroy; override;
 
+    // ToDo: Rationalise these tvToXXX methods found in TtiTestSetup.
+    //       Merge them with methods like tiIncStr found in tiTestFramework.pas
     function    tvToStr(const AValue: string; const AInc: integer = 0): string;
     function    tvToDateTime( const AValue: string; const AInc: integer = 0): TDateTime;
     function    tvToDate(     const AValue: string; const AInc: integer = 0): TDateTime;

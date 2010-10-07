@@ -1,5 +1,7 @@
 unit tiGenericFilteredThreadList;
 
+{$I tiDefines.inc}
+
 interface
 
 uses

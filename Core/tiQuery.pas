@@ -136,9 +136,9 @@ type
                              AFieldWidth : integer = 0): TtiDBMetaDataField; overload;
     function    AddInstance : TtiDBMetaDataField; overload;
     // Don't use AddField. Use AddInstance instead
-    procedure   AddField(const AFieldName : string;
-                          const AFieldKind : TtiQueryFieldKind;
-                          AFieldWidth : integer = 0); deprecated;
+    //    procedure   AddField(const AFieldName : string;
+    //                          const AFieldKind : TtiQueryFieldKind;
+    //                          AFieldWidth : integer = 0); deprecated;
     procedure   Read(const ADBConnectionName: string  = ''; APersistenceLayerName : string = ''); override;
     function    FindByFieldName(const AFieldName : TFieldName): TtiDBMetaDataField;
     function    IndexOfFieldName(const AFieldName: TFieldName): Integer;
@@ -514,6 +514,7 @@ type
 
     procedure   SetValueFromProp(const AFieldMetaData : TtiObject; const APropName : string; const pParamName : string);
     procedure   SetValueAsVariant(const AName : string; const AValue : variant);
+    procedure   SetValueAsVarRec(const AName: string; const AValue: TVarRec);
   end;
 
 
@@ -769,13 +770,6 @@ procedure TtiDBMetaDataTable.Add(AObject: TtiDBMetaDataField);
 begin
   inherited Add(AObject);
   FMaxFieldWidth := 0;
-end;
-
-// Don't use AddField. Use AddInstance instead
-procedure TtiDBMetaDataTable.AddField(const AFieldName: string;
-  const AFieldKind: TtiQueryFieldKind; AFieldWidth: integer);
-begin
-  AddInstance(AFieldName, AFieldKind, AFieldWidth);
 end;
 
 function TtiDBMetaDataTable.AddInstance(const AFieldName: string;
@@ -1365,6 +1359,48 @@ begin
   else
     // handle other (unknown) types
     SetValueAsString(AName, AValue);
+  end;
+end;
+
+procedure TtiQueryParams.SetValueAsVarRec(const AName: string;
+  const AValue: TVarRec);
+begin
+  case AValue.VType of
+    vtInteger:       SetValueAsInteger(AName, AValue.VInteger);
+    vtBoolean:       SetValueAsBoolean(AName, AValue.VBoolean);
+    vtExtended:      SetValueAsFloat(  AName, AValue.VExtended^);
+    vtWideChar:      SetValueAsString( AName, String(AValue.VWideChar));
+    // Implement (and unit test) as required
+    //    vtString:     result := result + QuotedStr(string(VString^));
+    //    vtChar:       result := result + QuotedStr(string(VChar));
+    //    vtPWideChar: SetValueAsString(AName, String(AValue.VPWideChar));
+    //    vtWideChar:   result := result + QuotedStr(string(VWideChar));
+    //    vtPChar:      result := result + QuotedStr(string(VPChar));
+    vtAnsiString:    SetValueAsString( AName, String(AValue.VAnsiString));
+    //    vtWideString: result := result + QuotedStr(string(VWideString));
+    //    vtCurrency:   result := result + CurrToStr(VCurrency^);
+    //    vtVariant:    result := result + QuotedStr(string(VVariant^));
+    //    vtInt64:      result := result + IntToStr(VInt64^);
+  else
+    raise EtiOPFProgrammerException.CreateFmt('Invalid variant type. Index="%d"', [AValue.VType]);
+    // Here are the possible values
+    //  vtInteger       = 0;
+    //  vtBoolean       = 1;
+    //  vtChar          = 2;
+    //  vtExtended      = 3;
+    //  vtString        = 4;
+    //  vtPointer       = 5;
+    //  vtPChar         = 6;
+    //  vtObject        = 7;
+    //  vtClass         = 8;
+    //  vtWideChar      = 9;
+    //  vtPWideChar     = 10;
+    //  vtAnsiString    = 11;
+    //  vtCurrency      = 12;
+    //  vtVariant       = 13;
+    //  vtInterface     = 14;
+    //  vtWideString    = 15;
+    //  vtInt64         = 16;
   end;
 end;
 
@@ -2140,17 +2176,8 @@ begin
 end;
 
 function TtiQueryParamStream.GetValueAsString: string;
-var
-  lStream : TStringStream;
 begin
-  lStream := TStringStream.Create('');
-  try
-    FStream.Position := 0;
-    MimeEncodeStream(FStream, lStream);
-    result := lStream.DataString;
-  finally
-    lStream.Free;
-  end;
+  result:= tiStreamToMIMEEncodeString(FStream);
 end;
 
 procedure TtiQueryParamStream.SetValueAsStream(const AValue: TStream);
@@ -2166,17 +2193,8 @@ begin
 end;
 
 procedure TtiQueryParamStream.SetValueAsString(const AValue: string);
-var
-  lStream : TStringStream;
 begin
-  lStream := TStringStream.Create(AValue);
-  try
-    FStream.Size := 0;
-    MimeDecodeStream(lStream, FStream);
-    FStream.Position := 0;
-  finally
-    lStream.Free;
-  end;
+  tiMIMEEncodeStringToStream(AValue, FStream);
 end;
 
 { TtiQueryNonSQL }

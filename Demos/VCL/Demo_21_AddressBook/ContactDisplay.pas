@@ -22,6 +22,7 @@ Type
     property Email : String index 3 read GetDisplay;
     property Comments : String index 4 read GetDisplay;
     property DateOfBirth : String index 5 read GetDisplay;
+    property HomeAddress: string index 6 read GetDisplay;
   End;
 
   TContactDisplayList = class(TBaseDisplayList)
@@ -64,6 +65,7 @@ begin
       3 : Result := Contact.EMail;
       4 : Result := Contact.Comments;
       5 : Result := DateToStr(Contact.DateOfBirth);
+      6 : Result := Contact.HomeAddress;
     end; { Case }
   end;
 end;

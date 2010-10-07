@@ -72,6 +72,7 @@ type
   {: Adds a reference to the appropriate persistence layer}
   TtiTestCaseWithPersistenceLayer = class(TtiTestCaseWithTestSetupData)
   private
+
     function    GetPersistenceLayer: TtiPersistenceLayer;
     procedure   CreateDBIfNotExists;
 
@@ -351,8 +352,8 @@ begin
   LTable := TtiDBMetaDataTable.Create;
   try
     LTable.Name := 'Test_Bin';
-    LTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
-    LTable.AddField('Item_Binary_Field', qfkBinary );
+    LTable.AddInstance('OID',               qfkString, 36); // Should be Not Null & PK
+    LTable.AddInstance('Item_Binary_Field', qfkBinary );
     CreateTable(LTable, ADatabase);
   finally
     LTable.Free;
@@ -552,8 +553,8 @@ begin
   LTable := TtiDBMetaDataTable.Create;
   try
     LTable.Name := cTIQueryTableName;
-    LTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
-    LTable.AddField(cTIQueryColName, qfkLogical);
+    LTable.AddInstance('OID', qfkString, 36); // Should be Not Null & PK
+    LTable.AddInstance(cTIQueryColName, qfkLogical);
     CreateTable(LTable, ADatabase);
   finally
     LTable.Free;
@@ -569,8 +570,8 @@ begin
   LTable := TtiDBMetaDataTable.Create;
   try
     LTable.Name := cTIQueryTableName;
-    LTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
-    LTable.AddField(cTIQueryColName, qfkDateTime);
+    LTable.AddInstance('OID', qfkString, 36); // Should be Not Null & PK
+    LTable.AddInstance(cTIQueryColName, qfkDateTime);
     CreateTable(LTable, ADatabase);
   finally
     LTable.Free;
@@ -586,8 +587,8 @@ begin
   LTable := TtiDBMetaDataTable.Create;
   try
     LTable.Name := cTIQueryTableName;
-    LTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
-    LTable.AddField(cTIQueryColName, qfkFloat);
+    LTable.AddInstance('OID', qfkString, 36); // Should be Not Null & PK
+    LTable.AddInstance(cTIQueryColName, qfkFloat);
     CreateTable(LTable, ADatabase);
   finally
     LTable.Free;
@@ -603,8 +604,8 @@ begin
   LTable := TtiDBMetaDataTable.Create;
   try
     LTable.Name := cTIQueryTableName;
-    LTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
-    LTable.AddField(cTIQueryColName, qfkInteger);
+    LTable.AddInstance('OID', qfkString, 36); // Should be Not Null & PK
+    LTable.AddInstance(cTIQueryColName, qfkInteger);
     CreateTable(LTable, ADatabase);
   finally
     LTable.Free;
@@ -637,8 +638,8 @@ begin
   LTable := TtiDBMetaDataTable.Create;
   try
     LTable.Name := cTIQueryTableName;
-    LTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
-    LTable.AddField(cTIQueryColName, qfkBinary);
+    LTable.AddInstance('OID', qfkString, 36); // Should be Not Null & PK
+    LTable.AddInstance(cTIQueryColName, qfkBinary);
     CreateTable(LTable, ADatabase);
   finally
     LTable.Free;

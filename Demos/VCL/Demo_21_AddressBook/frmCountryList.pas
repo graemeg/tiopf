@@ -35,8 +35,11 @@ implementation
 {$R *.dfm}
 
 uses
-  contactmanager, tiBaseMediator, tiListMediators, frmEditCountry;
-
+   contactmanager
+  ,tiBaseMediator
+  ,tiListMediators
+  ,frmEditCountry
+  ;
 
 procedure ShowCountries(const AList: TCountryList);
 var
@@ -52,53 +55,6 @@ begin
 end;
 
 { TCountryListForm }
-
-procedure TCountryListForm.BEditClick(Sender: TObject);
-
-var
-  c: TCountry;
-
-begin
-  c := TCountry(TtiStringGridMediatorView(FMediator.FindByComponent(gCountries).Mediator).SelectedObject);
-  if Assigned(c) then
-    if EditCountry(c) then
-    begin
-      // we can save country here
-    end;
-end;
-
-procedure TCountryListForm.BAddClick(Sender: TObject);
-
-var
-  c: TCountry;
-
-begin
-  C:=TCountry.Create;
-  if EditCountry(c) then
-    begin
-    // we can save country here
-    gcontactmanager.CountryList.Add(C);
-    end
-  else
-    c.Free;
-end;
-
-procedure TCountryListForm.BDeleteClick(Sender: TObject);
-
-var
-  c: TCountry;
-  M : TtiMediatorView;
-
-begin
-  M:=FMediator.FindByComponent(gCountries).Mediator;
-  c := TCountry(TtiStringGridMediatorView(M).SelectedObject);
-  if Assigned(c) then
-    begin
-    gContactManager.CountryList.Extract(c);
-    M.ObjectToGui;
-    C.Deleted:=True;
-    end;
-end;
 
 procedure TCountryListForm.SetData(const AValue: TCountryList);
 begin
@@ -117,4 +73,43 @@ begin
   FMediator.Active := True;
 end;
 
+procedure TCountryListForm.BAddClick(Sender: TObject);
+var
+  c: TCountry;
+begin
+  C:=TCountry.Create;
+  if EditCountry(c) then
+    gcontactmanager.CountryList.Add(C)
+  else
+    c.Free;
+end;
+
+procedure TCountryListForm.BEditClick(Sender: TObject);
+var
+  c: TCountry;
+begin
+  c := TCountry(TtiStringGridMediatorView(FMediator.FindByComponent(gCountries).Mediator).SelectedObject);
+  if Assigned(c) then
+    if EditCountry(c) then
+    begin
+      // we can save here
+    end;
+end;
+
+procedure TCountryListForm.BDeleteClick(Sender: TObject);
+var
+  c: TCountry;
+  M : TtiMediatorView;
+begin
+  M:=FMediator.FindByComponent(gCountries).Mediator;
+  c := TCountry(TtiStringGridMediatorView(M).SelectedObject);
+  if Assigned(c) then
+  begin
+    gContactManager.CountryList.Extract(c);
+    M.ObjectToGui;
+    C.Deleted:=True;
+  end;
+end;
+
 end.
+

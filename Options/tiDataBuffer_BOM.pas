@@ -29,12 +29,12 @@ type
 //  Add a ColNamesInFirstRow prop
 //  Write the tiQueryCSV class
 
-  TtiDataBuffers      = class;
+  TtiDataBufferList   = class;
   TtiDataBuffer       = class;
   TtiDataBufferRow    = class;
   TtiDataBufferCell   = class;
 
-  TtiDataBuffers = class(TtiBaseObject)
+  TtiDataBufferList = class(TtiBaseObject)
   private
     FList : TObjectList;
     function  GetItems(AIndex: Integer): TtiDataBuffer;
@@ -48,6 +48,8 @@ type
     procedure   Clear;
     function    Count : integer;
     function    FindByName(const AName : string): TtiDataBuffer;
+    function    FindCell(const ADataBufferName: string;
+        const AFieldName: string; const ARowIndex: Integer): TtiDataBufferCell;
     procedure   Remove(const AValue : TtiDataBuffer);
     procedure   Extract(const AValue: TtiDataBuffer);
   end;
@@ -72,8 +74,10 @@ type
     property    List : TList read GetRows;
     function    IndexOf(const AValue : TtiDataBufferRow): integer;
     function    FindByFieldValue(const AFieldName, AFieldValue: string): TtiDataBufferRow;
+    function    FindCell(const AFieldName: string; const ARowIndex: Integer): TtiDataBufferCell;
     property    Name : string read FName write FName;
     procedure   Remove(const pRow : TtiDataBufferRow);
+    procedure   Delete(const AIndex: Integer);
     property    Fields : TtiDBMetaDataTable read FFields write FFields;
   end;
 
@@ -141,11 +145,91 @@ uses
   ,SysUtils
  ;
 
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-//*
-//* TtiDataBuffer
-//*
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+{ TtiDataBufferList }
+
+procedure TtiDataBufferList.Add(const AData: TtiDataBuffer);
+begin
+  FList.Add(AData);
+end;
+
+function TtiDataBufferList.AddInstance(const AName: string): TtiDataBuffer;
+begin
+  result := TtiDataBuffer.Create;
+  result.Name := AName;
+  Add(result);
+end;
+
+procedure TtiDataBufferList.Clear;
+begin
+  FList.Clear;
+end;
+
+function TtiDataBufferList.Count: integer;
+begin
+  result := FList.Count;
+end;
+
+constructor TtiDataBufferList.Create;
+begin
+  inherited;
+  FList := TObjectList.Create(true);
+end;
+
+destructor TtiDataBufferList.Destroy;
+begin
+  FList.Free;
+  inherited;
+end;
+
+procedure TtiDataBufferList.Extract(const AValue: TtiDataBuffer);
+begin
+  FList.Extract(AValue);
+  FList.Capacity:= FList.Count; // To suppress a reported leak in testing
+end;
+
+function TtiDataBufferList.FindByName(const AName: string): TtiDataBuffer;
+var
+  i : integer;
+begin
+  result := nil;
+  for i := 0 to Count - 1 do
+    if SameText(Items[i].Name, AName) then
+    begin
+      result := Items[i];
+      Break; //==>
+    end;
+end;
+
+function TtiDataBufferList.FindCell(const ADataBufferName: string;
+  const AFieldName: string; const ARowIndex: Integer): TtiDataBufferCell;
+var
+  LDataBuffer: TtiDataBuffer;
+begin
+  LDataBuffer := FindByName(ADataBufferName);
+  if Assigned(LDataBuffer) then
+    Result := LDataBuffer.FindCell(AFieldName, ARowIndex)
+  else
+    Result := nil;
+end;
+
+function TtiDataBufferList.GetItems(AIndex: Integer): TtiDataBuffer;
+begin
+  result := TtiDataBuffer(FList.Items[AIndex])
+end;
+
+procedure TtiDataBufferList.Remove(const AValue: TtiDataBuffer);
+begin
+  FList.Remove(AValue);
+  FList.Capacity:= FList.Count; // To suppress a reported leak in testing
+end;
+
+procedure TtiDataBufferList.SetItems(AIndex: Integer; const AValue: TtiDataBuffer);
+begin
+  FList.Items[AIndex]:=AValue;
+end;
+
+{ TtiDataBuffer }
+
 procedure TtiDataBuffer.Add(const AValue: TtiDataBufferRow);
 begin
   FRows.Add(AValue);
@@ -191,6 +275,56 @@ function TtiDataBuffer.GetItems(AIndex: integer): TtiDataBufferRow;
 begin
   result := TtiDataBufferRow(FRows.Items[AIndex]);
 end;
+
+function TtiDataBuffer.GetRows: TList;
+begin
+  result := FRows;
+end;
+
+function TtiDataBuffer.IndexOf(const AValue: TtiDataBufferRow): integer;
+begin
+  result := FRows.IndexOf(AValue);
+end;
+
+function TtiDataBuffer.FindByFieldValue(const AFieldName, AFieldValue: string): TtiDataBufferRow;
+var
+  LFieldIndex: Integer;
+  I: Integer;
+begin
+  Result := nil;
+
+  LFieldIndex := Fields.IndexOfFieldName(AFieldName);
+  if LFieldIndex >= 0 then
+  begin
+    for I := 0 to Pred(Count) do
+      if Items[I].Items[LFieldIndex].ValueAsString = AFieldValue then
+      begin
+        Result := Items[I];
+        Break; //==>
+      end;
+  end;
+end;
+
+function TtiDataBuffer.FindCell(const AFieldName: string;
+  const ARowIndex: Integer): TtiDataBufferCell;
+begin
+  if (ARowIndex >= 0) and (ARowIndex < Count) then
+    Result := Items[ARowIndex].FindByFieldName(AFieldName)
+  else
+    Result := nil;
+end;
+
+procedure TtiDataBuffer.Remove(const pRow: TtiDataBufferRow);
+begin
+  FRows.Remove(pRow);
+end;
+
+procedure TtiDataBuffer.Delete(const AIndex: Integer);
+begin
+  FRows.Delete(AIndex);
+end;
+
+{ TtiDataBufferRow }
 
 procedure TtiDataBufferRow.Add(const AValue: TtiDataBufferCell);
 begin
@@ -255,6 +389,11 @@ begin
   result := FOwner;
 end;
 
+procedure TtiDataBufferRow.SetOwner(const AValue: TtiDataBuffer);
+begin
+  FOwner := AValue;
+end;
+
 function TtiDataBufferRow.IndexOf(const AValue: TtiDataBufferCell): integer;
 begin
   result := FList.IndexOf(AValue);
@@ -265,160 +404,12 @@ begin
   FList.Items[AIndex]:= AValue;
 end;
 
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-//*
-//* TtiDataBufferCell
-//*
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TtiDataBufferCell.AssignFromStream(AStream: TStream);
-var
-  lValue : ansistring;
-  newValue: ansistring;
-begin
-  Assert(AStream<>nil, 'AStream not assigned');
-  lValue := tiStreamToString(AStream);
-  newValue:= MimeEncodeString(lValue);
-  FValue:= newValue;
-end;
-
-procedure TtiDataBufferCell.AssignToStream(AStream: TStream);
-var
-  lValue : string;
-begin
-  Assert(AStream<>nil, 'AStream not assigned');
-  lValue := MimeDecodeString(FValue);
-  tiStringToStream(lValue,AStream);
-end;
-
-function TtiDataBufferCell.GetDataSetField: TtiDBMetaDataField;
-begin
-  Assert(Owner.TestValid,       CTIErrorInvalidObject);
-  Assert(Owner.Owner.TestValid, CTIErrorInvalidObject);
-  if Owner.Count <> Owner.Owner.Fields.Count then
-    raise exception.Create(cErrorTIDataSetCellMetaData);
-  result := Owner.Owner.Fields.Items[Index];
-end;
-
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-//*
-//* TtiDataBufferField
-//*
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+{ TtiDataBufferCell }
 
 function  TtiDataBufferCell.GetIndex : integer;
 begin
   Assert(Owner.TestValid, CTIErrorInvalidObject);
   result := Owner.IndexOf(Self);
-end;
-
-procedure TtiDataBufferRow.SetOwner(const AValue: TtiDataBuffer);
-begin
-  FOwner := AValue;
-end;
-
-function TtiDataBuffer.GetRows: TList;
-begin
-  result := FRows;
-end;
-
-function TtiDataBuffer.IndexOf(const AValue: TtiDataBufferRow): integer;
-begin
-  result := FRows.IndexOf(AValue);
-end;
-
-function TtiDataBuffer.FindByFieldValue(const AFieldName, AFieldValue: string): TtiDataBufferRow;
-var
-  LFieldIndex: Integer;
-  I: Integer;
-begin
-  Result := nil;
-
-  LFieldIndex := Fields.IndexOfFieldName(AFieldName);
-  if LFieldIndex >= 0 then
-  begin
-    for I := 0 to Pred(Count) do
-      if Items[I].Items[LFieldIndex].ValueAsString = AFieldValue then
-      begin
-        Result := Items[I];
-        Break; //==>
-      end;
-  end;
-end;
-
-{ TtiDataBuffers }
-
-procedure TtiDataBuffers.Add(const AData: TtiDataBuffer);
-begin
-  FList.Add(AData);
-end;
-
-function TtiDataBuffers.AddInstance(const AName: string): TtiDataBuffer;
-begin
-  result := TtiDataBuffer.Create;
-  result.Name := AName;
-  Add(result);
-end;
-
-procedure TtiDataBuffers.Clear;
-begin
-  FList.Clear;
-end;
-
-function TtiDataBuffers.Count: integer;
-begin
-  result := FList.Count;
-end;
-
-constructor TtiDataBuffers.Create;
-begin
-  inherited;
-  FList := TObjectList.Create(true);
-end;
-
-destructor TtiDataBuffers.Destroy;
-begin
-  FList.Free;
-  inherited;
-end;
-
-procedure TtiDataBuffers.Extract(const AValue: TtiDataBuffer);
-begin
-  FList.Extract(AValue);
-  FList.Capacity:= FList.Count; // To suppress a reported leak in testing
-end;
-
-function TtiDataBuffers.FindByName(const AName: string): TtiDataBuffer;
-var
-  i : integer;
-begin
-  result := nil;
-  for i := 0 to Count - 1 do
-    if SameText(Items[i].Name, AName) then
-    begin
-      result := Items[i];
-      Break; //==>
-    end;
-end;
-
-function TtiDataBuffers.GetItems(AIndex: Integer): TtiDataBuffer;
-begin
-  result := TtiDataBuffer(FList.Items[AIndex])
-end;
-
-procedure TtiDataBuffers.Remove(const AValue: TtiDataBuffer);
-begin
-  FList.Remove(AValue);
-  FList.Capacity:= FList.Count; // To suppress a reported leak in testing
-end;
-
-procedure TtiDataBuffers.SetItems(AIndex: Integer; const AValue: TtiDataBuffer);
-begin
-  FList.Items[AIndex]:=AValue;
-end;
-
-procedure TtiDataBuffer.Remove(const pRow: TtiDataBufferRow);
-begin
-  FRows.Remove(pRow);
 end;
 
 function TtiDataBufferCell.GetName: string;
@@ -489,4 +480,53 @@ begin
   FValue := IntToStr(AValue);
 end;
 
+procedure TtiDataBufferCell.AssignFromStream(AStream: TStream);
+var
+  LStream: TMemoryStream;
+  LPos : integer;
+begin
+  Assert(AStream<>nil, 'AStream not assigned');
+
+  // Mime encode stream directly as it may contain binary data.
+  LStream := TMemoryStream.Create;
+  try
+    LPos := AStream.Position;
+    AStream.Position := 0;
+    MimeEncodeStreamNoCRLF(AStream, LStream);
+    FValue := tiStreamToString(LStream);
+    AStream.Position := LPos;
+  finally
+    LStream.Free;
+  end;
+end;
+
+procedure TtiDataBufferCell.AssignToStream(AStream: TStream);
+var
+  LStream: TMemoryStream;
+begin
+  Assert(AStream<>nil, 'AStream not assigned');
+
+  // Mime decode stream directly as output may contain binary data.
+  LStream := TMemoryStream.Create;
+  try
+    tiStringToStream(FValue, LStream);
+    LStream.Position := 0;
+    AStream.Size := 0;
+    MimeDecodeStream(LStream, AStream);
+    AStream.Position := 0;
+  finally
+    LStream.Free;
+  end;
+end;
+
+function TtiDataBufferCell.GetDataSetField: TtiDBMetaDataField;
+begin
+  Assert(Owner.TestValid,       CTIErrorInvalidObject);
+  Assert(Owner.Owner.TestValid, CTIErrorInvalidObject);
+  if Owner.Count <> Owner.Owner.Fields.Count then
+    raise exception.Create(cErrorTIDataSetCellMetaData);
+  result := Owner.Owner.Fields.Items[Index];
+end;
+
 end.
+

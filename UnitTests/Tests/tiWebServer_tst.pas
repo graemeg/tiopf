@@ -11,11 +11,13 @@ type
 
   TTestTIWebServerClientConnectionDetails = class(TtiTestCase)
   published
-    procedure Equals;
+    procedure tiWebServerClientConnectionDetails_Equals;
     procedure Assign;
   end;
 
   TtiWebServerTestCase = class(TtiTestCase)
+  private
+    procedure DotiWebServer_Default(const APageName: string);
   protected
     procedure SetUp; override;
     procedure TearDown; override;
@@ -35,7 +37,15 @@ type
     procedure tiWebServer_Create;
     procedure tiWebServer_CreateStartAndStop;
     procedure tiWebServer_Ignore;
-    procedure tiWebServer_Default;
+    procedure tiWebServer_Default_NoPageAvailable;
+    procedure tiWebServer_Default_DefaultHTMRootFolder;
+    procedure tiWebServer_Default_DefaultHTMRootSubFolder;
+    procedure tiWebServer_Default_DefaultHTMLRootFolder;
+    procedure tiWebServer_Default_DefaultHTMLRootSubFolder;
+    procedure tiWebServer_Default_IndexHTMRootFolder;
+    procedure tiWebServer_Default_IndexHTMRootSubFolder;
+    procedure tiWebServer_Default_IndexHTMLRootFolder;
+    procedure tiWebServer_Default_IndexHTMLRootSubFolder;
     procedure tiWebServer_CanNotFindPage;
     procedure tiWebServer_CanFindPage;
     procedure tiWebServer_GetLogFile;
@@ -321,7 +331,80 @@ begin
   end;
 end;
 
-procedure TtiWebServerTestCase.tiWebServer_Default;
+procedure TtiWebServerTestCase.DotiWebServer_Default(const APageName: string);
+var
+  LO: TtiWebServerForTesting;
+  LResult: string;
+  LFileName: string;
+  LPage: string;
+  LDir: string;
+begin
+  LPage:= '<html>test page</html>';
+  LFileName:= TempFileName(APageName);
+  LDir:= ExtractFilePath(LFileName);
+  tiForceDirectories(LDir);
+  try
+    tiStringToFile(LPage, LFileName);
+    LO:= TtiWebServerForTesting.Create(cPort);
+    try
+      // ToDo: This is too fragile. SleepSec must be set before the web server is
+      //       started but StaticPageLocation must be set after web server is started
+      LO.BlockStreamCache.SleepSec:= 0;
+      LO.Start;
+      LO.SetStaticPageLocation(TempDirectory);
+
+      LResult:= TestHTTPRequest(ExtractFilePath(APageName));
+      CheckEquals(LPage, LResult);
+
+    finally
+      LO.Free;
+    end;
+  finally
+    tiForceRemoveDir(LDir);
+  end ;
+end;
+
+procedure TtiWebServerTestCase.tiWebServer_Default_DefaultHTMRootFolder;
+begin
+  DotiWebServer_Default('default.htm');
+end;
+
+procedure TtiWebServerTestCase.tiWebServer_Default_DefaultHTMRootSubFolder;
+begin
+  DotiWebServer_Default('subfolder\default.htm');
+end;
+
+procedure TtiWebServerTestCase.tiWebServer_Default_DefaultHTMLRootFolder;
+begin
+  DotiWebServer_Default('default.html');
+end;
+
+procedure TtiWebServerTestCase.tiWebServer_Default_DefaultHTMLRootSubFolder;
+begin
+  DotiWebServer_Default('subfolder\default.html');
+end;
+
+procedure TtiWebServerTestCase.tiWebServer_Default_IndexHTMLRootFolder;
+begin
+  DotiWebServer_Default('index.html');
+end;
+
+procedure TtiWebServerTestCase.tiWebServer_Default_IndexHTMLRootSubFolder;
+begin
+  DotiWebServer_Default('subfolder\index.html');
+end;
+
+procedure TtiWebServerTestCase.tiWebServer_Default_IndexHTMRootFolder;
+begin
+  DotiWebServer_Default('index.htm');
+end;
+
+procedure TtiWebServerTestCase.tiWebServer_Default_IndexHTMRootSubFolder;
+begin
+  DotiWebServer_Default('subfolder\index.htm');
+end;
+
+procedure TtiWebServerTestCase.tiWebServer_Default_NoPageAvailable;
 var
   LO: TtiWebServer;
   LResult: string;
@@ -413,7 +496,7 @@ begin
   LExpected:= tiCreateStringOfSize(LSize);
   // The actual size of the string passed will be larger than
   // CMaximumCommandLineLength because MIME encoding inflates the string
-  LEncoded:= MimeEncodeString(LExpected);
+  LEncoded:= MimeEncodeStringNoCRLF(LExpected);
   LWebServer:= nil;
   LHTTP:= nil;
   try
@@ -426,7 +509,7 @@ begin
     LHTTP.Post('http://localhost:' + IntToStr(cPort) + '/tiWebServerCGIForTesting.exe');
     LEncoded:= LHTTP.Output.DataString;
     LActual:= MimeDecodeString(LEncoded);
-    CheckEquals(Trim(LExpected), Trim(LActual));
+    Check(Trim(LExpected) = Trim(LActual));
   finally
     LHTTP.Free;
     LWebServer.Free;
@@ -456,14 +539,12 @@ begin
   LActual:= '';
   LExpected:= 'abcd';
   tiExecConsoleApp(LPath, LExpected, LActual, nil, False);
-  CheckEquals(Trim(LExpected), Trim(LActual));
-  // Must do something about this leading CrLf that's being added
-  CheckEquals(#13#10+LExpected, LActual);
+  CheckEquals(LExpected, LActual);
 
   // Test a long string
   LActual:= '';
   LExpected:= tiCreateStringOfSize(20*1024);
-  tiExecConsoleApp(LPath, MimeEncodeString(LExpected), LActual, nil, False);
+  tiExecConsoleApp(LPath, MimeEncodeStringNoCRLF(LExpected), LActual, nil, False);
   CheckEquals(Trim(LExpected), Trim(MimeDecodeString(LActual)));
 
   // Test a string string on the limit
@@ -782,7 +863,7 @@ begin
   end;
 end;
 
-procedure TTestTIWebServerClientConnectionDetails.Equals;
+procedure TTestTIWebServerClientConnectionDetails.tiWebServerClientConnectionDetails_Equals;
 var
   LA: TtiWebServerClientConnectionDetails;
   LB: TtiWebServerClientConnectionDetails;

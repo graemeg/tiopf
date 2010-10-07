@@ -1,9 +1,9 @@
 object frmDemoMain: TfrmDemoMain
   Left = 253
   Top = 351
-  Width = 818
-  Height = 388
   Caption = 'VCL Mediators Demo'
+  ClientHeight = 349
+  ClientWidth = 810
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,7 +17,7 @@ object frmDemoMain: TfrmDemoMain
   OnDestroy = FormDestroy
   DesignSize = (
     810
-    342)
+    349)
   PixelsPerInch = 96
   TextHeight = 13
   object btnAdd: TButton
@@ -50,14 +50,23 @@ object frmDemoMain: TfrmDemoMain
   object GContacts: TStringGrid
     Left = 8
     Top = 40
-    Width = 791
-    Height = 293
+    Width = 794
+    Height = 301
     Anchors = [akLeft, akTop, akRight, akBottom]
+    TabOrder = 4
+  end
+  object btnShow: TButton
+    Left = 249
+    Top = 9
+    Width = 75
+    Height = 25
+    Caption = 'Show'
     TabOrder = 3
+    OnClick = btnShowClick
   end
   object MainMenu1: TMainMenu
-    Left = 292
-    Top = 4
+    Left = 176
+    Top = 180
     object File1: TMenuItem
       Caption = 'File'
       object Exit1: TMenuItem

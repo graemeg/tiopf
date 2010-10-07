@@ -11,6 +11,8 @@ type
   TTestTIThread = class(TtiTestCase)
   private
   published
+    procedure tiThread_Start;
+    procedure tiSleepThread_Start;
     procedure TListDeleteLeak;
     procedure TListDeleteNoLeak;
     procedure tiActiveThreadList;
@@ -75,6 +77,28 @@ begin
 //  CheckEquals(0, GTIOPFManager.ActiveThreadList.Count);
 end;
 
+type
+  TtiSleepThreadForTesting = class(TtiSleepThread)
+  public
+    procedure Execute; override;
+  end;
+
+  procedure TtiSleepThreadForTesting.Execute;
+  begin
+    Sleep(CSleep);
+  end;
+
+procedure TTestTIThread.tiSleepThread_Start;
+var
+  L: TtiSleepThreadForTesting;
+begin
+  L:= TtiSleepThreadForTesting.Create(True);
+  L.FreeOnTerminate:= True;
+  L.Resume;
+  Sleep(CSleep*2);
+  Check(True);
+end;
+
 procedure TTestTIThread.tiThreadExplicitFree;
 //var
 //  LThread: TtiThreadForTesting;
@@ -120,6 +144,17 @@ type
   begin
     Sleep(CSleep);
   end;
+
+procedure TTestTIThread.tiThread_Start;
+var
+  L: TtiThreadForTesting;
+begin
+  L:= TtiThreadForTesting.Create(True);
+  L.FreeOnTerminate:= True;
+  L.Resume;
+  Sleep(CSleep*2);
+  Check(True);
+end;
 
 procedure TTestTIThread.TThreadFreeOnTerminate;
 var

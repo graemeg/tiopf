@@ -47,6 +47,7 @@ type
   TVisDBAutoGenDelete = class(TVisDBAutoGenUpdate)
   protected
     function  AcceptVisitor: Boolean; override;
+    procedure Init; override;
     procedure SetupParams; override;
   end;
 
@@ -97,23 +98,28 @@ begin
       Visited := nil;
     end;
 
-    SetupParams;
-    Assert(FTableName <> '', 'TableName not assigned');
-    case FQueryType of
-      qtInsert : begin
-                   Assert(FQueryWhere.Count = 0, 'FQueryWhere.Count <> 0');
-                   Query.InsertRow(FTableName, FQueryParams);
-                 end;
-      qtUpdate : begin
-                   Assert(FQueryParams.Count <> 0, 'FQueryParams.Count = 0');
-                   Query.UpdateRow(FTableName, FQueryParams, FQueryWhere);
-                 end;
-      qtDelete : begin
-                   Assert(FQueryParams.Count = 0, 'FQueryParams.Count <> 0');
-                   Query.DeleteRow(FTableName, FQueryWhere);
-                 end;
-    else
-      raise Exception.Create(cTIOPFExcMsgTIQueryType);
+    Init;
+    try
+      SetupParams;
+      Assert(FTableName <> '', 'TableName not assigned');
+      case FQueryType of
+        qtInsert : begin
+                     Assert(FQueryWhere.Count = 0, 'FQueryWhere.Count <> 0');
+                     Query.InsertRow(FTableName, FQueryParams);
+                   end;
+        qtUpdate : begin
+                     Assert(FQueryParams.Count <> 0, 'FQueryParams.Count = 0');
+                     Query.UpdateRow(FTableName, FQueryParams, FQueryWhere);
+                   end;
+        qtDelete : begin
+                     Assert(FQueryParams.Count = 0, 'FQueryParams.Count <> 0');
+                     Query.DeleteRow(FTableName, FQueryWhere);
+                   end;
+      else
+        raise Exception.Create(cTIOPFExcMsgTIQueryType);
+      end;
+    finally
+      UnInit;
     end;
 
   except
@@ -170,17 +176,18 @@ begin
   Result := (Visited.ObjectState = posDelete);
 end;
 
+procedure TVisDBAutoGenDelete.Init;
+begin
+  QueryType := qtDelete;
+end;
+
 procedure TVisDBAutoGenDelete.SetupParams;
-var
-  lData: TtiObject;
 begin
   Assert(Visited.TestValid(TtiObject), CTIErrorInvalidObject);
-  QueryType := qtDelete;
-  LData := (Visited as TtiObject);
   {$IFDEF OID_AS_INT64}
-    QueryWhere.SetValueAsInteger('OID', LData.OID);
+    QueryWhere.SetValueAsInteger('OID', Visited.OID);
   {$ELSE}
-    QueryWhere.SetValueAsString('OID', LData.OID.AsString);
+    QueryWhere.SetValueAsString('OID', Visited.OID.AsString);
   {$ENDIF}
 end;
 

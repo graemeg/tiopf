@@ -38,6 +38,7 @@ type
     procedure   SetThreadName(const AName: string);
     procedure   WakeUp;
     property    ThreadInstanceID: Integer read FThreadInstanceID;
+    property    SleepResponse: Cardinal read FSleepResponse write FSleepResponse;
   end;
 
   TtiThread = class(TtiSleepThread)
@@ -45,17 +46,18 @@ type
     FText: string;
     FDescription: string;
     FInActiveThreadList: boolean;
+    FOnTerminate: TNotifyEvent;
   protected
     procedure   DoOnTerminate(Sender: TObject); virtual;
-    procedure SetText(const AValue: string); virtual;
+    procedure   SetText(const AValue: string); virtual;
   public
-    constructor Create; reintroduce; overload;
     constructor Create(ACreateSuspended: Boolean); overload; override;
     constructor Create(const ACreateSuspended: boolean; const AAddToActiveThreadList: boolean); reintroduce; overload;
     constructor CreateAndResume; virtual; // See note in body of method
     destructor  Destroy; override;
-    Property    Text: string read FText write SetText;
+    property    Text: string read FText write SetText;
     property    Description: string read FDescription write FDescription;
+    property    OnTerminate: TNotifyEvent read FOnTerminate write FOnTerminate;
   end;
 
   TtiThreadEvent = procedure(const AThread: TtiThread) of object;
@@ -184,11 +186,7 @@ end;
 
 constructor TtiThread.CreateAndResume;
 begin
-  // When overriding CreateAndResume, don't call inherited as any code
-  // after the inherited call may execute after the thread starts running.
-  // Have never seen an error caused by this, but the code smells of trouble.
-  Create(true);
-  resume;
+  Create(false);
 end;
 
 
@@ -202,7 +200,7 @@ constructor TtiThread.Create(const ACreateSuspended: boolean; const AAddToActive
 begin
   inherited Create(ACreateSuspended);
   FreeOnTerminate := true;
-  OnTerminate := DoOnTerminate;
+  inherited OnTerminate := DoOnTerminate;
   if AAddToActiveThreadList then
   begin
     FThreadInstanceID := gTIOPFManager.ActiveThreadList.GetNewThreadInstanceID;
@@ -226,17 +224,13 @@ end;
 
 procedure TtiThread.DoOnTerminate(Sender: TObject);
 begin
-  // Implement in the concrete
+  if Assigned(FOnTerminate) then
+    FOnTerminate(Sender);
 end;
 
 procedure TtiThread.SetText(const AValue: string);
 begin
   FText := AValue;
-end;
-
-constructor TtiThread.Create;
-begin
-  Create(true);
 end;
 
 procedure TtiSleepThread.SetThreadName(const AName: string);

@@ -45,6 +45,7 @@ type
     procedure   WriteToMemo(const AMessage: string);
   protected
     procedure   WriteToOutput; override;
+    procedure   WorkingListToOutput; override;
     procedure   SetSevToLog(const AValue: TtiSevToLog); override;
   public
     constructor Create; override;
@@ -255,6 +256,12 @@ begin
 end;
 
 procedure TtiLogToGUI.WriteToOutput;
+begin
+  if not ThrdLog.Terminated then
+    inherited WriteToOutput;
+end;
+
+procedure TtiLogToGUI.WorkingListToOutput;
 var
   i : integer;
   LLogEvent : TtiLogEvent;
@@ -263,16 +270,11 @@ var
 const
   ciMaxLineCount = 200;
 begin
-  if ThrdLog.Terminated then
-    Exit; //==>
-
-  inherited WriteToOutput;
-
-  if ListWorking.Count > ciMaxLineCount * 2 then
+  if WorkingList.Count > ciMaxLineCount * 2 then
   begin
     FMemoLog.Lines.Clear;
-    LPosStart := ListWorking.Count - 1 - ciMaxLineCount;
-    LPosEnd  := ListWorking.Count - 1;
+    LPosStart := WorkingList.Count - 1 - ciMaxLineCount;
+    LPosEnd  := WorkingList.Count - 1;
   end else
   begin
     if FMemoLog.Lines.Count > ciMaxLineCount then
@@ -286,17 +288,15 @@ begin
       {$ENDIF MSWINDOWS}
     end;
     LPosStart := 0;
-    LPosEnd  := ListWorking.Count - 1;
+    LPosEnd  := WorkingList.Count - 1;
   end;
 
   for i := LPosStart to LPosEnd do begin
     if ThrdLog.Terminated then
       Break; //==>
-    LLogEvent := TtiLogEvent(ListWorking.Items[i]);
+    LLogEvent := TtiLogEvent(WorkingList.Items[i]);
     WriteToMemo(LLogEvent.AsLeftPaddedString);
   end;
-
-  ListWorking.Clear;
 end;
 
 

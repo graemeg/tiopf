@@ -1,5 +1,7 @@
 @echo off
 
+: You may have to change PathToISQL depending on the installed location of
+: Firebird on your machine
 set PathToISQL="C:\Program Files\Firebird\Firebird_2_0\bin\isql.exe"
 set PathToUnitTest=..\UnitTests\_bin
 set PathToBin=..\_bin

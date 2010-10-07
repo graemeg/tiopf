@@ -1,5 +1,7 @@
 unit tiGenericBase;
 
+{$I tiDefines.inc}
+
 interface
 
 uses

@@ -72,6 +72,7 @@ begin
   APersistenceLayerDefaults.CanSupportMultiUser := True;
   APersistenceLayerDefaults.CanSupportSQL := True;
   APersistenceLayerDefaults.DatabaseName := 'TIOPFSERVER';
+  APersistenceLayerDefaults.IsDatabaseNameFilePath:= False;
   APersistenceLayerDefaults.UserName := '';
   APersistenceLayerDefaults.Password := '';
 end;

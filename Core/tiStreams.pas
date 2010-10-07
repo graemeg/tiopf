@@ -111,6 +111,11 @@ type
 
   end;
 
+function  tiStreamToMIMEEncodeString(const AStream: TStream): string;
+procedure tiMIMEEncodeStringToStream(const AString: string; const AStream: TStream);
+function tiStreamReadToNextToken(const AStream: TStream; const AToken: string): string; overload;
+procedure tiStreamReadToNextToken(const AStream: TStream; const AToken: string; const AOutput: TStream); overload;
+
 {
 Unit:           rjMime
 Version:        1.31
@@ -222,6 +227,7 @@ function MimeEncodeString (const s: AnsiString): AnsiString;
 { MimeEncodeString takes a string, encodes it, and returns the result as a string.
   To decode the result string, use MimeDecodeString. }
 
+function MimeEncodeStringNoCRLF(const s: AnsiString): AnsiString;
 
 function MimeDecodeString (const s: AnsiString): AnsiString;
 { MimeDecodeString takes a a string, decodes it, and returns the result as a string.
@@ -238,6 +244,7 @@ procedure MimeEncodeStream (const InputStream: TStream; const OutputStream: TStr
   that its offset is positioned at the beginning of the stream. You can
   force this by issuing Seek (0, soFromBeginning) before calling this function. }
 
+procedure MimeEncodeStreamNoCRLF(const InputStream: TStream; const OutputStream: TStream);
 
 procedure MimeDecodeStream (const InputStream: TStream; const OutputStream: TStream);
 { MimeDecodeStream decodes InputStream starting at the current position
@@ -252,6 +259,8 @@ procedure MimeDecodeStream (const InputStream: TStream; const OutputStream: TStr
 
 function MimeEncodedSize (const i: Cardinal): Cardinal;
 { Calculates the output size of i MimeEncoded bytes. Use for MimeEncode only. }
+
+function MimeEncodedSizeNoCRLF (const i: Cardinal): Cardinal;
 
 function MimeDecodedSize (const i: Cardinal): Cardinal;
 { Calculates the maximum output size of i MimeDecoded bytes.
@@ -270,6 +279,10 @@ procedure MimeEncode (const InputBuffer; const InputByteCount: Cardinal; out Out
   If not all data fits into memory at once, you can use MimeEncode multiple times,
   but you must be very careful about the size of the InputBuffer.
   See comments on BUFFER_SIZE below for details. }
+
+procedure MimeEncodeFullLines(const InputBuffer; const InputByteCount: Cardinal; out OutputBuffer);
+
+procedure MimeEncodeNoCRLF (const InputBuffer; const InputByteCount: Cardinal; out OutputBuffer);
 
 function MimeDecode (const InputBuffer; const InputBytesCount: Cardinal; out OutputBuffer): Cardinal;
 { The primary Mime decoding routines.
@@ -305,6 +318,12 @@ uses
  ;
 
 const
+  MIME_ENCODED_LINE_BREAK = 76;
+
+  MIME_DECODED_LINE_BREAK = MIME_ENCODED_LINE_BREAK div 4 * 3;
+
+  MIME_BUFFER_SIZE  = MIME_DECODED_LINE_BREAK * 3 * 4 * 4;
+
   EQUAL_SIGN         = Byte ('=');
   BUFFER_SIZE        = $3000;
  { CAUTION: For MimeEncodeStream and all other kinds of multi-buffered
@@ -389,7 +408,7 @@ begin
   if Pointer(s) = nil then
     goto NothingToDo;
   l := Length(s);
-  SetLength (Result, (l + 2) div 3 * 4);
+  SetLength (Result, MimeEncodedSize(l));
   if Pointer (Result) = nil then
     goto NothingToDo;
   MimeEncode (Pointer (s)^, l, Pointer (Result)^);
@@ -397,6 +416,20 @@ begin
 
   NothingToDo:
   Result := '';
+end;
+
+function MimeEncodeStringNoCRLF(const s: AnsiString): AnsiString;
+var
+  l: Cardinal;
+begin
+  if Pointer(s) <> nil then
+    begin
+      l := PCardinal(Cardinal(s) - 4)^;
+      SetString(Result, nil, MimeEncodedSizeNoCRLF(l));
+      MimeEncodeNoCRLF(Pointer(s)^, l, Pointer(Result)^);
+    end
+  else
+    Result := '';
 end;
 
 function MimeDecodeString (const s: AnsiString): AnsiString;
@@ -421,25 +454,51 @@ begin
  Result := '';
 end;
 
-procedure MimeEncodeStream (const InputStream: TStream; const OutputStream: TStream);
+procedure MimeEncodeStream(const InputStream: TStream; const OutputStream: TStream);
 var
- InputBuffer       : array[0..BUFFER_SIZE - 1] of Byte;
- OutputBuffer      : array[0.. ((BUFFER_SIZE + 2) div 3) * 4 - 1] of Byte;
- BytesRead         : Cardinal;
+  InputBuffer       : array[0..BUFFER_SIZE - 1] of Byte;
+  OutputBuffer      : array[0..(BUFFER_SIZE + 2) div 3 * 4 + BUFFER_SIZE div MIME_DECODED_LINE_BREAK * 2 - 1] of Byte;
+  BytesRead         : Cardinal;
+  IDelta, ODelta    : Cardinal;
 begin
- InputStream.Position:= 0;
- OutputStream.Size:= 0;
- BytesRead := InputStream.Read (InputBuffer, SizeOf (InputBuffer));
- while BytesRead = SizeOf (InputBuffer) do
+  BytesRead := InputStream.Read(InputBuffer, SizeOf(InputBuffer));
+
+  while BytesRead = SizeOf(InputBuffer) do
+    begin
+      MimeEncodeFullLines(InputBuffer, SizeOf(InputBuffer), OutputBuffer);
+      OutputStream.Write(OutputBuffer, SizeOf(OutputBuffer));
+      BytesRead := InputStream.Read(InputBuffer, SizeOf(InputBuffer));
+    end;
+
+  MimeEncodeFullLines(InputBuffer, BytesRead, OutputBuffer);
+
+  IDelta := BytesRead div MIME_DECODED_LINE_BREAK;
+  ODelta := IDelta * (MIME_ENCODED_LINE_BREAK + 2);
+  IDelta := IDelta * MIME_DECODED_LINE_BREAK;
+  MimeEncodeNoCRLF(Pointer(Cardinal(@InputBuffer) + IDelta)^, BytesRead - IDelta, Pointer(Cardinal(@OutputBuffer) + ODelta)^);
+
+  OutputStream.Write(OutputBuffer, MimeEncodedSize(BytesRead));
+end;
+
+procedure MimeEncodeStreamNoCRLF(const InputStream: TStream; const OutputStream: TStream);
+var
+  InputBuffer       : array[0..BUFFER_SIZE - 1] of Byte;
+  OutputBuffer      : array[0..((BUFFER_SIZE + 2) div 3) * 4 - 1] of Byte;
+  BytesRead         : Cardinal;
+begin
+  InputStream.Position:= 0;
+  OutputStream.Size:= 0;
+  BytesRead := InputStream.Read(InputBuffer, SizeOf(InputBuffer));
+  while BytesRead = SizeOf(InputBuffer) do
   begin
-   MimeEncode (InputBuffer, SizeOf (InputBuffer), OutputBuffer);
-   OutputStream.Write (OutputBuffer, SizeOf (OutputBuffer));
-   BytesRead := InputStream.Read (InputBuffer, SizeOf (InputBuffer));
+    MimeEncodeNoCRLF(InputBuffer, SizeOf(InputBuffer), OutputBuffer);
+    OutputStream.Write(OutputBuffer, SizeOf(OutputBuffer));
+    BytesRead := InputStream.Read(InputBuffer, SizeOf(InputBuffer));
   end;
- if BytesRead > 0 then
+  if BytesRead > 0 then
   begin
-   MimeEncode (InputBuffer, BytesRead, OutputBuffer);
-   OutputStream.Write (OutputBuffer, {MimeEncodedSize (BytesRead)} (BytesRead + 2) div 3 * 4);
+    MimeEncodeNoCRLF(InputBuffer, BytesRead, OutputBuffer);
+    OutputStream.Write(OutputBuffer, MimeEncodedSizeNoCRLF(BytesRead));
   end;
 end;
 
@@ -465,6 +524,14 @@ end;
 
 function MimeEncodedSize (const i: Cardinal): Cardinal;
 begin
+  if i > 0 then
+    Result := (i + 2) div 3 * 4 + (i - 1) div MIME_DECODED_LINE_BREAK * 2
+  else
+    Result := i;
+end;
+
+function MimeEncodedSizeNoCRLF (const i: Cardinal): Cardinal;
+begin
   Result := (i + 2) div 3 * 4;
 end;
 
@@ -473,7 +540,65 @@ begin
   Result := (i + 3) div 4 * 3;
 end;
 
-procedure MimeEncode (const InputBuffer; const InputByteCount: Cardinal; out OutputBuffer);
+procedure MimeEncode(const InputBuffer; const InputByteCount: Cardinal; out OutputBuffer);
+var
+  iDelta, ODelta: Cardinal;
+begin
+  MimeEncodeFullLines(InputBuffer, InputByteCount, OutputBuffer);
+  iDelta := InputByteCount div MIME_DECODED_LINE_BREAK;
+  ODelta := iDelta * (MIME_ENCODED_LINE_BREAK + 2);
+  iDelta := iDelta * MIME_DECODED_LINE_BREAK;
+  MimeEncodeNoCRLF(Pointer(Cardinal(@InputBuffer) + iDelta)^, InputByteCount - iDelta, Pointer(Cardinal(@OutputBuffer) + ODelta)^);
+end;
+
+procedure MimeEncodeFullLines(const InputBuffer; const InputByteCount: Cardinal; out OutputBuffer);
+var
+  b, InnerLimit, OuterLimit: Cardinal;
+  InPtr: PByte3;
+  OutPtr: PByte4;
+begin
+
+  if InputByteCount < MIME_DECODED_LINE_BREAK then Exit;
+
+  InPtr := @InputBuffer;
+  OutPtr := @OutputBuffer;
+
+  InnerLimit := Cardinal(InPtr);
+  Inc(InnerLimit, MIME_DECODED_LINE_BREAK);
+
+  OuterLimit := Cardinal(InPtr);
+  Inc(OuterLimit, InputByteCount);
+
+  repeat
+
+    repeat
+
+      b := InPtr^.b1;
+      b := b shl 8;
+      b := b or InPtr^.b2;
+      b := b shl 8;
+      b := b or InPtr^.b3;
+      Inc(InPtr);
+
+      OutPtr^.b4 := MIME_ENCODE_TABLE[b and $3F];
+      b := b shr 6;
+      OutPtr^.b3 := MIME_ENCODE_TABLE[b and $3F];
+      b := b shr 6;
+      OutPtr^.b2 := MIME_ENCODE_TABLE[b and $3F];
+      b := b shr 6;
+      OutPtr^.b1 := MIME_ENCODE_TABLE[b];
+      Inc(OutPtr);
+    until Cardinal(InPtr) >= InnerLimit;
+
+    OutPtr^.b1 := 13;
+    OutPtr^.b2 := 10;
+    Inc(Cardinal(OutPtr), 2);
+
+    Inc(InnerLimit, MIME_DECODED_LINE_BREAK);
+  until InnerLimit > OuterLimit;
+end;
+
+procedure MimeEncodeNoCRLF (const InputBuffer; const InputByteCount: Cardinal; out OutputBuffer);
 var
   b, InMax3         : Cardinal;
   InPtr, InLimitPtr : ^Byte;
@@ -609,6 +734,40 @@ begin
  end;
 end;
 
+function tiStreamToMIMEEncodeString(const AStream: TStream): string;
+var
+  LStream : TStringStream;
+  LPos: integer;
+begin
+  LPos:= AStream.Position;
+  try
+    LStream := TStringStream.Create('');
+    try
+      AStream.Position := 0;
+      MimeEncodeStream(AStream, LStream);
+      result := LStream.DataString;
+    finally
+      LStream.Free;
+    end;
+  finally
+    AStream.Position:= LPos;
+  end;
+end;
+
+procedure tiMIMEEncodeStringToStream(const AString: string; const AStream: TStream);
+var
+  lStream: TStringStream;
+begin
+  lStream:= TStringStream.Create(AString);
+  try
+    AStream.Size := 0;
+    MimeDecodeStream(lStream, AStream);
+    AStream.Position := 0;
+  finally
+    lStream.Free;
+  end;
+end;
+
 function tiStreamDiscoverLineDelim(AStream: TStream): string;
 const
   cBufLen = 1024;
@@ -652,7 +811,7 @@ begin
   AStream.Seek(lOldPos, soFromBeginning);
 end;
 
-function tiStreamReadLn(AStream: TStream; const ALineDelim: string): AnsiString;
+function tiStreamReadToNextToken(const AStream: TStream; const AToken: string): AnsiString;
 const
   cBufLen = 1024;
 var
@@ -663,7 +822,7 @@ var
   ls: ansistring;
   lLineDelimLen: integer;
 begin
-  lLineDelimLen := Length(ALineDelim);
+  lLineDelimLen := Length(AToken);
   lStart := AStream.Position;
   lPos := 0;
 
@@ -675,7 +834,7 @@ begin
     if lReadCount < cBufLen then
       SetLength(ls, lReadCount);
 
-    lPos := Pos(ALineDelim, ls);
+    lPos := Pos(AToken, ls);
 
     if lPos <> 0 then
     begin
@@ -698,6 +857,65 @@ begin
   end;
 end;
 
+procedure tiStreamReadToNextToken(const AStream: TStream; const AToken: string; const AOutput: TStream); overload;
+const
+  cBufLen = 1024;
+var
+  lPos : LongInt;
+  lReadCount: LongInt;
+  lTrim: LongInt;
+  lStart: Int64;
+  lsAnsi: ansistring;
+  ls: string;
+  lLineDelimLen: integer;
+  LOutputSize: integer;
+begin
+  lLineDelimLen := Length(AToken);
+  lStart := AStream.Position;
+  lPos := 0;
+
+  while (lPos = 0) and (AStream.Position <> AStream.Size) do
+  begin
+    SetLength(lsAnsi, cBufLen);
+    lReadCount := AStream.Read(lsAnsi[1], cBufLen);
+
+    if lReadCount < cBufLen then
+      SetLength(lsAnsi, lReadCount);
+    ls := string(lsAnsi);
+
+    lPos := Pos(AToken, ls);
+
+    if lPos <> 0 then
+    begin
+      lTrim := lReadCount - (lPos - 1);
+      LOutputSize:= (AStream.Position - lTrim - lStart);
+      AOutput.Size:= LOutputSize;
+      AOutput.Position:= 0;
+      if LOutputSize > 0 then
+      begin
+        AStream.Seek(lStart, soFromBeginning);
+        AOutput.CopyFrom(AStream, LOutputSize);
+        // skip over ALineDelim
+        AStream.Seek(lLineDelimLen, soFromCurrent);
+      end;
+    end
+    else if lReadCount = cBufLen then
+      // rewind far enough to handle partial ALineDelim at end of current buffer
+      AStream.Seek( 1 - lLineDelimLen, soFromCurrent)
+    else
+    begin
+      LOutputSize:=(AStream.Position - lStart);
+      AOutput.Size:= LOutputSize;
+      AOutput.Position:= 0;
+      if LOutputSize > 0 then
+      begin
+        AStream.Seek(lStart, soFromBeginning);
+        AOutput.CopyFrom(AStream, LOutputSize);
+      end;
+    end;
+  end;
+end;
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
 // * TtiFileStream
@@ -711,7 +929,7 @@ end;
 
 function TtiFileStream.ReadLn: AnsiString;
 begin
-  Result := tiStreamReadLn(Self, LineDelim);
+  Result := tiStreamReadToNextToken(Self, LineDelim);
 end;
 
 procedure TtiFileStream.Write(const AString: AnsiString);
@@ -1077,7 +1295,7 @@ end;
 
 function TtiLineStream.ReadLn: string;
 begin
-  Result := tiStreamReadLn(FStream, LineDelim);
+  Result := tiStreamReadToNextToken(FStream, LineDelim);
 end;
 
 function TtiLineStream.Seek(const Offset: Int64; Origin: TSeekOrigin): Int64;

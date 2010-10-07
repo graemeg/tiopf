@@ -12,10 +12,10 @@ uses
 
 const
   {$IFDEF MSWINDOWS}
-  CLocalINISettingsMessage = ' Edit the file for Expected value "C:\Documents and Settings\tipwh\Local Settings\Application Data\DUnitTIOPF\DUnitTIOPF.ini"';
+  CLocalINISettingsMessage = ' Edit the file for Expected value "%s"';
   {$ENDIF}
   {$IFDEF UNIX}
-  CLocalINISettingsMessage = ' Edit the file for Expected value "/home/<user>/.config/<appname>/DUnitTIOPF/DUnitTIOPF.ini"';
+  CLocalINISettingsMessage = ' Edit the file for Expected value "%s"';
   {$ENDIF}
 
 type
@@ -26,6 +26,7 @@ type
   private
     FLocalINISettings: TDUntiLocalSettings;
     function  BuildLongString : string;
+    function  LocalINISettingErrorMessage: string;
 
   protected
     // These methods exist in tiUtils, but have not been DUnit tested because
@@ -120,6 +121,7 @@ type
     procedure tiHasRTTIOnClass;
     procedure tiHasRTTIOnObject;
     procedure tiHasSubDirectory;
+    procedure tiHTMLEncode;
     procedure tiIfInteger;
     procedure tiIfReal;
     procedure tiIfString;
@@ -177,6 +179,7 @@ type
     procedure tiStreamToString1;
     procedure tiStreamToString2;
     procedure tiStringToFile;
+    procedure tiAppendStringToFile;
     procedure tiStringToStream;
     procedure tiStripIntPrefix;
     procedure tiStrPos;
@@ -195,6 +198,9 @@ type
     procedure tiTrimL;
     procedure tiTrimR;
     procedure tiTrimTrailingWhiteSpace;
+    procedure tiURIDecode;
+    procedure tiURIDecodeAll;
+    procedure tiURIEncode;
     procedure tiVariantArrayToString;
     procedure tiWeekNumber;
     procedure tiWildcardMatch;
@@ -624,6 +630,36 @@ begin
 end;
 
 
+procedure TTestTIUtils.tiURIDecode;
+begin
+  CheckEquals('', tiUtils.tiURIDecode(''), '1');
+  CheckEquals(
+      '!@#$^&*()_+-={}[]|\:;"''<,>.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 ',
+      tiUtils.tiURIDecode('!@#$^&*()_+-={}[]|\:;"''<,>.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 '),
+      '2');
+  CheckEquals('%41*#%<>+ %5A', tiUtils.tiURIDecode('%41%2A%23%25%3C%3E%2B%20%5A'), '3');
+end;
+
+procedure TTestTIUtils.tiURIDecodeAll;
+begin
+  CheckEquals('', tiUtils.tiURIDecodeAll(''), '1');
+  CheckEquals(
+      '!@#$^&*()_+-={}[]|\:;"''<,>.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 ',
+      tiUtils.tiURIDecodeAll('!@#$^&*()_+-={}[]|\:;"''<,>.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 '),
+      '2');
+  CheckEquals('A*#%<>+ Z', tiUtils.tiURIDecodeAll('%41%2A%23%25%3C%3E%2B%20%5A'), '3');
+end;
+
+procedure TTestTIUtils.tiURIEncode;
+begin
+  CheckEquals('', tiUtils.tiURIEncode(''), '1');
+  CheckEquals(
+      '!@$^&()_-={}[]|\:;"'',.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
+      tiUtils.tiURIEncode('!@$^&()_-={}[]|\:;"'',.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'),
+      '2');
+  CheckEquals('A%2A%23%25%3C%3E%2B%20Z', tiUtils.tiURIEncode('A*#%<>+ Z'), '3');
+end;
+
 procedure TTestTIUtils.tiGetTempFile;
 var
   i : integer;
@@ -685,7 +721,7 @@ begin
   CheckEquals(
     FLocalINISettings.TempDir,
     tiUtils.tiRemoveTrailingSlash(tiUtils.tiGetTempDir),
-    'TEMP directory (No trailing path delimiter)' + CLocalINISettingsMessage);
+    'TEMP directory (No trailing path delimiter)' + LocalINISettingErrorMessage);
 end;
 
 
@@ -695,7 +731,7 @@ begin
   CheckEquals(
     FLocalINISettings.WindowsSysDir,
     tiUtils.tiGetWindowsSysDir,
-    'Windows System Directory' + CLocalINISettingsMessage
+    'Windows System Directory' + LocalINISettingErrorMessage
   );
   {$ENDIF}
   {$IFDEF UNIX}
@@ -705,24 +741,6 @@ end;
 
 
 procedure TTestTIUtils.tiReadFileDateSize;
-  procedure _SetFileDate(AFileName: string; pDate: TDateTime);
-  var
-    lFileHandle: Integer;
-    lFileDate: integer;
-  begin
-    lFileDate := DateTimeToFileDate(pDate);
-    {$IFNDEF FPC}
-    lFileHandle := FileOpen(AFileName, fmOpenWrite or fmShareDenyNone);
-    try
-      FileSetDate(lFileHandle, lFileDate);
-    finally
-      FileClose(lFileHandle);
-    end;
-    {$ELSE}
-    FileSetDate(AFileName, lFileDate);
-    {$ENDIF}
-  end;
-
 var
   lTargetDate: TDateTime;
   lReadDate: TDateTime;
@@ -733,7 +751,7 @@ begin
   lFileName := TempFileName('DUnitTest.txt');
   tiCreateTextFileOfSize(lFileName, 100);
   lTargetDate := EncodeDate(1980, 1, 1);
-  _SetFileDate(lFileName, lTargetDate);
+  SysUtils.FileSetDate(lFileName, DateTimeToFileDate(lTargetDate));
   tiUtils.tiReadFileDateSize(lFileName, lReadDate, lReadSize);
   CheckEquals(lTargetDate, lReadDate, '#1');
   CheckEquals(lTargetDate, tiReadFileDate(LFileName), '#2');
@@ -751,7 +769,7 @@ begin
   lTargetDate := EncodeDate(2038, 01, 19);
   {$ENDIF}
 
-  _SetFileDate(lFileName, lTargetDate);
+  SysUtils.FileSetDate(lFileName, DateTimeToFileDate(lTargetDate));
   tiUtils.tiReadFileDateSize(lFileName, lReadDate, lReadSize);
   CheckEquals(lTargetDate, lReadDate, '#5');
   CheckEquals(lTargetDate, tiReadFileDate(LFileName), '#6');
@@ -766,6 +784,7 @@ var
   lsl : TStringList;
   lDate : TDateTime;
   lFileName  : string;
+  LFileAge: TDateTime;
 begin
   ForceDirectories(TempDirectory);
   lFileName := TempFileName('DUnitTest.txt');
@@ -776,11 +795,13 @@ begin
 
     lDate := EncodeDate(1980, 1, 1);
     tiUtils.tiSetFileDate(lFileName, lDate);
-    CheckEquals(lDate, FileDateToDateTime(FileAge(lFileName)), cdtOneSecond, 'Failed on 1');
+    FileAge(lFileName, LFileAge);
+    CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 1');
 
     lDate := EncodeDate(1980, 1, 1);
     tiUtils.tiSetFileDate(lFileName, lDate);
-    CheckEquals(lDate, FileDateToDateTime(FileAge(lFileName)), cdtOneSecond, 'Failed on 2');
+    FileAge(lFileName, LFileAge);
+    CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 2');
 
     {$IFDEF MSWINDOWS}
     lDate := EncodeDate(2090, 12, 31);
@@ -791,25 +812,43 @@ begin
     lDate := EncodeDate(2038, 01, 19);
     {$ENDIF}
     tiUtils.tiSetFileDate(lFileName, lDate);
-    CheckEquals(lDate, FileDateToDateTime(FileAge(lFileName)), cdtOneSecond, 'Failed on 3');
+    FileAge(lFileName, LFileAge);
+    CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 3');
 
     lDate := EncodeDate(2002, 1, 1) + EncodeTime(1, 0, 0, 0);
     tiUtils.tiSetFileDate(lFileName, lDate);
-    CheckEquals(lDate, FileDateToDateTime(FileAge(lFileName)), cdtOneSecond, 'Failed on 4');
+    FileAge(lFileName, LFileAge);
+    CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 4');
 
     lDate := EncodeDate(2002, 1, 1) + EncodeTime(12, 0, 0, 0);
     tiUtils.tiSetFileDate(lFileName, lDate);
-    CheckEquals(lDate, FileDateToDateTime(FileAge(lFileName)), cdtOneSecond, 'Failed on 5');
+    FileAge(lFileName, LFileAge);
+    CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 5');
 
     lDate := EncodeDate(2002, 1, 1) + EncodeTime(23, 59, 59, 0);
     tiUtils.tiSetFileDate(lFileName, lDate);
-    CheckEquals(lDate, FileDateToDateTime(FileAge(lFileName)), cdtOneSecond, 'Failed on 6');
+    FileAge(lFileName, LFileAge);
+    CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 6');
 
     lDate := EncodeDate(2002, 1, 1) + EncodeTime(06, 06, 06, 0);
     tiUtils.tiSetFileDate(lFileName, lDate);
-    CheckEquals(lDate, FileDateToDateTime(FileAge(lFileName)), cdtOneSecond, 'Failed on 7');
-    tiDeleteFile(lFileName);
+    FileAge(lFileName, LFileAge);
+    CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 7');
 
+    lDate := 0;
+    try
+      tiUtils.tiSetFileDate(lFileName, lDate);
+      Fail('Exception not raised when it should have been');
+    except
+      on e:exception do
+      begin
+        CheckIs(e, EtiOPFFileSystemException);
+        CheckExceptionMessage(CErrorSettingFileDate,
+            [lFileName, tiUtils.tiDateTimeToStr(lDate), 87,
+             SysErrorMessage(87)], e);
+      end;
+    end;
+    tiDeleteFile(lFileName);
   finally
     lsl.Free;
   end;
@@ -1373,6 +1412,16 @@ begin
 end;
 
 
+procedure TTestTIUtils.tiHTMLEncode;
+begin
+  CheckEquals('', tiUtils.tiHTMLEncode(''), '1');
+  CheckEquals(
+      '!@#$%^*()_+-={}[]|\:;,.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 ',
+      tiUtils.tiHTMLEncode('!@#$%^*()_+-={}[]|\:;,.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 '),
+      '2');
+  CheckEquals('A&amp;&lt;&gt;&quot;&apos;Z', tiUtils.tiHTMLEncode('A&<>"''Z'), '3');
+end;
+
 procedure TTestTIUtils.tiStringToFile;
 var
   lFileStream : TFileStream;
@@ -1844,7 +1893,7 @@ begin
   CheckEquals(
     FLocalINISettings.UserName,
     tiUtils.tiGetUserName,
-    'User''s name' + CLocalINISettingsMessage
+    'User''s name' + LocalINISettingErrorMessage
   );
 end;
 
@@ -1854,7 +1903,7 @@ begin
   CheckEquals(
     FLocalINISettings.ComputerName,
     tiUtils.tiGetComputerName,
-    'ComputerName' + CLocalINISettingsMessage
+    'ComputerName' + LocalINISettingErrorMessage
   );
 end;
 
@@ -2025,6 +2074,11 @@ begin
   Check(tiUtils.Lf(5) = #10 + #10 + #10 + #10 + #10);
 end;
 
+
+function TTestTIUtils.LocalINISettingErrorMessage: string;
+begin
+  result:= Format(CLocalINISettingsMessage, [FLocalINISettings.FileName]);
+end;
 
 procedure TTestTIUtils.Cr;
 begin
@@ -2603,6 +2657,11 @@ begin
   CheckEquals('$1 alpha', tiUtils.tiStripIntPrefix('$1 alpha'));
 end;
 
+procedure TTestTIUtils.tiAppendStringToFile;
+begin
+
+end;
+
 procedure TTestTIUtils.tiAppendStringToStream;
 var
   lStream : TStringStream;
@@ -2857,7 +2916,7 @@ begin
     FLocalINISettings.AppDataDirPrivate,
     tiUtils.tiRemoveTrailingSlash(tiUtils.tiGetAppDataDirPrivate),
     'tiGetAppDataDirPrivate (No trailing path delimiter)' +
-    CLocalINISettingsMessage);
+    LocalINISettingErrorMessage);
 end;
 
 
@@ -2870,7 +2929,7 @@ begin
     FLocalINISettings.AppDataDirPublic,
     tiUtils.tiRemoveTrailingSlash(tiUtils.tiGetAppDataDirPublic),
     'tiGetAppDataDirPublic (No trailing path delimiter)' +
-    CLocalINISettingsMessage);
+    LocalINISettingErrorMessage);
 //  {$ENDIF}
 end;
 
@@ -3845,7 +3904,6 @@ begin
     L.Free;
   end;
 end;
-
 
 procedure TTestTIUtils.tiDateAsIntlDateDisp;
 var

@@ -2,10 +2,10 @@ object ContactEditForm: TContactEditForm
   Left = 541
   Top = 502
   BorderIcons = [biSystemMenu]
-  BorderStyle = bsDialog
+  BorderStyle = bsSingle
   Caption = 'Contact edit form'
-  ClientHeight = 368
-  ClientWidth = 538
+  ClientHeight = 355
+  ClientWidth = 508
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,13 +16,13 @@ object ContactEditForm: TContactEditForm
   Position = poMainFormCenter
   OnDestroy = FormDestroy
   DesignSize = (
-    538
-    368)
+    508
+    355)
   PixelsPerInch = 96
   TextHeight = 16
   object LEFirstName: TLabel
-    Left = 10
-    Top = 7
+    Left = 8
+    Top = 8
     Width = 62
     Height = 16
     Caption = '&First name'
@@ -37,8 +37,8 @@ object ContactEditForm: TContactEditForm
     ParentFont = False
   end
   object LELastName: TLabel
-    Left = 10
-    Top = 56
+    Left = 8
+    Top = 59
     Width = 62
     Height = 16
     Caption = '&Last name'
@@ -53,8 +53,8 @@ object ContactEditForm: TContactEditForm
     ParentFont = False
   end
   object LEEmail: TLabel
-    Left = 10
-    Top = 156
+    Left = 8
+    Top = 162
     Width = 34
     Height = 16
     Caption = '&Email'
@@ -69,8 +69,8 @@ object ContactEditForm: TContactEditForm
     ParentFont = False
   end
   object LEMobile: TLabel
-    Left = 10
-    Top = 204
+    Left = 8
+    Top = 213
     Width = 41
     Height = 16
     Caption = '&Mobile'
@@ -85,7 +85,7 @@ object ContactEditForm: TContactEditForm
     ParentFont = False
   end
   object LMComments: TLabel
-    Left = 256
+    Left = 232
     Top = 8
     Width = 64
     Height = 16
@@ -101,8 +101,8 @@ object ContactEditForm: TContactEditForm
     ParentFont = False
   end
   object Label1: TLabel
-    Left = 256
-    Top = 146
+    Left = 232
+    Top = 140
     Width = 69
     Height = 16
     Caption = 'Add&resses:'
@@ -116,16 +116,16 @@ object ContactEditForm: TContactEditForm
     ParentFont = False
   end
   object lblDOB: TLabel
-    Left = 12
-    Top = 104
+    Left = 8
+    Top = 110
     Width = 74
     Height = 16
     Caption = 'Date Of &Birth'
     FocusControl = dtpDOB
   end
   object EFirstName: TEdit
-    Left = 10
-    Top = 24
+    Left = 8
+    Top = 30
     Width = 206
     Height = 23
     AutoSelect = False
@@ -141,8 +141,8 @@ object ContactEditForm: TContactEditForm
     Text = 'EFirstName'
   end
   object ELastName: TEdit
-    Left = 10
-    Top = 72
+    Left = 8
+    Top = 81
     Width = 206
     Height = 23
     AutoSelect = False
@@ -158,8 +158,8 @@ object ContactEditForm: TContactEditForm
     Text = 'ELastName'
   end
   object EEmail: TEdit
-    Left = 10
-    Top = 172
+    Left = 8
+    Top = 184
     Width = 206
     Height = 23
     AutoSelect = False
@@ -175,8 +175,8 @@ object ContactEditForm: TContactEditForm
     Text = 'EEmail'
   end
   object EMobile: TEdit
-    Left = 10
-    Top = 220
+    Left = 8
+    Top = 235
     Width = 206
     Height = 23
     AutoSelect = False
@@ -192,8 +192,8 @@ object ContactEditForm: TContactEditForm
     Text = 'EMobile'
   end
   object MComments: TMemo
-    Left = 256
-    Top = 24
+    Left = 232
+    Top = 30
     Width = 267
     Height = 104
     Font.Charset = DEFAULT_CHARSET
@@ -208,8 +208,8 @@ object ContactEditForm: TContactEditForm
     TabOrder = 5
   end
   object LVAddresses: TListView
-    Left = 256
-    Top = 168
+    Left = 232
+    Top = 162
     Width = 267
     Height = 115
     Columns = <>
@@ -217,8 +217,8 @@ object ContactEditForm: TContactEditForm
     ViewStyle = vsList
   end
   object BAdd: TButton
-    Left = 258
-    Top = 294
+    Left = 232
+    Top = 283
     Width = 75
     Height = 25
     Caption = '&Add'
@@ -229,10 +229,11 @@ object ContactEditForm: TContactEditForm
     Font.Style = []
     ParentFont = False
     TabOrder = 7
+    OnClick = BAddClick
   end
   object Button2: TButton
-    Left = 448
-    Top = 294
+    Left = 394
+    Top = 283
     Width = 75
     Height = 25
     Caption = '&Delete'
@@ -246,8 +247,8 @@ object ContactEditForm: TContactEditForm
     OnClick = BDeleteClick
   end
   object BEdit: TButton
-    Left = 352
-    Top = 294
+    Left = 313
+    Top = 283
     Width = 75
     Height = 25
     Caption = 'Ed&it'
@@ -261,8 +262,8 @@ object ContactEditForm: TContactEditForm
     OnClick = BEditClick
   end
   object BCancel: TButton
-    Left = 439
-    Top = 336
+    Left = 417
+    Top = 322
     Width = 83
     Height = 25
     Anchors = [akRight, akBottom]
@@ -276,13 +277,13 @@ object ContactEditForm: TContactEditForm
     ParentFont = False
     TabOrder = 10
   end
-  object BSave: TButton
-    Left = 351
-    Top = 337
+  object BOK: TButton
+    Left = 331
+    Top = 322
     Width = 80
     Height = 25
     Anchors = [akRight, akBottom]
-    Caption = '&Save'
+    Caption = '&OK'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = 0
@@ -293,8 +294,8 @@ object ContactEditForm: TContactEditForm
     TabOrder = 11
   end
   object dtpDOB: TDateTimePicker
-    Left = 10
-    Top = 120
+    Left = 8
+    Top = 132
     Width = 97
     Height = 24
     Date = 39926.603568819460000000

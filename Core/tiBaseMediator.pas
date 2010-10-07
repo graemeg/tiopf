@@ -69,6 +69,8 @@ type
     procedure DoGUIToObject; virtual;
     // Copy object property to GUI. By default it copies published GUIFieldName to published FieldName
     procedure DoObjectToGUI; virtual;
+    // Allow descendants to change or format the displayed value
+    procedure GetObjectPropValue(var AValue: Variant); virtual;
     // Set value list object. Override to provide additional handling.
     procedure SetListObject(const AValue: TtiObjectList); virtual;
     // Set up subject, attach as observer. Override to provide additional handling.
@@ -80,9 +82,13 @@ type
     // Set ObjectUpdateMoment. Override to provide additional handling;
     procedure SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment); virtual;
     // Raise an error which shows more information about the control, subject and fieldname.
-    Procedure RaiseMediatorError(Const Msg : String); overload;
+    procedure RaiseMediatorError(const Msg: string); overload;
     // Format version
-    Procedure RaiseMediatorError(Const Fmt : String; Args : Array of const); overload;
+    procedure RaiseMediatorError(const Fmt: string; Args: array of const); overload;
+    // Returns nil by default
+    function GetSelectedObject: TtiObject; virtual;
+    // Does nothing by default
+    procedure SetSelectedObject(const AValue: TtiObject); virtual;
   public
     constructor Create; override;
     constructor CreateCustom(AView: TComponent; ASubject: TtiObject; AFieldName: string; AGUIFieldName: string); overload; virtual;
@@ -112,6 +118,9 @@ type
     property Subject: TtiObject read GetSubject write SetSubject;
     // Descendents that need a list of values can use this.
     property ValueList: TtiObjectList read FListObject write SetListObject;
+    {: Get/set the selected object. List mediator views use the selected item
+       in the list if appropriate. Get/Set subject by default. }
+    property SelectedObject: TtiObject read GetSelectedObject write SetSelectedObject;
   published
     // Property of subject.
     property FieldName: string read FFieldName write SetFieldName;
@@ -242,8 +251,6 @@ type
   protected
     FFieldsInfo: TtiMediatorFieldInfoList;
     procedure FieldInfoChanged(Item: TtiMediatorFieldInfo;Action: TCollectionNotification); virtual;
-    function GetSelectedObject: TtiObject; virtual;
-    procedure SetSelectedObject(const AValue: TtiObject); virtual;
     procedure CreateColumns; virtual; abstract;
     procedure ClearList; virtual; abstract;
     function DoCreateItemMediator(AData: TtiObject; ARowIdx: integer): TtiListItemMediator; virtual; abstract;
@@ -266,7 +273,6 @@ type
     procedure Update(ASubject: TtiObject; AOperation : TNotifyOperation); override;
     procedure HandleSelectionChanged; virtual; // Called from the GUI to trigger events
     procedure ItemDeleted(const ASubject: TtiObject); virtual;
-    property SelectedObject: TtiObject read GetSelectedObject write SetSelectedObject;
   published
     property OnBeforeSetupField: TtiOnBeforeSetupField read FOnBeforeSetupField write SetOnBeforeSetupField;
     property Model: TtiObjectList read GetModel;
@@ -286,7 +292,8 @@ type
     FPT: TTypeKinds;
   public
     // Return True if this definition handles the Subject,GUI,APropinfo trio
-    function Handles(ASubject: TtiObject; AGUI: TComponent; APropInfo: PPropInfo): Boolean;
+    function Handles(ASubjectClass: TClass; AGUI: TComponent; APropInfo: PPropInfo): Boolean; overload;
+    function Handles(ASubject: TtiObject; AGUI: TComponent; APropInfo: PPropInfo): Boolean; overload;
     // Return True if this definition matches 'closer' than M.
     // Note that both current and M must have Handles() returned true for this to be useful.
     function BetterMatch(M: TtiMediatorDef): Boolean;
@@ -317,6 +324,7 @@ type
     // If APropName is empty or APropInfo is Nil, a composite mediator will be searched.
     function FindDefFor(ASubject: TtiObject; AGUI: TComponent): TtiMediatorDef; overload;
     function FindDefFor(ASubject: TtiObject; AGUI: TComponent; APropName: string): TtiMediatorDef; overload;
+    function FindDefFor(ASubjectClass: TClass; AGUI: TComponent; APropInfo: PPropInfo): TtiMediatorDef; overload;
     function FindDefFor(ASubject: TtiObject; AGUI: TComponent; APropInfo: PPropInfo): TtiMediatorDef; overload;
     function RegisterMediator(MediatorClass: TtiMediatorViewClass; MinSubjectClass: TtiSubjectClass): TtiMediatorDef; overload;
     function RegisterMediator(MediatorClass: TtiMediatorViewClass; MinSubjectClass: TtiSubjectClass; PropertyName: string): TtiMediatorDef; overload;
@@ -333,8 +341,8 @@ function tiFieldCaption(const AField: string): string;
 function tiFieldAlignment(const AField: string): TAlignment;
 function tiValueFieldName(const AFieldName: string): string;
 function tiRootFieldName(const AFieldName: string): string;
-Procedure MediatorError(Sender : TObject; Const Msg : String); overload;
-Procedure MediatorError(Sender : TObject; Fmt : String; Args : Array of const); overload;
+procedure MediatorError(Sender: TObject; const Msg: string); overload;
+procedure MediatorError(Sender: TObject; Fmt: string; Args: array of const); overload;
 
 implementation
 
@@ -364,14 +372,12 @@ const
   cBrackets = '()';
   cRootFieldNameDelimiter = ':';
   
-Procedure MediatorError(Sender : TObject; Const Msg : String); overload;
-
-Var
+procedure MediatorError(Sender: TObject; const Msg: string); overload;
+var
   M : TtiMediatorView;
   V : TComponent;
   S : TTiObject;
   CN,SN,Err : String;
-
 begin
   if (Sender=Nil) then
     Err:=Msg
@@ -401,10 +407,9 @@ begin
   Raise EtiMediator.Create(Err);
 end;
 
-Procedure MediatorError(Sender : TObject; Fmt : String; Args : Array of const); overload;
-
+procedure MediatorError(Sender: TObject; Fmt: string; Args: array of const); overload;
 begin
-  MediatorError(Sender,Format(Fmt,Args));
+  MediatorError(Sender, Format(Fmt, Args));
 end;
 
 
@@ -489,7 +494,7 @@ begin
     Result := (IsPublishedProp(FSubject, FFieldName));
     if not Result then
       RaiseMediatorError('<%s> is not a property of <%s>',
-        [FFieldName, FSubject.ClassName]);
+          [FFieldName, FSubject.ClassName]);
   end;
 
   //  View.ReadOnly := ReadOnly or IsPropReadOnly;
@@ -571,12 +576,12 @@ begin
   FObjectUpdateMoment := AValue;
 end;
 
-procedure TtiMediatorView.RaiseMediatorError(Const Msg: String);
+procedure TtiMediatorView.RaiseMediatorError(const Msg: string);
 begin
   MediatorError(Self,Msg);
 end;
 
-procedure TtiMediatorView.RaiseMediatorError(Const Fmt: String; Args: array of const);
+procedure TtiMediatorView.RaiseMediatorError(const Fmt: string; Args: array of const);
 begin
   RaiseMediatorError(Format(FMT,Args));
 end;
@@ -584,6 +589,11 @@ end;
 procedure TtiMediatorView.SetFieldName(const AValue: string);
 begin
   FFieldName := AValue;
+end;
+
+procedure TtiMediatorView.SetSelectedObject(const AValue: TtiObject);
+begin
+  // Do nothing by default. Can be overridden in descendant.
 end;
 
 procedure TtiMediatorView.SetSubject(const AValue: TtiObject);
@@ -610,6 +620,12 @@ begin
   end
   else if (AOperation=noFree) and (ASubject=FSubject) then
     FSubject:=Nil;
+end;
+
+function TtiMediatorView.GetSelectedObject: TtiObject;
+begin
+  // nil by default. Can be overridden in descendant.
+  result := nil;
 end;
 
 function TtiMediatorView.GetSubject: TtiObject;
@@ -688,9 +704,23 @@ begin
 end;
 
 procedure TtiMediatorView.DoObjectToGUI;
+var
+  LPropInfo: PPropInfo;
+  LValue: Variant;
 begin
   CheckFieldNames;
-  TypInfo.SetPropValue(View, GUIFieldName, Subject.PropValue[FieldName]);
+  LPropInfo := tiGetPropInfo(View.ClassType, GUIFieldName, nil {PInstance});
+  if tiGetTypeInfo(LPropInfo)^.Kind in ctkString then
+    LValue := tiVariantAsStringDef(Subject.PropValue[FieldName])
+  else
+    LValue := Subject.PropValue[FieldName];
+  GetObjectPropValue(LValue);
+  TypInfo.SetPropValue(View, GUIFieldName, LValue);
+end;
+
+procedure TtiMediatorView.GetObjectPropValue(var AValue: Variant);
+begin
+  // Do nothing. Can be overridden in descendants.
 end;
 
 
@@ -734,18 +764,23 @@ end;
 
 function TtiMediatorManager.FindDefFor(ASubject: TtiObject; AGUI: TComponent): TtiMediatorDef;
 begin
-  Result := FindDefFor(ASubject, AGUI, PPropInfo(nil));
+  Result := FindDefFor(ASubject.ClassType, AGUI, PPropInfo(nil));
 end;
 
 function TtiMediatorManager.FindDefFor(ASubject: TtiObject; AGUI: TComponent; APropName: string): TtiMediatorDef;
 var
-  propinfo: PPropInfo;
+  LPropInfo: PPropInfo;
+  LSubject: TtiObject;
 begin
-  propinfo := tiGetPropInfo(ASubject.ClassType, APropName, @ASubject);
-  Result := FindDefFor(ASubject, AGUI, propinfo);
+  LSubject := ASubject;
+  LPropInfo := tiGetPropInfo(ASubject.ClassType, APropName, @LSubject);
+  if Assigned(LSubject) then
+    Result := FindDefFor(LSubject.ClassType, AGUI, LPropInfo)
+  else
+    Result := FindDefFor(tiGetTargetClass(ASubject.ClassType, APropName), AGUI, LPropInfo);
 end;
 
-function TtiMediatorManager.FindDefFor(ASubject: TtiObject; AGUI: TComponent; APropInfo: PPropInfo): TtiMediatorDef;
+function TtiMediatorManager.FindDefFor(ASubjectClass: TClass; AGUI: TComponent; APropInfo: PPropInfo): TtiMediatorDef;
 var
   D: TtiMediatorDef;
   I: integer;
@@ -754,10 +789,15 @@ begin
   for I := 0 to FDefs.Count - 1 do
   begin
     D := FDefs[I];
-    if D.Handles(ASubject, AGUI, APropInfo) then
+    if D.Handles(ASubjectClass, AGUI, APropInfo) then
       if (D.BetterMatch(Result)) then
         Result := D;
   end;
+end;
+
+function TtiMediatorManager.FindDefFor(ASubject: TtiObject; AGUI: TComponent; APropInfo: PPropInfo): TtiMediatorDef;
+begin
+  result := FindDefFor(ASubject.ClassType, AGUI, APropInfo);
 end;
 
 function TtiMediatorManager.RegisterMediator(MediatorClass: TtiMediatorViewClass; MinSubjectClass: TtiSubjectClass): TtiMediatorDef;
@@ -834,7 +874,7 @@ end;
 
 { TtiMediatorDef }
 
-function TtiMediatorDef.Handles(ASubject: TtiObject; AGUI: TComponent; APropInfo: PPropInfo): Boolean;
+function TtiMediatorDef.Handles(ASubjectClass: TClass; AGUI: TComponent; APropInfo: PPropInfo): Boolean;
 var
   N: string;
 begin
@@ -842,18 +882,26 @@ begin
     Result := FMC.CompositeMediator
   else
   begin
-    N      := APropInfo^.Name;
+    N      := string(APropInfo^.Name);
     Result := True;
   end;
   if not Result then
     Exit; // ==>
   // At least the classes must match
-  Result := AGUI.InheritsFrom(FMC.ComponentClass) and ASubject.InheritsFrom(FMSC);
+  // We check subject class and not the subject itself as this allows us to
+  // have a nil subject (e.g. class property where property is unassigned,
+  // such as Order.Product.ProductName where Product is nil).
+  Result := AGUI.InheritsFrom(FMC.ComponentClass) and ASubjectClass.InheritsFrom(FMSC);
   if Result and not FMC.CompositeMediator then
     if (PropertyName <> '') then
       Result := (CompareText(N, PropertyName) = 0)
     else // Property kind should match. Note that property MUST be set to something.
       Result := (APropInfo^.PropType^.Kind in PropertyTypes); // If PropertyName is set, it must match
+end;
+
+function TtiMediatorDef.Handles(ASubject: TtiObject; AGUI: TComponent; APropInfo: PPropInfo): Boolean;
+begin
+  result := Handles(ASubject.ClassType, AGUI, APropInfo);
 end;
 
 function TtiMediatorDef.BetterMatch(M: TtiMediatorDef): Boolean;
@@ -1005,6 +1053,16 @@ begin
   if Result='' then
     Result:=FPropName;
 end;
+
+// Field definitions:
+// New style:
+//   PropertyName|Alignment|FieldWidth|Caption[;PropertyName|Alignment|FieldWidth|Caption;...]
+//   Alignment is l (left), r (right), c (center)
+//   e.g. FirstName|r|100|First Name
+// or old style:
+//   PropertyName(FieldWidth,"Caption",Alignment)[;PropertyName(FieldWidth,"Caption",Alignment);...]
+//   Alignment is < (left), > (right), | (center)
+//   e.g. FirstName(100,"First Name",>)
 
 function TtiMediatorFieldInfo.GetAsString: string;
 begin
@@ -1277,11 +1335,6 @@ begin
   Result := Subject as TtiObjectList;
 end;
 
-function TtiCustomListMediatorView.GetSelectedObject: TtiObject;
-begin
-  Result := nil;
-end;
-
 function TtiCustomListMediatorView.GetDisplayNames: string;
 begin
   Result := FFieldsInfo.AsString;
@@ -1305,11 +1358,6 @@ end;
 procedure TtiCustomListMediatorView.SetIsObserving(const AValue: Boolean);
 begin
   Active := AValue;
-end;
-
-procedure TtiCustomListMediatorView.SetSelectedObject(const AValue: TtiObject);
-begin
-  // Do nothing
 end;
 
 procedure TtiCustomListMediatorView.DoDeleteItemMediator(AIndex : Integer; AMediator : TtiListItemMediator);
@@ -1337,9 +1385,8 @@ var
 begin
   CreateColumns;
   for i := 0 to Model.Count - 1 do
-  begin
-    if (not Model.Items[i].Deleted) or FShowDeleted then
     begin
+    if (not Model.Items[i].Deleted) or FShowDeleted then
       if i < MediatorList.Count then
         TtiListItemMediator(MediatorList[i]).Model := Model.Items[i]
       else
@@ -1348,7 +1395,6 @@ begin
         LItemMediator.ListMediator := Self;
       end;
     end;
-  end;
   for i := MediatorList.Count-1 downto Model.Count do
     DoDeleteItemMediator(I,TtiListItemMediator(MediatorList[i]));
   FListChanged:=False;

@@ -81,7 +81,8 @@ procedure RegisterPersistenceLayer(const APersistenceLayers: TtiPersistenceLayer
 
 implementation
 uses
-   tiUtils
+   Classes
+  ,tiUtils
   ,tiOPFManager
   ,tiDataBuffer_BOM
   ,tiConstants
@@ -246,9 +247,9 @@ end;
 
 procedure TtiDatabaseXMLLight.Read;
 var
-  lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
+  lXMLToTIDataSets : TtiXMLToDataBufferReaderWriter;
 begin
-  lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
+  lXMLToTIDataSets := TtiXMLToDataBufferReaderWriter.Create;
   try
     lXMLToTIDataSets.DataSets := DataSets;
     lXMLToTIDataSets.OptXMLDBSize := FOptXMLDBSize;
@@ -273,11 +274,11 @@ end;
 
 procedure TtiDatabaseXMLLight.Save;
 var
-  lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
+  lXMLToTIDataSets : TtiXMLToDataBufferReaderWriter;
 begin
   if FReadOnly then
     Exit; //==>
-  lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
+  lXMLToTIDataSets := TtiXMLToDataBufferReaderWriter.Create;
   try
     lXMLToTIDataSets.DataSets := DataSets;
     lXMLToTIDataSets.OptXMLDBSize := OptXMLDBSize;
@@ -349,6 +350,7 @@ begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
   APersistenceLayerDefaults.PersistenceLayerName:= cTIPersistXMLLight;
   APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseName + '.XMLLight';
+  APersistenceLayerDefaults.IsDatabaseNameFilePath:= True;
   APersistenceLayerDefaults.UserName:= 'null';
   APersistenceLayerDefaults.Password:= 'null';
   APersistenceLayerDefaults.CanDropDatabase:= False;

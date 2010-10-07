@@ -1,9 +1,10 @@
 object EditAddressForm: TEditAddressForm
   Left = 265
   Top = 184
-  Width = 317
-  Height = 307
+  BorderStyle = bsSingle
   Caption = 'Edit address'
+  ClientHeight = 304
+  ClientWidth = 275
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,11 +13,14 @@ object EditAddressForm: TEditAddressForm
   Font.Style = []
   OldCreateOrder = True
   Position = poMainFormCenter
+  DesignSize = (
+    275
+    304)
   PixelsPerInch = 96
   TextHeight = 16
   object LCBType: TLabel
-    Left = 18
-    Top = 4
+    Left = 8
+    Top = 8
     Width = 32
     Height = 16
     Caption = 'T&ype'
@@ -31,8 +35,8 @@ object EditAddressForm: TEditAddressForm
     ParentFont = False
   end
   object LENumber: TLabel
-    Left = 18
-    Top = 54
+    Left = 8
+    Top = 60
     Width = 48
     Height = 16
     Caption = 'N&umber'
@@ -47,8 +51,8 @@ object EditAddressForm: TEditAddressForm
     ParentFont = False
   end
   object LEStreet: TLabel
-    Left = 113
-    Top = 54
+    Left = 94
+    Top = 60
     Width = 35
     Height = 16
     Caption = '&Street'
@@ -63,8 +67,8 @@ object EditAddressForm: TEditAddressForm
     ParentFont = False
   end
   object LCBCity: TLabel
-    Left = 18
-    Top = 101
+    Left = 8
+    Top = 111
     Width = 22
     Height = 16
     Caption = '&City'
@@ -79,8 +83,8 @@ object EditAddressForm: TEditAddressForm
     ParentFont = False
   end
   object LETelephone1: TLabel
-    Left = 18
-    Top = 151
+    Left = 8
+    Top = 163
     Width = 83
     Height = 16
     Caption = 'Telephone #&1'
@@ -95,8 +99,8 @@ object EditAddressForm: TEditAddressForm
     ParentFont = False
   end
   object LEFax: TLabel
-    Left = 18
-    Top = 200
+    Left = 8
+    Top = 214
     Width = 22
     Height = 16
     Caption = '&Fax'
@@ -111,8 +115,8 @@ object EditAddressForm: TEditAddressForm
     ParentFont = False
   end
   object LETelephone2: TLabel
-    Left = 160
-    Top = 151
+    Left = 132
+    Top = 163
     Width = 83
     Height = 16
     Caption = 'Telephone #&2'
@@ -127,9 +131,9 @@ object EditAddressForm: TEditAddressForm
     ParentFont = False
   end
   object CBType: TComboBox
-    Left = 18
-    Top = 24
-    Width = 262
+    Left = 8
+    Top = 30
+    Width = 257
     Height = 24
     AutoComplete = False
     Ctl3D = False
@@ -138,7 +142,6 @@ object EditAddressForm: TEditAddressForm
     Font.Height = 0
     Font.Name = 'MS Sans Serif'
     Font.Style = []
-    ItemHeight = 16
     MaxLength = 65535
     ParentCtl3D = False
     ParentFont = False
@@ -146,8 +149,8 @@ object EditAddressForm: TEditAddressForm
     Text = 'CBType'
   end
   object ENumber: TEdit
-    Left = 18
-    Top = 72
+    Left = 8
+    Top = 82
     Width = 80
     Height = 23
     AutoSelect = False
@@ -163,9 +166,9 @@ object EditAddressForm: TEditAddressForm
     Text = 'ENumber'
   end
   object EStreet: TEdit
-    Left = 114
-    Top = 74
-    Width = 166
+    Left = 94
+    Top = 82
+    Width = 171
     Height = 23
     AutoSelect = False
     AutoSize = False
@@ -180,9 +183,9 @@ object EditAddressForm: TEditAddressForm
     Text = 'EStreet'
   end
   object CBCity: TComboBox
-    Left = 18
-    Top = 120
-    Width = 260
+    Left = 8
+    Top = 133
+    Width = 257
     Height = 24
     AutoComplete = False
     Ctl3D = False
@@ -191,7 +194,6 @@ object EditAddressForm: TEditAddressForm
     Font.Height = 0
     Font.Name = 'MS Sans Serif'
     Font.Style = []
-    ItemHeight = 16
     MaxLength = 65535
     ParentCtl3D = False
     ParentFont = False
@@ -199,8 +201,8 @@ object EditAddressForm: TEditAddressForm
     Text = 'CBCity'
   end
   object ETelephone1: TEdit
-    Left = 18
-    Top = 168
+    Left = 8
+    Top = 185
     Width = 118
     Height = 23
     AutoSelect = False
@@ -216,8 +218,8 @@ object EditAddressForm: TEditAddressForm
     Text = 'ETelephone1'
   end
   object ETelephone2: TEdit
-    Left = 160
-    Top = 168
+    Left = 132
+    Top = 185
     Width = 118
     Height = 23
     AutoSelect = False
@@ -233,8 +235,8 @@ object EditAddressForm: TEditAddressForm
     Text = 'ETelephone2'
   end
   object EFax: TEdit
-    Left = 18
-    Top = 216
+    Left = 8
+    Top = 236
     Width = 118
     Height = 23
     AutoSelect = False
@@ -250,10 +252,11 @@ object EditAddressForm: TEditAddressForm
     Text = 'EFax'
   end
   object BCancel: TButton
-    Left = 216
-    Top = 248
+    Left = 192
+    Top = 271
     Width = 75
     Height = 25
+    Anchors = [akRight, akBottom]
     Caption = '&Cancel'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -264,17 +267,19 @@ object EditAddressForm: TEditAddressForm
     ParentFont = False
     TabOrder = 7
   end
-  object BSave: TButton
-    Left = 136
-    Top = 248
+  object BOK: TButton
+    Left = 111
+    Top = 271
     Width = 75
     Height = 25
-    Caption = 'Sa&ve'
+    Anchors = [akRight, akBottom]
+    Caption = '&OK'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = 0
     Font.Name = 'MS Sans Serif'
     Font.Style = []
+    ModalResult = 1
     ParentFont = False
     TabOrder = 8
   end

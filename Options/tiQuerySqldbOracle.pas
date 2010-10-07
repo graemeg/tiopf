@@ -64,6 +64,7 @@ begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
   APersistenceLayerDefaults.PersistenceLayerName:= cTIPersistSqldbOracle;
   APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseName;
+  APersistenceLayerDefaults.IsDatabaseNameFilePath:= False;
   APersistenceLayerDefaults.Username:= 'admin';
   APersistenceLayerDefaults.Password:= 'admin';
   APersistenceLayerDefaults.CanCreateDatabase:= False;

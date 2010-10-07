@@ -714,9 +714,6 @@ begin
 
   RefreshHTTPInstance;
 
-//  Log('Request');
-//  Log(ls);
-
   TryHTTPPost(ls);
 
   if GTIOPFManager.Terminated then
@@ -724,8 +721,6 @@ begin
 
   ls := FHTTP.Output.DataString;
   ls := tiDecompressDecode(ls,cgsCompressZLib);
-//  Log('Response');
-//  Log(ls);
 
   if GTIOPFManager.Terminated then
     Exit; //==>
@@ -1260,6 +1255,7 @@ begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
   APersistenceLayerDefaults.PersistenceLayerName:= cTIPersistRemote;
   APersistenceLayerDefaults.DatabaseName:= cLocalHost;
+  APersistenceLayerDefaults.IsDatabaseNameFilePath:= False;
   APersistenceLayerDefaults.Username:= 'null';
   APersistenceLayerDefaults.Password:= 'null';
   APersistenceLayerDefaults.CanDropDatabase:= False;

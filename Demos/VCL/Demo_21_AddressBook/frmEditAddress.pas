@@ -10,7 +10,7 @@ type
 
   TEditAddressForm = class(TForm)
     BCancel: TButton;
-    BSave: TButton;
+    BOK: TButton;
     CBType: TComboBox;
     CBCity: TComboBox;
     ENumber: TEdit;
@@ -44,8 +44,10 @@ implementation
 {$R *.dfm}
 
 uses
-  tiListMediators, tiMediators, contactmanager;
-
+   tiListMediators
+  ,tiMediators
+  ,contactmanager
+  ;
 
 function EditAddress(AData: TAddress): Boolean;
 var

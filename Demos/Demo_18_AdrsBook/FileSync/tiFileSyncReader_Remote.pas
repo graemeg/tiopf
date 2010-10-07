@@ -1,5 +1,7 @@
 unit tiFileSyncReader_Remote;
 
+{$i tiDefines.inc}
+
 interface
 uses
   tiFileName_BOM

@@ -87,7 +87,7 @@ begin
   lFileName := CachedFileName;
   Assert( lFileName <> '', 'CachedFileName not assigned');
   lFileName := ChangeFileExt(ExtractFileName(lFileName),'');
-  Result := FCacheIndex.ReadDateTime(cCacheIndexINISection, lFileName, 0);
+  Result := FCacheIndex.ReadDateTime(cCacheIndexINISection, lFileName, CMinFileDate);
 end;
 
 function TtiObjectCacheAbs.GetCachedFileSize: Longint;
@@ -104,7 +104,8 @@ begin
   Assert( lFileName <> '', 'CachedFileName not assigned');
   lFileName := ChangeFileExt(ExtractFileName(lFileName),'');
   FCacheIndex.WriteDateTime(cCacheIndexINISection, lFileName, AData);
-  tiSetFileDate(GetCachedFileDirAndName, AData);
+  if AData <> 0 then
+    tiSetFileDate(GetCachedFileDirAndName, AData);
 end;
 
 function TtiObjectCacheAbs.CachedFileName: string;

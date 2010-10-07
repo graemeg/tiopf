@@ -9,15 +9,15 @@ uses
 
 type
 
-  TTestTIApplicationServer = class(TtiTestCase)
+  TtiApplicationServerTestCase = class(TtiTestCase)
   published
-    procedure tiDBProxyServer_Create;
-    procedure tiDBProxyServer_ServerVersion;
-    procedure tiDBProxyServer_ExecuteRemoteXML;
-    procedure tiDBProxyServer_TestAlive1;
-    procedure tiDBProxyServer_TestHTML;
-    procedure tiDBProxyServer_TestXML;
-    procedure tiDBProxyServer_TestAlive;
+    procedure tiApplicationServer_Create;
+    procedure tiApplicationServer_ServerVersion;
+    procedure tiApplicationServer_ExecuteRemoteXML;
+    procedure tiApplicationServer_TestAlive1;
+    procedure tiApplicationServer_TestHTML;
+    procedure tiApplicationServer_TestXML;
+    procedure tiApplicationServer_TestAlive;
   end;
 
 procedure RegisterTests;
@@ -29,7 +29,7 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTIApplicationServer);
+  tiRegisterNonPersistentTest(TtiApplicationServerTestCase);
 end;
 
 const
@@ -37,37 +37,37 @@ const
 
 { TTestTIWebServer }
 
-procedure TTestTIApplicationServer.tiDBProxyServer_Create;
+procedure TtiApplicationServerTestCase.tiApplicationServer_Create;
 begin
 
 end;
 
-procedure TTestTIApplicationServer.tiDBProxyServer_ExecuteRemoteXML;
+procedure TtiApplicationServerTestCase.tiApplicationServer_ExecuteRemoteXML;
 begin
 
 end;
 
-procedure TTestTIApplicationServer.tiDBProxyServer_ServerVersion;
+procedure TtiApplicationServerTestCase.tiApplicationServer_ServerVersion;
 begin
 
 end;
 
-procedure TTestTIApplicationServer.tiDBProxyServer_TestAlive;
+procedure TtiApplicationServerTestCase.tiApplicationServer_TestAlive;
 begin
 
 end;
 
-procedure TTestTIApplicationServer.tiDBProxyServer_TestAlive1;
+procedure TtiApplicationServerTestCase.tiApplicationServer_TestAlive1;
 begin
 
 end;
 
-procedure TTestTIApplicationServer.tiDBProxyServer_TestHTML;
+procedure TtiApplicationServerTestCase.tiApplicationServer_TestHTML;
 begin
 
 end;
 
-procedure TTestTIApplicationServer.tiDBProxyServer_TestXML;
+procedure TtiApplicationServerTestCase.tiApplicationServer_TestXML;
 begin
 
 end;

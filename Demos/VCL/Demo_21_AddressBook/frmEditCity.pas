@@ -8,7 +8,7 @@ uses
 
 type
   TEditCityForm = class(TForm)
-    BSave: TButton;
+    BOK: TButton;
     BCancel: TButton;
     CBCountry: TComboBox;
     EName: TEdit;

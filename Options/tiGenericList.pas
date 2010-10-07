@@ -1,5 +1,7 @@
 unit tiGenericList;
 
+{$I tiDefines.inc}
+
 interface
 
 uses

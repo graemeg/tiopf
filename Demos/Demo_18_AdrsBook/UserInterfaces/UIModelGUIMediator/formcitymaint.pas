@@ -38,6 +38,10 @@ type
 
 implementation
 
+{$IFNDEF FPC}
+  {$R *.dfm}
+{$ENDIF}
+
 uses
   contactmanager;
 

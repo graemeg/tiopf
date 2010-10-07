@@ -74,6 +74,9 @@ uses
   ,tiXMLToTIDataSet_TST
   ,tiHTTP_TST
   ,tiWebServer_TST
+  {$IFDEF LINK_REMOTE}
+  ,tiApplicationServer_TST
+  {$ENDIF}
   {$ENDIF}
 
   // Persistent test fixtures (in alpha order)
@@ -158,7 +161,9 @@ begin
   tiXMLToTIDataSet_TST.RegisterTests;
   tiHTTP_TST.RegisterTests;
   tiWebServer_TST.RegisterTests;
-  {$IFDEF LINK_REMOTE} tiApplicationServer_TST.RegisterTests; {$ENDIF} // Work in progress
+  {$IFDEF LINK_REMOTE}
+  tiApplicationServer_TST.RegisterTests;
+  {$ENDIF}
   {$ENDIF}
 
 

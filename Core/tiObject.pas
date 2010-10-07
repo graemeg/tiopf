@@ -124,7 +124,7 @@ type
     constructor Create(const AOwner: TtiObject); overload; virtual;
     constructor Create(const AOwner: TtiObject; const ANullValidation: TtiNullValidation); overload; virtual;
     function    IsValidValue(const AErrors : TtiObjectErrors = nil): Boolean; virtual;
-    function    Equals(const ACompareWith: TtiFieldAbs): Boolean; virtual; abstract;
+    function    Equals(const ACompareWith: TtiFieldAbs): Boolean; reintroduce; virtual; abstract;
     procedure   Assign(const AAssignFrom: TtiFieldAbs); virtual; abstract;
 
     property    Owner:            TtiObject         read FOwner;
@@ -247,6 +247,8 @@ type
     property    AsFloat: Extended read GetAsFloat Write SetAsFloat;
     property    AsInteger: Int64 read FValue write SetAsInteger;
     property    AsCurrencyString: string read GetAsCurrencyString write SetAsCurrencyString;
+    procedure   Inc(const AField: TtiFieldCurrency); overload;
+    procedure   Inc(const AValue: integer); overload;
   end;
 
   {: Concrete persistent boolean field}
@@ -345,6 +347,7 @@ type
     procedure   SetDeleted(const AValue: boolean); virtual;
     procedure   SetDirty(const AValue: boolean); virtual;
     procedure   SetObjectState(const AValue: TPerObjectState); virtual;
+    function    GetObjectState: TPerObjectState; virtual;
     function    OIDGenerator: TtiOIDGenerator; virtual;
     {$IFDEF OID_AS_INT64}
     procedure   SetOID(const AValue: TtiOID); virtual;
@@ -412,7 +415,7 @@ type
     constructor CreateNew(const ADatabaseName: string = ''; const APersistenceLayerName: string = ''); overload; virtual;
     destructor  Destroy; override;
     {: Does this object equal another? }
-    function    Equals(const AData : TtiObject): boolean; virtual;
+    function    Equals(const AData : TtiObject): boolean; reintroduce; virtual;
     {: The OID of this object }
    {$IFDEF OID_AS_INT64}
       property    OID        : TtiOID                   read GetOID write SetOID;
@@ -420,7 +423,7 @@ type
       property    OID        : TtiOID                   read GetOID       ;
    {$ENDIF}
     {: The current state of this object}
-    property    ObjectState: TPerObjectState read FObjectState write SetObjectState;
+    property    ObjectState: TPerObjectState read GetObjectState write SetObjectState;
     {: The type of class that owns this object. If I am owned by a TtiObjectList,
        then my owner is the object responsible for my destruction.}
     property    Owner: TtiObject read GetOwner write SetOwner;
@@ -577,6 +580,8 @@ type
     procedure   Assign(const ASource : TtiObject); override;
     {: Assign the captions from all objects to the TStrings AList}
     procedure   AssignCaptions(const AStrings: TStrings);
+    {: Assign the captions & objects from all objects to the TStrings AList}
+    procedure   AssignCaptionsAndObjects(const AStrings: TStrings);
     {: The number of items in the list.}
     property    Count : integer read GetCount;
     {: The capacity (number of items with allocated memory) of the list.}
@@ -1971,6 +1976,15 @@ begin
   AStrings.Clear;
   for i := 0 to count - 1 do
     AStrings.Add(Items[i].Caption);
+end;
+
+procedure TtiObjectList.AssignCaptionsAndObjects(const AStrings: TStrings);
+var
+  i: Integer;
+begin
+  AStrings.Clear;
+  for i := 0 to count - 1 do
+    AStrings.AddObject(Items[i].Caption, Items[i]);
 end;
 
 procedure TtiObjectList.AssignClassProps(ASource: TtiObject);
@@ -3498,6 +3512,16 @@ begin
     Result:= ''
 end;
 
+procedure TtiFieldCurrency.Inc(const AValue: integer);
+begin
+  AsInteger:= AsInteger + AValue;
+end;
+
+procedure TtiFieldCurrency.Inc(const AField: TtiFieldCurrency);
+begin
+  AsInteger:= AsInteger + AField.AsInteger;
+end;
+
 procedure TtiFieldCurrency.SetAsCurrencyString(const AValue: string);
 var
   LValue: string;
@@ -4172,6 +4196,11 @@ end;
 procedure TtiObject.StopObserving(ASubject: TtiObject);
 begin
   { Do nothing here. This will be implemented in decendant classes when needed }
+end;
+
+function TtiObject.GetObjectState: TPerObjectState;
+begin
+  result:= FObjectState;
 end;
 
 function TtiObject.GetObserverList: TList;

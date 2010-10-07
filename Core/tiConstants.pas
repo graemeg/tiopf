@@ -230,12 +230,15 @@ const
   {$ENDIF}
   {$IFDEF UNIX}
   cLineEnding         = #10;    // Unix type OSes (Linux, *BSD, ...)
+  CMinFileDate        = 29221; {$MESSAGE 'ToDo: Supply correct value for min file date on Unix'}
   {$ENDIF}
   {$IFDEF DARWIN}
   cLineEnding         = #13;    // Mac OS
+  CMinFileDate        = 29221;  {$MESSAGE 'ToDo: Supply correct value for min file date on Mac OS'}
   {$ENDIF}
   {$IFDEF MSWINDOWS}
   cLineEnding         = #13#10; // Windows
+  CMinFileDate        = 29221;
   {$ENDIF}
 
 
@@ -246,7 +249,8 @@ const
   CErrorInvalidVariantType      = 'Invalid variant type';
   CErrorXMLStringToDate         = 'Error converting string to date. String <%s> Error: %s';
   CErrorCanNotDeleteFile        = 'Can not delete file <%s>. It may be locked by another application.';
-  CErrorCanNotCopyFile          = 'Unable to copy "%s" to "%s". System error code: "%d" System error message: "%s"';
+  CErrorCanNotCopyFile          = 'Unable to copy "%s" to "%s". System error code: "%d". System error message: "%s"';
+  CErrorSettingFileDate         = 'Unable to set file date on: "%s" to "%s" System error code: "%d". System error message: "%s"';
 
   CUnknownGUI = 'Unknown' ;
   CUnknownDB = 'UNKNOWN';

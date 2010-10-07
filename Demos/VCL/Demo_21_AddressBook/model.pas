@@ -118,6 +118,7 @@ type
     procedure SetStreet(const AValue: string);
     procedure SetTelephone1(const AValue: string);
     procedure SetTelephone2(const AValue: string);
+    function GetFullAddress: string;
   public
     constructor Create; override;
     procedure AssignClassProps(ASource: TtiObject); override;
@@ -130,6 +131,7 @@ type
     property AddressType: TAddressType read FAddressType write SetAddressType;
     property AddressType4GUI: string read GetAddressType4GUI;
     property City: TCity read FCity write SetCity;
+    property FullAddress: string read GetFullAddress;
   end;
   
   
@@ -139,6 +141,7 @@ type
     procedure SetItems(i: integer; const AValue: TAddress); reintroduce;
   public
     function Add(const AObject: TAddress): integer; reintroduce;
+    procedure Update(ASubject: TtiObject); override;
     property Items[i: integer]: TAddress read GetItems write SetItems; default;
   end;
 
@@ -170,12 +173,14 @@ type
     procedure SetLastName(const AValue: string);
     procedure SetMobile(const AValue: string);
     procedure SetDateOfBirth(const AValue: TDateTime);
+    function GetHomeAddress: string;
     function GetMemento: TContactMemento;
     procedure SetMemento(const Value: TContactMemento);
   public
     constructor Create; override;
     destructor Destroy; override;
-    property Memento : TContactMemento read GetMemento Write SetMemento; 
+    procedure Update(ASubject: TtiObject); override;
+    property Memento : TContactMemento read GetMemento Write SetMemento;
   published
     property FirstName: string read FFirstName write SetFirstName;
     property LastName: string read FLastName write SetLastName;
@@ -184,6 +189,7 @@ type
     property Comments: string read FComments write SetComments;
     property DateOfBirth: TDateTime read FDateOfBirth write SetDateOfBirth;
     property AddressList: TAddressList read FAddressList;
+    property HomeAddress: string read GetHomeAddress;
   end;
   
   
@@ -346,7 +352,7 @@ end;
 procedure TAddress.SetTelephone2(const AValue: string);
 begin
   if FTelephone2=AValue then exit;
-  
+
   BeginUpdate;
   FTelephone2:=AValue;
   Mark;
@@ -404,11 +410,17 @@ end;
 procedure TAddress.SetFax(const AValue: string);
 begin
   if FFax=AValue then exit;
-  
+
   BeginUpdate;
   FFax:=AValue;
   Mark;
   EndUpdate;
+end;
+
+function TAddress.GetFullAddress: string;
+begin
+  result := Format('%d %s, %s, %s, %s', [Nr, Street, City.Name, City.ZIP,
+      City.Country.Name]);
 end;
 
 { TContact }
@@ -474,12 +486,26 @@ begin
   FAddressList.Owner:= self;
   // ToDo: Refactor to remove need for ItemOwner. Use Parent instead
   FAddressList.ItemOwner:= self;
+  FAddressList.AttachObserver(Self);
 end;
 
 destructor TContact.Destroy;
 begin
   FAddressList.Free;
   inherited Destroy;
+end;
+
+function TContact.GetHomeAddress: string;
+var
+  i: Integer;
+begin
+  result := '';
+  for i := 0 to AddressList.Count - 1 do
+    if AddressList.Items[i].AddressType.Name = 'Home' then
+    begin
+      result := AddressList.Items[i].FullAddress;
+      break;
+    end;
 end;
 
 function TContact.GetMemento: TContactMemento;
@@ -507,6 +533,11 @@ begin
     FComments:= Value.FComments;
     FDateOfBirth := Value.FDOB;
   end;
+end;
+
+procedure TContact.Update(ASubject: TtiObject);
+begin
+  NotifyObserversHelper;
 end;
 
 { TCountryList }
@@ -558,6 +589,12 @@ end;
 function TAddressList.Add(const AObject: TAddress): integer;
 begin
   result:= inherited Add(AObject);
+  AObject.AttachObserver(Self);
+end;
+
+procedure TAddressList.Update(ASubject: TtiObject);
+begin
+  NotifyObserversHelper;
 end;
 
 { TContactList }
@@ -576,7 +613,6 @@ function TContactList.Add(const AObject: TContact): integer;
 begin
   result:= inherited Add(AObject);
 end;
-
 
 { TAddressTypeList }
 

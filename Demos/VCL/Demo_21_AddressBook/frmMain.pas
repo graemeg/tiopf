@@ -24,6 +24,7 @@ type
     CityList1: TMenuItem;
     CountryList1: TMenuItem;
     AddressTypeList1: TMenuItem;
+    btnShow: TButton;
     procedure CountryListClick(Sender: TObject);
     procedure DeleteContactClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -32,6 +33,7 @@ type
     procedure AddressTypeListClick(Sender: TObject);
     procedure MIExitClick(Sender: TObject);
     procedure EditContactClick(Sender: TObject);
+    procedure btnShowClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
     FMediator: TtiModelMediator;
@@ -60,6 +62,43 @@ uses
 
 { TForm1 }
 
+procedure TfrmDemoMain.FormCreate(Sender: TObject);
+begin
+  RegisterFallBackMediators;
+  RegisterFallBackListmediators;
+  FDisplayList := TContactDisplayList.CreateCustom(gContactManager.ContactList);
+  gContactManager.PopulateContacts;
+  SetupMediators;
+end;
+
+procedure TfrmDemoMain.FormDestroy(Sender: TObject);
+begin
+  FDisplayList.Free;
+end;
+
+procedure TfrmDemoMain.SetupMediators;
+begin
+  if not Assigned(FMediator) then
+  begin
+    FMediator := TtiModelMediator.Create(self);
+    FMediator.AddComposite(
+        'FirstName(60,"First Name");LastName(90,"Last Name");EMail(130);' +
+        'DateOfBirth(80,"Date of Birth");Mobile(100);Comments(100);HomeAddress(200,"Home Address")', GContacts);
+  end;
+  FMediator.Subject := DisplayList;
+  FMediator.Active := True;
+end;
+
+procedure TfrmDemoMain.MIExitClick(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TfrmDemoMain.AddressTypeListClick(Sender: TObject);
+begin
+  ShowAddressTypes(gContactManager.AddressTypeList);
+end;
+
 procedure TfrmDemoMain.CityListClick(Sender: TObject);
 begin
   ShowCities(gContactManager.CityList);
@@ -68,6 +107,34 @@ end;
 procedure TfrmDemoMain.CountryListClick(Sender: TObject);
 begin
   ShowCountries(gContactManager.CountryList);
+end;
+
+procedure TfrmDemoMain.AddContactClick(Sender: TObject);
+var
+  c: TContact;
+begin
+  c := TContact.CreateNew;
+  c.DateOfBirth := Date;
+  if EditContact(c) then
+    gContactManager.ContactList.Add(c)
+  else
+    c.Free;
+end;
+
+procedure TfrmDemoMain.EditContactClick(Sender: TObject);
+var
+  D : TContactDisplay;
+  C : TContact;
+  M : TtiMediatorView;
+begin
+  M := FMediator.FindByComponent(GContacts).Mediator;
+  D := TContactDisplay(TtiStringGridMediatorView(M).SelectedObject);
+  C := D.Contact;
+  if Assigned(C) then
+    if EditContact(C) then
+    begin
+      // we can save contact here or modify EditContact to handle it for us.
+    end;
 end;
 
 procedure TfrmDemoMain.DeleteContactClick(Sender: TObject);
@@ -88,7 +155,7 @@ begin
   end;
 end;
 
-procedure TfrmDemoMain.EditContactClick(Sender: TObject);
+procedure TfrmDemoMain.btnShowClick(Sender: TObject);
 var
   D : TContactDisplay;
   C : TContact;
@@ -98,56 +165,7 @@ begin
   D := TContactDisplay(TtiStringGridMediatorView(M).SelectedObject);
   C := D.Contact;
   if Assigned(C) then
-    if EditContact(C) then
-    begin
-      // we can save contact here or modify EditContact to handle it for us.
-    end;
-end;
-
-procedure TfrmDemoMain.FormCreate(Sender: TObject);
-begin
-  RegisterFallBackMediators;
-  RegisterFallBackListmediators;
-  FDisplayList := TContactDisplayList.CreateCustom(gContactManager.ContactList);
-  gContactManager.PopulateContacts;
-  SetupMediators;
-end;
-
-procedure TfrmDemoMain.AddContactClick(Sender: TObject);
-var
-  c: TContact;
-begin
-  c := TContact.CreateNew;
-  if EditContact(c) then
-    gContactManager.ContactList.Add(c)
-  else
-    c.Free;
-end;
-
-procedure TfrmDemoMain.AddressTypeListClick(Sender: TObject);
-begin
-  ShowAddressTypes(gContactManager.AddressTypeList);
-end;
-
-procedure TfrmDemoMain.MIExitClick(Sender: TObject);
-begin
-  Close;
-end;
-
-procedure TfrmDemoMain.SetupMediators;
-begin
-  if not Assigned(FMediator) then
-  begin
-    FMediator := TtiModelMediator.Create(self);
-    FMediator.AddComposite('FirstName;LastName(130);EMail(180);DateOfBirth(100);Mobile(130);Comments(200)', GContacts);
-  end;
-  FMediator.Subject := DisplayList;
-  FMediator.Active := True;
-end;
-
-procedure TfrmDemoMain.FormDestroy(Sender: TObject);
-begin
-  FDisplayList.Free;
+    ShowMessage(C.AsDebugString);
 end;
 
 end.

@@ -37,10 +37,12 @@ type
     procedure DoLock_Unlock(ACount: integer);
   published
     procedure CreateAndDestroy;
+    procedure tiThrdPoolMonitor;
     procedure Lock_Unlock_1;
     procedure Lock_Unlock_10;
     procedure Lock_UnLock_Threaded;
-    procedure MinPoolSize;
+    procedure MinPoolSize0;
+    procedure MinPoolSize1;
     procedure MaxPoolSize;
     procedure TimeOut;
   end;
@@ -177,29 +179,49 @@ begin
   end;
 end;
 
-procedure TTestTiPool.MinPoolSize;
+procedure TTestTiPool.MinPoolSize0;
 var
-  lPool : TtiPoolForTesting;
-  lItem1 : TtiBaseObject;
-  lItem2 : TtiBaseObject;
+  LPool : TtiPoolForTesting;
+  LItem1 : TtiBaseObject;
+  LItem2 : TtiBaseObject;
 begin
-  lPool := TtiPoolForTesting.Create(1, 2);
+  LPool := TtiPoolForTesting.Create(0 {MinPoolSize}, 2 {MaxPoolSize});
   try
-    lPool.SetTimeOut(0);
-    lItem1 := lPool.Lock;
-    lItem2 := lPool.Lock;
-    Check(lItem1 <> lItem2, 'Items should not be same');
-
-    lPool.UnLock(lItem1);
-    lPool.UnLock(lItem2);
+    LPool.SetTimeOut(0);
+    LItem1 := lPool.Lock;
+    LItem2 := lPool.Lock;
+    Check(LItem1 <> LItem2, 'Items should not be same');
+    lPool.UnLock(LItem1);
+    lPool.UnLock(LItem2);
     Sleep(1000);
-    lPool.SweepForTimeOuts;
-
-    lItem2 := lPool.Lock;
-    Check(lItem1 = lItem2, 'Items should be same');
-
+    LPool.SweepForTimeOuts;
+    CheckEquals(0, LPool.Count);
   finally
-    lPool.Free;
+    LPool.Free;
+  end;
+end;
+
+procedure TTestTiPool.MinPoolSize1;
+var
+  LPool : TtiPoolForTesting;
+  LItem1 : TtiBaseObject;
+  LItem2 : TtiBaseObject;
+begin
+  LPool := TtiPoolForTesting.Create(1 {MinPoolSize}, 2 {MaxPoolSize});
+  try
+    LPool.SetTimeOut(0);
+    LItem1 := lPool.Lock;
+    LItem2 := lPool.Lock;
+    Check(LItem1 <> LItem2, 'Items should not be same');
+    lPool.UnLock(LItem1);
+    lPool.UnLock(LItem2);
+    Sleep(1000);
+    LPool.SweepForTimeOuts;
+    CheckEquals(1, LPool.Count);
+    LItem2 := lPool.Lock;
+    CheckSame(LItem1, LItem2);
+  finally
+    LPool.Free;
   end;
 end;
 
@@ -256,6 +278,29 @@ begin
   end;
 end;
 
+
+type
+  TtiThrdPoolMonitorForTesting = class(TtiThrdPoolMonitor)
+  public
+    procedure Execute; override;
+  end;
+
+  procedure TtiThrdPoolMonitorForTesting.Execute;
+  begin
+    Sleep(200);
+  end;
+
+procedure TTestTiPool.tiThrdPoolMonitor;
+var
+  L: TtiThrdPoolMonitorForTesting;
+begin
+  L:= TtiThrdPoolMonitorForTesting.CreateExt(nil);
+  try
+    L.Terminate;
+  finally
+    L.Free;
+  end;
+end;
 
 procedure TTestTiPool.CreateAndDestroy;
 var

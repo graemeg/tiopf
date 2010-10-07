@@ -14,7 +14,9 @@ type
     function GetPort: integer;
     function GetSendBugReportEmailOnCGIFailure: boolean;
     function GetLogToApplicationSubDirectory: boolean;
+    function GetLogFullHTTPRequest: boolean;
   protected
+    function  GetRegistryKey: string; virtual;
     function  GetRegistryValue(const AName, ADefault: string): string; virtual;
     function  GetINIFileName: string; virtual;
     property  INI: TtiINIFile Read FINI;
@@ -24,7 +26,9 @@ type
     function  GetLogPathToSharedFiles: string; virtual;
     function  GetPathToCGIBin: string; virtual;
     function  GetPathToStaticPages: string; virtual;
-    function  GetCIGExtensionLogging: boolean;
+    function  GetPathToPassThrough: string; virtual;
+    function  GetCGIExtensionLogging: boolean;
+    function  GetCGIExtensionSeverityToLog: string;
 
   public
     constructor Create;
@@ -33,13 +37,16 @@ type
     procedure   RegisterLog; virtual;
     property    LogPathToSharedFiles: string Read GetLogPathToSharedFiles;
     property    LogToApplicationSubDirectory: boolean read GetLogToApplicationSubDirectory;
-    property    CGIExtensionLogging: boolean read GetCIGExtensionLogging;
+    property    LogFullHTTPRequest: boolean read GetLogFullHTTPRequest;
+    property    CGIExtensionLogging: boolean read GetCGIExtensionLogging;
+    property    CGIExtensionSeverityToLog: string read GetCGIExtensionSeverityToLog;
 
     property    WebServiceShortName: string Read GetWebServiceShortName;
     property    WebServiceDisplayName: string Read GetWebServiceDisplayName;
 
     property    PathToStaticPages: string Read GetPathToStaticPages;
     property    PathToCGIBin: string Read GetPathToCGIBin;
+    property    PathToPassThrough: string Read GetPathToPassThrough;
 
     property    Port: integer read GetPort;
 
@@ -65,7 +72,10 @@ const
   cINILog_PathToSharedFiles = 'PathToSharedFiles';
   cINILog_DefaultPathToSharedFiles = 'C:\TechInsite\Log';
   cINILog_CGIExtensionLogging = 'CGIExtensionLogging';
+  cINILog_CGIExtensionSeverityToLog = 'CGIExtensionSeverityToLog';
   CINILog_LogToApplicationSubDirectory = 'LogToApplicationSubDirectory';
+  CINILog_LogFullHTTPRequest = 'LogFullHTTPRequest';
+  CINILog_DefaultLogFullHTTPRequest = false;
 
   cINIService = 'Web Server';
   cINIService_ShortName = 'ShortName';
@@ -74,8 +84,10 @@ const
   cINIService_DisplayNameDefault  = 'TechInsite Web Server';
   cINIService_PathToStaticPages = 'PathToStaticPages';
   cINIService_PathToCGIBin = 'PathToCGIBin';
+  cINIService_PathToPassThrough = 'PathToPassThrough';
   cINIService_DefaultPathToStaticPages = 'StaticPages';
   cINIService_DefaultPathToCGIBin = 'CGI-Bin';
+  cINIService_DefaultPathToPassThrough = 'PathToPassThrough';
   CINILog_DefaultLogToApplicationSubDirectory = true;
   cINIService_SendBugReportEmailOnCGIFailure = 'SendBugReportEmailOnCGIFailure';
   cINIService_SendBugReportEmailOnCGIFailureDefault = true;
@@ -114,16 +126,19 @@ begin
   result := tiRemoveExtension(ExtractFileName(tiGetModuleFileName));
 end;
 
+function TtiWebServerConfig.GetRegistryKey: string;
+begin
+  result:= 'SOFTWARE\TechInsite\Shared';
+end;
+
 function TtiWebServerConfig.GetRegistryValue(const AName, ADefault: string): string;
 var
   LRegistry: TRegistry;
-const
-  cKey   = 'SOFTWARE\TechInsite\Shared';
 begin
   LRegistry := TRegistry.Create(HKEY_LOCAL_MACHINE);
   try
     LRegistry.RootKey := HKEY_LOCAL_MACHINE;
-    LRegistry.OpenKey(cKey, True);
+    LRegistry.OpenKey(GetRegistryKey, True);
     Result := LRegistry.ReadString(AName);
     if Result = '' then
     begin
@@ -133,6 +148,11 @@ begin
   finally
     LRegistry.Free;
   end;
+end;
+
+function TtiWebServerConfig.GetLogFullHTTPRequest: boolean;
+begin
+  Result:= INI.ReadBool(cINILog, cINILog_LogFullHTTPRequest, cINILog_DefaultLogFullHTTPRequest);
 end;
 
 function TtiWebServerConfig.GetLogPathToSharedFiles: string;
@@ -148,9 +168,14 @@ begin
   Result:= INI.ReadBool(cINILog, cINILog_LogToApplicationSubDirectory, cINILog_DefaultLogToApplicationSubDirectory);
 end;
 
-function TtiWebServerConfig.GetCIGExtensionLogging: boolean;
+function TtiWebServerConfig.GetCGIExtensionLogging: boolean;
 begin
   Result:= INI.ReadBool(cINILog, cINILog_CGIExtensionLogging, False);
+end;
+
+function TtiWebServerConfig.GetCGIExtensionSeverityToLog: string;
+begin
+  Result := INI.ReadString(cINILog, cINILog_CGIExtensionSeverityToLog, '');
 end;
 
 function TtiWebServerConfig.GetWebServiceDisplayName;
@@ -180,6 +205,16 @@ begin
   begin
     Result:= tiGetEXEPath + PathDelim + cINIService_DefaultPathToCGIBin;
     INI.WriteString(cINIService, cINIService_PathToCGIBin, Result);
+  end;
+end;
+
+function TtiWebServerConfig.GetPathToPassThrough: string;
+begin
+  Result:= INI.ReadString(cINIService, cINIService_PathToPassThrough, '');
+  if Result = '' then
+  begin
+    Result:= tiGetEXEPath + PathDelim + cINIService_DefaultPathToPassThrough;
+    INI.WriteString(cINIService, cINIService_PathToPassThrough, Result);
   end;
 end;
 

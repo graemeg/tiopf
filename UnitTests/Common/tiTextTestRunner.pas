@@ -5,6 +5,7 @@
 unit tiTextTestRunner;
 
 {$I tiDefines.inc}
+{$I DUnit.inc}
 
 interface
 uses
@@ -129,6 +130,7 @@ begin
     else
     begin
       Suite.LoadConfiguration(ExtractFilePath(ParamStr(0)) + 'Dunit.ini', False, True);
+      Suite.FailsOnNoChecksExecuted:= false; // Suppress empty tests in the TextTestRunner
       i := 0;
       { We have this default listener, unless told to be silent }
       if not gCommandLineParams.IsParam(CCommandLineParamSilent) then

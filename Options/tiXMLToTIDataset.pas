@@ -59,13 +59,13 @@ type
   TtiXMLDBParserState = (xdbsRoot, xdbsTables, xdbsTable, xdbsFields, xdbsField,
                           xdbsRows, xdbsRow, xdbsEnd);
 
-  TXMLToDataSetReader = class(TtiBaseObject)
+  TtiXMLToDataBufferReader = class(TtiBaseObject)
   private
     FXML: string;
     FState: TtiXMLDBParserState;
     FPos: Cardinal;
     FLen: Cardinal;
-    FDataSets : TtiDataBuffers;
+    FDataSets : TtiDataBufferList;
     FDataSet: TtiDataBuffer;
     FDataSetRow: TtiDataBufferRow;
     FXMLRCTrans: IXMLReservedCharsTranslator;
@@ -81,7 +81,7 @@ type
   protected
     property    XML : string read FXML write SetXML;
     property    State : TtiXMLDBParserState read FState;
-    property    DataSets: TtiDataBuffers read FDataSets write FDataSets;
+    property    DataSets: TtiDataBufferList read FDataSets write FDataSets;
     property    Pos : Cardinal read FPos;
     property    Len : Cardinal read FLen;
 
@@ -93,7 +93,7 @@ type
   public
     constructor Create;
     destructor  Destroy; override;
-    procedure   Execute(const pXML: string; const pDataSets: TtiDataBuffers);
+    procedure   Execute(const pXML: string; const pDataSets: TtiDataBufferList);
     property    XMLFieldNameStyle : TtiXMLFieldNameStyle read FXMLFieldNameStyle Write FXMLFieldNameStyle;
     property    OptXMLDBSize: TtiOptXMLDBSize read GetOptXMLDBSize Write SetOptXMLDBSize;
     property    Compress: string read FCompress Write FCompress;
@@ -148,15 +148,15 @@ type
     // Returns the number of rows added
     function    AssignFromTIQuery(const ATableName : string;const AQuery : TtiQuery): Integer;
     procedure   AssignMetaDataFromTIQuery(const ATableName : string;const AQuery : TtiQuery);
-    procedure   AssignFromTIDataSets(const pDataSets: TtiDataBuffers);
+    procedure   AssignFromTIDataSets(const pDataSets: TtiDataBufferList);
     procedure   AssignFromTIDataSet(const pDataSet: TtiDataBuffer);
 
   end;
 
   // Provides Read/Write access to a tiOPF XML file
-  TtiXMLToDataSetReadWriter = class(TtiBaseObject)
+  TtiXMLToDataBufferReaderWriter = class(TtiBaseObject)
   private
-    FDataSets: TtiDataBuffers;
+    FDataSets: TtiDataBufferList;
     FDataSet : TtiDataBuffer;
     FMetaDataField : TtiDBMetaDataField;
     FDataSetRow : TtiDataBufferRow;
@@ -175,7 +175,7 @@ type
     destructor  Destroy; override;
     property    XMLFieldNameStyle : TtiXMLFieldNameStyle read FXMLFieldNameStyle Write FXMLFieldNameStyle;
 
-    property    DataSets : TtiDataBuffers read FDataSets write FDataSets;
+    property    DataSets : TtiDataBufferList read FDataSets write FDataSets;
     procedure   LoadFromFile(const AFileName : string; pReadOnly : Boolean = false);
     procedure   SaveToFile(const AFileName : string);
     property    AsString : string read GetAsString write SetAsString;
@@ -185,14 +185,14 @@ type
   end;
 
 // Some helper methods
-procedure tiXMLStringToTIDataSets(const AXMLString : string;
-  const ADataSets : TtiDataBuffers); overload;
-procedure tiXMLStringToTIDataSets(const AXMLString : string;
-  const ADataSets : TtiDataBuffers;
+procedure tiXMLStringToTIDataBufferList(const AXMLString : string;
+  const ADataSets : TtiDataBufferList); overload;
+procedure tiXMLStringToTIDataBufferList(const AXMLString : string;
+  const ADataSets : TtiDataBufferList;
   const AOptXMLDBSize: TtiOptXMLDBSize;
   const AXMLFieldNameStyle: TtiXMLFieldNameStyle); overload;
-function  tiTIDataSetsToXMLString(const pDataSets : TtiDataBuffers): string;
-function  tiTIDataSetToXMLString( const pDataSet : TtiDataBuffer): string;
+function  tiTIDataBufferListToXMLString(const pDataSets : TtiDataBufferList): string;
+function  tiTIDataBufferToXMLString( const pDataSet : TtiDataBuffer): string;
 
 // ToDo: Move these to implementation when optimisation is done
 const
@@ -211,23 +211,23 @@ uses
   {$ENDIF}
  ;
 
-procedure tiXMLStringToTIDataSets(
+procedure tiXMLStringToTIDataBufferList(
   const AXMLString : string;
-  const ADataSets : TtiDataBuffers);
+  const ADataSets : TtiDataBufferList);
 begin
-  tiXMLStringToTIDataSets(AXMLString, ADataSets,
+  tiXMLStringToTIDataBufferList(AXMLString, ADataSets,
     optDBSizeOff, xfnsString);
 end;
 
-procedure tiXMLStringToTIDataSets(
+procedure tiXMLStringToTIDataBufferList(
   const AXMLString : string;
-  const ADataSets : TtiDataBuffers;
+  const ADataSets : TtiDataBufferList;
   const AOptXMLDBSize: TtiOptXMLDBSize;
   const AXMLFieldNameStyle: TtiXMLFieldNameStyle);
 var
-  LXMLToTIDataSet : TtiXMLToDataSetReadWriter;
+  LXMLToTIDataSet : TtiXMLToDataBufferReaderWriter;
 begin
-  LXMLToTIDataSet := TtiXMLToDataSetReadWriter.Create;
+  LXMLToTIDataSet := TtiXMLToDataBufferReaderWriter.Create;
   try
     LXMLToTIDataSet.DataSets := ADataSets;
     LXMLToTIDataSet.OptXMLDBSize:= AOptXMLDBSize;
@@ -238,11 +238,11 @@ begin
   end;
 end;
 
-function tiTIDataSetsToXMLString(const pDataSets : TtiDataBuffers): string;
+function tiTIDataBufferListToXMLString(const pDataSets : TtiDataBufferList): string;
 var
-  lXMLToTIDataSet : TtiXMLToDataSetReadWriter;
+  lXMLToTIDataSet : TtiXMLToDataBufferReaderWriter;
 begin
-  lXMLToTIDataSet := TtiXMLToDataSetReadWriter.Create;
+  lXMLToTIDataSet := TtiXMLToDataBufferReaderWriter.Create;
   try
     lXMLToTIDataSet.DataSets := pDataSets;
     result := lXMLToTIDataSet.AsString;
@@ -251,15 +251,15 @@ begin
   end;
 end;
 
-function  tiTIDataSetToXMLString( const pDataSet : TtiDataBuffer): string;
+function  tiTIDataBufferToXMLString( const pDataSet : TtiDataBuffer): string;
 var
-  lDataSets: TtiDataBuffers;
+  lDataSets: TtiDataBufferList;
 begin
-  lDataSets:= TtiDataBuffers.Create;
+  lDataSets:= TtiDataBufferList.Create;
   try
     lDataSets.Add(pDataSet);
     try
-      Result := tiTIDataSetsToXMLString(lDataSets);
+      Result := tiTIDataBufferListToXMLString(lDataSets);
     finally
       lDataSets.Extract(pDataSet);
     end;
@@ -282,21 +282,21 @@ begin
   //Result := Low(TtiXMLFieldNameStyle); // To shut the compiler up
 end;
 
-{ TtiXMLToDataSetReadWriter }
+{ TtiXMLToDataBufferReaderWriter }
 
-constructor TtiXMLToDataSetReadWriter.Create;
+constructor TtiXMLToDataBufferReaderWriter.Create;
 begin
   inherited;
   FXMLFieldNameStyle := xfnsString;
   FCompress         := cgsCompressNone;
 end;
 
-destructor TtiXMLToDataSetReadWriter.Destroy;
+destructor TtiXMLToDataBufferReaderWriter.Destroy;
 begin
   inherited;
 end;
 
-procedure TtiXMLToDataSetReadWriter.LoadFromFile(const AFileName: string; pReadOnly : Boolean = false);
+procedure TtiXMLToDataBufferReaderWriter.LoadFromFile(const AFileName: string; pReadOnly : Boolean = false);
 var
   lStream : TFileStream;
   ls : string;
@@ -316,11 +316,11 @@ end;
 
 { TtiTIDataSetsToXML }
 
-function TtiXMLToDataSetReadWriter.GetAsString: string;
+function TtiXMLToDataBufferReaderWriter.GetAsString: string;
 var
   lXMLWriter : TtiDataBufferToXMLWriter;
 begin
-  Assert(DataSets.TestValid(TtiDataBuffers, true), CTIErrorInvalidObject);
+  Assert(DataSets.TestValid(TtiDataBufferList, true), CTIErrorInvalidObject);
   lXMLWriter := TtiDataBufferToXMLWriter.Create;
   try
     lXMLWriter.XMLFieldNameStyle := FXMLFieldNameStyle;
@@ -335,13 +335,13 @@ begin
   end;
 end;
 
-procedure TtiXMLToDataSetReadWriter.SetAsString(const AValue: string);
+procedure TtiXMLToDataBufferReaderWriter.SetAsString(const AValue: string);
 var
-  lXMLToDataSetReader: TXMLToDataSetReader;
+  lXMLToDataSetReader: TtiXMLToDataBufferReader;
 begin
-  Assert(FDataSets.TestValid(TtiDataBuffers), CTIErrorInvalidObject);
+  Assert(FDataSets.TestValid(TtiDataBufferList), CTIErrorInvalidObject);
   Clear;
-  lXMLToDataSetReader:= TXMLToDataSetReader.Create;
+  lXMLToDataSetReader:= TtiXMLToDataBufferReader.Create;
   try
     lXMLToDataSetReader.OptXMLDBSize := FOptXMLDBSize;
     lXMLToDataSetReader.XMLFieldNameStyle := FXMLFieldNameStyle;
@@ -352,7 +352,7 @@ begin
   end;
 end;
 
-procedure TtiXMLToDataSetReadWriter.SaveToFile(const AFileName: string);
+procedure TtiXMLToDataBufferReaderWriter.SaveToFile(const AFileName: string);
 var
   LDirectory: string;
   lStream : TFileStream;
@@ -372,7 +372,7 @@ begin
   end;
 end;
 
-procedure TtiXMLToDataSetReadWriter.Clear;
+procedure TtiXMLToDataBufferReaderWriter.Clear;
 begin
   FDataSet      := nil;
   FMetaDataField := nil;
@@ -380,16 +380,16 @@ begin
   FDataSets.Clear;
 end;
 
-procedure TXMLToDataSetReader.Execute(const pXML: string; const pDataSets: TtiDataBuffers);
+procedure TtiXMLToDataBufferReader.Execute(const pXML: string; const pDataSets: TtiDataBufferList);
 begin
-  Assert(pDataSets.TestValid(TtiDataBuffers), CTIErrorInvalidObject);
+  Assert(pDataSets.TestValid(TtiDataBufferList), CTIErrorInvalidObject);
   XML := pXML;
   DataSets := pDataSets;
   while FState <> xdbsEnd do
     Next;
 end;
 
-function TXMLToDataSetReader.MatchToken(const pToken : string;
+function TtiXMLToDataBufferReader.MatchToken(const pToken : string;
                                         pLength : byte;
                                         pNewState: TtiXMLDBParserState): boolean;
 var
@@ -405,7 +405,7 @@ begin
     result := false;
 end;
 
-procedure TXMLToDataSetReader.Next;
+procedure TtiXMLToDataBufferReader.Next;
 var
   lTableName: string;
   lFieldName: string;
@@ -478,64 +478,66 @@ begin
     raise Exception.CreateFmt(cErrorParsingXMLAtPos, [lPos]);
 end;
 
-procedure TXMLToDataSetReader.ParseForAttributesUntil(const pUntil: string);
+procedure TtiXMLToDataBufferReader.ParseForAttributesUntil(const pUntil: string);
 var
-  lState    : TtiXMLAttributeParseState;
-  lStart    : Cardinal;
-  lChar     : Char;
-  lName     : string;
-  lValue    : string;
-  lStr : string;
+  LState : TtiXMLAttributeParseState;
+  LStart : Cardinal;
+  LPChar : PChar;
+  LName  : string;
+  LValue : string;
+  LPUntil: PChar;
 begin
-  lState    := xapsWaitForAttr;
-  lStart    := 0; // To fix a compiler warning
+  LState := xapsWaitForAttr;
+  LStart := 0; // To fix a compiler warning
+  LPChar := @FXML[FPos];
+  LPUntil := tiStrPos(LPChar, PChar(pUntil));
   While (FPos <= FLen) do
   begin
-    lStr := Copy(FXML, FPos, Length(pUntil));
-    if (lStr = pUntil) then
+    if LPChar = LPUntil then
     begin
-      Inc(FPos,Length(pUntil));
+      Inc(FPos, Length(pUntil));
       Exit; //==>
     end;
-    lChar := FXML[FPos];
-    case lState of
+    case LState of
     xapsWaitForAttr : begin
-                        if lChar <> #32 then
+                        if LPChar^ <> #32 then
                         begin
-                          lStart := FPos;
-                          Inc(lState);
+                          LStart := FPos;
+                          Inc(LState);
                         end;
                       end;
     xapsInAttrName : begin
-                        if lChar in [#32, '='] then
+                        if LPChar^ in [#32, '='] then
                         begin
-                          Inc(lState);
-                          lName := Copy(FXML, lStart, FPos - lStart);
+                          Inc(LState);
+                          LName := Copy(FXML, LStart, FPos - LStart);
                         end;
                       end;
     xapsWaitForAttrValue : begin
-                        if (lChar = '"') then
+                        if (LPChar^ = '"') then
                         begin
-                          Inc(lState);
-                          lStart := FPos;
+                          Inc(LState);
+                          LStart := FPos;
                         end;
                       end;
     xapsInAttrValue : begin
-                        if (lChar = '"') then
+                        if (LPChar^ = '"') then
                         begin
-                          lState := Low(TtiXMLAttributeParseState);
-                          lValue := Copy(FXML, lStart+1, FPos - lStart - 1);
-                          DoAddCell(lName, lValue);
+                          LState := Low(TtiXMLAttributeParseState);
+                          LValue := Copy(FXML, LStart+1, FPos - LStart - 1);
+                          DoAddCell(LName, LValue);
                         end;
                       end;
     else
       raise EtiOPFInternalException.Create(cErrorInvalidTXMLAttributeParseState);
     end;
-      Inc(FPos);
+
+    Inc(FPos);
+    Inc(LPChar);
   end;
 end;
 
-function TXMLToDataSetReader.ParseForSingleAttribute(const AAttrName: string): string;
+function TtiXMLToDataBufferReader.ParseForSingleAttribute(const AAttrName: string): string;
 var
   lState    : TtiXMLAttributeParseState;
   lStart    : Cardinal;
@@ -583,7 +585,7 @@ begin
   end;
 end;
 
-procedure TXMLToDataSetReader.SetXML(const AValue: string);
+procedure TtiXMLToDataBufferReader.SetXML(const AValue: string);
 begin
   if FCompress <> cgsCompressNone then
     FXML := tiDecompressString(AValue, FCompress)
@@ -594,7 +596,7 @@ begin
   FState := xdbsRoot;
 end;
 
-procedure TXMLToDataSetReader.DoAddField(const AFieldName, AFieldKind, pFieldSize: string);
+procedure TtiXMLToDataBufferReader.DoAddField(const AFieldName, AFieldKind, pFieldSize: string);
 var
   lFieldKind : TtiQueryFieldKind;
   lFieldWidth : integer;
@@ -605,19 +607,19 @@ begin
   FDataSet.Fields.AddInstance(AFieldName, lFieldKind, lFieldWidth);
 end;
 
-procedure TXMLToDataSetReader.DoAddRow;
+procedure TtiXMLToDataBufferReader.DoAddRow;
 begin
   Assert(FDataSet.TestValid(TtiDataBuffer), CTIErrorInvalidObject);
   FDataSetRow := FDataSet.AddInstance;
 end;
 
-procedure TXMLToDataSetReader.DoAddTable(const ATableName: string);
+procedure TtiXMLToDataBufferReader.DoAddTable(const ATableName: string);
 begin
-  Assert(FDataSets.TestValid(TtiDataBuffers), CTIErrorInvalidObject);
+  Assert(FDataSets.TestValid(TtiDataBufferList), CTIErrorInvalidObject);
   FDataSet := FDataSets.AddInstance(ATableName);
 end;
 
-procedure TXMLToDataSetReader.DoAddCell(const AFieldName: string; pFieldValue: string);
+procedure TtiXMLToDataBufferReader.DoAddCell(const AFieldName: string; pFieldValue: string);
 var
   lCell: TtiDataBufferCell;
   lIndex: Integer;
@@ -638,10 +640,9 @@ begin
     lCell.ValueAsString := FXMLRCTrans.InsertReserved(rcXML, pFieldValue)
   else
     lCell.ValueAsString := pFieldValue;
-
 end;
 
-procedure TtiXMLToDataSetReadWriter.SetCompress(const AValue: string);
+procedure TtiXMLToDataBufferReaderWriter.SetCompress(const AValue: string);
 begin
   FCompress := AValue;
 end;
@@ -696,7 +697,7 @@ var
 begin
   ls := FXMLRCTrans.RemoveReserved(rcXML, AValue);
   DoAddCellAsString(AName, ls);
-end;                                
+end;
 
 procedure TtiDataBufferToXMLWriter.DoAddCellAsString(const AName, AValue: string);
 begin
@@ -900,11 +901,11 @@ begin
   end;
 end;
 
-procedure TtiDataBufferToXMLWriter.AssignFromTIDataSets(const pDataSets: TtiDataBuffers);
+procedure TtiDataBufferToXMLWriter.AssignFromTIDataSets(const pDataSets: TtiDataBufferList);
 var
   i : integer;
 begin
-  Assert(pDataSets.TestValid(TtiDataBuffers), CTIErrorInvalidObject);
+  Assert(pDataSets.TestValid(TtiDataBufferList), CTIErrorInvalidObject);
   for i := 0 to pDataSets.Count - 1 do
     AssignFromTIDataSet(pDataSets.Items[i]);
 end;
@@ -1011,7 +1012,7 @@ begin
   FCellIndex:= 0;
 end;
 
-constructor TXMLToDataSetReader.Create;
+constructor TtiXMLToDataBufferReader.Create;
 begin
   inherited;
   FXMLFieldNameStyle := xfnsString;
@@ -1020,18 +1021,18 @@ begin
   FXMLTags := TtiXMLTags.Create;
 end;
 
-destructor TXMLToDataSetReader.Destroy;
+destructor TtiXMLToDataBufferReader.Destroy;
 begin
   FXMLTags.Free;
   inherited;
 end;
 
-function TXMLToDataSetReader.GetOptXMLDBSize: TtiOptXMLDBSize;
+function TtiXMLToDataBufferReader.GetOptXMLDBSize: TtiOptXMLDBSize;
 begin
   Result := FXMLTags.OptXMLDBSize;
 end;
 
-procedure TXMLToDataSetReader.SetOptXMLDBSize(const AValue: TtiOptXMLDBSize);
+procedure TtiXMLToDataBufferReader.SetOptXMLDBSize(const AValue: TtiOptXMLDBSize);
 begin
   FXMLTags.OptXMLDBSize := AValue;
 end;
