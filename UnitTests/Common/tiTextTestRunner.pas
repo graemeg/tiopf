@@ -372,7 +372,7 @@ procedure TtiTextTestListener.TestingStarts;
       end;
     end;
     if not LSelected then
-      writeln2Short('None selected',[tlwtFile, tlwtConsole]);
+      writeln2Short('  None selected',[tlwtFile, tlwtConsole]);
   end;
 
   procedure _WriteLong(const pDelphiVersion: string);
@@ -538,7 +538,7 @@ begin
       ,'<font color="#008000">PASS</font>'
       ,''
       ,''
-      ,tiIntToCommaStr(Trunc(test.ElapsedTestTime)));
+      ,tiElapsedDHMS(test.ElapsedTestTime));
   end;
 end;
 
