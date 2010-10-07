@@ -88,8 +88,15 @@ type
 
   function  tiGetTypeInfo(PropInfo: PPropInfo): PTypeInfo;
   function  tiGetProperty(const AObject: TObject; const APropPath: string): Variant;
+  {: Get the property as a string. If the property is not valid then return a default. }
+  function  tiGetPropertyCoalesce(const AObject: TObject; const APropPath: string; const ADefault: string = ''): string;
   procedure tiSetProperty(const AObject: TObject; const APropPath: string; const APropValue: Variant);
   function  tiGetPropInfo(AClass: TClass; PropPath: string; PInstance: Pointer): PPropInfo;
+  {: Get the propinfo of the deepest class in the path. e.g. ClassPropA.ClassPropB.ClassPropC.NonClassProp
+     returns the propinfo for ClassPropC. }
+  function  tiGetTargetClassPropInfo(AClass: TClass; APropPath: string): PPropInfo;
+  {: Get the class type of the deepest class in the path. }
+  function  tiGetTargetClass(AClass: TClass; APropPath: string): TClass;
   procedure tiGetEnumNames(TypeInfo: PTypeInfo; Names: TStrings; PrefixLen: Integer = 0);
   function  tiPropertyInheritsFrom(AClass: TClass; PropPath: string; AParentClass: TClass): boolean;
   function  tiGetPropertyClass(AClass: TClass; PropPath: string): TClass;
@@ -156,6 +163,7 @@ end;
 function tiGetProperty(const AObject: TObject; const APropPath: string): Variant;
 var
   LPropInfo: PPropInfo;
+  LObject: TObject;
 begin
   // ToDo: I'm not sure that invalid AObject or APropPath should be swallowed with null returned
   //       Would it be better if an exception was raised?
@@ -164,33 +172,41 @@ begin
   begin
     if not SameText(APropPath, 'self') then
     begin
-      if Assigned(AObject) then
-      begin
-        LPropInfo := tiGetPropInfo(AObject.ClassType, APropPath, @AObject);
-        if Assigned(LPropInfo) and Assigned(LPropInfo.GetProc) then
-          Result := GetPropValue(AObject, string(LPropInfo^.Name))
-        else
-          Result:= Null;
-      end;
+      LObject := AObject;
+      LPropInfo := tiGetPropInfo(LObject.ClassType, APropPath, @LObject);
+      if Assigned(LPropInfo) and Assigned(LPropInfo.GetProc) and
+         Assigned(LObject) then // Check that class property is assigned
+        Result := GetPropValue(LObject, string(LPropInfo^.Name))
+      else
+        Result:= Null;
     end else
       Result := PtrInt(AObject);
   end else
     Result:= Null;
 end;
 
+function tiGetPropertyCoalesce(const AObject: TObject;
+  const APropPath: string; const ADefault: string): string;
+begin
+  result := tiVariantAsStringDef(tiGetProperty(AObject, APropPath), ADefault);
+end;
+
 procedure tiSetProperty(const AObject: TObject; const APropPath: string; const APropValue: Variant);
 var
+  LObject: TObject;
   LPropInfo: PPropInfo;
   LValue: Variant;
 begin
   Assert(Assigned(AObject), CTIErrorInvalidObject);
   Assert(APropPath <> '', 'APropPath not aassigned');
-  LPropInfo := tiGetPropInfo(AObject.ClassType, APropPath, @AObject);
+  LObject := AObject;
+  LPropInfo := tiGetPropInfo(AObject.ClassType, APropPath, @LObject);
   if Assigned(LPropInfo) and Assigned(LPropInfo.SetProc) then
   begin
     case tiGetTypeInfo(LPropInfo)^.Kind of
       tkClass:
-        SetObjectProp(AObject, LPropInfo, TObject(Integer(APropValue)));
+        if Assigned(LObject) then // Check that class property is assigned
+          SetObjectProp(LObject, LPropInfo, TObject(Integer(APropValue)));
       tkEnumeration{$IFDEF FPC},tkBool{$ENDIF}:
         begin
           if VarIsStr(APropValue) and (VarToStr(APropValue) = '') then
@@ -199,17 +215,17 @@ begin
             LValue:= APropValue;
           // Special handling if it's a boolean
           if SameText(string(LPropInfo^.PropType^.Name), 'Boolean') then
-            tiSetBooleanPropValue(AObject, string(LPropInfo^.Name), LValue)
+            tiSetBooleanPropValue(LObject, string(LPropInfo^.Name), LValue)
           else
-            SetPropValue(AObject, string(LPropInfo^.Name), LValue);
+            SetPropValue(LObject, string(LPropInfo^.Name), LValue);
         end;
       tkSet:
         if VarToStr(APropValue) = '' then
-          SetPropValue(AObject, string(LPropInfo^.Name), '[]')
+          SetPropValue(LObject, string(LPropInfo^.Name), '[]')
         else
-          SetPropValue(AObject, string(LPropInfo^.Name), APropValue);
+          SetPropValue(LObject, string(LPropInfo^.Name), APropValue);
     else
-      SetPropValue(AObject, string(LPropInfo^.Name), APropValue);
+      SetPropValue(LObject, string(LPropInfo^.Name), APropValue);
     end;  { case }
   end;
 end;
@@ -245,6 +261,56 @@ begin
         Result := nil;
     end;  { if }
   end
+  else
+    Result := nil;
+end;
+
+function tiGetTargetClassPropInfo(AClass: TClass; APropPath: string): PPropInfo;
+var
+  LFirstDot: Integer;
+  LPropName: string;
+  LPropInfo: PPropInfo;
+  LTypeData: PTypeData;
+begin
+  Result := nil;
+  if Assigned(AClass) then
+  begin
+    LFirstDot := Pos('.', APropPath);
+    if LFirstDot = 0 then
+      LPropName := APropPath
+    else
+    begin
+      LPropName := Copy(APropPath, 1, LFirstDot - 1);
+      System.Delete(APropPath, 1, LFirstDot);
+    end;
+
+    LPropInfo := GetPropInfo(AClass, LPropName);
+    if Assigned(LPropInfo) and (LPropInfo^.PropType^.Kind = tkClass) then
+      if LFirstDot = 0 then
+        Result := LPropInfo // Found a class and there are no more sub-properties
+      else
+      begin
+        // Look for the deepest class in the sub-properties
+        LTypeData := GetTypeData(tiGetTypeInfo(LPropInfo));
+        if Assigned(LTypeData) then
+        begin
+          Result := tiGetTargetClassPropInfo(LTypeData.ClassType, APropPath);
+          if Result  = nil then
+            Result := LPropInfo; // No class in sub-properties, use this one
+        end;
+      end;
+  end;
+end;
+
+function tiGetTargetClass(AClass: TClass; APropPath: string): TClass;
+var
+  LPropInfo: PPropInfo;
+  LTypeData: PTypeData;
+begin
+  LPropInfo := tiGetTargetClassPropInfo(AClass, APropPath);
+  LTypeData := GetTypeData(tiGetTypeInfo(LPropInfo));
+  if Assigned(LTypeData) then
+    Result := LTypeData.ClassType
   else
     Result := nil;
 end;

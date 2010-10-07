@@ -91,6 +91,9 @@ type
     procedure SetPropertyLinkDefs(const AValue: TtiPropertyLinkDefs);
     procedure SetSubject(const AValue: TtiObject);
     procedure SubjectUpdate(ASubject: TtiObject; AOperation: TNotifyOperation);
+    function GetMediatorView(AComponent: TComponent): TtiMediatorView;
+    function GetSelectedObject(AComponent: TComponent): TtiObject;
+    procedure SetSelectedObject(AComponent: TComponent; AObject: TtiObject);
   protected
     function CreatePropertyDefs: TtiPropertyLinkDefs; virtual;
     function CreateProperty(const AFieldName: string; const AGUIComponent: TComponent): TtiPropertyLinkDef; virtual;
@@ -110,11 +113,21 @@ type
     function FindByComponent(AComponent: TComponent): TtiPropertyLinkDef;
     function FindByMediator(AMediator: TtiMediatorView): TtiPropertyLinkDef;
     function FindByTag(ATag: LongInt): TtiPropertyLinkDef;
-    function ComponentMediator(AComponent: TComponent): TtiMediatorView;
-    function MediatorComponent(AMediator: TtiMediatorView): TComponent;
+    {: Find the mediator view for the given component. Returns nil if not found. }
+    function FindMediatorView(AComponent: TComponent): TtiMediatorView;
+    {: Find the component for the given mediator view. Returns nil if not found. }
+    function FindComponent(AMediator: TtiMediatorView): TComponent;
     procedure SubjectChanged;
+
     property Subject: TtiObject read FSubject write SetSubject;
     property Active: Boolean read FActive write SetActive;
+
+    {: Find the mediator view for the given component. If the component is not found an exception is raised. }
+    property MediatorView[AComponent: TComponent]: TtiMediatorView read GetMediatorView;
+    {: Find the selected object in the given component. For list mediator views this returns
+       the selected item in the list. For other mediators this returns the subject.
+       If the component is not found an exception is raised. }
+    property SelectedObject[AComponent: TComponent]: TtiObject read GetSelectedObject write SetSelectedObject;
   published
     property PropertyLinks: TtiPropertyLinkDefs read FDefs write SetPropertyLinkDefs;
   end;
@@ -142,6 +155,8 @@ type
     function ModelMediatorList: TtiModelMediatorList;
     {: The subject for this item. There can be more than one item for the same subject } 
     property Subject: TtiObject read FSubject write FSubject;
+    {: Find the mediator view for the given component. Returns nil if not found. }
+    function FindMediatorView(AComponent: TComponent): TtiMediatorView;
   published
     {: Model mediator for this item }
     property ModelMediator: TtiModelMediator read FModelMediator;
@@ -199,6 +214,9 @@ type
     procedure SetSubjectByName(AModelMediatorName: string; const AValue: TtiObject);
     function GetActiveBySubject(ASubject: TtiObject): boolean;
     procedure SetActiveBySubject(ASubject: TtiObject; const AValue: boolean);
+    function GetMediatorView(AComponent: TComponent): TtiMediatorView;
+    function GetSelectedObject(AComponent: TComponent): TtiObject;
+    procedure SetSelectedObject(AComponent: TComponent; AObject: TtiObject);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -238,6 +256,9 @@ type
        first model mediator will be returned }
     function ModelMediator(const ASubject: TtiObject): TtiModelMediator; overload;
 
+    {: Find the mediator view for the given component. Returns nil if not found. }
+    function FindMediatorView(AComponent: TComponent): TtiMediatorView;
+
     {: Notify model mediator for the given model class that the subjects data changed }
     procedure SubjectChanged(const ASubjectClass: TtiObjectClass); overload;
     {: Notify model mediator for the given model name that the subjects data changed }
@@ -260,6 +281,13 @@ type
     property ActiveBySubject[ASubject: TtiObject]: boolean read GetActiveBySubject write SetActiveBySubject;
     {: Active for all model mediators }
     property AllActive: boolean read GetAllActive write SetAllActive;
+
+    {: Find the mediator view for the given component. If the component is not found an exception is raised. }
+    property MediatorView[AComponent: TComponent]: TtiMediatorView read GetMediatorView;
+    {: Find the selected object in the given component. For list mediator views this returns
+       the selected item in the list. For other mediators this returns the subject.
+       If the component is not found an exception is raised. }
+    property SelectedObject[AComponent: TComponent]: TtiObject read GetSelectedObject write SetSelectedObject;
   published
     {: Design-time and run-time support for adding model mediators. }
     property ModelMediators: TtiModelMediatorCollection read FModelMediators write SetModelMediators;
@@ -279,8 +307,9 @@ resourcestring
   SErrNoSubject  = 'Cannot perform this operation if subject is not set.';
   SErrActive     = 'Cannot perform this operation while active.';
   SErrNoMediator = 'Cannot find a mediator for control %s (%s), property %s.';
+  SErrNoMediatorViewForComponent = 'Cannot find a mediator view for control %s (%s).';
   SErrNoModelMediatorName = 'ModelMediatorName is required';
-  SErrDuplicateModelMediatorName = 'ModelMediatorName must be unique';
+  SErrDuplicateModelMediatorName = 'ModelMediatorName %s must be unique';
   SErrNoModelMediator = 'Cannot find model mediator %s.';
 
 
@@ -363,6 +392,7 @@ begin
   FMediator.SetView(Self.Component);
   FMediator.ValueList := Self.ValueList;
   FMediator.Subject := ModelMediator.Subject;
+  FMediator.ObjectUpdateMoment := Self.ObjectUpdateMoment;
   FMediator.Active := True;
   if Assigned(FOnSetupMediator) then
     FOnSetupMediator(FMediator);
@@ -370,10 +400,13 @@ end;
 
 procedure TtiPropertyLinkDef.FreeMediator(FreeDef: Boolean = True);
 begin
-  FMediator.Active := False;
-  FMediator.Subject := nil;
-  FMediator.SetView(nil);
-  FreeAndNil(FMediator);
+  if Assigned(FMediator) then
+  begin
+    FMediator.Active := False;
+    FMediator.Subject := nil;
+    FMediator.SetView(nil);
+    FreeAndNil(FMediator);
+  end;
   if FreeDef then
     FMediatorDef := nil;
 end;
@@ -426,11 +459,9 @@ procedure TtiModelMediator.SetActive(const AValue: Boolean);
 begin
   if (FActive = AValue) then
     Exit;
-  if AValue then
-  begin
-    CheckSubject;
-    Bind;
-  end else
+  if AValue and Assigned(FSubject) then
+    Bind
+  else
     UnBind;
   FActive := AValue;
   if Assigned(FSubject) then
@@ -445,18 +476,36 @@ begin
   FDefs.Assign(AValue);
 end;
 
+procedure TtiModelMediator.SetSelectedObject(AComponent: TComponent;
+  AObject: TtiObject);
+var
+  LView: TtiMediatorView;
+begin
+  LView := FindMediatorView(AComponent);
+  if Assigned(LView) then
+    LView.SelectedObject := AObject
+  else
+    MediatorError(nil, SErrNoMediatorViewForComponent, [AComponent.Name, AComponent.ClassName]);
+end;
+
 procedure TtiModelMediator.SetSubject(const AValue: TtiObject);
 var
+  LSubjectWasAssigned: boolean;
   I: integer;
 begin
   if FSubject = AValue then
     Exit;
+  LSubjectWasAssigned := Assigned(FSubject);
+
   FSubject := AValue;
   FSubjectObserver.Subject := AValue;
   if (FSubject = nil) then
     Active := False
   else if Active then
   begin
+    if not LSubjectWasAssigned then
+      Bind;
+
     for I := 0 to FDefs.Count - 1 do
       if Assigned(FDefs[I].FMediator) then
         FDefs[I].FMediator.Subject := AValue;
@@ -618,7 +667,27 @@ begin
   Result := FDefs.FindByTag(ATag);
 end;
 
-function TtiModelMediator.ComponentMediator(AComponent: TComponent): TtiMediatorView;
+function TtiModelMediator.GetMediatorView(
+  AComponent: TComponent): TtiMediatorView;
+begin
+  result := FindMediatorView(AComponent);
+  if not Assigned(result) then
+    MediatorError(nil, SErrNoMediatorViewForComponent, [AComponent.Name, AComponent.ClassName]);
+end;
+
+function TtiModelMediator.GetSelectedObject(AComponent: TComponent): TtiObject;
+var
+  LView: TtiMediatorView;
+begin
+  result := nil;
+  LView := FindMediatorView(AComponent);
+  if Assigned(LView) then
+    result := LView.SelectedObject
+  else
+    MediatorError(nil, SErrNoMediatorViewForComponent, [AComponent.Name, AComponent.ClassName]);
+end;
+
+function TtiModelMediator.FindMediatorView(AComponent: TComponent): TtiMediatorView;
 var
   L: TtiPropertyLinkDef;
 begin
@@ -629,7 +698,7 @@ begin
     Result := L.Mediator;
 end;
 
-function TtiModelMediator.MediatorComponent(AMediator: TtiMediatorView): TComponent;
+function TtiModelMediator.FindComponent(AMediator: TtiMediatorView): TComponent;
 var
   L: TtiPropertyLinkDef;
 begin
@@ -735,6 +804,12 @@ begin
   inherited;
 end;
 
+function TtiModelMediatorItem.FindMediatorView(
+  AComponent: TComponent): TtiMediatorView;
+begin
+  result := FModelMediator.FindMediatorView(AComponent);
+end;
+
 function TtiModelMediatorItem.GetDisplayName: string;
 begin
   if FModelMediatorName <> '' then
@@ -768,10 +843,10 @@ begin
   begin
     // Must have a name
     if AValue = '' then
-      raise Exception.Create(SErrNoModelMediatorName);
+      MediatorError(nil, SErrNoModelMediatorName);
     // Must be unique
     if ModelMediatorCollection.FindByName(AValue) <> nil then
-      raise Exception.Create(SErrDuplicateModelMediatorName);
+      MediatorError(nil, SErrDuplicateModelMediatorName, [AValue]);
     FModelMediatorName := AValue;
   end;
 end;
@@ -907,6 +982,20 @@ begin
   result := LItem.ModelMediator;
 end;
 
+function TtiModelMediatorList.FindMediatorView(
+  AComponent: TComponent): TtiMediatorView;
+var
+  i: integer;
+begin
+  result := nil;
+  for i := 0 to ModelMediators.Count - 1 do
+  begin
+    result := ModelMediators.Items[i].FindMediatorView(AComponent);
+    if Assigned(result) then
+      break;
+  end;
+end;
+
 function TtiModelMediatorList.Add(
   const AModelMediatorName: string): TtiModelMediator;
 begin
@@ -1005,6 +1094,27 @@ begin
     MediatorError(Self, SErrNoModelMediator, [ASubject.ClassName + ' instance']);
 end;
 
+function TtiModelMediatorList.GetMediatorView(
+  AComponent: TComponent): TtiMediatorView;
+begin
+  result := FindMediatorView(AComponent);
+  if not Assigned(result) then
+    MediatorError(nil, SErrNoMediatorViewForComponent, [AComponent.Name, AComponent.ClassName]);
+end;
+
+function TtiModelMediatorList.GetSelectedObject(
+  AComponent: TComponent): TtiObject;
+var
+  LView: TtiMediatorView;
+begin
+  result := nil;
+  LView := FindMediatorView(AComponent);
+  if Assigned(LView) then
+    result := LView.SelectedObject
+  else
+    MediatorError(nil, SErrNoMediatorViewForComponent, [AComponent.Name, AComponent.ClassName]);
+end;
+
 function TtiModelMediatorList.GetSubjectByClass(
   ASubjectClass: TtiObjectClass): TtiObject;
 begin
@@ -1081,6 +1191,18 @@ begin
   if FModelMediators = AValue then
     Exit;
   FModelMediators.Assign(AValue);
+end;
+
+procedure TtiModelMediatorList.SetSelectedObject(AComponent: TComponent;
+  AObject: TtiObject);
+var
+  LView: TtiMediatorView;
+begin
+  LView := FindMediatorView(AComponent);
+  if Assigned(LView) then
+    LView.SelectedObject := AObject
+  else
+    MediatorError(nil, SErrNoMediatorViewForComponent, [AComponent.Name, AComponent.ClassName]);
 end;
 
 procedure TtiModelMediatorList.SetSubjectByClass(ASubjectClass: TtiObjectClass;

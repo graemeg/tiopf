@@ -90,8 +90,6 @@ type
     class function CompositeMediator: Boolean; override;
     function GetObjectFromRow(ARow: Integer): TtiObject;
     function  View: TStringGrid; reintroduce;
-  published
-    property SelectedObject: TtiObject read GetSelectedObject write SetSelectedObject;
   end;
 
 
@@ -102,8 +100,8 @@ type
     FView: TListItem;
     procedure SetupFields; virtual;
   public
-    constructor CreateCustom(AModel: TtiObject; AView: TListItem; const AFieldsInfo: TtiMediatorFieldInfoList; IsObserving: Boolean = True); reintroduce; overload;
-    constructor CreateCustom(AModel: TtiObject; AView: TListItem; AOnBeforeSetupField: TtiOnBeforeSetupField; const AFieldsInfo: TtiMediatorFieldInfoList; IsObserving: Boolean = True); reintroduce; overload;
+    constructor CreateCustom(AModel: TtiObject; AView: TListItem; const AFieldsInfo: TtiMediatorFieldInfoList; AIsObserving: Boolean = True); reintroduce; overload;
+    constructor CreateCustom(AModel: TtiObject; AView: TListItem; AOnBeforeSetupField: TtiOnBeforeSetupField; const AFieldsInfo: TtiMediatorFieldInfoList; AIsObserving: Boolean = True); reintroduce; overload;
     procedure Update(ASubject: TtiObject); override;
   published
     property View: TListItem read FView;
@@ -116,7 +114,7 @@ type
   private
     FView: TtiVTListView;
   public
-    constructor CreateCustom(AModel: TtiObject; AView: TtiVTListView; const AFieldsInfo: TtiMediatorFieldInfoList; IsObserving: Boolean = True); reintroduce; overload;
+    constructor CreateCustom(AModel: TtiObject; AView: TtiVTListView; const AFieldsInfo: TtiMediatorFieldInfoList; AIsObserving: Boolean = True); reintroduce; overload;
     procedure Update(ASubject: TtiObject); override;
   published
     property View: TtiVTListView read FView;
@@ -130,7 +128,7 @@ type
     FView: TStringGrid;
     FRowIndex: integer;
   public
-    constructor CreateCustom(AModel: TtiObject; AGrid: TStringGrid; const AFieldsInfo: TtiMediatorFieldInfoList; ARowIndex: integer; IsObserving: Boolean = True); reintroduce; overload;
+    constructor CreateCustom(AModel: TtiObject; AGrid: TStringGrid; const AFieldsInfo: TtiMediatorFieldInfoList; ARowIndex: integer; AIsObserving: Boolean = True); reintroduce; overload;
     procedure Update(ASubject: TtiObject); override;
   published
     property View: TStringGrid read FView;
@@ -143,7 +141,9 @@ procedure RegisterFallBackListMediators;
 implementation
 
 uses
-  tiRTTI;
+  tiRTTI
+  ,Variants
+  ;
 
 type
   // friend class to get access to protected methods
@@ -319,7 +319,7 @@ var
   i: integer;
   LObserversInTransit: TList;
 begin
-  if View.Selected = Nil then
+  if View.Selected = nil then
     SelectedObject := nil
   else
   begin
@@ -367,29 +367,29 @@ var
   lValue: string;
 begin
   lMemberName := FFieldsInfo[0].PropName;
-  lValue      := tiGetProperty(Model, lMemberName);
+  lValue      := tiGetPropertyCoalesce(Model, lMemberName);
   if Assigned(OnBeforeSetupField) then
     OnBeforeSetupField(Model, lMemberName, lValue);
   FView.Caption := lValue;
   for c := 1 to FFieldsInfo.Count - 1 do
   begin
     lMemberName := FFieldsInfo[c].PropName;
-    lValue      := tiGetProperty(Model, lMemberName);
+    lValue      := tiGetPropertyCoalesce(Model, lMemberName);
     if Assigned(OnBeforeSetupField) then
       OnBeforeSetupField(Model, lMemberName, lValue);
     FView.SubItems.Add(lValue);
   end;
 end;
 
-constructor TtiListViewListItemMediator.CreateCustom(AModel: TtiObject; AView: TListItem; const AFieldsInfo: TtiMediatorFieldInfoList; IsObserving: Boolean);
+constructor TtiListViewListItemMediator.CreateCustom(AModel: TtiObject; AView: TListItem; const AFieldsInfo: TtiMediatorFieldInfoList; AIsObserving: Boolean);
 var
   p: TtiOnBeforeSetupField;
 begin
   p := nil;
-  CreateCustom(AModel, AView, p, AFieldsInfo, IsObserving);
+  CreateCustom(AModel, AView, p, AFieldsInfo, AIsObserving);
 end;
 
-constructor TtiListViewListItemMediator.CreateCustom(AModel: TtiObject; AView: TListItem; AOnBeforeSetupField: TtiOnBeforeSetupField; const AFieldsInfo: TtiMediatorFieldInfoList; IsObserving: Boolean);
+constructor TtiListViewListItemMediator.CreateCustom(AModel: TtiObject; AView: TListItem; AOnBeforeSetupField: TtiOnBeforeSetupField; const AFieldsInfo: TtiMediatorFieldInfoList; AIsObserving: Boolean);
 begin
   inherited Create;
   Model      := AModel;
@@ -397,7 +397,7 @@ begin
   FFieldsInfo := AFieldsInfo;
   OnBeforeSetupField := AOnBeforeSetupField;
   SetupFields;
-  Active      := IsObserving; // Will attach
+  Active      := AIsObserving; // Will attach
 end;
 
 procedure TtiListViewListItemMediator.Update(ASubject: TtiObject);
@@ -410,7 +410,7 @@ begin
   for c := 0 to FFieldsInfo.Count - 1 do
   begin
     lMemberName := FFieldsInfo[c].PropName;
-    lValue      := tiGetProperty(Model, lMemberName);
+    lValue      := tiGetPropertyCoalesce(Model, lMemberName);
     if Assigned(OnBeforeSetupField) then
       OnBeforeSetupField(Model, lMemberName, lValue);
     If c=0 Then
@@ -625,13 +625,13 @@ end;
 
 constructor TtiVTListViewListItemMediator.CreateCustom(AModel: TtiObject;
   AView: TtiVTListView; const AFieldsInfo: TtiMediatorFieldInfoList;
-  IsObserving: Boolean);
+  AIsObserving: Boolean);
 begin
   inherited Create;
   Model := AModel;
   FView := AView;
   FFieldsInfo := AFieldsInfo;
-  Active := IsObserving; // Will attach
+  Active := AIsObserving; // Will attach
 end;
 
 procedure TtiVTListViewListItemMediator.Update(ASubject: TtiObject);
@@ -686,7 +686,7 @@ begin
     for i := 0 to FieldsInfo.Count - 1 do
     begin
       lFieldName := FieldsInfo[i].PropName;
-      View.Cells[i, ARowIdx+1] := tiGetProperty(AData, lFieldName);  // set Cell text
+      View.Cells[i, ARowIdx+1] := tiGetPropertyCoalesce(AData, lFieldName);  // set Cell text
     end;
     result := TtiStringGridRowMediator.CreateCustom(AData, View, FieldsInfo, ARowIdx+1, Active);
     View.Objects[0, ARowIdx+1] := result;   // set Object reference inside grid
@@ -819,14 +819,14 @@ end;
 
 { TtiStringGridRowMediator }
 
-constructor TtiStringGridRowMediator.CreateCustom(AModel: TtiObject; AGrid: TStringGrid; const AFieldsInfo: TtiMediatorFieldInfoList; ARowIndex: integer; IsObserving: Boolean);
+constructor TtiStringGridRowMediator.CreateCustom(AModel: TtiObject; AGrid: TStringGrid; const AFieldsInfo: TtiMediatorFieldInfoList; ARowIndex: integer; AIsObserving: Boolean);
 begin
   inherited Create;
   Model      := AModel;
   FView       := AGrid;
   FFieldsInfo := AFieldsInfo;
   FRowIndex   := ARowIndex;
-  Active      := IsObserving; // Will attach
+  Active      := AIsObserving; // Will attach
 end;
 
 procedure TtiStringGridRowMediator.Update(ASubject: TtiObject);
@@ -838,7 +838,7 @@ begin
   for i := 0 to FFieldsInfo.Count - 1 do
   begin
     lFieldName := FFieldsInfo[I].PropName;
-    lValue     := tiGetProperty(Model, lFieldName);
+    lValue     := tiGetPropertyCoalesce(Model, lFieldName);
     if Assigned(OnBeforeSetupField) then
       OnBeforeSetupField(Model, lFieldName, lValue);
     FView.Cells[i, FRowIndex] := lValue;

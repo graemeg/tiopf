@@ -91,12 +91,17 @@ type
 
   { Base class to handle TLabel controls }
   TtiStaticTextMediatorView = class(TtiControlMediatorView)
+  private
+    FFormatString: string;
+    procedure   SetFormatString(const AValue: string);
   protected
     procedure   SetupGUIandObject; override;
+    procedure   GetObjectPropValue(var AValue: Variant); override;
   public
     constructor Create; override;
     function    View: TLabel; reintroduce;
     class function ComponentClass: TClass; override;
+    property FormatString: string read FFormatString write SetFormatString;
   end;
 
 
@@ -218,6 +223,7 @@ uses
   ,tiGUIConstants   // for error color
   ,tiLog
   ,tiRTTI
+  ,tiUtils
   ;
 
 type
@@ -226,7 +232,6 @@ type
   THackCustomEdit = class(TCustomEdit);
 
 const
-  cErrorListHasNotBeenAssigned   = 'List has not been assigned';
   cErrorPropertyNotClass         = 'Property is not a class type!';
   cErrorAddingItemToCombobox     = 'Error adding list items to combobox ' +
                                    'Message: %s, Item Property Name: %s';
@@ -524,7 +529,7 @@ end;
 procedure TtiComboBoxMediatorView.DoObjectToGUI;
 begin
   View.ItemIndex :=
-      View.Items.IndexOf(Subject.PropValue[FieldName]);
+      View.Items.IndexOf(tiVariantAsStringDef(Subject.PropValue[FieldName]));
 end;
 
 procedure TtiComboBoxMediatorView.SetObjectUpdateMoment(
@@ -570,7 +575,7 @@ end;
 
 procedure TtiMemoMediatorView.DoObjectToGUI;
 begin
-  View.Lines.Text := Subject.PropValue[FieldName];
+  View.Lines.Text := tiVariantAsStringDef(Subject.PropValue[FieldName]);
 end;
 
 
@@ -676,11 +681,8 @@ begin
 
   //  Set the index only (We're assuming the item is present in the list)
   View.ItemIndex := -1;
-  if Subject = nil then
+  if (Subject = nil) or (not Assigned(ValueList)) then
     Exit; //==>
-
-  if not Assigned(ValueList) then
-    RaiseMediatorError(cErrorListHasNotBeenAssigned);
 
   lValue := nil;
   lPropType := typinfo.PropType(Subject, FieldName);
@@ -774,6 +776,21 @@ end;
 class function TtiStaticTextMediatorView.ComponentClass: TClass;
 begin
   Result := TLabel;
+end;
+
+procedure TtiStaticTextMediatorView.SetFormatString(const AValue: string);
+begin
+  if FFormatString <> AValue then
+  begin
+    FFormatString := AValue;
+    ObjectToGUI;
+  end;
+end;
+
+procedure TtiStaticTextMediatorView.GetObjectPropValue(var AValue: Variant);
+begin
+  if FFormatString <> '' then
+    AValue := Format(FFormatString, [AValue]);
 end;
 
 { TtiCalendarComboMediatorView }

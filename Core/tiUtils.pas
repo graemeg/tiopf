@@ -514,6 +514,8 @@ function tiReplaceFileNameReservedChars(const AString: string;
   function  tiVariantArrayToString(AValue: Variant): string;
   // Is a variant of a given type
   function  tiIsVariantOfType(AVariant: Variant; AVarType: TVarType): boolean;
+  {: Return the given vairant as a string. If Null then return the default. }
+  function tiVariantAsStringDef(const AVariant: Variant; const ADefault: string = ''): string;
   // Return a string with ACount #10 characters
   function  Lf(const ACount : Byte = 1): string;
   // Return a string with ACount #13 characters
@@ -1721,6 +1723,15 @@ begin
 end;
 
 
+function tiVariantAsStringDef(const AVariant: Variant; const ADefault: string): string;
+begin
+  if AVariant = Null then
+    result := ADefault
+  else
+    result := AVariant;
+end;
+
+
 function  tiAddTrailingValue(const ALine, AValue : string; ADuplicates : boolean = true): string;
 begin
   if ALine = '' then
@@ -2540,16 +2551,38 @@ end;
 procedure tiSetFileDate(const AFileName : string; const ADateTime : TDateTime);
 var
   LFileDate: Integer;
+  {$IFDEF MSWINDOWS}
+  LFileHandle: Integer;
+  {$ENDIF MSWINDOWS}
   LExitCode: Integer;
 begin
-  LFileDate  := DateTimeToFileDate(ADateTime);
-  LExitCode := FileSetDate(AFileName, LFileDate);
-  if LExitCode <> 0 then
-    raise EtiOPFFileSystemException.CreateFmt(
-      CErrorSettingFileDate, [
-        AFileName, tiDateTimeToStr(ADateTime),
-        LExitCode, SysErrorMessage(LExitCode)]);
+  LFileDate := DateTimeToFileDate(ADateTime);
+  {$IFDEF MSWINDOWS}
+  LFileHandle := FileOpen(AFileName, fmOpenWrite or fmShareDenyNone);
+  try
+    if LFileHandle > 0 then
+    begin
+      LExitCode := FileSetDate(LFileHandle, LFileDate);
+      if LExitCode <> 0 then
+        raise EtiOPFFileSystemException.CreateFmt(
+            CErrorSettingFileDate, [
+            AFileName, tiDateTimeToStr(ADateTime),
+            LExitCode, SysErrorMessage(LExitCode)]);
+    end
+    else
+      raise exception.Create('Unable to set file date on <' + AFileName + '>');
+  finally
+    FileClose(LFileHandle);
+  end;
+  {$ENDIF MSWINDOWS}
+
+  {$IFDEF UNIX}
+    LExitCode := FileSetDate(AFileName, LFileDate);
+    if LExitCode <> 0 then
+      raise Exception.Create('Unable to set file date on <' + AFileName + '>');
+  {$ENDIF UNIX}
 end;
+
 
 function  Cr(const ACount : Byte = 1): string;
 begin
