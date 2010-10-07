@@ -2526,9 +2526,14 @@ end;
 
 
 function tiReadFileDate(const AFileName : string): TDateTime;
+var
+  fa: LongInt;
 begin
-  if not FileAge(AFileName, Result) then
-    result:= 0;
+  fa := FileAge(AFileName);
+  Result := FileDateToDateTime(fa);
+  { graeme 2010-10-07: at least the above code works on all earlier Delph versions and FPC }
+  //if not FileAge(AFileName, Result) then
+  //  result:= 0;
 end;
 
 
