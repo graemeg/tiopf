@@ -90,7 +90,9 @@ uses
   ,tiOPFFIBP_TST
   ,tiOPFIBO_TST
   ,tiOPFIBX_TST
+  {$IFDEF LINK_REMOTE}
   ,tiOPFRemote_TST
+  {$ENDIF}
   ,tiOPFSQLDB_IB_TST
   ,tiOPFSQLDB_PQ_TST
   ,tiOPFTAB_TST
@@ -179,7 +181,9 @@ begin
   tiOPFFIBP_TST.RegisterTests;
   tiOPFIBO_TST.RegisterTests;
   tiOPFIBX_TST.RegisterTests;
+  {$IFDEF LINK_REMOTE}
   tiOPFRemote_TST.RegisterTests;
+  {$ENDIF}
   tiOPFSQLDB_IB_TST.RegisterTests;
   tiOPFSQLDB_PQ_TST.RegisterTests;
   tiOPFTAB_TST.RegisterTests;
