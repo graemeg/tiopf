@@ -130,10 +130,7 @@ begin
   tiVisitor_TST.RegisterTests;
   tiVisitorDB_TST.RegisterTests;
   tiObject_TST.RegisterTests;
-  {$IFNDEF FPC}
-  { TODO : This causes Dunit2 to AV under FPC!! }
   tiCompress_TST.RegisterTests;
-  {$ENDIF}
   tiEncrypt_TST.RegisterTests;
   tiStreams_TST.RegisterTests;
   tiThread_TST.RegisterTests;

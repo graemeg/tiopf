@@ -213,7 +213,7 @@ begin
         P := OutBuf;
         Inc(OutBytes, 256);
         ReallocMem(OutBuf, OutBytes);
-        strm.next_out := {$ifdef fpc202}PBytef{$else}PByte{$endif}(Integer(OutBuf) + (Integer(strm.next_out) - Integer(P)));
+        strm.next_out := {$ifdef fpc202}PBytef{$else}PByte{$endif}(OutBuf + (Pointer(strm.next_out) - P));
         strm.avail_out := 256;
       end;
     finally
@@ -258,7 +258,7 @@ begin
         P := OutBuf;
         Inc(OutBytes, BufInc);
         ReallocMem(OutBuf, OutBytes);
-        strm.next_out := {$ifdef fpc202}pBytef{$else}PByte{$endif}(Integer(OutBuf) + (Integer(strm.next_out) - Integer(P)));
+        strm.next_out := {$ifdef fpc202}pBytef{$else}PByte{$endif}(OutBuf + (Pointer(strm.next_out) - P));
         strm.avail_out := BufInc;
       end;
     finally
