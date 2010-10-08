@@ -1226,9 +1226,14 @@ end;
 
 constructor TtiThrdLog.CreateExt(ALogTo : TtiLogToCacheAbs);
 begin
-  Create(true);
+  Create(True);
   Priority := tpLower;
   FLogTo   := ALogTo;
+  {$IFDEF FPC}
+  { otherwise if Execute is not called, Finished is never True, then the
+    while loop in Terminate() never exits. The LogToFile unit tests does this }
+  Finished := True;
+  {$ENDIF}
 end;
 
 

@@ -190,7 +190,7 @@ end;
 procedure TtiLogToFile.Terminate;
 begin
   ThrdLog.Priority := tpHighest;
-  inherited;
+  inherited Terminate;
   WriteToOutput;
 end;
 
