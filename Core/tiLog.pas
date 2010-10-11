@@ -850,7 +850,7 @@ destructor TtiLogToList.Destroy;
 begin
   FEvents.Free;
   FEventsCritSect.Free;
-  inherited;
+  inherited Destroy;
 end;
 
 
@@ -1056,7 +1056,7 @@ begin
     See the following URL for a more detailed explanation:
       http://free-pascal-general.1045716.n5.nabble.com/TThread-WaitFor-not-returning-td2820297.html
     }
-  while not FThrdLog.Finished do sleep(100);
+  while not FThrdLog.Finished do CheckSynchronize(100);
   {$ELSE}
   FThrdLog.WaitFor;
   {$ENDIF}
