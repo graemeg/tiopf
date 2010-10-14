@@ -51,7 +51,7 @@ type
     // Format: FieldName[:RootFieldName] (see TtiMediatorView.FieldName/RootFieldName)
     property FieldName: string read FFieldName write SetFieldName;
     property Component: TComponent read FComponent write SetComponent;
-    property ObjectUpdateMoment: TtiObjectUpdateMoment read FObjectUpdateMoment write SetObjectUpdateMoment;
+    property ObjectUpdateMoment: TtiObjectUpdateMoment read FObjectUpdateMoment write SetObjectUpdateMoment default ouDefault;
     property OnGUIToObject: TtiGUIToObjectEvent read FOnGUIToObject write SetOnGUIToObject;
     property OnObjectToGUI: TtiObjectToGUIEvent read FOnObjectToGUI write SetOnObjectToGUI;
     Property OnSetupMediator: TtiMediatorEvent Read FOnSetupMediator Write FOnSetupMediator;
