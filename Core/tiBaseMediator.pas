@@ -134,7 +134,7 @@ type
     property GUIFieldName: string read FGUIFieldName write FGUIFieldName;
     // Property ObjectUpdateMoment : Do action e.g. in OnExit instead of OnChange.
     // Up to the descendent class to decide this.
-    property ObjectUpdateMoment: TtiObjectUpdateMoment read FObjectUpdateMoment write SetObjectUpdateMoment default ouOnChange;
+    property ObjectUpdateMoment: TtiObjectUpdateMoment read FObjectUpdateMoment write SetObjectUpdateMoment default ouDefault;
     // OnGUIToObject
     property OnGUIToObject: TtiGUIToObjectEvent read FOnGUIToObject write FOnGUIToObject;
     // OnObjectToGUI
