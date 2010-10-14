@@ -41,6 +41,7 @@ type
     procedure FreeMediator(FreeDef: Boolean = True); virtual;
     property MediatorDef: TtiMediatorDef read FMediatorDef;
   public
+    constructor Create(Collection: TCollection); override;
     procedure Assign(Source: TPersistent); override;
     function ModelMediator: TtiModelMediator;
     property Mediator: TtiMediatorView read FMediator;
@@ -314,6 +315,12 @@ resourcestring
 
 
 { TtiPropertyLinkDef }
+
+constructor TtiPropertyLinkDef.Create(Collection: TCollection);
+begin
+  inherited Create(Collection);
+  FObjectUpdateMoment := ouDefault;
+end;
 
 procedure TtiPropertyLinkDef.SetComponent(const AValue: TComponent);
 begin
