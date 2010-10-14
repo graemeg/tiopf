@@ -379,7 +379,7 @@ begin
   inherited;
   if View <> nil then
     case ObjectUpdateMoment of
-      ouOnChange, ouCustom: THackCustomEdit(View).OnChange := @DoOnChange;
+      ouOnChange, ouCustom, ouDefault: THackCustomEdit(View).OnChange := @DoOnChange;
       ouOnExit: THackCustomEdit(View).OnExit := @DoOnChange;
       ouNone:
       begin
@@ -440,7 +440,7 @@ begin
   inherited;
   if View <> nil then
     case ObjectUpdateMoment of
-      ouOnChange, ouCustom: View.OnChange := @DoOnChange;
+      ouOnChange, ouCustom, ouDefault: View.OnChange := @DoOnChange;
       ouOnExit: View.OnExit := @DoOnChange;
       ouNone:
       begin
@@ -486,7 +486,7 @@ begin
   inherited;
   if View <> nil then
     case ObjectUpdateMoment of
-      ouOnChange, ouCustom: View.OnChange := @DoOnChange;
+      ouOnChange, ouCustom, ouDefault: View.OnChange := @DoOnChange;
       ouOnExit: View.OnExit := @DoOnChange;
       ouNone:
       begin
@@ -526,7 +526,7 @@ begin
   inherited;
   if View <> nil then
     case ObjectUpdateMoment of
-      ouOnChange, ouCustom: View.OnChange := @DoOnChange;
+      ouOnChange, ouCustom, ouDefault: View.OnChange := @DoOnChange;
       ouOnExit: View.OnExit := @DoOnChange;
       ouNone:
       begin
@@ -721,7 +721,7 @@ begin
   inherited SetObjectUpdateMoment(AValue);
   if View <> nil then
     case ObjectUpdateMoment of
-      ouOnChange, ouCustom: View.OnClick := @DoOnChange;
+      ouOnChange, ouCustom, ouDefault: View.OnClick := @DoOnChange;
       ouOnExit: View.OnExit := @DoOnChange;
       ouNone:
       begin
@@ -805,7 +805,7 @@ begin
   inherited SetObjectUpdateMoment(AValue);
   if View <> nil then
     case ObjectUpdateMoment of
-      ouOnChange, ouCustom: View.OnChange := @DoOnChange;
+      ouOnChange, ouCustom, ouDefault: View.OnChange := @DoOnChange;
       ouOnExit: View.OnExit := @DoOnChange;
       ouNone:
       begin

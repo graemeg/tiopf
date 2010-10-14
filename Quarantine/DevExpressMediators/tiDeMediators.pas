@@ -1396,7 +1396,7 @@ begin
   if View <> nil then
   begin
     case ObjectUpdateMoment of
-      ouOnChange, ouCustom: THackcxCustomEdit(View).Properties.OnEditValueChanged := DoOnChange;
+      ouOnChange, ouCustom, ouDefault: THackcxCustomEdit(View).Properties.OnEditValueChanged := DoOnChange;
       ouOnExit: THackcxCustomEdit(View).OnExit := DoOnChange;
       ouNone:
       begin

@@ -27,7 +27,7 @@ type
   TtiMediatorEvent = procedure(AMediatorView: TtiMediatorView) of object;
   TtiComponentNotificationEvent = procedure(AComponent: TComponent; Operation: TOperation) of object;
 
-  TtiObjectUpdateMoment = (ouNone, ouOnChange, ouOnExit, ouCustom);
+  TtiObjectUpdateMoment = (ouNone, ouDefault, ouOnChange, ouOnExit, ouCustom);
 
   TtiMediatorViewComponentHelper = class;
 
@@ -429,7 +429,7 @@ begin
   FViewHelper := TtiMediatorViewComponentHelper.Create(ViewNotification);
   UseInternalOnChange := True;
   FActive := True;
-  FObjectUpdateMoment := ouOnChange;
+  FObjectUpdateMoment := ouDefault;
   FSettingUp := False;
 end;
 
