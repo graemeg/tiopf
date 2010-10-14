@@ -1,21 +1,37 @@
 
- Using tiOPF with fpGUI Toolkit
- ------------------------------
+  Model-GUI-Mediator (MGM) pattern implementation by Graeme Geldenhuys
+  --------------------------------------------------------------------
 
-The GUI support for tiOPF using the fpGUI Toolkit is stored in the fpGUI
-repository - not in the tiOPF repository. Many demos have also been ported
-using the fpGUI Toolkit and also live in the fpGUI repository.
+This allows standard controls or any other GUI controls for that matter to become
+object-aware.  The benefits are much greater ease in cross platform development, 
+or if you would like to make your favorite set of GUI controls object-aware.
 
-For more information please see the fpGUI website:
-   http://opensoft.homeip.net/fpgui/
+Please note this is work in progress...
+So far I have implemented most used basic edit controls:
+     TfpgEdit
+     TfpgSpinEdit    (dependend on fpGUI component)
+     TfpgLabel
+     TfpgComboBox    (single and list property)
+     TfpgTrackBar
+     TfpgMemo
+     TfpgListView    (includes popup menu)
+     TfpgListBox     (includes popup menu)
+     TfpgCheckBox
+     TfpgCalendarCombo
+     TfpgCalendarCheckCombo
+     TfpgStringGrid
 
-tiOPF support is stored in the following fpGUI repository location:
-   git clone git://fpgui.git.sourceforge.net/gitroot/fpgui/fpgui
+Currently I am considering implementing the container classes like TfpgTreeView.
+They are quite complex and there are multiple ways of implementing them.
 
-then look in the '/extras/tiopf' directory.
+For more information on the MGM pattern visit:
+
+  Articles by Graeme or Michael
+    http://opensoft.homeip.net:8080/articles/
+
+  Andy Bulka's website.
+    http://www.atug.com/andypatterns/mgm.htm
 
 
-Regards,
-  - Graeme -
-
+               ----oO0Oo----
 
