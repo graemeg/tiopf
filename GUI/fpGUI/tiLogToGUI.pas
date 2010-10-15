@@ -36,6 +36,7 @@ type
     FToolBar: TfpgBevel;
     FPopupMenu: TfpgPopupMenu;
     FViewLogMenuItem: TfpgMenuItem;
+    FStatusBar: TfpgPanel;
     function    GetFormParent: TfpgWidget;
     procedure   SetFormParent(const AValue: TfpgWidget);
     function    CreateForm: TfpgForm;
@@ -46,6 +47,7 @@ type
     procedure   DoViewLogFile(Sender: TObject);
     procedure   DoOnPopup(Sender: TObject);
     procedure   WriteToMemo(const AMessage: string);
+    procedure   UpdateStatus(const AMessage: string);
   protected
     procedure   WriteToOutput; override;
     procedure   WorkingListToOutput; override;
@@ -113,6 +115,14 @@ begin
   FToolbar.Shape            := bsSpacer;
   FToolBar.Align            := alTop;
   FToolBar.TabOrder         := 1;
+
+  FStatusBar                := TfpgPanel.Create(FForm);
+  FStatusBar.Name           := 'FStatusBar';
+  FStatusBar.Style          := bsLowered;
+  FStatusBar.Alignment      := taLeftJustify;
+  FStatusBar.Height         := 20;
+  FStatusBar.Text           := '';
+  FStatusBar.Align          := alBottom;
 
   FMemoLog                  := TfpgMemo.Create(FForm);
   FMemoLog.Name             := 'MemoLog';
@@ -202,14 +212,26 @@ var
   LCount: integer;
 begin
   LCount := tiNumToken(AMessage, tiLineEnd);
+  FMemoLog.BeginUpdate;
   if LCount = 1 then
     FMemoLog.Lines.Add(tiTrimTrailingWhiteSpace(AMessage))
   else
+  begin
+    UpdateStatus('processing multiline log...');
     for i := 1 to LCount do
     begin
       LLine := tiTrimTrailingWhiteSpace(tiToken(AMessage, tiLineEnd, i));
       FMemoLog.Lines.Add(LLine);
     end;
+  end;
+  UpdateStatus('done');
+  FMemoLog.EndUpdate;
+end;
+
+procedure TtiLogToGUI.UpdateStatus(const AMessage: string);
+begin
+  FStatusBar.Text := AMessage;
+  fpgApplication.ProcessMessages;
 end;
 
 procedure TtiLogToGUI.WriteToOutput;
