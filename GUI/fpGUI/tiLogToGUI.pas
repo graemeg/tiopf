@@ -83,9 +83,7 @@ end;
 
 destructor TtiLogToGUI.Destroy;
 begin
-  if Assigned(FForm) then
-    FForm.Free;
-  FForm := nil;
+  { No need to free FForm, because fpgApplication will handle that for use }
   inherited Destroy;
 end;
 
