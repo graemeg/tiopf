@@ -300,12 +300,12 @@ procedure LogError(const AMessage : string; const AArray : Array of Const); over
 // helper procedures to debug values
 procedure LogValue(const AIdentifier: string; const AValue: Integer); overload;
 procedure LogValue(const AIdentifier: string; const AValue: Cardinal); overload;
-procedure LogValue(const AIdentifier: string; const AValue: Extended); overload;
+procedure LogFloat(const AIdentifier: string; const AValue: Extended); overload;
 procedure LogValue(const AIdentifier: string; const AValue: Boolean); overload;
 procedure LogValue(const AIdentifier: string; const AValue: String); overload;
 procedure LogValue(const AIdentifier: string; const ARect: TRect); overload;
 procedure LogValue(const AIdentifier: string; const APoint: TPoint); overload;
-procedure LogValue(const AIdentifier: string; const AValue: TDateTime); overload;
+procedure LogDateTime(const AIdentifier: string; const AValue: TDateTime); overload;
 procedure LogValue(const AIdentifier: string; const AValue: Currency); overload;
 
 function LogSeverityToString(const ALogSeverity: TtiLogSeverity): string;
@@ -608,7 +608,7 @@ begin
   Log(AIdentifier + ' = ' + IntToStr(AValue), lsDebug);
 end;
 
-procedure LogValue(const AIdentifier: string; const AValue: Extended);
+procedure LogFloat(const AIdentifier: string; const AValue: Extended);
 begin
   Log(AIdentifier + ' = ' + FloatToStr(AValue), lsDebug);
 end;
@@ -620,7 +620,7 @@ end;
 
 procedure LogValue(const AIdentifier: string; const AValue: String);
 begin
-  Log(AIdentifier + ' = ' + AValue, lsDebug);
+  Log(AIdentifier + ' = ''' + AValue + '''', lsDebug);
 end;
 
 procedure LogValue(const AIdentifier: string; const ARect: TRect);
@@ -633,7 +633,7 @@ begin
   Log(AIdentifier + ' = ' + PointToStr(APoint), lsDebug);
 end;
 
-procedure LogValue(const AIdentifier: string; const AValue: TDateTime);
+procedure LogDateTime(const AIdentifier: string; const AValue: TDateTime);
 begin
   Log(AIdentifier + ' = ' + tiDateTimeAsIntlDateDisp(AValue), lsDebug);
 end;
