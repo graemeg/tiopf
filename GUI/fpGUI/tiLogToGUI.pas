@@ -201,13 +201,13 @@ var
   LLine: string;
   LCount: integer;
 begin
-  LCount := tiNumToken(AMessage, CrLf);
+  LCount := tiNumToken(AMessage, tiLineEnd);
   if LCount = 1 then
     FMemoLog.Lines.Add(tiTrimTrailingWhiteSpace(AMessage))
   else
     for i := 1 to LCount do
     begin
-      LLine := tiTrimTrailingWhiteSpace(tiToken(AMessage, CrLf, i));
+      LLine := tiTrimTrailingWhiteSpace(tiToken(AMessage, tiLineEnd, i));
       FMemoLog.Lines.Add(LLine);
     end;
 end;
