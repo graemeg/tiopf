@@ -73,6 +73,11 @@ begin
   // GUI output must be synchronized with the main thread.
   inherited CreateSynchronized;
   FForm := CreateForm;
+  FForm.Show;
+  { Make sure the log form doesn't steal MainForm status }
+  if fpgApplication.MainForm = FForm then
+    fpgApplication.MainForm := nil;
+  fpgApplication.ProcessMessages;
   ThrdLog.Resume;
 end;
 
