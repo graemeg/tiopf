@@ -9,7 +9,7 @@ uses
   ;
 
 const
-  clError = clYellow;
+  clError = TfpgColor($FFA0A0);  { a pink/reddish color - almost like salmon }
 
 implementation
 
