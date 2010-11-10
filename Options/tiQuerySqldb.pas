@@ -66,6 +66,10 @@ type
     procedure SetActive(const AValue: Boolean); override;
     function GetSQL: TStrings; override;
     procedure SetSQL(const AValue: TStrings); override;
+    function GetFieldAsBoolean(const AName: string): Boolean; override;
+    function GetParamAsBoolean(const AName: string): Boolean; override;
+    procedure SetParamAsBoolean(const AName: string; const AValue: Boolean);
+       override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -116,6 +120,23 @@ begin
   Result := FSQLQuery.RowsAffected;
 end;
 
+function TtiQuerySQLDB.GetFieldAsBoolean(const AName: string): Boolean;
+var
+  lBoolStr: string;
+begin
+  lBoolStr := FSQLQuery.FieldByName(AName).AsString;
+  result := (lBoolStr = 'T') or
+    (lBoolStr = 'TRUE') or
+    (lBoolStr = 'Y') or
+    (lBoolStr = 'YES') or
+    (lBoolStr = '1');
+end;
+
+function TtiQuerySQLDB.GetParamAsBoolean(const AName: string): Boolean;
+begin
+  Result:=inherited GetParamAsBoolean(AName);
+end;
+
 function TtiQuerySQLDB.GetSQL: TStrings;
 begin
   Result := FSQLQuery.SQL;
@@ -146,6 +167,29 @@ begin
 {$ifdef LOGSQLDB}
   log('<<< TtiQuerySQLDB.SetActive');
 {$endif}
+end;
+
+procedure TtiQuerySQLDB.SetParamAsBoolean(const AName: string;
+  const AValue: Boolean);
+begin
+  {$IFDEF BOOLEAN_CHAR_1}
+  if AValue then
+    FSQLQuery.Params.ParamByName(AName).AsString := 'T'
+  else
+    FSQLQuery.Params.ParamByName(AName).AsString := 'F'
+{$ELSE}
+  {$IFDEF BOOLEAN_NUM_1}
+    if AValue then
+      FSQLQuery.Params.ParamByName(AName).AsInteger := 1
+    else
+      FSQLQuery.Params.ParamByName(AName).AsInteger := 0;
+  {$ELSE}
+    if AValue then
+      FSQLQuery.Params.ParamByName(AName).AsString := 'TRUE'
+    else
+      FSQLQuery.Params.ParamByName(AName).AsString := 'FALSE';
+  {$ENDIF}
+{$ENDIF BOOLEAN_CHAR_1}
 end;
 
 procedure TtiQuerySQLDB.SetSQL(const AValue: TStrings);
