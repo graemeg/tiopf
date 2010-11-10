@@ -74,19 +74,19 @@ begin
     at runtime, they will just not be remembered. I will attend to this issue
     at a later date. }
     // Only set the form size if a bsSizable window
-  //if AForm.Sizeable then
-  //begin
-    //if AHeight = -1 then
-      //LHeight := AForm.Height
-    //else
-      //LHeight := AHeight;
-    //if AWidth = -1 then
-      //LWidth := AForm.Width
-    //else
-      //LWidth := AWidth;
-    //AForm.Height  := readInteger(LINISection, 'Height', LHeight);
-    //AForm.Width   := readInteger(LINISection, 'Width',  LWidth);
-  //end;
+  if AForm.Sizeable then
+  begin
+    if AHeight = -1 then
+      LHeight := AForm.Height
+    else
+      LHeight := AHeight;
+    if AWidth = -1 then
+      LWidth := AForm.Width
+    else
+      LWidth := AWidth;
+    AForm.Height  := readInteger(LINISection, 'Height', LHeight);
+    AForm.Width   := readInteger(LINISection, 'Width',  LWidth);
+  end;
 
   // If the form is off screen (positioned outside all monitor screens) then
   // center the form on screen.
@@ -96,6 +96,7 @@ begin
        (AForm.Left < 0) or (AForm.Left > fpgApplication.ScreenWidth) then
       AForm.WindowPosition := wpScreenCenter;
   end;
+  AForm.UpdateWindowPosition;
 end;
 
 procedure TtiGuiINIFile.WriteFormState(AForm: TfpgForm);
