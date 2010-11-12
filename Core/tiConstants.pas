@@ -105,7 +105,7 @@ const
 {$ENDIF}
 
 {$IFDEF FPC}
-  cPackageSuffix = '2.4.3';
+  cPackageSuffix = {$I %fpcversion%};
   cCompilerName = 'Free Pascal';
 {$ENDIF}
 
