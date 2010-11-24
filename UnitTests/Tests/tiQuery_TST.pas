@@ -2044,7 +2044,7 @@ begin
     lStreamTo := TStringStream.Create(LongString);
     try
       lResult := AreStreamContentsSame(lStreamFrom, lStreamTo, lMessage);
-      Check(lResult, 'Returned FALSE but should have returned TRUE');
+      Check(lResult, '#1 Returned FALSE but should have returned TRUE');
     finally
       lStreamTo.Free;
     end;
@@ -2057,7 +2057,7 @@ begin
     lStreamTo := TStringStream.Create(LongString + 'a');
     try
       lResult := AreStreamContentsSame(lStreamFrom, lStreamTo, lMessage);
-      Check(not lResult, 'Returned TRUE but should have returned FALSE <' + lMessage + '>');
+      Check(not lResult, '#2 Returned TRUE but should have returned FALSE <' + lMessage + '>');
     finally
       lStreamTo.Free;
     end;
@@ -2067,17 +2067,16 @@ begin
 
   lStreamFrom := TStringStream.Create(LongString);
   try
-    lStreamTo := TStringStream.Create(Copy(LongString, 1, Length(LongString) - 1) + 'a');
+    lStreamTo := TStringStream.Create(Copy(LongString, 1, Length(LongString) - 1) + ';');
     try
       lResult := AreStreamContentsSame(lStreamFrom, lStreamTo, lMessage);
-      Check(not lResult, 'Returned TRUE but should have returned FALSE <' + lMessage + '>');
+      Check(not lResult, '#3 Returned TRUE but should have returned FALSE <' + lMessage + '>');
     finally
       lStreamTo.Free;
     end;
   finally
     lStreamFrom.Free;
   end;
-
 end;
 
 procedure TTestTIQueryAbs.FieldAsStream;
