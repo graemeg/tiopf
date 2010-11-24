@@ -319,6 +319,7 @@ begin
   LPersistenceLayer := DBConnectionPools.PersistenceLayer as TtiPersistenceLayer;
   result :=
     'Persistence layer:   ' + LPersistenceLayer.PersistenceLayerName + tiLineEnd +
+    'Database alias:       ' + FDatabaseAlias + tiLineEnd +
     'Database name:       ' + DBConnectParams.DatabaseName + tiLineEnd +
     'User name:           ' + DBConnectParams.UserName     + tiLineEnd +
     'Password:            ' + CPasswordMasked + tiLineEnd +
