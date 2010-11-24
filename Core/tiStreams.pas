@@ -315,6 +315,9 @@ uses
   ,tiConstants
   ,SysUtils
   ,Math
+  {$IFDEF FPC}
+  ,base64
+  {$ENDIF}
  ;
 
 const
@@ -399,6 +402,33 @@ type
 { Wrapper functions & procedures }
 { **************************************************************************** }
 
+{$IFDEF FPC}
+{ This is 32 & 64 bit safe }
+function MimeEncodeString (const s: AnsiString): AnsiString;
+var
+  InStream: TStringStream;
+  OutStream: TStringStream;
+  b64encoder: TBase64EncodingStream;
+begin
+  if s = '' then
+    Exit; { nothing to do }
+
+  InStream := TStringStream.Create(s);
+  try
+    OutStream := TStringStream.Create('');
+    b64encoder := TBase64EncodingStream.Create(OutStream);
+    try
+      b64encoder.CopyFrom(InStream, InStream.Size);
+    finally
+      b64encoder.Free;
+      Result := OutStream.DataString;
+      OutStream.Free;
+    end;
+  finally
+    InStream.Free;
+  end;
+end;
+{$ELSE}
 function MimeEncodeString (const s: AnsiString): AnsiString;
 label
   NothingToDo;
@@ -417,6 +447,7 @@ begin
   NothingToDo:
   Result := '';
 end;
+{$ENDIF}
 
 function MimeEncodeStringNoCRLF(const s: AnsiString): AnsiString;
 var
@@ -432,6 +463,35 @@ begin
     Result := '';
 end;
 
+{$IFDEF FPC}
+{ This is 32 & 64 bit safe }
+function MimeDecodeString(const s: AnsiString): AnsiString;
+var
+  b64decoder: TBase64DecodingStream;
+  outputstream: TStringStream;
+  inputstream: TStringStream;
+begin
+  if s = '' then
+    exit; // nothing to do
+
+  inputstream := TStringStream.Create(s);
+  try
+    outputstream := TStringStream.Create('');
+    try
+      b64decoder := TBase64DecodingStream.Create(inputstream, bdmStrict);
+      OutputStream.CopyFrom(b64decoder, inputstream.Size);
+    finally
+      b64decoder.Free;
+      { destroying the decoder, flush'es the remained of the data, so don't read
+        it earlier }
+      Result := outputStream.DataString;
+      outputstream.Free;
+    end;
+  finally
+    inputstream.Free;
+  end;
+end;
+{$ELSE}
 function MimeDecodeString (const s: AnsiString): AnsiString;
 label
  NothingToDo;
@@ -453,6 +513,7 @@ begin
  NothingToDo:
  Result := '';
 end;
+{$ENDIF}
 
 procedure MimeEncodeStream(const InputStream: TStream; const OutputStream: TStream);
 var
@@ -734,6 +795,33 @@ begin
  end;
 end;
 
+{$IFDEF FPC}
+{ This is 32 & 64 bit safe }
+function tiStreamToMIMEEncodeString(const AStream: TStream): string;
+var
+  OutStream: TStringStream;
+  b64encoder: TBase64EncodingStream;
+  LPos: integer;
+  r: integer;
+begin
+  LPos:= AStream.Position;
+  try
+    OutStream := TStringStream.Create('');
+    try
+      AStream.Position := 0;
+
+      b64encoder := TBase64EncodingStream.Create(OutStream);
+      r := b64encoder.CopyFrom(AStream, AStream.Size);
+    finally
+      b64encoder.Free;
+      result := OutStream.DataString;
+      OutStream.Free;
+    end;
+  finally
+    AStream.Position:= LPos;
+  end;
+end;
+{$ELSE}
 function tiStreamToMIMEEncodeString(const AStream: TStream): string;
 var
   LStream : TStringStream;
@@ -753,7 +841,29 @@ begin
     AStream.Position:= LPos;
   end;
 end;
+{$ENDIF}
 
+{$IFDEF FPC}
+{ This is 32 & 64 bit safe }
+procedure tiMIMEEncodeStringToStream(const AString: string; const AStream: TStream);
+var
+  lStream: TStringStream;
+  b64encoder: TBase64EncodingStream;
+begin
+  lStream:= TStringStream.Create(AString);
+  try
+    AStream.Size := 0;
+
+    b64encoder := TBase64EncodingStream.Create(AStream);
+    b64encoder.CopyFrom(lStream, lStream.Size);
+
+    AStream.Position := 0;
+  finally
+    b64encoder.Free;
+    lStream.Free;
+  end;
+end;
+{$ELSE}
 procedure tiMIMEEncodeStringToStream(const AString: string; const AStream: TStream);
 var
   lStream: TStringStream;
@@ -767,6 +877,7 @@ begin
     lStream.Free;
   end;
 end;
+{$ENDIF}
 
 function tiStreamDiscoverLineDelim(AStream: TStream): string;
 const
