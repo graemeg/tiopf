@@ -202,7 +202,7 @@ begin
     result := result + ls;
     if (Length(Result)< ASize) and
        (Length(Result) mod 60 = 0) then
-      Result := Result + cLineEnding;
+      Result := Result {$IFNDEF FPC} + cLineEnding {$ENDIF};
   end;
 end;
 
