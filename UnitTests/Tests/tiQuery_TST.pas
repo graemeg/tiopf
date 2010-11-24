@@ -1763,6 +1763,7 @@ var
   lStream1 : TStringStream;
   lStream2 : TStream;
   ls      : string;
+  s: string;
 begin
   lStream1 := TStringStream.Create(LongString);
   try
@@ -1779,6 +1780,7 @@ begin
         // Because, it's MIME encoded when it's read out as a string
         // (for persisting to a DB that does not have a native BIN field type)
         ls := MimeDecodeString(ls);
+        CheckEquals(Length(LongString), Length(ls), ' length of strings #1');
         CheckEquals(LongString, ls, 'GetValueAsString failed');
 
         lStream1.WriteString('a');
@@ -1793,8 +1795,8 @@ begin
         // Because, it's MIME encoded when it's read out as a string
         // (for persisting to a DB that does not have a native BIN field type)
         ls := MimeDecodeString(ls);
+        CheckEquals(lStream1.Size, Length(ls), ' length of strings #2');
         CheckEquals(LongString+'a', ls, 'GetValueAsString failed');
-
       finally
         lParams.Free;
       end;
