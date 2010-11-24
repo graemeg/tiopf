@@ -515,6 +515,19 @@ begin
 end;
 {$ENDIF}
 
+{$IFDEF FPC}
+procedure MimeEncodeStream(const InputStream: TStream; const OutputStream: TStream);
+var
+  b64encoder: TBase64EncodingStream;
+begin
+  b64encoder := TBase64EncodingStream.Create(OutputStream);
+  try
+    b64encoder.CopyFrom(InputStream, InputStream.Size);
+  finally
+    b64encoder.Free;
+  end;
+end;
+{$ELSE}
 procedure MimeEncodeStream(const InputStream: TStream; const OutputStream: TStream);
 var
   InputBuffer       : array[0..BUFFER_SIZE - 1] of Byte;
@@ -540,6 +553,7 @@ begin
 
   OutputStream.Write(OutputBuffer, MimeEncodedSize(BytesRead));
 end;
+{$ENDIF}
 
 procedure MimeEncodeStreamNoCRLF(const InputStream: TStream; const OutputStream: TStream);
 var
@@ -563,6 +577,19 @@ begin
   end;
 end;
 
+{$IFDEF FPC}
+procedure MimeDecodeStream (const InputStream: TStream; const OutputStream: TStream);
+var
+  b64decoder: TBase64DecodingStream;
+begin
+  b64decoder := TBase64DecodingStream.Create(InputStream, bdmStrict);
+  try
+    OutputStream.CopyFrom(b64decoder, InputStream.Size);
+  finally
+    b64decoder.Free;
+  end;
+end;
+{$ELSE}
 procedure MimeDecodeStream (const InputStream: TStream; const OutputStream: TStream);
 var
   ByteBuffer, ByteBufferSpace: Cardinal;
@@ -582,6 +609,7 @@ begin
   end;
   OutputStream.Write (OutputBuffer, MimeDecodePartialEnd (OutputBuffer, ByteBuffer, ByteBufferSpace));
 end;
+{$ENDIF}
 
 function MimeEncodedSize (const i: Cardinal): Cardinal;
 begin
