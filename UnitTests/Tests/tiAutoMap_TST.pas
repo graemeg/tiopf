@@ -1484,7 +1484,7 @@ end;
 
 type
 
-  TtiObjectyListForTestingThread = class(TtiThread)
+  TtiObjectyListForTestingThread = class(TtiSleepThread)
   private
     FTestCase: TtiTestCase;
     FDatabaseName: String;
@@ -1514,6 +1514,7 @@ type
   var
     LData : TtiObjectListForTesting;
   begin
+    inherited Execute;
     LData := TtiObjectListForTesting.Create;
     try
       LData.ReadPK(FDatabaseName, FPersistenceLayerName);

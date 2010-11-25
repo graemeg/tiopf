@@ -111,6 +111,7 @@ end;
 
 procedure TtiSceduledFilePurgeThread.Execute;
 begin
+  inherited Execute;
   while not Terminated do
   begin
     case FProcessEvent.WaitFor(TimeUntilNextScheduledRunInMS) of

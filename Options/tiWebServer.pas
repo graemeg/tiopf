@@ -1085,6 +1085,7 @@ procedure TtiThreadBlockStreamCacheSweepForTimeouts.Execute;
 var
   LStart: TDateTime;
 begin
+  inherited Execute;
   while not Terminated do
   begin
     LStart:= Now;

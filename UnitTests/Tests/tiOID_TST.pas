@@ -546,7 +546,7 @@ begin
 end;
 
 type
-  TtiOIDGeneratorThread = class(TtiThread)
+  TtiOIDGeneratorThread = class(TtiSleepThread)
   private
     FOIDGeneratorClass: TtiOIDGeneratorClass;
     FOIDList: TStringList;
@@ -589,6 +589,7 @@ var
   LOID: TtiOID;
   i:    integer;
 begin
+  inherited Execute;
   Assert(Assigned(FOIDGeneratorClass), 'FOIDGeneratorClass not assigned');
   LNextOIDGenerator := FOIDGeneratorClass.Create;
   try
@@ -639,7 +640,7 @@ begin
       LList.ResumeAll;
       LList.WaitForAll;
       for i := 0 to LList.Count - 1 do
-        _CheckForDuplicates(Self, LList.Items[i] as TtiOIDGeneratorThread);
+        _CheckForDuplicates(Self, TtiOIDGeneratorThread(LList.Items[i]));
     finally
       LList.Free;
     end;
@@ -1025,7 +1026,7 @@ procedure TTestTIOIDPersistentGUID.TtiNextOIDGeneratorAssignNextOIDMultiUser;
 begin
   AllowedMemoryLeakSize := 32;  //Sneaky way to get 4 values
   SetAllowedLeakArray([208, 265, 376]);
-  inherited;
+  inherited TtiNextOIDGeneratorAssignNextOIDMultiUser;
 end;
 
 procedure TTestTIOIDPersistentGUID.TtiNextOIDGeneratorAssignNextOIDSingleUser;
@@ -1037,7 +1038,7 @@ end;
 procedure TTestTIOIDPersistentGUID.TtiNextOIDGeneratorAssignNextOIDThreaded;
 begin
   SetAllowedLeakArray([32, 208, 265]);
-  inherited;
+  inherited TtiNextOIDGeneratorAssignNextOIDThreaded;
 end;
 
 { TTestTIOIDInt64 }

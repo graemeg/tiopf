@@ -7,6 +7,7 @@ uses
   tiTestFramework
   ,tiPool
   ,tiBaseObject
+  ,tiThread
   ,Classes
   ,Contnrs
  ;
@@ -15,7 +16,7 @@ type
 
   TTestPoolItemData = class(TtiBaseObject);
 
-  TThresPoolThread = class(TThread)
+  TThresPoolThread = class(TtiSleepThread)
   private
     FItemCount: integer;
     FPool: TtiPool;
@@ -127,11 +128,12 @@ var
   lPool : TtiPoolForTesting;
   i : integer;
   lThrd : TThresPoolThread;
-  lList : TObjectList;
+  lList : TList;
 begin
+  writeln('DEBUG:  TTestTiPool.Lock_UnLock_Threaded >>');
   InhibitStackTrace;
   Check(True); // To Force OnCheckCalled to be called
-  lList := TObjectList.Create(true);
+  lList := TList.Create;
   try
     lPool := TtiPoolForTesting.Create(0, cThreadCount * cThreadItemCount);
     try
@@ -144,14 +146,33 @@ begin
         lThrd.Resume;
         Sleep(20);
       end;
+      writeln('lList.Count = ', lList.Count);
       for i := 0 to lList.Count - 1 do
-        TThread(lList.Items[i]).WaitFor;
+      begin
+        write('item ', i+1, '....');
+        TThresPoolThread(lList.Items[i]).WaitFor;
+        writeln('DONE');
+      end;
     finally
+      write('freeing lPool....');
       lPool.Free;
+      writeln('DONE');
     end;
   finally
+//    write('Clearing lList....');
+//    lList.Clear;
+    write('freeing lList...');
+    for i := lList.Count-1 downto 0 do
+    begin
+      write(i+1, '.');
+      TThresPoolThread(lList.Items[i]).Free;
+      writeln('DONE');
+    end;
+    write('now freeing list...');
     lList.Free;
+    writeln('DONE');
   end;
+  writeln('DEBUG:  TTestTiPool.Lock_UnLock_Threaded <<');
 end;
 
 
@@ -324,11 +345,12 @@ end;
 destructor TThresPoolThread.Destroy;
 begin
   FItemList.Free;
-  inherited;
+  inherited Destroy;
 end;
 
 procedure TThresPoolThread.Execute;
 begin
+  inherited Execute;
   LockItems;
   UnLockItems;
 end;

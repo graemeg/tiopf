@@ -430,6 +430,7 @@ end;
 
 procedure TtiThrdPoolMonitor.Execute;
 begin
+  inherited Execute;
   while SleepAndCheckTerminated(10000) do
     FPool.SweepForTimeOuts;
 end;

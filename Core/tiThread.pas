@@ -29,6 +29,7 @@ type
     FUpdateEvent: TEvent;
     FThreadInstanceID: Integer;
   protected
+    FFinished: boolean;
     procedure WakeUpAndTerminate;
     function SleepAndCheckTerminated(ASleepFor: Cardinal): boolean;
     property UpdateEvent: TEvent read FUpdateEvent;
@@ -37,6 +38,10 @@ type
     destructor  Destroy; override;
     procedure   SetThreadName(const AName: string);
     procedure   WakeUp;
+    procedure   Execute; override;
+    {$IFDEF FPC}
+    procedure   WaitFor; reintroduce;
+    {$ENDIF}
     property    ThreadInstanceID: Integer read FThreadInstanceID;
     property    SleepResponse: Cardinal read FSleepResponse write FSleepResponse;
   end;
@@ -152,6 +157,32 @@ uses
  ;
 
 
+{ This could be used for Delphi too, but it's not really needed }
+type
+  TAutoFinishedState = class(TInterfacedObject)
+  private
+    FFinished: PBoolean;
+  public
+    constructor Create(Finished: PBoolean);
+    destructor Destroy; override;
+  end;
+
+{ TAutoFinishedState }
+
+constructor TAutoFinishedState.Create(Finished: PBoolean);
+begin
+  FFinished := Finished;
+  FFinished^ := False;
+end;
+
+destructor TAutoFinishedState.Destroy;
+begin
+  FFinished^ := True;
+  inherited Destroy;
+end;
+
+
+
 {$IFDEF MSWINDOWS}
 procedure SetIdeDebuggerThreadName(AThreadID: DWORD; AThreadName: PChar);
 type
@@ -218,7 +249,7 @@ begin
   {$ENDIF}
   if FInActiveThreadList then
     gTIOPFManager.ActiveThreadList.Remove(Self);
-  inherited;
+  inherited Destroy;
 end;
 
 
@@ -325,7 +356,7 @@ var
   i: integer;
 begin
   for i := 0 to Count - 1 do
-    Items[i].WaitFor;
+    TtiThread(Items[i]).WaitFor;
 end;
 
 { TtiActiveThreadList }
@@ -584,6 +615,7 @@ begin
   inherited Create(ASuspended);
   FSleepResponse:= cDefaultSleepResponse;
   FUpdateEvent := TEvent.Create(nil, True, False, '');
+  FFinished := True;
 end;
 
 
@@ -603,6 +635,34 @@ procedure TtiSleepThread.WakeUp;
 begin
   FUpdateEvent.SetEvent;
 end;
+
+procedure TtiSleepThread.Execute;
+var
+  intf: IInterface;
+begin
+  intf := TAutoFinishedState.Create(@FFinished);
+  { FFinished will automatically be set to True once it goes out of scope }
+end;
+
+{$IFDEF FPC}
+procedure TtiSleepThread.WaitFor;
+begin
+  { graemeg: 2009-05-04
+    FPC handles WaitFor slightly different under Unix enviroments, so I rather
+    do the following which seems safer. Delphi could probably also use this
+    method.
+    When FThrdLog's Execute() method is done, it will set Finished to True,
+    which we can then detect to know that the thread is done.
+    The default TThread.WaitFor is a blocking method under Unix, suspending the
+    main thread. If the thread calls syncronise, it waits for the main thread which
+    is suspended, thus we sit with a deadlock! This issue is only under Unix.
+
+    See the following URL for a more detailed explanation:
+      http://free-pascal-general.1045716.n5.nabble.com/TThread-WaitFor-not-returning-td2820297.html
+    }
+  while not FFinished do CheckSynchronize(100);
+end;
+{$ENDIF}
 
 procedure TtiSleepThread.WakeUpAndTerminate;
 begin

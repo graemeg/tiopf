@@ -918,7 +918,7 @@ end;
 
 type
 
-  TThrdDBConnectionPoolTest = class(TtiThread)
+  TThrdDBConnectionPoolTest = class(TtiSleepThread)
   private
     FCycles: integer;
     FDone: Boolean;
@@ -957,6 +957,7 @@ end;
     i : integer;
     LDatabase : TtiDatabase;
   begin
+    inherited Execute;
     for i := 1 to FCycles do
     begin
       LDatabase := FDBConnectionPool.Lock;
@@ -988,6 +989,7 @@ end;
 
 procedure TTestTIPersistenceLayers.DoThreadedDBConnectionPool(
   const ADBConnectionPool: TtiDBConnectionPool; const AThreadCount : integer);
+
   procedure _CreateThreads(
     const ADBConnectionPool: TtiDBConnectionPool;
     const AList : TList; const AThreadCount, AIterations : integer);

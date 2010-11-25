@@ -155,11 +155,11 @@ end;
 
 procedure TTestTIPersistenceLayersSQLDB_IB.ThreadedDBConnectionPool;
 begin
-  {$IFDEF FPC}
-  Fail('This freezes up under FPC compiler.');
-  {$ELSE}
+//  {$IFDEF FPC}
+//  Fail('This freezes up under FPC compiler.');
+//  {$ELSE}
   inherited ThreadedDBConnectionPool;
-  {$ENDIF}
+//  {$ENDIF}
 end;
 
 { TTestTIQuerySQLDB_IB }
@@ -178,9 +178,9 @@ end;
 
 procedure TTestTIAutoMapOperationSQLDB_IB.CollectionReadPKThreaded;
 begin
-  {$IFDEF FPC}
-  Fail('This freezes up under FPC compiler.');
-  {$ENDIF}
+//  {$IFDEF FPC}
+//  Fail('This freezes up under FPC compiler.');
+//  {$ENDIF}
   inherited CollectionReadPKThreaded;
 end;
 
@@ -193,17 +193,17 @@ end;
 
 procedure TTestTIOIDPersistentGUIDSQLDB_IB.TtiNextOIDGeneratorAssignNextOIDThreaded;
 begin
-  {$IFDEF FPC}
-  Fail('This freezes up under FPC compiler.');
-  {$ENDIF}
+//  {$IFDEF FPC}
+//  Fail('This freezes up under FPC compiler.');
+//  {$ENDIF}
   inherited TtiNextOIDGeneratorAssignNextOIDThreaded;
 end;
 
 procedure TTestTIOIDPersistentGUIDSQLDB_IB.TtiNextOIDGeneratorAssignNextOIDMultiUser;
 begin
-  {$IFDEF FPC}
-  Fail('This freezes up under FPC compiler.');
-  {$ENDIF}
+//  {$IFDEF FPC}
+//  Fail('This freezes up under FPC compiler.');
+//  {$ENDIF}
   inherited TtiNextOIDGeneratorAssignNextOIDMultiUser;
 end;
 
@@ -216,17 +216,17 @@ end;
 
 procedure TTestTIOIDPersistentIntegerSQLDB_IB.TtiNextOIDGeneratorAssignNextOIDThreaded;
 begin
-  {$IFDEF FPC}
-  Fail('This freezes up under FPC compiler.');
-  {$ENDIF}
+//  {$IFDEF FPC}
+//  Fail('This freezes up under FPC compiler.');
+//  {$ENDIF}
   inherited TtiNextOIDGeneratorAssignNextOIDThreaded;
 end;
 
 procedure TTestTIOIDPersistentIntegerSQLDB_IB.TtiNextOIDGeneratorAssignNextOIDMultiUser;
 begin
-  {$IFDEF FPC}
-  Fail('This freezes up under FPC compiler.');
-  {$ENDIF}
+//  {$IFDEF FPC}
+//  Fail('This freezes up under FPC compiler.');
+//  {$ENDIF}
   inherited TtiNextOIDGeneratorAssignNextOIDMultiUser;
 end;
 

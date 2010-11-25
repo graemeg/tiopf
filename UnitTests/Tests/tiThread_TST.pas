@@ -56,6 +56,7 @@ type
 
   procedure TtiThreadForTesting.Execute;
   begin
+    inherited Execute;
     Sleep(CSleep);
   end;
 
@@ -85,6 +86,7 @@ type
 
   procedure TtiSleepThreadForTesting.Execute;
   begin
+    inherited Execute;
     Sleep(CSleep);
   end;
 
