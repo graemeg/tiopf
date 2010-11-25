@@ -943,6 +943,10 @@ begin
       else
         // handle case of Cr at end of buffer - rewind to crPos
         AStream.Seek(crPos - 1 - lReadCount, soFromCurrent);
+    end
+    else if (crPos > 0) and (lfPos > 0) then
+    begin
+      Result := CrLf;
     end;
   end;
 
