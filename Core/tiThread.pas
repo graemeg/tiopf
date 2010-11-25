@@ -130,7 +130,7 @@ type
     // ToDo: WaitForAll is buggy. It depends on TtiThread's Destroy method
     //       executing when the thread terminates (Destroy is where each
     //       thread removes it self from the list.) Destroy will only be called
-    //       after Application.ProcessMessages when ther is  GUI, and never
+    //       after Application.ProcessMessages when there is a GUI, and never
     //       for console apps. This needs investigation. So, for the meantime,
     //       don't use WaitForAll.
     procedure   WaitForAll;
@@ -157,7 +157,8 @@ uses
  ;
 
 
-{ This could be used for Delphi too, but it's not really needed }
+{ This could be used for Delphi too, but it's not really needed (while Delphi
+  only supports Windows) }
 type
   TAutoFinishedState = class(TInterfacedObject)
   private
@@ -648,14 +649,16 @@ end;
 procedure TtiSleepThread.WaitFor;
 begin
   { graemeg: 2009-05-04
-    FPC handles WaitFor slightly different under Unix enviroments, so I rather
+    FPC handles WaitFor slightly different under Unix environments, so I rather
     do the following which seems safer. Delphi could probably also use this
-    method.
-    When FThrdLog's Execute() method is done, it will set Finished to True,
+    method (and will probably be needed when it gets cross-platfrom support).
+    When the Execute() method is done, it will set Finished to True,
     which we can then detect to know that the thread is done.
     The default TThread.WaitFor is a blocking method under Unix, suspending the
-    main thread. If the thread calls syncronise, it waits for the main thread which
+    main thread. If the thread calls synchronise, it waits for the main thread which
     is suspended, thus we sit with a deadlock! This issue is only under Unix.
+    Under Windows (applies to FPC and Delphi) i uses a specific Win API to make
+    TThread.WaitFor non-blocking.
 
     See the following URL for a more detailed explanation:
       http://free-pascal-general.1045716.n5.nabble.com/TThread-WaitFor-not-returning-td2820297.html
