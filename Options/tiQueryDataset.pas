@@ -265,30 +265,30 @@ var
   lDataPtr: Pointer;
   lHigh, lLow, lLen: integer;
   lParameter: TParam;
+  s: TStringStream;
 begin
-  Assert(AStream <> nil, 'Stream not assigned');
-  lParameter := FParams.ParamByName(AName);
-  lLow       := VarArrayLowBound(lParameter.Value, 1);
-  lHigh      := VarArrayHighBound(lParameter.Value, 1);
-  lLen       := lHigh - lLow + 1;
-  lBinData   := VarArrayCreate([0, lLen], varByte);
-  lBinData   := lParameter.Value;
-  lDataPtr   := VarArrayLock(lBinData);
-  try
-    AStream.WriteBuffer(lDataPtr^, lLen);
-  finally
-    VarArrayUnlock(lBinData);
-  end;
+  //Assert(AStream <> nil, 'Stream not assigned');
+  //lParameter := FParams.ParamByName(AName);
+  //lLow       := VarArrayLowBound(lParameter.Value, 1);
+  //lHigh      := VarArrayHighBound(lParameter.Value, 1);
+  //lLen       := lHigh - lLow + 1;
+  //lBinData   := VarArrayCreate([0, lLen], varByte);
+  //lBinData   := lParameter.Value;
+  //lDataPtr   := VarArrayLock(lBinData);
+  //try
+  //  AStream.WriteBuffer(lDataPtr^, lLen);
+  //finally
+  //  VarArrayUnlock(lBinData);
+  //end;
 
 {$IFDEF FPC}
   {$Note  Please try this option of saving to a Stream as well }
 {$ENDIF}
-{
   Assert(AStream <> nil, 'Stream not assigned');
-  AStream.Position := 0;
-  (FParams.ParamByName(AName) as TBlobField).SaveToStream(AStream);
-  AStream.Position := 0;
-}
+  lParameter := FParams.ParamByName(AName);
+  s := TStringStream.Create(lParameter.AsString);
+  AStream.CopyFrom(s, s.Size);
+  s.Free;
 end;
 
 procedure TtiQueryDataset.AssignFieldAsStream(const AName: string; const AStream: TStream);
