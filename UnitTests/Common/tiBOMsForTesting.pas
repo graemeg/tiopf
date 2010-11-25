@@ -768,19 +768,19 @@ begin
   inherited;
 end;
 
-  { TtiObjectByPropertyForTestingAbs }
+{ TtiObjectByPropertyForTestingAbs }
 
-  procedure TtiObjectByPropertyForTestingAbs.Read(const ADBConnectionName: string;
-    APersistenceLayerName: string);
-  begin
-    inherited;
-  end;
+procedure TtiObjectByPropertyForTestingAbs.Read(const ADBConnectionName: string;
+  APersistenceLayerName: string);
+begin
+  inherited;
+end;
 
-  procedure TtiObjectByPropertyForTestingAbs.Save(const ADBConnectionName: string;
-    APersistenceLayerName: string);
-  begin
-    inherited;
-  end;
+procedure TtiObjectByPropertyForTestingAbs.Save(const ADBConnectionName: string;
+  APersistenceLayerName: string);
+begin
+  inherited;
+end;
 
 end.
 
