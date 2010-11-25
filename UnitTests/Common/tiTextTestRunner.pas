@@ -129,7 +129,7 @@ begin
       Writeln('No tests registered')
     else
     begin
-      Suite.LoadConfiguration(ExtractFilePath(ParamStr(0)) + 'Dunit.ini', False, True);
+      Suite.LoadConfiguration(ExtractFilePath(ParamStr(0)) + 'dunit.ini', False, True);
       Suite.FailsOnNoChecksExecuted:= false; // Suppress empty tests in the TextTestRunner
       i := 0;
       { We have this default listener, unless told to be silent }
