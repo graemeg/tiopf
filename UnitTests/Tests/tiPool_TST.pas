@@ -130,7 +130,6 @@ var
   lThrd : TThresPoolThread;
   lList : TList;
 begin
-  writeln('DEBUG:  TTestTiPool.Lock_UnLock_Threaded >>');
   InhibitStackTrace;
   Check(True); // To Force OnCheckCalled to be called
   lList := TList.Create;
@@ -146,33 +145,21 @@ begin
         lThrd.Resume;
         Sleep(20);
       end;
-      writeln('lList.Count = ', lList.Count);
+
       for i := 0 to lList.Count - 1 do
       begin
-        write('item ', i+1, '....');
         TThresPoolThread(lList.Items[i]).WaitFor;
-        writeln('DONE');
       end;
     finally
-      write('freeing lPool....');
       lPool.Free;
-      writeln('DONE');
     end;
   finally
-//    write('Clearing lList....');
-//    lList.Clear;
-    write('freeing lList...');
     for i := lList.Count-1 downto 0 do
     begin
-      write(i+1, '.');
       TThresPoolThread(lList.Items[i]).Free;
-      writeln('DONE');
     end;
-    write('now freeing list...');
     lList.Free;
-    writeln('DONE');
   end;
-  writeln('DEBUG:  TTestTiPool.Lock_UnLock_Threaded <<');
 end;
 
 
