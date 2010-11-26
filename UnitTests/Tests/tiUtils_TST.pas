@@ -856,8 +856,8 @@ begin
              SysErrorMessage(87)], e);
       end;
     end;
-    tiDeleteFile(lFileName);
   finally
+    tiDeleteFile(lFileName);
     lsl.Free;
   end;
 end;
