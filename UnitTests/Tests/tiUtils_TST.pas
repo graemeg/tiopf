@@ -843,10 +843,18 @@ begin
     LFileAge := FileDateToDateTime(fa);
     CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 7');
 
-    lDate := 0;
+    lDate := 0.0;   { is in fact the following:  1899-12-30 00:00:00 }
     try
+      {$IFDEF MSWINDOWS}
       tiUtils.tiSetFileDate(lFileName, lDate);
       Fail('Exception not raised when it should have been');
+      {$ENDIF}
+      {$IFDEF UNIX}
+      { This will succeed but with rollover effect
+        2036-02-05 Tue - 06:28:16 local is 2^32 seconds from 1899-12-30 00:00:00;
+        Delphi TDateTime can no longer be converted to dword seconds }
+      tiUtils.tiSetFileDate(lFileName, lDate);
+      {$ENDIF}
     except
       on e:exception do
       begin
