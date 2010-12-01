@@ -17,6 +17,7 @@ fi
 # clean out old files and recompile
 cd $SCRIPTS
 ./cleanup.sh
+rm /tmp/DUnitReportShort2.4.3.txt
 
 # compile tiOPF library
 cd $TIOPF/Compilers/FPC
@@ -26,6 +27,10 @@ $SCRIPTS/opf_package-64.run
 /bin/rm -f $TIOPF/UnitTests/Text/textrunner
 $SCRIPTS/textrunner_dunit2-64.run
 #$SCRIPTS/textrunner-64.run
+
+# Restore the Firebird database to make sure we have a clean/empty one every time
+/usr/bin/gbak -r -REPLACE_DATABASE -USER SYSDBA -PASSWORD masterkey /opt/dailybuilds/data/sqldb_ib_dunit2.fbk /opt/dailybuilds/data/sqldb_ib_dunit2.fdb
+/usr/bin/gbak -r -REPLACE_DATABASE -USER SYSDBA -PASSWORD masterkey /opt/dailybuilds/data/sqldb_ib_dunit2.fbk /opt/dailybuilds/data/fblib_dunit2.fdb
 
 # run the tests
 #./fpcUnitTIOPFText.exe -a > results.xml
@@ -53,9 +58,10 @@ FPCHOST=`$FPC -iTO`
 sed "s/#REV/$REV/g" msg.txt > msg1.txt
 sed "s/#FPCVER/$FPCVER/g" msg1.txt > msg2.txt
 sed "s/#FPCCPU/$FPCCPU-$FPCHOST/g" msg2.txt > msg3.txt
+cat msg3.txt divider.txt /tmp/DUnitReportShort2.4.3.txt > msg4.txt
 
 # post text result to tiopf.dailybuilds newsgroup
-/usr/bin/rpost 192.168.0.54 < msg3.txt
+/usr/bin/rpost 192.168.0.54 < msg4.txt
 # copy html results to web server
 scp -q -i /home/graemeg/.ssh/id_dsa_github_mirroring index.html graemeg@opensoft:/var/www/opensoft.homeip.net/tiopf/fpcunit/index64.html
 
