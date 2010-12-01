@@ -440,8 +440,8 @@ begin
   Database.StartTransaction;
   try
     FQuery.SelectRow(cTIQueryTableName, nil);
-    CheckEquals(1234.5678, FQuery.FieldAsFloat[ cTIQueryColName ], 0.00001, 'FieldAsFloat');
-    CheckEquals(1234.5678, FQuery.FieldAsFloatByIndex[ cFieldAs_Index ], 0.00001, 'FieldAsFloat');
+    CheckEquals(1234.5678, FQuery.FieldAsFloat[ cTIQueryColName ], 0.00001, 'Failed on 1');
+    CheckEquals(1234.5678, FQuery.FieldAsFloatByIndex[ cFieldAs_Index ], 0.00001, 'Failed on 2');
     FQuery.Close;
   finally
     Database.Rollback;
