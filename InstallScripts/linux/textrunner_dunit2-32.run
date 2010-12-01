@@ -1,0 +1,27 @@
+#!/bin/sh
+# Build script for tiOPF's TextRunner using 32bit Free Pascal Compiler
+
+TARGET="i386-linux"
+TIOPF="/opt/dailybuilds/tiopf"
+FBLIB="$TIOPF/3rdParty/FBLib/lib/$TARGET"
+FPC="/opt/fpc-2.4.3/$TARGET/bin/ppc386"
+DUNIT2="/opt/git/dunit2/lib/$TARGET/"
+
+$FPC -S2cgi -O1 -gl -ve -l \
+  -Fu$TIOPF/Compilers/FPC/lib/$TARGET/ \
+  -Fi$TIOPF/Core/ \
+  -Fu$TIOPF/UnitTests/Common/ \
+  -Fu$TIOPF/UnitTests/Tests/ \
+  -Fu$FBLIB/ \
+  -Fu/opt/fpc-2.4.3/src/packages/fcl-registry/src/ \
+  -Fu/opt/fpc-2.4.3/src/packages/fcl-xml/src/ \
+  -Fu/opt/git/dunit2/src/ \
+  -Fu/opt/git/dunit2/3rdparty/epiktimer/ \
+  -Fu. \
+  -o$TIOPF/UnitTests/Text/textrunner32 \
+  -FU$TIOPF/UnitTests/Text/_Dcu \
+  -dDUNIT2 -dXMLLISTENER \
+  -dLINK_CSV -dLINK_TAB -dLINK_XMLLIGHT -dLINK_SQLDB_IB -dLINK_FBL \
+  -dUseCThreads \
+  $TIOPF/UnitTests/Text/dunit2_fpc_textrunner.lpr
+

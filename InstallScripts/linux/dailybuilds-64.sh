@@ -48,7 +48,7 @@ fi
 cp textrunner64.xml /opt/dailybuilds/results/results64.xml
 cd /opt/dailybuilds/results/
 /usr/bin/xsltproc -o index.html $SCRIPTS/fpcunit2.xsl results64.xml
-/usr/bin/xsltproc -o msg.txt $SCRIPTS/summarypost.xsl results64.xml
+/usr/bin/xsltproc -o msg.txt $SCRIPTS/summarypost-64.xsl results64.xml
 
 # inject the SVN revision
 REV=`svnversion -n $TIOPF/`
