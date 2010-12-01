@@ -1044,7 +1044,7 @@ begin
   APersistenceLayerDefaults.Password:= 'masterkey';
   APersistenceLayerDefaults.CanDropDatabase:= False;
   APersistenceLayerDefaults.CanCreateDatabase:= False;
-  APersistenceLayerDefaults.CanSupportMultiUser:= True;
+  APersistenceLayerDefaults.CanSupportMultiUser:= False;
   APersistenceLayerDefaults.CanSupportSQL:= True;
 end;
 
