@@ -169,14 +169,14 @@ begin
   {$ENDIF MSWINDOWS}
   {$IFDEF UNIX}
   i := 0;
-  sem_getvalue(FSemaphore, i);
+  sem_getvalue(@FSemaphore, @i);
   while i = 0 do
   begin
-    if sem_post(FSemaphore) <> 0 then // unlock a semaphore
+    if sem_post(@FSemaphore) <> 0 then // unlock a semaphore
       break;  // received an error
-    sem_getvalue(FSemaphore, i);
+    sem_getvalue(@FSemaphore, @i);
   end;
-  error := sem_destroy(FSemaphore);
+  error := sem_destroy(@FSemaphore);
   if error <> 0 then
     raise EtiOPFInternalException.Create('Failed to destroy the semaphore');
   {$ENDIF UNIX}
@@ -318,7 +318,7 @@ begin
     i := fpgeterrno; }
   repeat
     { TODO -oGraeme -cUnix : Add timeout counter variable here so we can force exit after timeout is reached. }
-    Result := sem_trywait(FSemaphore) = 0;
+    Result := sem_trywait(@FSemaphore) = 0;
   until Result or (GetLastOSError <> ESysEINTR);  // ESysEINTR = System error: Interrupted system call
   {$ENDIF UNIX}
 end;
@@ -485,7 +485,7 @@ begin
   ReleaseSemaphore(FSemaphore, 1, nil);
   {$ENDIF MSWINDOWS}
   {$IFDEF UNIX}
-  if sem_post(FSemaphore) <> 0 then
+  if sem_post(@FSemaphore) <> 0 then
     raise EtiOPFInternalException.Create('Failed to unlock the semaphore');
   {$ENDIF UNIX}
 end;
@@ -500,7 +500,7 @@ begin
   {$IFDEF UNIX}
   FillChar(FSemaphore, sizeof(FSemaphore), 0);
   // pShared = 0 means, shared between the threads of a process
-  if sem_init(FSemaphore, 0, FMaxPoolSize) <> 0 then
+  if sem_init(@FSemaphore, 0, FMaxPoolSize) <> 0 then
     raise EtiOPFInternalException.Create('Failed to initialize the semaphore');
   {$ENDIF UNIX}
 end;
