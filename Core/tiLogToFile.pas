@@ -269,7 +269,7 @@ begin
       for i := 0 to WorkingList.Count - 1 do
       begin
         Assert(WorkingList.Items[i].TestValid(TtiLogEvent), CTIErrorInvalidObject);
-        LLine := WorkingList.Items[i].AsLeftPaddedString + #13 + #10;
+        LLine := WorkingList.Items[i].AsLeftPaddedString + cLineEnding;
         LFileStream.Write(PChar(LLine)^, Length(LLine));
       end;
     finally
