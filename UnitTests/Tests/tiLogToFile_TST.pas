@@ -163,7 +163,8 @@ begin
     end;
 
     for i := 0 to CLogFileCount - 1 do
-      CheckEquals(200000, LogFileLineCount(_FileName(i)));
+      { 200,000 is the 20,000 for-loop in each thread, times 10 threads }
+      CheckEquals(200000, LogFileLineCount(_FileName(i)), 'Failed on logfile #'+IntToStr(i));
   finally
     LLog.Free;
   end;
@@ -241,6 +242,7 @@ begin
   finally
     LLog.Free;
   end;
+  Check(True);  // Not sure what to check
 end;
 
 { TtiLogTestCase }
