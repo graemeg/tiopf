@@ -20,14 +20,20 @@ type
     FRefCount:    integer;
     {$ENDIF}
   protected
-    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
-    function _AddRef: integer; stdcall;
-    function _Release: integer; stdcall;
+    {$IFDEF FPC_HAS_CONSTREF}
+      function QueryInterface(constref iid: TGuid; out obj): LongInt; {$IFDEF WINDOWS}stdcall{$ELSE}cdecl{$ENDIF};
+      function _AddRef: LongInt; {$IFDEF WINDOWS}stdcall{$ELSE}cdecl{$ENDIF};
+      function _Release: LongInt; {$IFDEF WINDOWS}stdcall{$ELSE}cdecl{$ENDIF};
+    {$ELSE}
+      function QueryInterface(const iid: tguid; out obj): longint; stdcall;
+      function _AddRef: longint; stdcall;
+      function _Release: longint; stdcall;
+    {$ENDIF}
   public
     {$IFDEF REFERENCE_COUNTING}
     constructor CreateWithRefCounting;
-    procedure AfterConstruction; override;
-    procedure BeforeDestruction; override;
+    procedure   AfterConstruction; override;
+    procedure   BeforeDestruction; override;
     class function NewInstance: TObject; override;
     {$ENDIF}
 
@@ -35,10 +41,11 @@ type
        useful but still worth checking.)}
     function TestValid(AClassType: TClass = nil; AAllowNil: boolean = False): boolean; overload;
     function TestValid(AAllowNil: boolean): boolean; overload;
-
   end;
 
+
   TtiBaseObjectClass = class of TtiBaseObject;
+
 
 implementation
 {$IFNDEF FPC}
@@ -46,15 +53,23 @@ uses
   Windows;
 {$ENDIF}
 
-function TtiBaseObject.QueryInterface(const IID: TGUID; out Obj): HResult;
-begin
+{$IFDEF FPC_HAS_CONSTREF}
+function TtiBaseObject.QueryInterface(constref iid: TGuid; out obj): LongInt; {$IFDEF WINDOWS}stdcall{$ELSE}cdecl{$ENDIF};
+{$ELSE}
+function TtiBaseObject.QueryInterface(const iid: tguid; out obj): longint; stdcall;
+{$ENDIF}
+ begin
   if GetInterface(IID, Obj) then
     Result := 0
   else
     Result := E_NOINTERFACE;
 end;
 
-function TtiBaseObject._AddRef: integer;
+{$IFDEF FPC_HAS_CONSTREF}
+function TtiBaseObject._AddRef: longint; {$IFDEF WINDOWS}stdcall{$ELSE}cdecl{$ENDIF};
+{$ELSE}
+function TtiBaseObject._AddRef: longint; stdcall;
+{$ENDIF}
 begin
   {$IFDEF REFERENCE_COUNTING}
   Result := InterlockedIncrement(FRefCount);
@@ -63,7 +78,11 @@ begin
   {$ENDIF}
 end;
 
-function TtiBaseObject._Release: integer;
+{$IFDEF FPC_HAS_CONSTREF}
+function TtiBaseObject._Release: longint; stdcall; {$IFDEF WINDOWS}stdcall{$ELSE}cdecl{$ENDIF};
+{$ELSE}
+function TtiBaseObject._Release: longint; stdcall;
+{$ENDIF}
 begin
   {$IFDEF REFERENCE_COUNTING}
   Result := InterlockedDecrement(FRefCount);
