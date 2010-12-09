@@ -126,7 +126,7 @@ begin
     tiRTTI.tiGetPropertyNames(TTestGetPropNames, lsl, [ tkUString ]);
 {$ELSE}
     tiRTTI.tiGetPropertyNames(TTestGetPropNames, lsl, [ tkWString ]);
-{$ENDIF}
+{$IFEND}
     CheckEquals(2, lsl.Count, 'Failed on WideStringProp');
     CheckEquals('WideStringProp', lsl.Strings[0], 'Failed on WideStringProp');
     CheckEquals('ReadOnlyWideStringProp', lsl.Strings[1], 'Failed on ReadOnlyWideStringProp');
@@ -236,7 +236,7 @@ begin
       tiRTTI.tiGetPropertyNames(lObj, lsl, [ tkUString ]);
 {$ELSE}
       tiRTTI.tiGetPropertyNames(lObj, lsl, [ tkWString ]);
-{$ENDIF}
+{$IFEND}
       CheckEquals(2, lsl.Count, 'Failed on WideStringProp');
       CheckEquals('WideStringProp', lsl.Strings[0], 'Failed on WideStringProp');
       CheckEquals('ReadOnlyWideStringProp', lsl.Strings[1], 'Failed on ReadOnlyWideStringProp');
