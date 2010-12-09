@@ -162,23 +162,23 @@ uses
 type
   TAutoFinishedState = class(TInterfacedObject)
   private
-    FFinished: PBoolean;
+    FFinished: Boolean;
   public
-    constructor Create(Finished: PBoolean);
+    constructor Create(var Finished: Boolean);
     destructor Destroy; override;
   end;
 
 { TAutoFinishedState }
 
-constructor TAutoFinishedState.Create(Finished: PBoolean);
+constructor TAutoFinishedState.Create(var Finished: Boolean);
 begin
   FFinished := Finished;
-  FFinished^ := False;
+  FFinished := False;
 end;
 
 destructor TAutoFinishedState.Destroy;
 begin
-  FFinished^ := True;
+  FFinished := True;
   inherited Destroy;
 end;
 
@@ -641,7 +641,7 @@ procedure TtiSleepThread.Execute;
 var
   intf: IInterface;
 begin
-  intf := TAutoFinishedState.Create(@FFinished);
+  intf := TAutoFinishedState.Create(FFinished);
   { FFinished will automatically be set to True once it goes out of scope }
 end;
 
