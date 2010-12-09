@@ -22,11 +22,11 @@ uses
   {$IFDEF FASTMM}
    FastMM4,
   {$ENDIF}
-  IdThreadSafe
-  ,IdGlobal
+  IdThreadSafe,
+  IdGlobal,
 {$ENDIF}
-  TestFramework,
-  SysUtils
+  TestFramework
+  ,SysUtils
 
   ,tiConstants
   ,tiOPFManager
