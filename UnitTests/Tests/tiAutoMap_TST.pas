@@ -1493,7 +1493,7 @@ type
   public
     constructor Create(const ATestCase: TtiTestCase;
       const ADatabaseName: string; const APersistenceLayerName: string;
-      const AGroupCount: integer);
+      const AGroupCount: integer); reintroduce;
     procedure Execute; override;
   end;
 

@@ -24,7 +24,7 @@ type
     procedure LockItems;
     procedure UnLockItems;
   public
-    constructor Create(ACreateSuspended: Boolean);
+    constructor Create(ASuspended: boolean); override;
     destructor  Destroy; override;
     property    Pool : TtiPool read FPool write FPool;
     property    ItemCount : integer read FItemCount write FItemCount;
@@ -321,9 +321,9 @@ end;
 
 { TThresPoolThread }
 
-constructor TThresPoolThread.Create(ACreateSuspended: Boolean);
+constructor TThresPoolThread.Create(ASuspended: Boolean);
 begin
-  inherited Create(ACreateSuspended);
+  inherited Create(ASuspended);
   FreeOnTerminate := false;
   FItemList := TObjectList.Create(false);
 end;
