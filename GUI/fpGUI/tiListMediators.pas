@@ -166,7 +166,10 @@ end;
 
 function TtiListViewMediatorView.GetSelectedObject: TtiObject;
 begin
-  Result := GetObjectFromItem(View.Items.Item[View.ItemIndex]);
+  If (View.ItemIndex=-1) then
+    Result:=Nil
+  else
+    Result := GetObjectFromItem(View.Items.Item[View.ItemIndex]);
 end;
 
 function TtiListViewMediatorView.DoCreateItemMediator(AData: TtiObject; ARowIdx: integer): TtiListItemMediator;
@@ -690,7 +693,8 @@ end;
 procedure TtiListBoxListMediatorView.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
-  View.Items.Clear;
+  If Assigned(View) then
+    View.Items.Clear;
 end;
 
 constructor TtiListBoxListMediatorView.CreateCustom(AModel: TtiObjectList;
@@ -770,7 +774,9 @@ begin
     lValue := tiGetProperty(Model, lFieldName);
     if Assigned(OnBeforeSetupField) then
       OnBeforeSetupField(Model, lFieldName, lValue);
-    s := s + ', ' + lValue;
+    If S<>'' then
+      S:=S+', ';
+    s := s + lValue;
   end;
   FView.Items[FRowIndex] := s;
 //  inherited Update(ASubject);
