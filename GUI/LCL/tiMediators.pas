@@ -247,6 +247,7 @@ begin
   inherited;
   FViewErrorVisible := true;
   FViewErrorColor := clError;
+  FViewColor:=clWindow;
 end;
 
 class function TtiControlMediatorView.ComponentClass: TClass;
@@ -323,7 +324,7 @@ end;
 
 function TtiControlMediatorView.GetCurrentControlColor: TColor;
 begin
-  result := ColorToRGB(FViewColor);
+  result := FViewColor;
 end;
 
 procedure TtiControlMediatorView.SetViewState(const AColor: TColor;
