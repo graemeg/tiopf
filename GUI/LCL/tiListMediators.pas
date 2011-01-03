@@ -447,9 +447,9 @@ begin
       lColumnTotalWidth := lColumnTotalWidth + C.Width;
   end;
   if ShowDeleted then
-    View.RowCount := Model.Count
+    View.RowCount := Model.Count + Ord(Model.Count=0)
   else
-    View.RowCount := Model.CountNotDeleted;
+    View.RowCount := Model.CountNotDeleted+ Ord(Model.CountNotDeleted=0);
   View.FixedRows := 1;
 end;
 
