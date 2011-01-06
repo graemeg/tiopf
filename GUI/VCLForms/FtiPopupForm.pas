@@ -202,7 +202,7 @@ end;
 
 procedure TFormTIPopupData.FormHide(Sender: TObject);
 begin
-  GAMS.FormMgr.ActiveForm.SetEscapeKeyEnabled(True);
+  GAMS.SetEscapeKeyEnabled(True);
 end;
 
 function TFormTIPopupData.FormIsValid(out AMessage: string): boolean;
@@ -220,7 +220,7 @@ end;
 
 procedure TFormTIPopupData.FormShow(Sender: TObject);
 begin
-  GAMS.FormMgr.ActiveForm.SetEscapeKeyEnabled(False);
+  GAMS.SetEscapeKeyEnabled(False);
 end;
 
 function TFormTIPopupData.GetData: TtiObject;

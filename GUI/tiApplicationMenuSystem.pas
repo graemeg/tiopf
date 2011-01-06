@@ -163,6 +163,7 @@ type
     FBruteForceNoFlicker: TtiBruteForceNoFlicker;
     FAboutFormClass : TFormClass;
     FLblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent;
+    FEscapeContextAction: TAction;
 
     procedure CreateDockSystem;
     procedure CreateContainerPanels;
@@ -280,7 +281,7 @@ type
      function    AddMenuSidebarItem(const pAction: TAction; const pSideBarGroup: TdxWinXPBar = nil): TdxWinXPBarItem;
 
      procedure   ClearContextActions;
-     procedure   AddContextAction(const pAction: TAction);
+     procedure   AddContextAction(const AAction: TAction);
      procedure   AddContextActions(const AList: TList);
      property    ContextMenuSideBar: TdxWinXPBar read FdxWinXPBarContext;
      property    dxContainer : TdxContainer read FdxContainer;
@@ -289,6 +290,8 @@ type
      property    StatusPanelMessage: string read GetStatusPannelMessage write SetStatusPannelMessage;
 
      procedure   MouseToContextMenuSideBar;
+     procedure   SetEscapeKeyEnabled(const AValue: boolean);
+
 
    end;
 
@@ -638,6 +641,7 @@ begin
   CreateContextMenuItems;
   FMainForm.OnResize := OnMainFormResize;
   FLblMessageOnHotSpotClickEvent:= ALblMessageOnHotSpotClickEvent;
+  FEscapeContextAction:= nil;
 
 end;
 
@@ -1536,14 +1540,20 @@ begin
   FdxWinXPBarContext.Visible := False;
 end;
 
-procedure TtiApplicationMenuSystem.AddContextAction(const pAction: TAction);
+procedure TtiApplicationMenuSystem.AddContextAction(const AAction: TAction);
 begin
-  AddMenuItem(pAction, FtbxContextMenu);
-  AddMenuSidebarItem(pAction, FdxWinXPBarContext);
+  AddMenuItem(AAction, FtbxContextMenu);
+  AddMenuSidebarItem(AAction, FdxWinXPBarContext);
+  if (AAction.ShortCut = Shortcut(Word(VK_ESCAPE), [])) then
+  begin
+    Assert(FEscapeContextAction = nil, 'EscapeContextAction <> nil');
+    FEscapeContextAction:= AAction;
+  end;
 end;
 
 procedure TtiApplicationMenuSystem.ClearContextActions;
 begin
+  FEscapeContextAction:= nil;
   FtbxContextMenu.Visible := False;
   FdxWinXPBarContext.Visible := False;
   FtbxContextMenu.Clear;
@@ -1623,6 +1633,22 @@ end;
 function TtiApplicationMenuSystem.GetFormCaption: TCaption;
 begin
   Result := FlblCaption.Caption;
+end;
+
+procedure TtiApplicationMenuSystem.SetEscapeKeyEnabled(const AValue: boolean);
+var
+  i: integer;
+begin
+  if FEscapeContextAction = nil then
+    Exit; //==>
+
+  if AValue then
+    FEscapeContextAction.ShortCut := Shortcut(Word(VK_ESCAPE), [])
+  else
+    FEscapeContextAction.ShortCut:= 0;
+
+  FormMgr.ActiveForm.SetEscapeKeyEnabled(True);
+
 end;
 
 procedure TtiApplicationMenuSystem.SetFormCaption(const AValue: TCaption);
