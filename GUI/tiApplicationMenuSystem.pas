@@ -1714,6 +1714,12 @@ begin
     if Assigned(FLblMessageOnHotSpotClickEvent) then
       FLblMessageOnHotSpotClickEvent(ASrc);
     AHandled := true;
+  end
+  // 'http://...'
+  else if Pos(CTIProtocolHTTP + ':', ASrc) = 1 then
+  begin
+    tiShellExecute(ASrc);
+    AHandled := true;
   end;
 end;
 

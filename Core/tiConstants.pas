@@ -61,6 +61,7 @@ const
   cTIDBProxyServiceName = 'tiDBProxyServer';
   cSecToTimeOutLocked = 999999;
 
+  CTIProtocolHTTP = 'http';
   CTIProtocolFile = 'file';
   CTIProtocolSelf = 'self';
 
