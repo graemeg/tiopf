@@ -690,14 +690,15 @@ begin
     lValue := TtiObject(typinfo.GetObjectProp(Subject, FieldName))
   else
     RaiseMediatorError(cErrorPropertyNotClass);
-
-  for i := 0 to ValueList.Count - 1 do
-    if ValueList.Items[i].Equals(lValue) then
-    begin
-      View.ItemIndex := i;
-      Break; //==>
-    end;
-
+  if Assigned(lValue) then // only check if property isn't nil.
+  begin
+    for i := 0 to ValueList.Count - 1 do
+      if ValueList.Items[i].Equals(lValue) then
+      begin
+        View.ItemIndex := i;
+        Break; //==>
+      end;
+  end;
   SetOnChangeActive(true);
 end;
 
