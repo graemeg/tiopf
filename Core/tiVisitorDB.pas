@@ -132,7 +132,6 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    procedure Execute(const AVisited: TtiVisited); override;
     class function VisitorControllerClass: TtiVisitorControllerClass; override;
     property Visited: TtiObject read GetVisited write SetVisited;
   end;
@@ -198,11 +197,6 @@ destructor TtiObjectVisitor.Destroy;
 begin
   FQuery.Free;
   inherited;
-end;
-
-procedure TtiObjectVisitor.Execute(const AVisited: TtiVisited);
-begin
-  inherited Execute(AVisited);
 end;
 
 procedure TtiObjectVisitor.Final(const AVisited: TtiObject);
