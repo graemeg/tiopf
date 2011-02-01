@@ -154,12 +154,12 @@ type
     property    ShowFocusRect;
     property    ShowHint;
     property    ParentColor;
-    property    ParentCtl3D;
     property    ParentFont;
     {$IFDEF FPC}
     property    Hint;
     {$ELSE}
     property    Hint read FHint write SetHint;
+    property    ParentCtl3D;
     {$ENDIF}
 
     property    OnChangeDelayInterval: Cardinal read FOnChangeDelayInterval write FOnChangeDelayInterval;
@@ -836,10 +836,10 @@ begin
   FLabel.FocusControl := FWinControl;
 
   {$IFDEF FPC}
-  Include(FLabel.ComponentStyle, csSubComponent);
-  Include(FLabel.ControlStyle, csNoDesignSelectable);
-  Include(FWinControl.ComponentStyle, csSubComponent);
-  Include(FWinControl.ControlStyle, csNoDesignSelectable);
+  FLabel.SetSubComponent(True);
+  FLabel.ControlStyle := FLabel.ControlStyle + [csNoDesignSelectable];
+  FWinControl.SetSubComponent(True);
+  FWinControl.ControlStyle := FWinControl.ControlStyle + [csNoDesignSelectable];
   {$ENDIF}
   FLabel.FreeNotification(Self);
   FWinControl.FreeNotification(Self);

@@ -46,7 +46,6 @@ type
     {$ENDIF}
     {$ENDIF}
     property ParentColor;
-    property ParentCtl3D;
     property ParentFont;
     property ParentShowHint;
     property PopupMenu;
@@ -55,6 +54,7 @@ type
     property TabStop;
     property Visible;
     {$IFNDEF FPC}
+    property ParentCtl3D;
     property OnCanResize;
     {$ENDIF}
     property OnClick;

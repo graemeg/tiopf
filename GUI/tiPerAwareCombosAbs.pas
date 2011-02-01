@@ -132,7 +132,6 @@ begin
   Color      := clBtnFace;
   BevelOuter := bvNone;
   BorderWidth := 1;
-  Ctl3D := false;
   BorderStyle := bsSingle;
 
   FSpeedButton := TtiSpeedButton.Create(self);
@@ -141,6 +140,7 @@ begin
   FSpeedButton.parent := self;
   FSpeedButton.ParentFont := true;
   {$IFNDEF FPC}
+  Ctl3D := false;
   FSpeedButton.glyph.LoadFromResourceName(HInstance, 'PAITHREEDOTS');
   FSpeedButton.glyphHot.LoadFromResourceName(HInstance, 'PAITHREEDOTS');
   FSpeedButton.GlyphDisabled.LoadFromResourceName(HInstance, 'PAITHREEDOTS_D');
@@ -171,10 +171,10 @@ begin
   FEdit.ParentFont := true;
 
   {$IFDEF FPC}
-  Include(FEdit.ComponentStyle, csSubComponent);
-  Include(FEdit.ControlStyle, csNoDesignSelectable);
-  Include(FSpeedButton.ComponentStyle, csSubComponent);
-  Include(FSpeedButton.ControlStyle, csNoDesignSelectable);
+  FEdit.SetSubComponent(True);
+  FEdit.ControlStyle := FEdit.ControlStyle + [csNoDesignSelectable];
+  FSpeedButton.SetSubComponent(True);
+  FSpeedButton.ControlStyle := FSpeedButton.ControlStyle + [csNoDesignSelectable];
   {$ENDIF}
   FEdit.FreeNotification(Self);
   FSpeedButton.FreeNotification(Self);
