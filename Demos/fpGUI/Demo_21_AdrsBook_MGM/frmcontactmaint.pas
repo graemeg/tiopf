@@ -41,6 +41,8 @@ type
     procedure SetupMediators;
     procedure btnDebugClicked(Sender: TObject);
     procedure btnEditClicked(Sender: TObject);
+    procedure btnAddClicked(Sender: TObject);
+    procedure btnDelClicked(Sender: TObject);
   public
     procedure AfterCreate; override;
     property  Data: TContact read FData write SetData;
@@ -115,6 +117,35 @@ begin
   begin
     // do nothing
   end;
+end;
+
+procedure TContactEditForm.btnAddClicked(Sender: TObject);
+var
+  obj: TAddress;
+begin
+  obj := TAddress.CreateNew;
+  if Assigned(obj) then
+  begin
+    if EditAddress(obj) then
+      FData.AddressList.Add(obj)
+    else
+      obj.Free;
+  end;
+end;
+
+procedure TContactEditForm.btnDelClicked(Sender: TObject);
+var
+  obj: TAddress;
+begin
+  obj := TAddress(TtiListViewMediatorView(FAdrsMediator.FindByComponent(lvAddresses).Mediator).SelectedObject);
+  if Assigned(obj) then
+  begin
+    if tiAppConfirmation('Are you sure you want to delete this item?') then
+    begin
+      obj.Deleted := True;
+    end;
+  end;
+
 end;
 
 procedure TContactEditForm.SetData(const AValue: TContact);
@@ -286,7 +317,7 @@ begin
     Hint := '';
     ImageName := '';
     TabOrder := 14;
-    Enabled := False;
+    OnClick := @btnAddClicked;
   end;
 
   btnEdit := TfpgButton.Create(self);
@@ -312,7 +343,7 @@ begin
     Hint := '';
     ImageName := '';
     TabOrder := 16;
-    Enabled := False;
+    OnClick := @btnDelClicked;
   end;
 
   btnDebug := TfpgButton.Create(self);
