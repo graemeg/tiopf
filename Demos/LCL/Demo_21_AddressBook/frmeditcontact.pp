@@ -37,6 +37,7 @@ type
     procedure BDeleteClick(Sender: TObject);
     procedure BEditClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure BAddClick(Sender: TObject);
   private
     FData: TContact;
     FMediator: TtiModelMediator;
@@ -92,6 +93,20 @@ end;
 procedure TContactEditForm.Button1Click(Sender: TObject);
 begin
   tiShowString(FData.AsDebugString);
+end;
+
+procedure TContactEditForm.BAddClick(Sender: TObject);
+var
+  A: TAddress;
+begin
+  A := TAddress.CreateNew;
+  if Assigned(A) then
+  begin
+    if EditAddress(A) then
+      FData.AddressList.Add(A)
+    else
+      A.Free;
+  end;
 end;
 
 procedure TContactEditForm.BDeleteClick(Sender: TObject);
