@@ -4,40 +4,39 @@ LazarusResources.Add('TEditAddressForm','FORMDATA',[
   'TPF0'#16'TEditAddressForm'#15'EditAddressForm'#4'Left'#3'f'#2#6'Height'#3#24
   +#1#3'Top'#3#231#0#5'Width'#3'%'#1#13'ActiveControl'#7#6'CBType'#7'Caption'#6
   +#12'Edit address'#12'ClientHeight'#3#24#1#11'ClientWidth'#3'%'#1#8'Position'
-  +#7#16'poMainFormCenter'#10'LCLVersion'#6#6'0.9.27'#0#6'TLabel'#7'LCBType'#4
-  +'Left'#2#18#6'Height'#2#18#3'Top'#2#4#5'Width'#2'*'#7'Caption'#6#5'T&ype'#12
+  +#7#16'poMainFormCenter'#10'LCLVersion'#6#8'0.9.30.1'#0#6'TLabel'#7'LCBType'#4
+  +'Left'#2#18#6'Height'#2#18#3'Top'#2#4#5'Width'#2#29#7'Caption'#6#5'T&ype'#12
   +'FocusControl'#7#6'CBType'#11'ParentColor'#8#10'ParentFont'#8#0#0#6'TLabel'#8
-  +'LENumber'#4'Left'#2#18#6'Height'#2#18#3'Top'#2'6'#5'Width'#2'@'#7'Caption'#6
+  +'LENumber'#4'Left'#2#18#6'Height'#2#18#3'Top'#2'6'#5'Width'#2'5'#7'Caption'#6
   +#7'N&umber'#12'FocusControl'#7#7'ENumber'#11'ParentColor'#8#10'ParentFont'#8
   +#0#0#6'TLabel'#8'LEStreet'#4'Left'#2'q'#6'Height'#2#18#3'Top'#2'6'#5'Width'#2
-  +'4'#7'Caption'#6#7'&Street'#12'FocusControl'#7#7'EStreet'#11'ParentColor'#8
+  +')'#7'Caption'#6#7'&Street'#12'FocusControl'#7#7'EStreet'#11'ParentColor'#8
   +#10'ParentFont'#8#0#0#6'TLabel'#7'LCBCity'#4'Left'#2#18#6'Height'#2#18#3'Top'
-  +#2'e'#5'Width'#2'$'#7'Caption'#6#5'&City'#12'FocusControl'#7#6'CBCity'#11'Pa'
+  +#2'e'#5'Width'#2#25#7'Caption'#6#5'&City'#12'FocusControl'#7#6'CBCity'#11'Pa'
   +'rentColor'#8#10'ParentFont'#8#0#0#6'TLabel'#12'LETelephone1'#4'Left'#2#18#6
-  +'Height'#2#18#3'Top'#3#151#0#5'Width'#2'c'#7'Caption'#6#13'Telephone #&1'#12
+  +'Height'#2#18#3'Top'#3#151#0#5'Width'#2'X'#7'Caption'#6#13'Telephone #&1'#12
   +'FocusControl'#7#11'ETelephone1'#11'ParentColor'#8#10'ParentFont'#8#0#0#6'TL'
-  +'abel'#5'LEFax'#4'Left'#2#18#6'Height'#2#18#3'Top'#3#200#0#5'Width'#2'!'#7'C'
+  +'abel'#5'LEFax'#4'Left'#2#18#6'Height'#2#18#3'Top'#3#200#0#5'Width'#2#22#7'C'
   +'aption'#6#4'&Fax'#12'FocusControl'#7#4'EFax'#11'ParentColor'#8#10'ParentFon'
   +'t'#8#0#0#6'TLabel'#12'LETelephone2'#4'Left'#3#160#0#6'Height'#2#18#3'Top'#3
-  +#151#0#5'Width'#2'c'#7'Caption'#6#13'Telephone #&2'#12'FocusControl'#7#11'ET'
+  +#151#0#5'Width'#2'X'#7'Caption'#6#13'Telephone #&2'#12'FocusControl'#7#11'ET'
   +'elephone2'#11'ParentColor'#8#10'ParentFont'#8#0#0#9'TComboBox'#6'CBType'#4
-  +'Left'#2#18#6'Height'#2#29#3'Top'#2#24#5'Width'#3#6#1#12'AutoComplete'#8#10
-  +'ItemHeight'#2#0#9'ItemWidth'#2#0#9'MaxLength'#4#255#255#0#0#10'ParentFont'#8
-  +#8'TabOrder'#2#0#4'Text'#6#6'CBType'#0#0#5'TEdit'#7'ENumber'#4'Left'#2#18#6
-  +'Height'#2#23#3'Top'#2'H'#5'Width'#2'P'#10'ParentFont'#8#8'TabOrder'#2#1#4'T'
-  +'ext'#6#7'ENumber'#0#0#5'TEdit'#7'EStreet'#4'Left'#2'r'#6'Height'#2#23#3'Top'
-  +#2'J'#5'Width'#3#166#0#10'ParentFont'#8#8'TabOrder'#2#2#4'Text'#6#7'EStreet'
-  +#0#0#9'TComboBox'#6'CBCity'#4'Left'#2#18#6'Height'#2#29#3'Top'#2'x'#5'Width'
-  +#3#4#1#12'AutoComplete'#8#10'ItemHeight'#2#0#9'ItemWidth'#2#0#9'MaxLength'#4
-  +#255#255#0#0#10'ParentFont'#8#8'TabOrder'#2#3#4'Text'#6#6'CBCity'#0#0#5'TEdi'
-  +'t'#11'ETelephone1'#4'Left'#2#18#6'Height'#2#23#3'Top'#3#168#0#5'Width'#2'n'
-  +#10'ParentFont'#8#8'TabOrder'#2#4#4'Text'#6#11'ETelephone1'#0#0#5'TEdit'#11
-  +'ETelephone2'#4'Left'#3#160#0#6'Height'#2#23#3'Top'#3#168#0#5'Width'#2'v'#10
-  +'ParentFont'#8#8'TabOrder'#2#5#4'Text'#6#11'ETelephone2'#0#0#5'TEdit'#4'EFax'
-  +#4'Left'#2#18#6'Height'#2#23#3'Top'#3#216#0#5'Width'#2'P'#10'ParentFont'#8#8
-  +'TabOrder'#2#6#4'Text'#6#4'EFax'#0#0#7'TButton'#7'BCancel'#4'Left'#3#216#0#6
-  +'Height'#2#25#3'Top'#3#240#0#5'Width'#2'K'#7'Caption'#6#7'&Cancel'#11'ModalR'
-  +'esult'#2#2#10'ParentFont'#8#8'TabOrder'#2#7#0#0#7'TButton'#5'BSave'#4'Left'
-  +#3#136#0#6'Height'#2#25#3'Top'#3#240#0#5'Width'#2'K'#7'Caption'#6#5'Sa&ve'#10
-  +'ParentFont'#8#8'TabOrder'#2#8#0#0#0
+  +'Left'#2#18#6'Height'#2#27#3'Top'#2#24#5'Width'#3#6#1#10'ItemHeight'#2#0#9'M'
+  +'axLength'#4#255#255#0#0#10'ParentFont'#8#8'TabOrder'#2#0#4'Text'#6#6'CBType'
+  +#0#0#5'TEdit'#7'ENumber'#4'Left'#2#18#6'Height'#2#25#3'Top'#2'H'#5'Width'#2
+  +'P'#10'ParentFont'#8#8'TabOrder'#2#1#4'Text'#6#7'ENumber'#0#0#5'TEdit'#7'ESt'
+  +'reet'#4'Left'#2'r'#6'Height'#2#25#3'Top'#2'J'#5'Width'#3#166#0#10'ParentFon'
+  +'t'#8#8'TabOrder'#2#2#4'Text'#6#7'EStreet'#0#0#9'TComboBox'#6'CBCity'#4'Left'
+  +#2#18#6'Height'#2#27#3'Top'#2'x'#5'Width'#3#4#1#10'ItemHeight'#2#0#9'MaxLeng'
+  +'th'#4#255#255#0#0#10'ParentFont'#8#8'TabOrder'#2#3#4'Text'#6#6'CBCity'#0#0#5
+  +'TEdit'#11'ETelephone1'#4'Left'#2#18#6'Height'#2#25#3'Top'#3#168#0#5'Width'#2
+  +'n'#10'ParentFont'#8#8'TabOrder'#2#4#4'Text'#6#11'ETelephone1'#0#0#5'TEdit'
+  +#11'ETelephone2'#4'Left'#3#160#0#6'Height'#2#25#3'Top'#3#168#0#5'Width'#2'v'
+  +#10'ParentFont'#8#8'TabOrder'#2#5#4'Text'#6#11'ETelephone2'#0#0#5'TEdit'#4'E'
+  +'Fax'#4'Left'#2#18#6'Height'#2#25#3'Top'#3#216#0#5'Width'#2'P'#10'ParentFont'
+  +#8#8'TabOrder'#2#6#4'Text'#6#4'EFax'#0#0#7'TButton'#7'BCancel'#4'Left'#3#216
+  +#0#6'Height'#2#25#3'Top'#3#240#0#5'Width'#2'K'#7'Caption'#6#7'&Cancel'#11'Mo'
+  +'dalResult'#2#2#10'ParentFont'#8#8'TabOrder'#2#7#0#0#7'TButton'#5'BSave'#4'L'
+  +'eft'#3#136#0#6'Height'#2#25#3'Top'#3#240#0#5'Width'#2'K'#7'Caption'#6#5'Sa&'
+  +'ve'#11'ModalResult'#2#1#10'ParentFont'#8#8'TabOrder'#2#8#0#0#0
 ]);

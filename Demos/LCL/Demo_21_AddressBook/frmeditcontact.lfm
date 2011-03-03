@@ -10,12 +10,12 @@ object ContactEditForm: TContactEditForm
   ClientHeight = 330
   ClientWidth = 539
   Position = poMainFormCenter
-  LCLVersion = '0.9.29'
+  LCLVersion = '0.9.30.1'
   object LEFirstName: TLabel
     Left = 10
     Height = 18
     Top = 7
-    Width = 79
+    Width = 68
     Caption = '&First name'
     FocusControl = EFirstName
     ParentColor = False
@@ -25,7 +25,7 @@ object ContactEditForm: TContactEditForm
     Left = 10
     Height = 18
     Top = 56
-    Width = 80
+    Width = 69
     Caption = '&Last name'
     FocusControl = ELastName
     ParentColor = False
@@ -35,7 +35,7 @@ object ContactEditForm: TContactEditForm
     Left = 10
     Height = 18
     Top = 104
-    Width = 47
+    Width = 36
     Caption = '&Email'
     FocusControl = EEmail
     ParentColor = False
@@ -45,7 +45,7 @@ object ContactEditForm: TContactEditForm
     Left = 10
     Height = 18
     Top = 152
-    Width = 53
+    Width = 42
     Caption = '&Mobile'
     FocusControl = EMobile
     ParentColor = False
@@ -55,7 +55,7 @@ object ContactEditForm: TContactEditForm
     Left = 10
     Height = 18
     Top = 200
-    Width = 83
+    Width = 72
     Caption = '&Comments'
     FocusControl = MComments
     ParentColor = False
@@ -65,7 +65,7 @@ object ContactEditForm: TContactEditForm
     Left = 256
     Height = 18
     Top = 10
-    Width = 83
+    Width = 72
     Caption = 'Add&resses:'
     ParentColor = False
     ParentFont = False
@@ -80,7 +80,7 @@ object ContactEditForm: TContactEditForm
   end
   object EFirstName: TEdit
     Left = 10
-    Height = 27
+    Height = 25
     Top = 24
     Width = 206
     ParentFont = False
@@ -89,7 +89,7 @@ object ContactEditForm: TContactEditForm
   end
   object ELastName: TEdit
     Left = 10
-    Height = 27
+    Height = 25
     Top = 72
     Width = 206
     ParentFont = False
@@ -98,7 +98,7 @@ object ContactEditForm: TContactEditForm
   end
   object EEmail: TEdit
     Left = 10
-    Height = 27
+    Height = 25
     Top = 120
     Width = 206
     ParentFont = False
@@ -107,7 +107,7 @@ object ContactEditForm: TContactEditForm
   end
   object EMobile: TEdit
     Left = 10
-    Height = 27
+    Height = 25
     Top = 168
     Width = 206
     ParentFont = False
@@ -139,6 +139,7 @@ object ContactEditForm: TContactEditForm
     Top = 158
     Width = 75
     Caption = '&Add'
+    OnClick = BAddClick
     ParentFont = False
     TabOrder = 7
   end
@@ -184,7 +185,7 @@ object ContactEditForm: TContactEditForm
   end
   object EDateOfBirth: TDateEdit
     Left = 259
-    Height = 27
+    Height = 25
     Top = 216
     Width = 133
     CalendarDisplaySettings = [dsShowHeadings, dsShowDayNames]
@@ -244,9 +245,9 @@ object ContactEditForm: TContactEditForm
   end
   object chkIsConfirmed: TCheckBox
     Left = 264
-    Height = 22
+    Height = 21
     Top = 256
-    Width = 160
+    Width = 158
     Caption = 'Are details confirmed'
     TabOrder = 13
   end
