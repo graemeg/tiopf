@@ -40,6 +40,7 @@ type
     destructor Destroy; override;
     function  View: TListView; reintroduce;
     procedure HandleSelectionChanged; override;
+    procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation); override;
   end;
 
 
@@ -120,13 +121,18 @@ procedure TtiListViewMediatorView.SetSelectedObject(const AValue: TtiObject);
 var
   i: integer;
 begin
-  for i := 0 to View.Items.Count - 1 do
-    if TtiListItemMediator(View.Items[i].Data).Model = AValue then
-    begin
-      View.Selected:=View.Items.Item[i];
-      //HandleSelectionChanged;
-      Exit; //==>
-    end;
+  If (AValue=Nil) then
+    View.Selected:=Nil
+  else
+  begin
+    for i := 0 to View.Items.Count - 1 do
+      if TtiListItemMediator(View.Items[i].Data).Model = AValue then
+      begin
+        View.Selected:=View.Items.Item[i];
+        //HandleSelectionChanged;
+        Exit; //==>
+      end;
+  end;
 end;
 
 function TtiListViewMediatorView.GetSelectedObject: TtiObject;
@@ -195,13 +201,20 @@ begin
 end;
 
 procedure TtiListViewMediatorView.RebuildList;
+var
+  S: TtiObject;
 begin
   { This rebuilds the whole list. Not very efficient. You can always override
     this in your mediators to create a more optimised rebuild. }
+  S := GetSelectedObject;
   View.BeginUpdate;
   try
     CreateColumns;
     CreateSubMediators;
+    if (S <> Nil) then
+      SetSelectedObject(S);
+    if (View.Selected = Nil) and (View.Items.Count > 0) then
+      View.Selected := View.Items[0];
   finally
     View.EndUpdate;
   end;
@@ -212,6 +225,19 @@ begin
   if not AValue then
     ClearList;
   inherited SetActive(AValue);
+end;
+
+procedure TtiListViewMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
+var
+  C: integer;
+begin
+  if Assigned(View) then
+    C := View.Items.Count
+  else
+    C := -1;
+  inherited Update(ASubject, AOperation);
+  if (AOperation = noAddItem) and (C = 0) and (View.Selected = Nil) and (View.Items.Count = 1) then
+     View.Selected := View.Items[0];
 end;
 
 procedure TtiListViewMediatorView.DoDeleteItemMediator(AIndex: Integer;
