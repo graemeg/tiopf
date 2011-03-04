@@ -490,7 +490,8 @@ end;
 
 procedure TtiStringGridMediatorView.ClearList;
 begin
-  MediatorList.Clear;
+  if Assigned(MediatorList) then
+    MediatorList.Clear;
   if View <> nil then
     View.RowCount:=1;
 end;

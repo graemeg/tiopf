@@ -235,7 +235,8 @@ end;
 
 procedure TtiListViewMediatorView.ClearList;
 begin
-  MediatorList.Clear;
+  if Assigned(MediatorList) then
+    MediatorList.Clear;
   if View <> nil then
     View.Items.Clear;
 end;
@@ -506,7 +507,8 @@ end;
 
 procedure TtiStringGridMediatorView.ClearList;
 begin
-  MediatorList.Clear;
+  if Assigned(MediatorList) then
+    MediatorList.Clear;
   if View <> nil then
     View.RowCount := 0;  { Don't call View.Clear because then the Header is gone too }
 end;

@@ -450,7 +450,7 @@ begin
     FView.RemoveFreeNotification(FViewHelper);
 //  Active := false;
   Subject := nil; // Will call DetachObserver
-  FViewHelper.Free;
+  FreeAndNil(FViewHelper);
   inherited Destroy;
 end;
 
@@ -1297,9 +1297,14 @@ end;
 
 procedure TtiCustomListMediatorView.SetSubject(const AValue: TtiObject);
 begin
+  if (AValue=GetSubject) then Exit;
   if (AValue <> nil) then
+  begin
     if not (AValue is TtiObjectList) then
       RaiseMediatorError(SErrNotListObject, [AValue.ClassName]);
+  end
+  else
+    ClearList;
   FListChanged:=True;
   inherited SetSubject(AValue);
 end;
@@ -1443,8 +1448,8 @@ end;
 destructor TtiCustomListMediatorView.Destroy;
 begin
   Active:=False;
-  FMediatorList.Free;
-  FFieldsInfo.Free;
+  FreeAndNil(FMediatorList);
+  FreeAndNil(FFieldsInfo);
   inherited Destroy;
 end;
 
