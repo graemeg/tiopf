@@ -8,7 +8,7 @@
   * If you application doesn't terminate when you activated LogToGUI, it probably
     means a TThread.WaitFor deadlock occured. In that case, call ReleaseLog()
     after fpgApplication.Run in you project's *.lpr file.
-  * Alternatively, the LogToGUI form was accidentaly set as Application.MainForm,
+  * Alternatively, the LogToGUI form was accidentally set as Application.MainForm,
     because it was the first form created.
 }
 unit tiLogToGUI;
@@ -45,6 +45,7 @@ type
     procedure   FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure   FormLogLevelButtonClick(Sender: TObject);
     procedure   DoViewLogFile(Sender: TObject);
+    procedure   CopyToClipboardMenuItemClick(Sender: TObject);
     procedure   DoOnPopup(Sender: TObject);
     procedure   WriteToMemo(const AMessage: string);
     procedure   UpdateStatus(const AMessage: string);
@@ -143,6 +144,8 @@ begin
   lMenuItem.Name            := 'N1';
   lMenuItem                 := FPopupMenu.AddMenuItem('Clear', '', @FormClearMenuItemClick);
   lMenuItem.Name            := 'ClearMenuItem';
+  lMenuItem                 := FPopupMenu.AddMenuItem('Copy to clipboard', '', @CopyToClipboardMenuItemClick);
+  lMenuItem.Name            := 'CopyToClipboardMenuItem';
   lMenuItem                 := FPopupMenu.AddMenuItem('Word wrap', '', @FormWordWrapMenuItemClick);
   lMenuItem.Name            := 'WordWrapMenuItem';
   lMenuItem.Enabled         := False;
@@ -331,6 +334,11 @@ begin
       sl.Free;
     end;
   end;
+end;
+
+procedure TtiLogToGUI.CopyToClipboardMenuItemClick(Sender: TObject);
+begin
+  FMemoLog.CopyToClipboard;
 end;
 
 procedure TtiLogToGUI.DoOnPopup(Sender: TObject);
