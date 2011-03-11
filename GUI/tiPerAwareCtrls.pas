@@ -2895,7 +2895,7 @@ end;
 
 function TtiPerAwareComboBoxStatic.GetValueObject: TtiObject;
 begin
-  if ItemIndex <> -1 then
+  if not (csDesigning in ComponentState) and (ItemIndex <> -1) then
     result:= Items.Objects[ItemIndex] as TtiObject
   else
     result:= nil;
