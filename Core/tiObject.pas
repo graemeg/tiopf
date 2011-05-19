@@ -1,6 +1,10 @@
 {:@summary The base unit for tiOPF.
    @desc Contains all the base classes used throughout the framework.}
 
+
+{ TODO : Write unit tests for TtiObjectVisitorSetObjectStateToDelete functionality. }
+
+
 unit tiObject;
 
 {$I tiDefines.inc}
@@ -1314,16 +1318,17 @@ type
     TtiObject(AVisited).ObjectState := posDelete;
   end;
 
-  function TtiObjectVisitorSetObjectStateToDelete.VisitBranch(
-    const ADerivedParent, AVisited: TtiVisited): boolean;
-  var
-    LVisited: TtiObject;
+  function TtiObjectVisitorSetObjectStateToDelete.VisitBranch(const ADerivedParent, AVisited: TtiVisited): boolean;
+  //var
+  //  LVisited: TtiObject;
   begin
-    Assert(ADerivedParent.TestValid(TtiObject, True), CTIErrorInvalidObject);
-    Assert(AVisited.TestValid(TtiObject), CTIErrorInvalidObject);
-    LVisited:= AVisited as TtiObject;
-    result:= (ADerivedParent = nil) or
-      (ADerivedParent = LVisited.Owner)
+    //Assert(ADerivedParent.TestValid(TtiObject, True), CTIErrorInvalidObject);
+    //Assert(AVisited.TestValid(TtiObject), CTIErrorInvalidObject);
+    //LVisited:= AVisited as TtiObject;
+    //result:= (ADerivedParent = nil) or
+    //  (ADerivedParent = LVisited.Owner)
+
+    Result := inherited VisitBranch(ADerivedParent, AVisited);
   end;
 
 procedure TtiObject.SetDeleted(const AValue: boolean);
