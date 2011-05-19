@@ -437,7 +437,8 @@ constructor TtiMediatorView.CreateCustom(AView: TComponent; ASubject: TtiObject;
 begin
   Create;
   FSettingUp   := True;
-  FieldName    := AFieldName;
+  FieldName    := tiValueFieldName(AFieldName);
+  RootFieldName := tiRootFieldName(AFieldName);
   GUIFieldName := AGUIFieldName;
   Subject      := ASubject;
   SetView(AView); // At this point, SetupGUIAndObject is called
