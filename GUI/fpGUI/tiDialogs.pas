@@ -212,7 +212,7 @@ end;
 
 function tiAppConfirmation(const AMessage: TfpgString; ATitle: TfpgString = ''): boolean;
 begin
-  Result := TfpgMessageDialog.Question(ATitle, AMessage) = mbYes
+  Result := TfpgMessageDialog.Question(ATitle, AMessage) = mbYes;
 end;
 
 function tiAppConfirmation(const AMessage: TfpgString;
