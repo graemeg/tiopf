@@ -427,7 +427,7 @@ type
     {: The type of class that owns this object. If I am owned by a TtiObjectList,
        then my owner is the object responsible for my destruction.}
     property    Owner: TtiObject read GetOwner write SetOwner;
-    {: The parent of this object. By default, my parent is the same as my object,
+    {: The parent of this object. By default, my parent is the same as my Owner,
        except if I'm owned by a list when my parent will be the owner of the list.
        Parent is used to help determine foreign key relationships.}
     property    Parent: TtiObject read GetParent;
