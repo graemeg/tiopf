@@ -302,7 +302,7 @@ begin
   gMediatorManager.RegisterMediator(TtiComboBoxMediatorView, TtiObject, [tkSString,tkAString]);
   gMediatorManager.RegisterMediator(TtiItemComboBoxMediatorView, TtiObject, [tkInteger, tkEnumeration]);
   gMediatorManager.RegisterMediator(TtiDynamicComboBoxMediatorView, TtiObject, [tkClass]);
-  gMediatorManager.RegisterMediator(TtiStaticTextMediatorView, TtiObject);
+  gMediatorManager.RegisterMediator(TtiStaticTextMediatorView, TtiObject, [tkSString,tkAString,tkLString,tkWString,tkUString]);
   gMediatorManager.RegisterMediator(TtiTrackBarMediatorView, TtiObject, [tkInteger]);
   gMediatorManager.RegisterMediator(TtiMemoMediatorView, TtiObject, [tkSString,tkAString,tkLString,tkWString,tkUString]);
   gMediatorManager.RegisterMediator(TtiCalendarComboMediatorView, TtiObject, [tkFloat]);
@@ -334,7 +334,6 @@ var
   oError: TtiObjectError;
 begin
   inherited UpdateGuiValidStatus(pErrors);
-
   oError := pErrors.FindByErrorProperty(RootFieldName);
   if oError <> nil then
   begin
