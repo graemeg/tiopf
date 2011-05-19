@@ -38,7 +38,7 @@ uses
   // Show a error message
   procedure tiAppError(const AMessage: TfpgString; ATitle: TfpgString = '');
 
-  // A type of notification window that will disappear by it self
+  // A type of notification window that will disappear by itself
   procedure tiProcessing(const AMessage: TfpgString);
   procedure tiEndProcessing;
 
