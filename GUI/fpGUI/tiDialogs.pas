@@ -40,6 +40,7 @@ uses
 
   // A type of notification window that will disappear by itself
   procedure tiProcessing(const AMessage: TfpgString);
+  procedure tiProcessingUpdate(const AUpdateMessage: TfpgString);
   procedure tiEndProcessing;
 
 implementation
@@ -247,6 +248,15 @@ begin
   else
     TProcessingForm(pWorkingForm).lblMessage.Text := AMessage;
   fpgApplication.ProcessMessages;
+end;
+
+procedure tiProcessingUpdate(const AUpdateMessage: TfpgString);
+begin
+  if Assigned(pWorkingForm) then
+  begin
+    TProcessingForm(pWorkingForm).lblMessage.Text := AUpdateMessage;
+    fpgApplication.ProcessMessages;
+  end;
 end;
 
 procedure tiEndProcessing;
