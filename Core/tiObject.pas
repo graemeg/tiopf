@@ -926,6 +926,7 @@ uses
    tiConstants
   ,tiOPFManager
   ,tiUtils
+  ,tiLog
   // Delphi
   ,SysUtils
   ,Math
@@ -1304,6 +1305,7 @@ type
     Assert(AVisited.TestValid(TtiObject), CTIErrorInvalidObject);
     LVisited:= AVisited as TtiObject;
     result := LVisited.ObjectState <> posDeleted;
+    Log([ClassName, LVisited.ClassName, LVisited.ObjectStateAsString, Result], lsAcceptVisitor);
   end;
 
   procedure TtiObjectVisitorSetObjectStateToDelete.Execute(const AVisited: TtiVisited);
