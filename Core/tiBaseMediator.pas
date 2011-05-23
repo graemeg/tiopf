@@ -1472,8 +1472,19 @@ begin
     noDeleteItem : ItemDeleted(ASubject);
     noFree       : if (ASubject = FSubject) then
                      Subject := nil;
-    noChanged    : if FListChanged or (Model.Count<>MediatorList.Count) or (Model.Count=0) then // Safety measure
-                     RebuildList;
+    noChanged    :
+                  begin
+                    if ShowDeleted then
+                    begin
+                      if FListChanged or (Model.Count<>MediatorList.Count) or (Model.Count=0) then // Safety measure
+                       RebuildList;
+                    end
+                    else
+                    begin
+                      if FListChanged or (Model.CountNotDeleted<>MediatorList.Count) or (Model.CountNotDeleted=0) then // Safety measure
+                       RebuildList;
+                    end;
+                  end;
     noReSort     : RebuildList;
   end;
 end;
