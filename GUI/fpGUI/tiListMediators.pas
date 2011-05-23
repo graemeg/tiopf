@@ -255,8 +255,8 @@ end;
 procedure TtiListViewMediatorView.SetActive(const AValue: Boolean);
 begin
   inherited SetActive(AValue);
-  if not AValue then
-    ClearList;
+//  if not AValue then
+//    ClearList;
 end;
 
 constructor TtiListViewMediatorView.CreateCustom(AModel: TtiObjectList; AView: TfpgListView; AOnBeforeSetupField: TtiOnBeforeSetupField; ADisplayNames: string; AIsObserving: Boolean);
@@ -530,8 +530,8 @@ end;
 procedure TtiStringGridMediatorView.SetActive(const AValue: Boolean);
 begin
   inherited SetActive(AValue);
-  if not AValue then
-    ClearList;
+//  if not AValue then
+//    ClearList;
 end;
 
 constructor TtiStringGridMediatorView.CreateCustom(AModel: TtiObjectList; AGrid: TfpgStringGrid; ADisplayNames: string; AIsObserving: Boolean);
