@@ -196,6 +196,7 @@ type
     procedure   DoObjectToGui; override;
   public
     procedure   RefreshList; virtual;
+    procedure   Update(ASubject: TtiObject; AOperation: TNotifyOperation); override;
     property    DisplayFieldName: string read GetDisplayFieldName write FDisplayFieldName;
   end;
   
@@ -798,6 +799,14 @@ end;
 procedure TtiDynamicComboBoxMediatorView.RefreshList;
 begin
   InternalListRefresh;
+end;
+
+procedure TtiDynamicComboBoxMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
+begin
+  if Assigned(ValueList) and Active and (ASubject = ValueList) then
+    RefreshList
+  else
+    inherited Update(ASubject, AOperation);
 end;
 
 
