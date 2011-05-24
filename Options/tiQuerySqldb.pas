@@ -388,14 +388,17 @@ begin
       //        raise EtiOPFDBExceptionUserNamePassword.Create(cTIPersistIBX, DatabaseName, UserName, Password)
       //      else
       //      begin
-      lMessage :=
-        'Error attempting to connect to database.' + Cr + e.Message;
+      lMessage := 'Error attempting to connect to database.' + Cr + e.Message;
       raise EtiOPFDBExceptionUserNamePassword.Create(
         cTIPersistSqldbIB, DatabaseName, UserName, Password, lMessage);
       //      end;
-    end
-    else
-      raise EtiOPFDBException.Create(cTIPersistSqldbIB, DatabaseName, UserName, Password)
+    end;
+
+    on e: Exception do
+    begin
+      lMessage := 'Error attempting to connect to database.' + Cr + e.Message;
+      raise EtiOPFDBException.Create(cTIPersistSqldbIB, DatabaseName, UserName, Password, lMessage)
+    end;
   end;
 end;
 
