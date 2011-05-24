@@ -449,6 +449,8 @@ destructor TtiMediatorView.Destroy;
 begin
   if Assigned(FView) then
     FView.RemoveFreeNotification(FViewHelper);
+  if Assigned(FListObject) then
+    FListObject.DetachObserver(self);
 //  Active := false;
   Subject := nil; // Will call DetachObserver
   FreeAndNil(FViewHelper);
@@ -564,7 +566,11 @@ procedure TtiMediatorView.SetListObject(const AValue: TtiObjectList);
 begin
   if FListObject = AValue then
     Exit;
+  if Assigned(FListObject) then
+    FListObject.DetachObserver(self);
   FListObject := AValue;
+  if Assigned(FListObject) then
+    FListObject.AttachObserver(self);
 end;
 
 procedure TtiMediatorView.SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment);
@@ -614,13 +620,18 @@ end;
 procedure TtiMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
 begin
   inherited Update(ASubject, AOperation);
-  if (AOperation=noChanged) and Active then
+  { We can be observing FSubject and ValueList, so make sure we handle the
+    correct one. }
+  if FSubject = ASubject then
   begin
-    ObjectToGUI;
-    TestIfValid;
-  end
-  else if (AOperation=noFree) and (ASubject=FSubject) then
-    FSubject:=Nil;
+    if (AOperation=noChanged) and Active then
+    begin
+      ObjectToGUI;
+      TestIfValid;
+    end
+    else if (AOperation=noFree) and (ASubject=FSubject) then
+      FSubject:=Nil;
+  end;
 end;
 
 function TtiMediatorView.GetSelectedObject: TtiObject;
@@ -647,7 +658,20 @@ begin
   if FActive = AValue then
     Exit;
   FActive := AValue;
+
+  if Assigned(FListObject) then
+  begin
+    if Active then
+    begin
+      FListObject.AttachObserver(self);
+      FListObject.NotifyObservers;
+    end
+    else
+      FListObject.DetachObserver(self);
+  end;
+
   if Assigned(FSubject) then
+  begin
     if Active then
     begin
       FSubject.AttachObserver(Self);
@@ -655,11 +679,15 @@ begin
     end
     else
       FSubject.DetachObserver(Self);
+  end;
+
   if Assigned(FView) then
+  begin
     if Active then
       SetObjectUpdateMoment(FObjectUpdateMoment)
     else
       SetObjectUpdateMoment(ouNone);
+  end;
 end;
 
 procedure TtiMediatorView.DoGUIToObject;
