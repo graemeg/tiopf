@@ -126,8 +126,13 @@ begin
     qfkLogical: Result    := 'Char(1) default ''F'' check(' +
         lFieldName + ' in (''T'', ''F''))';
     {$ELSE}
+      {$IFDEF BOOLEAN_NUM_1}
+    qfkLogical: Result    := 'SmallInt default 0 check(' +
+        lFieldName + ' in (1, 0)) ';
+      {$ELSE}
     qfkLogical: Result    := 'VarChar(5) default ''FALSE'' check(' +
         lFieldName + ' in (''TRUE'', ''FALSE'')) ';
+      {$ENDIF}
     {$ENDIF}
     qfkBinary: Result     := 'Blob sub_type 0';
     qfkLongString: Result := 'Blob sub_type 1';
