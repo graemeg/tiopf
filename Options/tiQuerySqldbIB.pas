@@ -115,6 +115,7 @@ begin
   case AFieldMetaData.Kind of
     qfkString: Result := 'VarChar(' + IntToStr(AFieldMetaData.Width) + ')';
     qfkInteger: Result    := 'Integer';
+//    qfkLargeInt: Result := 'BigInt';  // aka Numeric(18,0) a 8 byte type - only available in dialect 3 databases 
     qfkFloat: Result      := 'DOUBLE PRECISION';    // 'or Decimal(10, 5)';
     qfkDateTime:
         // Take into account dialect

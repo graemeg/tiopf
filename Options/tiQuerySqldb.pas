@@ -172,7 +172,7 @@ end;
 procedure TtiQuerySQLDB.SetParamAsBoolean(const AName: string;
   const AValue: Boolean);
 begin
-  {$IFDEF BOOLEAN_CHAR_1}
+{$IFDEF BOOLEAN_CHAR_1}
   if AValue then
     FSQLQuery.Params.ParamByName(AName).AsString := 'T'
   else
