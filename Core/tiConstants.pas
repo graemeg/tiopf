@@ -23,7 +23,7 @@ const
   cTIPersistSqldbIB       = 'Sqldb_IB';     // Free Pascal equivalent to Delphi dbExpress
   cTIPersistSqldbPQ       = 'Sqldb_PQ';
   cTIPersistSqldbOracle   = 'Sqldb_Oracle';
-  cTIPersistSqldbSQLLite3 = 'Sqldb_SQLLite3';
+  cTIPersistSqldbSQLite3  = 'Sqldb_SQLite3';
   cTIPersistSqldbODBC     = 'Sqldb_ODBC';
   cTIPersistSqldbMySQL40  = 'Sqldb_MySQL40';
   cTIPersistSqldbMySQL41  = 'Sqldb_MySQL41';

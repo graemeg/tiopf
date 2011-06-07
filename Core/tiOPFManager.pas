@@ -254,7 +254,7 @@ uses
   {$IFDEF LINK_SQLDB_IB}        ,tiQuerySqldbIB       {$ENDIF}
   {$IFDEF LINK_SQLDB_PQ}        ,tiQuerySqldbPQ       {$ENDIF}
   {$IFDEF LINK_SQLDB_Oracle}    ,tiQuerySqldbOracle   {$ENDIF}
-  {$IFDEF LINK_SQLDB_SQLLite3}  ,tiQuerySqldbSQLLite3 {$ENDIF}
+  {$IFDEF LINK_SQLDB_SQLite3}   ,tiQuerySqldbSQLite3  {$ENDIF}
 //  {$IFDEF LINK_SQLDB_ODBC}      ,tiQuerySqldbODBC    {$ENDIF}
   {$IFDEF LINK_SQLDB_MySQL40}   ,tiQuerySqldbMySQL40  {$ENDIF}
   {$IFDEF LINK_SQLDB_MySQL41}   ,tiQuerySqldbMySQL41  {$ENDIF}

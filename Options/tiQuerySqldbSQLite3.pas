@@ -1,7 +1,7 @@
 {
   This persistence layer uses standard Free Pascal SQLDB (SQLite3) components.
 
-  The connection string format is the same as the standard SQLIte3 persistence layers.
+  The connection string format is the same as the standard SQLite3 persistence layers.
 
   eg:
     GTIOPFManager.ConnectDatabase('Test.db','','', '');
@@ -9,7 +9,7 @@
   Initial Author:  Michael Van Canneyt (michael@freepascal.org) - Aug 2008
 }
 
-unit tiQuerySqldbSQLLite3;
+unit tiQuerySqldbSQLite3;
 
 {$I tiDefines.inc}
 
