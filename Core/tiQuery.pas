@@ -90,15 +90,14 @@ type
   TtiDBMetaDataField  = class;
   TtiQueryParams      = class;
   TtiQueryParamAbs    = class;
-  TTableName          = String; //[ 255 ];   //
-  TFieldName          = String; // [ 255 ];
+  TTableName          = String;
+  TFieldName          = String;
   TtiQueryClass       = class of TtiQuery;
   TtiDatabaseClass    = class of TtiDatabase;
   TtiQueryParamClass  = class of TtiQueryParamAbs;
 
 
  TtiDBMetaData = class(TtiObjectList)
-  private
   protected
     function    GetItems(i: integer): TtiDBMetaDataTable; reintroduce;
     procedure   SetItems(i: integer; const AValue: TtiDBMetaDataTable); reintroduce;
@@ -110,7 +109,6 @@ type
     procedure   Add(AObject: TtiDBMetaDataTable); reintroduce;
 //    property    Owner       : TtiObject   read GetOwner      write SetOwner;
     procedure   Read(const ADBConnectionName: string = ''; APersistenceLayerName : string = ''); override;
-    procedure   Clear; override;
     function    FindByTableName(const ATableName : TTableName): TtiDBMetaDataTable;
   end;
   
@@ -701,12 +699,6 @@ begin
   inherited Add(AObject);
 end;
 
-procedure TtiDBMetaData.Clear;
-begin
-  inherited Clear;
-  ObjectState := posEmpty;
-end;
-
 function TtiDBMetaData.FindByTableName(const ATableName: TTableName): TtiDBMetaDataTable;
 var
   i : integer;
@@ -753,8 +745,7 @@ begin
   end;
 end;
 
-procedure TtiDBMetaData.SetItems(i: integer;
-  const AValue: TtiDBMetaDataTable);
+procedure TtiDBMetaData.SetItems(i: integer; const AValue: TtiDBMetaDataTable);
 begin
   inherited SetItems(i, AValue);
 end;
