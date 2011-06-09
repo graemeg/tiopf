@@ -18,6 +18,9 @@
     <VersionInfo>
       <StringTable ProductVersion=""/>
     </VersionInfo>
+    <BuildModes Count="1">
+      <Item1 Name="default" Default="True"/>
+    </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
       <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
@@ -37,7 +40,7 @@
         <PackageName Value="dunit2"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="2">
+    <Units Count="6">
       <Unit0>
         <Filename Value="dunit2_fpc_textrunner.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -48,6 +51,26 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="textprogressrunner"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="../Common/tiTextTestRunner.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiTextTestRunner"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="../Common/tiTestDependencies.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiTestDependencies"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../Common/tiTestFramework.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiTestFramework"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../Common/tiOPFTestCase.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiOPFTestCase"/>
+      </Unit5>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -56,8 +79,8 @@
       <Filename Value="dunit2_fpc_textrunner"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="../../Core/"/>
-      <OtherUnitFiles Value="../Common/;../Tests/"/>
+      <IncludeFiles Value="../../Core"/>
+      <OtherUnitFiles Value="../Common;../Tests"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>

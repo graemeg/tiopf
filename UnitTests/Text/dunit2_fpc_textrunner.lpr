@@ -11,7 +11,7 @@ uses
   TextTestRunner,
   tiOPFTestManager,
   tiTestDependencies,
-  tiTextTestRunner, textprogressrunner;
+  tiTextTestRunner, tiTestFramework, tiOPFTestCase, textprogressrunner;
 
 var
   LExitBehavior : TRunnerExitBehavior;
