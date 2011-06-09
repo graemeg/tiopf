@@ -68,11 +68,6 @@ begin
       AForm.WindowPosition := wpScreenCenter;
   end;
 
-  { 2008-11-20 graemeg: disabled Width and Height settings for now. It causes
-    major headaches, plus in most applications the forms have been designed
-    with specific sizes for best look and fit. The user can still adjust sizes
-    at runtime, they will just not be remembered. I will attend to this issue
-    at a later date. }
     // Only set the form size if a bsSizable window
   if AForm.Sizeable then
   begin
