@@ -222,25 +222,20 @@ type
     FVisitedsOwner:  TtiVisited;
   protected
     function AcceptVisitor: boolean; overload; virtual;
-    function AcceptVisitor(const AVisited: TtiVisited): boolean;
-      overload; virtual;
-    function VisitBranch(const ADerivedParent, AVisited: TtiVisited): boolean;
-      virtual;
+    function AcceptVisitor(const AVisited: TtiVisited): boolean; overload; virtual;
+    function VisitBranch(const ADerivedParent, AVisited: TtiVisited): boolean; virtual;
     function GetVisited: TtiVisited; virtual;
     procedure SetVisited(const AValue: TtiVisited);
     procedure SetDepth(const ADepth: TIterationDepth);
   public
     constructor Create; virtual;
     class function VisitorControllerClass: TtiVisitorControllerClass; virtual;
-
     procedure Execute(const AVisited: TtiVisited); virtual;
     property Visited: TtiVisited read FVisited; // ToDo: Can this be protected?
-
     property ContinueVisiting: boolean read FContinueVisiting write FContinueVisiting;
     property Depth: TIterationDepth read FDepth;
     property IterationStyle: TtiIterationStyle read FIterationStyle write FIterationStyle;
     property VisitedsOwner: TtiVisited read FVisitedsOwner write FVisitedsOwner;
-
   end;
 
   {** @exclude}
