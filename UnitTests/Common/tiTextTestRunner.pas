@@ -358,7 +358,7 @@ procedure TtiTextTestListener.TestingStarts;
     {$ENDIF}
     writeln2Short('Compiler name "' + cCompilerName + '"', [tlwtFile, tlwtConsole]);
     writeln2Short('Compiler version "' + FDelphiVersion + '"', [tlwtFile, tlwtConsole]);
-    writeln2Short('Testing started at ' + DateTimeToStr(Now), [tlwtFile, tlwtConsole]);
+    writeln2Short('Testing started at ' + FormatDateTime(cIntlDateTimeDisp, Now), [tlwtFile, tlwtConsole]);
     writeln2Short('(E = Exception, F = Test failure, W = Warning, x = Test Excluded)', [tlwtFile, tlwtConsole]);
     writeln2Short('', [tlwtFile, tlwtConsole]);
     writeln2Short('Persistence layers to be tested:', [tlwtFile, tlwtConsole]);
