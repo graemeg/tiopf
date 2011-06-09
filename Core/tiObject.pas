@@ -2053,7 +2053,6 @@ var
   function PropertyMatch(const Idx: Integer; const PropName: string; const PropValue: variant): boolean;
   var
     lSearch, lItem: variant;
-    lVarType: TVarType;
     tiFieldAbs: TtiFieldAbs;
     lPropInfo: PPropInfo;
     AObject: TObject;
@@ -2087,17 +2086,6 @@ var
     else
       lItem := tiGetProperty(Items[Idx], PropName);
 
-    // Just to be sure that I'm comparing the SAME kind of values,
-    // plus Boolean types need some extra help under FPC
-    if VarIsType(PropValue, varBoolean) then
-      lItem := Boolean(TypInfo.GetOrdProp(AObject, LPropInfo^.Name))
-    else
-    begin
-      lVarType  := VarType(lItem);
-      lSearch   := VarAsType(lSearch, lVarType);
-      lItem     := VarAsType(lItem, lVarType);
-    end;
-
     // PWH Changed for D5 compat
     if (tiIsVariantOfType(lSearch, varOleStr)
        or tiIsVariantOfType(lSearch, varString)
@@ -2125,7 +2113,7 @@ begin
     begin
       lFound := PropertyMatch(i, AProps[j], AVals[j]);
 
-      if not lFound then
+      if lFound then
         break;
     end;    // for j
 

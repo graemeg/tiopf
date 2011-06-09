@@ -3262,8 +3262,9 @@ var
 begin
   LList := CreateList;
   try
-    // by boolean
     CheckEquals(5,LList.Count,'Wrong list! - Wrong count!');
+
+    // by boolean
     LItem:=TtiObjectForTesting(LList.FindByProps(['BoolProp'],[true]));
     CheckNotNull(LItem,'Find By Boolean value - NO result when expected');
     CheckEquals('1',LItem.OID.AsString,'Find By Boolean value - wrong object!');
@@ -3307,6 +3308,14 @@ begin
     CheckEquals('2',LItem.OID.AsString,'Find By Integer value 2000-02-03, 4:05:06.007 - wrong object!');
     LItem:=TtiObjectForTesting(LList.FindByProps(['DateProp'],[EncodeDate(1999,02,06)+EncodeTime(20,0,0,1)]));
     CheckNull(LItem,'Find By DateTime value 1999-02-06, 20:00:00.001 - result when not expected');
+
+    { Now for non-matching results }
+    LItem := nil;
+    LItem := TtiObjectForTesting(LList.FindByProps(['BoolProp1'],[true]));
+    CheckNull(LItem, 'failed on non-matching 1');
+
+    LItem := TtiObjectForTesting(LList.FindByProps(['DateProp1'],[true]));
+    CheckNull(LItem, 'failed on non-matching 2');
   finally
     LList.Free;
   end;
@@ -3467,6 +3476,11 @@ begin
     CheckNotNull(lFound, 'failed on 7');
     CheckEquals('OID2', lFound.OID.AsString, 'failed in 7.1');
     CheckEquals(d, lFound.ObjProp.DateProp, 'failed on 7.2');
+
+    { Now for non-matching results }
+    lFound := nil;
+    lFound := TtiObjectWithOwnedForTesting(LList.FindByProps(['ObjProp.BoolProp1'],[true]));
+    CheckNull(lFound, 'failed on non-matching 1');
 
   finally
     LList.Free;
