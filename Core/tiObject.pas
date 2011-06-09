@@ -1335,7 +1335,7 @@ procedure TtiObject.SetDeleted(const AValue: boolean);
 var
   lVis : TtiObjectVisitorSetObjectStateToDelete;
 begin
-  if AValue and not Deleted then
+  if AValue and (not Deleted) then
   begin
     lVis := TtiObjectVisitorSetObjectStateToDelete.Create;
     try
@@ -2050,7 +2050,7 @@ var
   i: integer;
   lFound: boolean;
 
-  function PropertyMatch(Idx: Integer; PropName: string; PropValue: variant): boolean;
+  function PropertyMatch(const Idx: Integer; const PropName: string; const PropValue: variant): boolean;
   var
     lSearch, lItem: variant;
     lVarType: TVarType;
