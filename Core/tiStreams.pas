@@ -830,7 +830,6 @@ var
   OutStream: TStringStream;
   b64encoder: TBase64EncodingStream;
   LPos: integer;
-  r: integer;
 begin
   LPos:= AStream.Position;
   try
@@ -839,7 +838,7 @@ begin
       AStream.Position := 0;
 
       b64encoder := TBase64EncodingStream.Create(OutStream);
-      r := b64encoder.CopyFrom(AStream, AStream.Size);
+      b64encoder.CopyFrom(AStream, AStream.Size);
     finally
       b64encoder.Free;
       result := OutStream.DataString;
