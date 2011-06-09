@@ -174,9 +174,16 @@ begin
     begin
       LObject := AObject;
       LPropInfo := tiGetPropInfo(LObject.ClassType, APropPath, @LObject);
-      if Assigned(LPropInfo) and Assigned(LPropInfo.GetProc) and
-         Assigned(LObject) then // Check that class property is assigned
-        Result := GetPropValue(LObject, string(LPropInfo^.Name))
+      if Assigned(LPropInfo) and Assigned(LPropInfo.GetProc) then // Check that class property is assigned
+      begin
+        Result := GetPropValue(LObject, string(LPropInfo^.Name));
+        {$IFDEF FPC}
+        { IFDEF is used because Delphi doesn't support tkBool types. Also we
+          want a more precise return value under FPC. }
+        if LPropInfo^.PropType^.Kind = tkBool then
+          Result := Boolean(Result);
+        {$ENDIF}
+      end
       else
         Result:= Null;
     end else
