@@ -35,7 +35,9 @@ $SCRIPTS/textrunner_dunit2-64.run
 
 # Restore the Firebird database to make sure we have a clean/empty one every time
 /usr/bin/gbak -REP -USER SYSDBA -PASSWORD masterkey /opt/data/tiopf/sqldb_ib_dunit2.fbk /opt/data/tiopf/sqldb_ib_dunit2.fdb
+/bin/chown graemeg:firebird /opt/data/tiopf/sqldb_ib_dunit2.fdb
 /usr/bin/gbak -REP -USER SYSDBA -PASSWORD masterkey /opt/data/tiopf/sqldb_ib_dunit2.fbk /opt/data/tiopf/fblib_dunit2.fdb
+/bin/chown graemeg:firebird /opt/data/tiopf/fblib_dunit2.fdb
 
 # run the tests
 #./fpcUnitTIOPFText.exe -a > results.xml
