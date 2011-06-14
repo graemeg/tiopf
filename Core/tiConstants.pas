@@ -40,6 +40,7 @@ const
   cTIPersistUIB_EB        = 'UIB_EB';  // Embedded server
   cTIPersistUIB_FB        = 'UIB_FB';  // Firebird server
   cTIPersistUIB_IB        = 'UIB_IB';  // Interbase server
+  cTIPersistNexusDB       = 'NexusDB';
 
   cDBProxyServerTimeOut   = 1; // Minute
 
