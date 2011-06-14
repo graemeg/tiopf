@@ -195,6 +195,9 @@
 // from a CHAR or VARCHAR. The tiOPF will use 'T' & 'F' or 'TRUE ' & 'FALSE'. This
 // can be controled with the compiler directive below:
 {$DEFINE BOOLEAN_CHAR_1}
+{$IFDEF BOOLEAN_NUM_1}
+  {$UNDEF BOOLEAN_CHAR_1}
+{$ENDIF}
 
 // tiPerAwareCtrls will use either "Courier New" or "MS Sans Serif"
 // for GUI controls based on this directive.
