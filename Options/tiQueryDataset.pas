@@ -339,7 +339,10 @@ begin
     if fld <> nil then
       Result := fld.Index;
   except
-    // If "Field not found" exception is created, silently do nothing
+    on E: Exception do
+    begin
+      // If "Field not found" exception is created, silently do nothing
+    end;
   end;
 end;
 
