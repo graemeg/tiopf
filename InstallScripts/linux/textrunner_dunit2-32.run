@@ -7,14 +7,14 @@ FBLIB="$TIOPF/3rdParty/FBLib/lib/$TARGET"
 FPC="/opt/fpc-2.4.3/$TARGET/bin/ppc386"
 DUNIT2="/opt/git/dunit2/lib/$TARGET/"
 
-$FPC -S2cgi -O1 -gl -ve -l \
+$FPC -S2cgi -O1 -gl -ve -l -Xd \
   -Fu$TIOPF/Compilers/FPC/lib/$TARGET/ \
   -Fi$TIOPF/Core/ \
   -Fu$TIOPF/UnitTests/Common/ \
   -Fu$TIOPF/UnitTests/Tests/ \
   -Fu$FBLIB/ \
-  -Fu/opt/fpc-2.4.3/src/packages/fcl-registry/src/ \
-  -Fu/opt/fpc-2.4.3/src/packages/fcl-xml/src/ \
+  -Fu/opt/fpc-2.4.5/src/packages/fcl-registry/src/ \
+  -Fu/opt/fpc-2.4.5/src/packages/fcl-xml/src/ \
   -Fu/opt/git/dunit2/src/ \
   -Fu/opt/git/dunit2/3rdparty/epiktimer/ \
   -Fu. \

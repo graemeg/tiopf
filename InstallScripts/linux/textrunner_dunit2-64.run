@@ -1,23 +1,20 @@
 #!/bin/sh
 # Build script for tiOPF's TextRunner using 64bit Free Pascal Compiler
 
+TARGET="x86_64-linux"
 TIOPF="/opt/dailybuilds/tiopf"
-FBLIB="$TIOPF/3rdParty/FBLib/lib/x86_64-linux"
-FPC="/opt/fpc-2.4.3/x86_64-linux/bin/ppcx64"
-#FPC="/opt/fpc-2.5.1/x86_64-linux/bin/ppcx64"
-LAZ="/opt/lazarus"
-DUNIT2="/opt/git/dunit2/lib/x86_64-linux/"
+FBLIB="$TIOPF/3rdParty/FBLib/lib/$TARGET"
+FPC="/opt/fpc-2.4.5/$TARGET/bin/ppcx64"
+DUNIT2="/opt/git/dunit2/lib/$TARGET/"
 
 $FPC -S2cgi -O1 -gl -ve -l \
-  -Fu$LAZ/components/fpcunit/console/lib/x86_64-linux/ \
-  -Fu$LAZ/packager/units/x86_64-linux/ \
-  -Fu$TIOPF/Compilers/FPC/lib/x86_64-linux/ \
+  -Fu$TIOPF/Compilers/FPC/lib/$TARGET/ \
   -Fi$TIOPF/Core/ \
   -Fu$TIOPF/UnitTests/Common/ \
   -Fu$TIOPF/UnitTests/Tests/ \
   -Fu$FBLIB/ \
-  -Fu/opt/fpc-2.4.3/src/packages/fcl-registry/src/ \
-  -Fu/opt/fpc-2.4.3/src/packages/fcl-xml/src/ \
+  -Fu/opt/fpc-2.4.5/src/packages/fcl-registry/src/ \
+  -Fu/opt/fpc-2.4.5/src/packages/fcl-xml/src/ \
   -Fu/opt/git/dunit2/src/ \
   -Fu/opt/git/dunit2/3rdparty/epiktimer/ \
   -Fu. \

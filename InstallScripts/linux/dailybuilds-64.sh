@@ -7,7 +7,12 @@
 
 TIOPF="/opt/dailybuilds/tiopf"              # tiOPF root directory
 SCRIPTS="$TIOPF/InstallScripts/linux"       # linux scripts directory
-FPC="/opt/fpc-2.4.3/x86_64-linux/bin/ppcx64"
+FPC="/opt/fpc-2.4.5/x86_64-linux/bin/ppcx64"
+REV=`svnversion -n $TIOPF/`
+FPCVER=`$FPC -iV`
+FPCCPU=`$FPC -iTP`
+FPCHOST=`$FPC -iTO`
+
 
 if [ -f $TIOPF/halt.tests ]; then
   echo "Remove the file 'halt.tests' if you want the tests to continue."
@@ -17,7 +22,7 @@ fi
 # clean out old files and recompile
 cd $SCRIPTS
 ./cleanup.sh
-rm /tmp/DUnitReportShort2.4.3.txt
+rm /tmp/DUnitReportShort${FPCVER}.txt
 
 # compile tiOPF library
 cd $TIOPF/Compilers/FPC
@@ -26,11 +31,11 @@ $SCRIPTS/opf_package-64.run
 # compile Text Test Runner application
 /bin/rm -f $TIOPF/UnitTests/Text/textrunner
 $SCRIPTS/textrunner_dunit2-64.run
-#$SCRIPTS/textrunner-64.run
+
 
 # Restore the Firebird database to make sure we have a clean/empty one every time
-/usr/bin/gbak -r -REPLACE_DATABASE -USER SYSDBA -PASSWORD masterkey /opt/dailybuilds/data/sqldb_ib_dunit2.fbk /opt/dailybuilds/data/sqldb_ib_dunit2.fdb
-/usr/bin/gbak -r -REPLACE_DATABASE -USER SYSDBA -PASSWORD masterkey /opt/dailybuilds/data/sqldb_ib_dunit2.fbk /opt/dailybuilds/data/fblib_dunit2.fdb
+/usr/bin/gbak -REP -USER SYSDBA -PASSWORD masterkey /opt/data/tiopf/sqldb_ib_dunit2.fbk /opt/data/tiopf/sqldb_ib_dunit2.fdb
+/usr/bin/gbak -REP -USER SYSDBA -PASSWORD masterkey /opt/data/tiopf/sqldb_ib_dunit2.fbk /opt/data/tiopf/fblib_dunit2.fdb
 
 # run the tests
 #./fpcUnitTIOPFText.exe -a > results.xml
@@ -51,14 +56,10 @@ cd /opt/dailybuilds/results/
 /usr/bin/xsltproc -o msg.txt $SCRIPTS/summarypost-64.xsl results64.xml
 
 # inject the SVN revision
-REV=`svnversion -n $TIOPF/`
-FPCVER=`$FPC -iV`
-FPCCPU=`$FPC -iTP`
-FPCHOST=`$FPC -iTO`
 sed "s/#REV/$REV/g" msg.txt > msg1.txt
 sed "s/#FPCVER/$FPCVER/g" msg1.txt > msg2.txt
 sed "s/#FPCCPU/$FPCCPU-$FPCHOST/g" msg2.txt > msg3.txt
-cat msg3.txt divider.txt /tmp/DUnitReportShort2.4.3.txt > msg4.txt
+cat msg3.txt divider.txt /tmp/DUnitReportShort${FPCVER}.txt > msg4.txt
 
 # post text result to tiopf.dailybuilds newsgroup
 /usr/bin/rpost 192.168.0.54 < msg4.txt
