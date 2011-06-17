@@ -24,6 +24,8 @@ function gGUIINI(const AFileName: string = ''): TtiGuiINIFile;
 implementation
 uses
   fpg_main
+  ,fpg_base
+  ,tiUtils
   ;
 
 var
@@ -50,13 +52,13 @@ var
 begin
   Assert(AForm <> nil, 'AForm not assigned');
   LINISection := AForm.Name + 'State';
-  // Read form position, -1 if not stored in registry
+  // Read form position, -1 indicates that it was not stored before
   LTop := readInteger(LINISection, 'Top', -1);
   LLeft := readInteger(LINISection, 'Left', -1);
   // The form pos was found in the ini file
   if (LTop <> -1) and (LLeft <> -1) then
   begin
-    AForm.Top   := readInteger(LINISection, 'Top',    AForm.Top);
+    AForm.Top   := tiIf(LTop >= 0, LTop, AForm.Top);
     AForm.Left  := readInteger(LINISection, 'Left',   AForm.Left);
     AForm.WindowPosition := wpUser;
   end
@@ -68,7 +70,7 @@ begin
       AForm.WindowPosition := wpScreenCenter;
   end;
 
-    // Only set the form size if a bsSizable window
+  // Only set the form size if a bsSizable window
   if AForm.Sizeable then
   begin
     if AHeight = -1 then
@@ -82,14 +84,18 @@ begin
     AForm.Height  := readInteger(LINISection, 'Height', LHeight);
     AForm.Width   := readInteger(LINISection, 'Width',  LWidth);
   end;
+  //AForm.WindowState := TfpgWindowState(ReadInteger(LINISection, 'WindowState', Ord(wsNormal)));
 
   // If the form is off screen (positioned outside all monitor screens) then
-  // center the form on screen.
+  // bring it back into view.
   if AForm.WindowPosition = wpUser then
   begin
     if (AForm.Top < 0) or (AForm.Top > fpgApplication.ScreenHeight) or
        (AForm.Left < 0) or (AForm.Left > fpgApplication.ScreenWidth) then
-      AForm.WindowPosition := wpScreenCenter;
+    begin
+      AForm.Left := 0;
+      AForm.Top := 0;
+    end;
   end;
   AForm.UpdateWindowPosition;
 end;
@@ -99,12 +105,16 @@ var
   LINISection: string;
 begin
   LINISection := AForm.Name + 'State';
-  WriteInteger(LINISection, 'Top', AForm.Top);
-  WriteInteger(LINISection, 'Left', AForm.Left);
-  if AForm.Sizeable then
+  WriteInteger(LINISection, 'WindowState', Ord(AForm.WindowState));
+  if AForm.WindowState = wsNormal then
   begin
-    WriteInteger(LINISection, 'Height', AForm.Height);
-    WriteInteger(LINISection, 'Width', AForm.Width);
+    WriteInteger(LINISection, 'Top', AForm.Top);
+    WriteInteger(LINISection, 'Left', AForm.Left);
+    if AForm.Sizeable then
+    begin
+      WriteInteger(LINISection, 'Height', AForm.Height);
+      WriteInteger(LINISection, 'Width', AForm.Width);
+    end;
   end;
 end;
 
