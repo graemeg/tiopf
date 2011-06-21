@@ -1,8 +1,21 @@
+{
+    This file is part of the tiOPF project.
+
+    See the file license.txt, included in this distribution,
+    for details about redistributing tiOPF.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+    Description:
+      This file contains some helper functions for use with the fpGUI
+      Toolkit. Here we extended the INI support to save and restore the
+      size and state of application forms.
+}
 unit tiGUIINI;
 
 {$mode objfpc}{$H+}
-
-{ TODO: When TfpgForm supports FormState property, implement the remaining functions. }
 
 interface
 uses
