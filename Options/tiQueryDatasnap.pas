@@ -111,7 +111,7 @@ begin
     FQuery.Params.Clear;
 end;
 
-function TtiQueryDatasnap.ExecSQL: integere;
+function TtiQueryDatasnap.ExecSQL: integer;
 begin
   Result := -1;
   FQuery.Execute;
