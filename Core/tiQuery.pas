@@ -84,12 +84,15 @@ type
                    qtDDL
                  );
 
+  // forward declarations
   TtiQuery            = class;
+  TtiDatabase         = class;
   TtiDBMetaData       = class;
   TtiDBMetaDataTable  = class;
   TtiDBMetaDataField  = class;
   TtiQueryParams      = class;
   TtiQueryParamAbs    = class;
+
   TTableName          = String;
   TFieldName          = String;
   TtiQueryClass       = class of TtiQuery;
