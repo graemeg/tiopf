@@ -113,9 +113,9 @@ type
     property  DefaultDBConnectionPool    : TtiDBConnectionPool read GetDefaultDBConnectionPool;
     property  DBConnectionPools          : TtiDBConnectionPools read FDBConnectionPools;
 
-    function  DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean;
-    procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string);
-    procedure DropDatabase(const ADatabaseName, AUserName, APassword : string);
+    function  DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string=''): boolean;
+    procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string='');
+    procedure DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string='');
     function  TestConnectToDatabase(const ADatabaseName, AUserName, APassword, AParams : string): boolean;
     // Must be overridden in the concreate class
     procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); virtual; abstract;
@@ -242,23 +242,23 @@ begin
 end;
 
 procedure TtiPersistenceLayer.CreateDatabase(const ADatabaseName, AUserName,
-  APassword: string);
+  APassword: string; const AParams: string);
 begin
   Assert(DatabaseClass<>nil, 'DatabaseClass not assigned');
-  DatabaseClass.CreateDatabase(ADatabaseName, AUserName, APassword);
+  DatabaseClass.CreateDatabase(ADatabaseName, AUserName, APassword, AParams);
 end;
 
 procedure TtiPersistenceLayer.DropDatabase(const ADatabaseName, AUserName,
-  APassword: string);
+  APassword: string; const AParams: string);
 begin
   Assert(DatabaseClass<>nil, 'DatabaseClass not assigned');
-  DatabaseClass.DropDatabase(ADatabaseName, AUserName, APassword);
+  DatabaseClass.DropDatabase(ADatabaseName, AUserName, APassword, AParams);
 end;
 
-function TtiPersistenceLayer.DatabaseExists(const ADatabaseName, AUserName, APassword: string): boolean;
+function TtiPersistenceLayer.DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string): boolean;
 begin
   Assert(DatabaseClass<>nil, 'DatabaseClass not assigned');
-  result := DatabaseClass.DatabaseExists(ADatabaseName, AUserName, APassword);
+  result := DatabaseClass.DatabaseExists(ADatabaseName, AUserName, APassword, AParams);
 end;
 
 destructor TtiPersistenceLayer.Destroy;

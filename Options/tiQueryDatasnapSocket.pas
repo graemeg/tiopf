@@ -39,9 +39,9 @@ type
     constructor Create; override;
     destructor Destroy; override;
     property Connection: TSocketCOnnection read FConnection;
-    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string); override;
-    class function DatabaseExists(const ADatabaseName, AUserName, APassword: string): Boolean; override;
-    class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string); override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string=''); override;
+    class function DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string=''): Boolean; override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string=''); override;
     procedure StartTransaction; override;
     function InTransaction: Boolean; override;
     procedure Commit; override;
@@ -105,12 +105,12 @@ begin
   ProviderName := 'DSPTiOPF';
 end;
 
-class procedure TtiDatabaseDatasnapSocket.CreateDatabase(const ADatabaseName, AUserName, APassword: string);
+class procedure TtiDatabaseDatasnapSocket.CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string='');
 begin
   Assert(False, 'CreateDatabase not implemented in ' + ClassName);
 end;
 
-class function TtiDatabaseDatasnapSocket.DatabaseExists(const ADatabaseName, AUserName, APassword: string): Boolean;
+class function TtiDatabaseDatasnapSocket.DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string=''): Boolean;
 begin
   Assert(False, 'DatabaseExists not implemented in ' + ClassName);
 end;
@@ -121,7 +121,7 @@ begin
   inherited;
 end;
 
-class procedure TtiDatabaseDatasnapSocket.DropDatabase(const ADatabaseName, AUserName, APassword: string);
+class procedure TtiDatabaseDatasnapSocket.DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string='');
 begin
   Assert(False, 'Drop Database not implemented in ' + ClassName);
 end;

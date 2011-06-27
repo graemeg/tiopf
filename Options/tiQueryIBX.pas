@@ -37,9 +37,9 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean; override;
-    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
-    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class function  DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''): boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
     property        IBDatabase: TIBDatabase read FDatabase write FDatabase;
     property        TraceLevel  : integer read FTraceLevel    write FTraceLevel  ;
     procedure       StartTransaction; override;
@@ -1071,7 +1071,7 @@ www.discoverysystems.com.au
 
 
 
-class procedure TtiDatabaseIBX.CreateDatabase(const ADatabaseName,AUserName, APassword: string);
+class procedure TtiDatabaseIBX.CreateDatabase(const ADatabaseName,AUserName, APassword: string; const AParams: string);
 var
   LDatabase : TtiDatabaseIBX;
   LPath: string;
@@ -1091,7 +1091,7 @@ begin
 end;
 
 class procedure TtiDatabaseIBX.DropDatabase(const ADatabaseName, AUserName,
-  APassword: string);
+  APassword: string; const AParams: string);
 begin
   Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;
@@ -1148,7 +1148,7 @@ begin
 end;
 }
 
-class function TtiDatabaseIBX.DatabaseExists(const ADatabaseName,AUserName, APassword: string): boolean;
+class function TtiDatabaseIBX.DatabaseExists(const ADatabaseName,AUserName, APassword: string; const AParams: string): boolean;
 var
   lDatabase : TtiDatabaseIBX;
 begin

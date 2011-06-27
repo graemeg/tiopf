@@ -40,9 +40,9 @@ type
     constructor     create; override;
     destructor      Destroy; override;
     procedure       Commit; override;
-    class procedure CreateDatabase (const ADatabaseName, AUserName, APassword : string); override;
-    class function  DatabaseExists (const ADatabaseName, AUserName, APassword: string): Boolean; override;
-    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class procedure CreateDatabase (const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
+    class function  DatabaseExists (const ADatabaseName, AUserName, APassword: string; const AParams: string = ''): Boolean; override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
     function        InTransaction: Boolean; override;
     function        ReadGeneratorOID (AGeneratorName: string; AIncrement: integer = 1) :Integer;
     procedure       ReadMetaDataFields (AData: TtiDBMetaData); override;
@@ -720,7 +720,7 @@ begin
 end;
 
 class procedure TtiDatabaseIBO.CreateDatabase (const ADatabaseName, AUserName,
-  APassword: string);
+  APassword: string; const AParams: string);
 var
   FDatabase: TIB_Connection;
 begin
@@ -747,7 +747,7 @@ begin
 end;
 
 class function TtiDatabaseIBO.DatabaseExists (const ADatabaseName, AUserName,
-  APassword: string): Boolean;
+  APassword: string; const AParams: string): Boolean;
 var
   FDatabase: TIB_Connection;
 begin
@@ -772,7 +772,7 @@ begin
 end;
 
 class procedure TtiDatabaseIBO.DropDatabase(const ADatabaseName, AUserName,
-  APassword: string);
+  APassword: string; const AParams: string);
 begin
   Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;

@@ -27,8 +27,8 @@ type
     function    GetConnectionString: string; override;
     function    FieldMetaDataToSQLCreate(const AFieldMetaData : TtiDBMetaDataField): string; override;
   public
-    class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean; override;
-    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class function  DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams:string = ''): boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams:string = ''); override;
     procedure       ReadMetaDataTables(AData : TtiDBMetaData); override;
     procedure       ReadMetaDataFields(AData : TtiDBMetaDataTable); override;
     function        Test : boolean; override;
@@ -67,7 +67,7 @@ const
 //* TtiDatabaseADOAccess
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-class procedure TtiDatabaseADOAccess.CreateDatabase(const ADatabaseName, AUserName, APassword: string);
+class procedure TtiDatabaseADOAccess.CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string);
 var
   lADOXCatalog : TADOXCatalog;
   lConnectionString : string;
@@ -89,7 +89,7 @@ begin
   end;
 end;
 
-class function TtiDatabaseADOAccess.DatabaseExists(const ADatabaseName,AUserName, APassword: string):boolean;
+class function TtiDatabaseADOAccess.DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string): boolean;
 var
   lDatabase : TtiDatabaseADOAccess;
 begin

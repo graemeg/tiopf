@@ -53,9 +53,9 @@ type
     constructor Create; override;
     destructor  Destroy; override;
 
-    class function DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean; override;
-    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
-    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class function DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''): boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
     procedure   StartTransaction; override;
     function    InTransaction : boolean; override;
     procedure   Commit; override;
@@ -818,7 +818,7 @@ begin
   end;
 end;
 
-class procedure TtiDatabaseXML.CreateDatabase(const ADatabaseName,AUserName, APassword: string);
+class procedure TtiDatabaseXML.CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string);
 var
   lXML : string;
   lPath : string;
@@ -838,12 +838,12 @@ begin
 end;
 
 class procedure TtiDatabaseXML.DropDatabase(const ADatabaseName, AUserName,
-  APassword: string);
+  APassword: string; const AParams: string);
 begin
   Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;
 
-class function TtiDatabaseXML.DatabaseExists(const ADatabaseName,AUserName, APassword: string): boolean;
+class function TtiDatabaseXML.DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string): boolean;
 begin
   result := FileExists(ADatabaseName);
 end;

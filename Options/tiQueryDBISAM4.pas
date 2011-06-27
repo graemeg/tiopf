@@ -31,8 +31,9 @@ type
     function    InTransaction : boolean; override;
     procedure   Commit; override;
     procedure   RollBack; override;
-    class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string):boolean; override;
-    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class function  DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''):boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string; const AParams: string = ''); override;
     procedure       ReadMetaDataTables(AData : TtiDBMetaData); override;
     procedure       ReadMetaDataFields(AData : TtiDBMetaDataTable); override;
     function        Test : boolean; override;
@@ -403,7 +404,7 @@ begin
   inherited DropTable(ATableMetaData);
 end;
 
-class procedure TtiDatabaseDBISAM4.CreateDatabase(const ADatabaseName,AUserName, APassword: string);
+class procedure TtiDatabaseDBISAM4.CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string);
 var
   lDir : string;
 begin
@@ -414,6 +415,12 @@ begin
     raise EtiOPFDBExceptionCanNotCreateDatabase.Create(cTIPersistDBISAM4, ADatabaseName, AUserName, APassword);
 end;
 
+class procedure TtiDatabaseDBISAM4.DropDatabase(const ADatabaseName, AUserName,
+  APassword: string; const AParams: string);
+begin
+  Assert(False, 'DropDatabase not implemented in ' + ClassName);
+end;
+
 procedure TtiDatabaseDBISAM4.CreateTable(
   const ATableMetaData: TtiDBMetaDataTable);
 begin
@@ -422,7 +429,7 @@ begin
   inherited CreateTable(ATableMetaData);
 end;
 
-class function TtiDatabaseDBISAM4.DatabaseExists(const ADatabaseName,AUserName, APassword: string): boolean;
+class function TtiDatabaseDBISAM4.DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string): boolean;
 var
   lDir : string;
 begin

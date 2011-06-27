@@ -43,9 +43,9 @@ type
     procedure       Save; virtual;
   public
     constructor     Create; override;
-    class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string):boolean; override;
-    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
-    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class function  DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''):boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
     procedure       CreateTable(const ATableMetaData : TtiDBMetaDataTable); override;
     procedure       DropTable(const ATableMetaData: TtiDBMetaDataTable); override;
     procedure       Commit; override;
@@ -200,7 +200,7 @@ begin
 end;
 
 class procedure TtiDatabaseXMLLight.CreateDatabase(const ADatabaseName,
-  AUserName, APassword: string);
+  AUserName, APassword: string; const AParams: string);
 var
   lDatabase : TtiDatabaseXMLLight;
 begin
@@ -214,7 +214,7 @@ begin
 end;
 
 class procedure TtiDatabaseXMLLight.DropDatabase(const ADatabaseName,
-  AUserName, APassword: string);
+  AUserName, APassword: string; const AParams: string);
 begin
   Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;
@@ -226,7 +226,7 @@ begin
 end;
 
 class function TtiDatabaseXMLLight.DatabaseExists(const ADatabaseName,
-  AUserName, APassword: string): boolean;
+  AUserName, APassword: string; const AParams: string): boolean;
 begin
   result := FileExists(ADatabaseName);
 end;

@@ -27,8 +27,8 @@ type
     procedure   SetupDBParams; override;
     function    FieldMetaDataToSQLCreate(const AFieldMetaData : TtiDBMetaDataField): string; override;
   public
-    class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string):boolean; override;
-    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class function  DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams:string = ''): boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams:string = ''); override;
     procedure       ReadMetaDataTables(AData : TtiDBMetaData); override;
     procedure       ReadMetaDataFields(AData : TtiDBMetaDataTable); override;
     procedure       RollBack; override; // Not supported in BDE
@@ -54,7 +54,7 @@ uses
 //* TtiDatabaseBDEParadox
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-class procedure TtiDatabaseBDEParadox.CreateDatabase(const ADatabaseName,AUserName, APassword: string);
+class procedure TtiDatabaseBDEParadox.CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string);
 var
   lDir : string;
 begin
@@ -65,7 +65,7 @@ begin
     raise EtiOPFDBExceptionCanNotCreateDatabase.Create(cTIPersistBDEParadox, ADatabaseName, AUserName, APassword);
 end;
 
-class function TtiDatabaseBDEParadox.DatabaseExists(const ADatabaseName,AUserName, APassword: string): boolean;
+class function TtiDatabaseBDEParadox.DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string): boolean;
 var
   lDir : string;
 begin
