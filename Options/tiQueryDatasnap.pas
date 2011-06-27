@@ -42,7 +42,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    procedure ExecSQL; override;
+    function  ExecSQL: integer; override;
 
     procedure AttachDatabase(ADatabase: TtiDatabase); override;
     procedure DetachDatabase; override;
@@ -111,8 +111,9 @@ begin
     FQuery.Params.Clear;
 end;
 
-procedure TtiQueryDatasnap.ExecSQL;
+function TtiQueryDatasnap.ExecSQL: integere;
 begin
+  Result := -1;
   FQuery.Execute;
 end;
 
