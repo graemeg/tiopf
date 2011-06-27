@@ -35,9 +35,9 @@ type
     constructor Create; override;
     destructor  Destroy; override;
 
-    class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean; override;
-    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
-    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class function  DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''): boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
 
     procedure   StartTransaction; override;
     function    InTransaction : boolean; override;
@@ -410,11 +410,30 @@ begin
   Connection;
 end;
 
+class procedure TtiDatabaseCrAbs.CreateDatabase(const ADatabaseName, AUserName,
+  APassword: string; const AParams: string);
+begin
+  Assert(false, 'CreateDatabase not implemented in ' + ClassName);
+end;
+
+class function TtiDatabaseCrAbs.DatabaseExists(const ADatabaseName, AUserName,
+  APassword: string; const AParams: string): boolean;
+begin
+  result := false;
+  Assert(false, 'DatabaseExists not implemented in ' + ClassName);
+end;
+
 destructor TtiDatabaseCrAbs.Destroy;
 begin
   FreeAndNil(FMSConnection);
   tiWin32CoUnInitialize;
   inherited;
+end;
+
+class procedure TtiDatabaseCrAbs.DropDatabase(const ADatabaseName, AUserName,
+  APassword: string; const AParams: string);
+begin
+  Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;
 
 procedure TtiDatabaseCrAbs.Commit;
@@ -561,11 +580,45 @@ begin
 end;
 
 procedure TtiDatabaseCrAbs.SetupDBParams;
+var lParams: TStringList;
 begin
+  lParams := TStringList.Create;
+  try
+    lParams.Assign(Params);
+
+    if lParams.Values['AUTHENTICATION'] <> '' then
+    begin
+      if lParams.Values['AUTHENTICATION'] = 'auServer' then
+        Connection.Authentication := auServer
+      else
+        Connection.Authentication := auWindows;
+    end
+    else
+    begin
+      Connection.Authentication := auWindows;
+    end;
+    if lParams.Values['ISOLATIONLEVEL'] <> '' then
+    begin
+      if lParams.Values['ISOLATIONLEVEL'] = 'ilReadCommitted' then
+        Connection.IsolationLevel := ilReadCommitted
+      else if lParams.Values['ISOLATIONLEVEL'] = 'ilReadUnCommitted' then
+        Connection.IsolationLevel := ilReadUnCommitted
+      else if lParams.Values['ISOLATIONLEVEL'] = 'ilRepeatableRead' then
+        Connection.IsolationLevel := ilRepeatableRead
+      else if lParams.Values['ISOLATIONLEVEL'] = 'ilIsolated' then
+        Connection.IsolationLevel := ilIsolated
+      else if lParams.Values['ISOLATIONLEVEL'] = 'ilSnapshot' then
+        Connection.IsolationLevel := ilSnapshot
+      else
+        Connection.IsolationLevel := ilReadCommitted;
+    end
+    else
+      Connection.IsolationLevel := ilReadCommitted;
+  finally
+    lParams.free;
+  end;
   Connection.LoginPrompt      := false;
-  Connection.IsolationLevel   := ilReadCommitted;
   Connection.ConnectString := ConnectionString;
-  Connection.Authentication := auWindows;
   Connection.Options.Provider := prSQL;
 end;
 
@@ -623,24 +676,6 @@ end;
 function TtiQueryCrSdac.HasNativeLogicalType: boolean;
 begin
   result := true;
-end;
-
-class procedure TtiDatabaseCrAbs.CreateDatabase(const ADatabaseName, AUserName, APassword: string);
-begin
-  Assert(false, 'CreateDatabase not implemented in ' + ClassName);
-end;
-
-class procedure TtiDatabaseCrAbs.DropDatabase(const ADatabaseName, AUserName,
-  APassword: string);
-begin
-  Assert(False, 'DropDatabase not implemented in ' + ClassName);
-end;
-
-class function TtiDatabaseCrAbs.DatabaseExists(const ADatabaseName,
-  AUserName, APassword: string): boolean;
-begin
-  result := false;
-  Assert(false, 'DatabaseExists not implemented in ' + ClassName);
 end;
 
 procedure TtiQueryCrSdac.AssignFieldAsStreamByIndex(AIndex: Integer;const AValue: TStream);

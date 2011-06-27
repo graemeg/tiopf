@@ -43,9 +43,9 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    class function DatabaseExists(const ADatabaseName, AUserName, APassword: string): Boolean; override;
-    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string); override;
-    class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string); override;
+    class function DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''): Boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
     property SQLConnection: TSQLConnection read FDatabase write FDatabase;
     procedure StartTransaction; override;
     function InTransaction: Boolean; override;
@@ -402,7 +402,7 @@ begin
   end;
 end;
 
-class procedure TtiDatabaseSQLDB.CreateDatabase(const ADatabaseName, AUserName, APassword: string);
+class procedure TtiDatabaseSQLDB.CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string);
 var
   DB: TSQLConnection;
 begin
@@ -420,7 +420,7 @@ begin
   end;
 end;
 
-class procedure TtiDatabaseSQLDB.DropDatabase(const ADatabaseName, AUserName, APassword: string);
+class procedure TtiDatabaseSQLDB.DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string);
 var
   DB: TSQLConnection;
 begin
@@ -438,7 +438,7 @@ begin
   end;
 end;
 
-class function TtiDatabaseSQLDB.DatabaseExists(const ADatabaseName, AUserName, APassword: string): Boolean;
+class function TtiDatabaseSQLDB.DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string): Boolean;
 var
   DB: TSQLConnection;
 begin

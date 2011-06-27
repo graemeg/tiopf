@@ -61,9 +61,9 @@ type
   public
     constructor Create; override;
     destructor  Destroy; override;
-    class function  DatabaseExists(const ADatabaseName, AUserName, APassword: string): boolean; override;
-    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string); override;
-    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class function  DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''): boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
     property    IBDatabase: TFBLDatabase read FDBase write FDBase;
     procedure   StartTransaction; override;
     function    InTransaction: boolean; override;
@@ -923,7 +923,7 @@ begin
   end;
 end;
 
-class procedure TtiDatabaseFBL.CreateDatabase(const ADatabaseName, AUserName, APassword: string);
+class procedure TtiDatabaseFBL.CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string);
 var
   lDatabase: TtiDatabaseFBL;
 begin
@@ -939,7 +939,7 @@ begin
 end;
 
 class procedure TtiDatabaseFBL.DropDatabase(const ADatabaseName, AUserName,
-  APassword: string);
+  APassword: string; const AParams: string);
 begin
   Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;
@@ -996,7 +996,7 @@ begin
 end;
 }
 
-class function TtiDatabaseFBL.DatabaseExists(const ADatabaseName, AUserName, APassword: string): boolean;
+class function TtiDatabaseFBL.DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string): boolean;
 var
   lDatabase: TtiDatabaseFBL;
 begin

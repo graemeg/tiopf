@@ -29,8 +29,8 @@ type
     function    GetConnectionString: string; override;
     function    FieldMetaDataToSQLCreate(const AFieldMetaData : TtiDBMetaDataField): string; override;
   public
-    class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string):boolean; override;
-    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class function  DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams:string = ''): boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams:string = ''); override;
     procedure       ReadMetaDataTables(AData : TtiDBMetaData); override;
     procedure       ReadMetaDataFields(AData : TtiDBMetaDataTable); override;
     function        Test : boolean; override;
@@ -52,12 +52,12 @@ uses
 
 { TtiDatabaseADOSQLServer }
 
-class procedure TtiDatabaseADOSQLServer.CreateDatabase(const ADatabaseName, AUserName, APassword: string);
+class procedure TtiDatabaseADOSQLServer.CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string);
 begin
   Assert(false, 'CreateDatabase not implemented in ' + ClassName);
 end;
 
-class function TtiDatabaseADOSQLServer.DatabaseExists(const ADatabaseName, AUserName, APassword: string):boolean;
+class function TtiDatabaseADOSQLServer.DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string): boolean;
 var
   lDatabase: TtiDatabaseADOSQLServer;
 begin

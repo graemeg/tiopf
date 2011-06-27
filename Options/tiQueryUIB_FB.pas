@@ -57,9 +57,9 @@ Type
   TtiDatabaseUIB_FB = Class(TtiDatabaseUIBAbs)
   Public
     Constructor Create; Override;
-    Class Procedure CreateDatabase(Const ADatabaseName, AUserName, APassword : String); Override;
-    Class Function DatabaseExists(Const ADatabaseName, AUserName, APassword : String) : Boolean; Override;
-    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    Class Procedure CreateDatabase(Const ADatabaseName, AUserName, APassword: String; const AParams: string = ''); Override;
+    Class Function DatabaseExists(Const ADatabaseName, AUserName, APassword: String; const AParams: string = ''): Boolean; Override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
     Function TIQueryClass : TtiQueryClass; Override;
   End;
 
@@ -84,7 +84,7 @@ Begin
   UIBDatabase.LibraryName := 'FbClient.dll';
 End;
 
-Class Procedure TtiDatabaseUIB_FB.CreateDatabase(Const ADatabaseName, AUserName, APassword : String);
+Class Procedure TtiDatabaseUIB_FB.CreateDatabase(Const ADatabaseName, AUserName, APassword: String; const AParams: string);
 Var
   lDatabase : TtiDatabaseUIB_FB;
 Begin
@@ -102,7 +102,7 @@ Begin
 End;
 
 Class Function TtiDatabaseUIB_FB.DatabaseExists(Const ADatabaseName, AUserName,
-  APassword : String) : Boolean;
+  APassword: String; const AParams: string): Boolean;
 Var
   lDatabase : TtiDatabaseUIB_FB;
 Begin
@@ -127,7 +127,7 @@ Begin
 End;
 
 class procedure TtiDatabaseUIB_FB.DropDatabase(const ADatabaseName, AUserName,
-  APassword: string);
+  APassword: string; const AParams: string);
 begin
   Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;

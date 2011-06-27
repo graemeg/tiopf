@@ -40,9 +40,9 @@ type
     function    InTransaction : boolean; override;
     procedure   Commit; override;
     procedure   RollBack; override;
-    class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string):boolean; override;
-    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
-    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class function  DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''):boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
     procedure       ReadMetaDataTables(AData : TtiDBMetaData); override;
     procedure       ReadMetaDataFields(AData : TtiDBMetaDataTable); override;
     function        Test : boolean; override;
@@ -401,7 +401,7 @@ end;
 //  inherited DropTable(ATableMetaData);
 //end;
 
-class procedure TtiDatabaseASqlite3.CreateDatabase(const ADatabaseName,AUserName, APassword: string);
+class procedure TtiDatabaseASqlite3.CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string);
 var
   lFileName : string;
   lDb: TASQLite3DB;
@@ -428,7 +428,7 @@ begin
 end;
 
 class procedure TtiDatabaseASqlite3.DropDatabase(const ADatabaseName,
-  AUserName, APassword: string);
+  AUserName, APassword: string; const AParams: string);
 begin
   Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;
@@ -441,7 +441,7 @@ end;
 //  inherited CreateTable(ATableMetaData);
 //end;
 
-class function TtiDatabaseASqlite3.DatabaseExists(const ADatabaseName,AUserName, APassword: string): boolean;
+class function TtiDatabaseASqlite3.DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string): boolean;
 var
   lFileName : string;
 begin

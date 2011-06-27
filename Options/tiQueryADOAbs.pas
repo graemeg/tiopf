@@ -35,9 +35,9 @@ type
     constructor Create; override;
     destructor  Destroy; override;
 
-    class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean; override;
-    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
-    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class function  DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''): boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
 
     procedure   StartTransaction; override;
     function    InTransaction : boolean; override;
@@ -516,19 +516,19 @@ begin
   result := true;
 end;
 
-class procedure TtiDatabaseADOAbs.CreateDatabase(const ADatabaseName, AUserName, APassword: string);
+class procedure TtiDatabaseADOAbs.CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string);
 begin
   Assert(false, 'CreateDatabase not implemented in ' + ClassName);
 end;
 
 class procedure TtiDatabaseADOAbs.DropDatabase(const ADatabaseName, AUserName,
-  APassword: string);
+  APassword: string; const AParams: string);
 begin
   Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;
 
 class function TtiDatabaseADOAbs.DatabaseExists(const ADatabaseName,
-  AUserName, APassword: string): boolean;
+  AUserName, APassword: string; const AParams: string): boolean;
 begin
   result := false;
   Assert(false, 'DatabaseExists not implemented in ' + ClassName);

@@ -39,9 +39,9 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean; override;
-    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
-    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class function  DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''): boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
     property        NativeDatabase: TpFIBDatabase read FDatabase write FDatabase;
     property        TraceLevel  : integer read FTraceLevel    write FTraceLevel  ;
     procedure       StartTransaction; override;
@@ -923,7 +923,7 @@ begin
 end;
 
 
-class procedure TtiDatabaseFIBP.CreateDatabase(const ADatabaseName,AUserName, APassword: string);
+class procedure TtiDatabaseFIBP.CreateDatabase(const ADatabaseName,AUserName, APassword: string; const AParams: string);
 var
   LDatabase : TtiDatabaseFIBP;
   LPath: string;
@@ -943,13 +943,13 @@ begin
 end;
 
 class procedure TtiDatabaseFIBP.DropDatabase(const ADatabaseName, AUserName,
-  APassword: string);
+  APassword: string; const AParams: string);
 begin
   Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;
 
 
-class function TtiDatabaseFIBP.DatabaseExists(const ADatabaseName,AUserName, APassword: string): boolean;
+class function TtiDatabaseFIBP.DatabaseExists(const ADatabaseName,AUserName, APassword: string; const AParams: string): boolean;
 var
   lDatabase : TtiDatabaseFIBP;
 begin

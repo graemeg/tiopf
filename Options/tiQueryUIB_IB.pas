@@ -56,9 +56,9 @@ type
   TtiDatabaseUIB_IB = class (TtiDatabaseUIBAbs)
   public
     constructor create; override;
-    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string); override;
-    class function DatabaseExists(const ADatabaseName, AUserName, APassword: string): Boolean; override;
-    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
+    class function DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''): Boolean; override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
   end;
 
   TtiQueryUIB_IB = class (TtiQueryUIBAbs)
@@ -83,7 +83,7 @@ begin
 end;
 
 class procedure TtiDatabaseUIB_IB.CreateDatabase(const ADatabaseName, AUserName,
-        APassword : string );
+        APassword: string; const AParams: string);
 var
   lDatabase: TtiDatabaseUIB_IB;
 begin
@@ -101,7 +101,7 @@ begin
 end;
 
 class function TtiDatabaseUIB_IB.DatabaseExists(const ADatabaseName, AUserName,
-        APassword : string ): Boolean;
+        APassword: string; const AParams: string): Boolean;
 var
   lDatabase: TtiDatabaseUIB_IB;
 begin
@@ -125,7 +125,7 @@ begin
 end;
 
 class procedure TtiDatabaseUIB_IB.DropDatabase(const ADatabaseName, AUserName,
-  APassword: string);
+  APassword: string; const AParams: string);
 begin
   Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;

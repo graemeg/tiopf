@@ -73,9 +73,9 @@ type
     constructor Create; override;
     destructor  Destroy; override;
 
-    class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string):boolean; override;
-    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
-    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class function  DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''):boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
     procedure   Commit; override;
     procedure   RollBack; override;
 
@@ -804,8 +804,7 @@ begin
     result := nil;
 end;
 
-
-class procedure TtiDatabaseTXTFlatFileAbs.CreateDatabase(const ADatabaseName,AUserName, APassword: string);
+class procedure TtiDatabaseTXTFlatFileAbs.CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string);
 begin
   if DatabaseExists(ADatabaseName,AUserName,APassword) then
     raise EtiOPFDBExceptionAlreadyExists.Create('Generic flat file persistence layer', ADatabaseName, AUserName, APassword);
@@ -813,14 +812,12 @@ begin
     raise EtiOPFDBExceptionCanNotCreateDatabase.Create('Generic flat file persistence layer', ADatabaseName, AUserName, APassword);
 end;
 
-class procedure TtiDatabaseTXTFlatFileAbs.DropDatabase(const ADatabaseName,
-  AUserName, APassword: string);
+class procedure TtiDatabaseTXTFlatFileAbs.DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string);
 begin
   Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;
 
-
-class function TtiDatabaseTXTFlatFileAbs.DatabaseExists(const ADatabaseName,AUserName, APassword: string):boolean;
+class function TtiDatabaseTXTFlatFileAbs.DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string):boolean;
 begin
   result := DirectoryExists(ADatabaseName);
 end;

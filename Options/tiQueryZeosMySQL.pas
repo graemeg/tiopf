@@ -38,9 +38,9 @@ type
     constructor Create; override;
     procedure ReadMetaDataTables(pData: TtiDBMetaData); override;
     procedure ReadMetaDataFields(pData: TtiDBMetaDataTable); override;
-    class function DatabaseExists(const ADatabaseName, AUserName, APassword: String): boolean; override;
-    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string); override;
-    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class function DatabaseExists(const ADatabaseName, AUserName, APassword: String; const AParams: string=''): boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string=''); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string=''); override;
   end;
 
 implementation
@@ -67,7 +67,7 @@ begin
 end;
 
 class procedure TtiDatabaseZeosMySQL.CreateDatabase(const ADatabaseName,
-  AUserName, APassword: string);
+  AUserName, APassword: string; const AParams: string);
 var
   lDatabase : TtiDatabaseZeosMySQL;
   conn: IZConnection;
@@ -103,13 +103,13 @@ begin
 end;
 
 class procedure TtiDatabaseZeosMySQL.DropDatabase(const ADatabaseName,
-  AUserName, APassword: string);
+  AUserName, APassword: string; const AParams: string);
 begin
   Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;
 
 class function TtiDatabaseZeosMySQL.DatabaseExists(const ADatabaseName,
-  AUserName, APassword: String): boolean;
+  AUserName, APassword: String; const AParams: string): boolean;
 var
   lDatabase: TtiDatabaseZeosMySQL;
 begin

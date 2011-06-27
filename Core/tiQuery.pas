@@ -199,10 +199,10 @@ type
     property    ErrorInLastCall : boolean read FErrorInLastCall write FErrorInLastCall;
 
     // Implement these in the concrete
-    class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean; virtual; abstract;
-    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); virtual; abstract;
-    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); virtual; abstract;
-    class function  TestConnectTo( const ADatabaseName, AUserName, APassword, AParams : string): boolean; virtual;
+    class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string; const AParams: string = ''): boolean; virtual; abstract;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string; const AParams: string = ''); virtual; abstract;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string; const AParams: string = ''); virtual; abstract;
+    class function  TestConnectTo( const ADatabaseName, AUserName, APassword, AParams: string): boolean; virtual;
 
     procedure   StartTransaction; virtual; abstract;
     function    InTransaction : boolean; virtual; abstract;
