@@ -164,6 +164,9 @@ function tiGetProperty(const AObject: TObject; const APropPath: string): Variant
 var
   LPropInfo: PPropInfo;
   LObject: TObject;
+  {$IFDEF FPC}
+  b: boolean;
+  {$ENDIF}
 begin
   // ToDo: I'm not sure that invalid AObject or APropPath should be swallowed with null returned
   //       Would it be better if an exception was raised?
@@ -181,7 +184,10 @@ begin
         { IFDEF is used because Delphi doesn't support tkBool types. Also we
           want a more precise return value under FPC. }
         if LPropInfo^.PropType^.Kind = tkBool then
-          Result := Boolean(Result);
+        begin
+          b := GetPropValue(LObject, string(LPropInfo^.Name));
+          Result := b;
+        end;
         {$ENDIF}
       end
       else
