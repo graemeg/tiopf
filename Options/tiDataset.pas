@@ -1980,7 +1980,7 @@ begin
             Inc(lTempResult);
         End;
       Finally
-        SetTempState(dsBrowse);
+        RestoreState(oldState);
       End;
       Result := lTempResult;
       FObjectIndex := OldObject;
