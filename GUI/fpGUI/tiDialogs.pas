@@ -152,8 +152,8 @@ begin
   with Memo1 do
   begin
     Name := 'Memo1';
-    SetPosition(4, 4, 292, 294);
-    Anchors := [anLeft,anRight,anTop,anBottom];
+    SetPosition(0, 0, 300, 300);
+    Align := alClient;
     FontDesc := '#Edit2';
     Hint := '';
     TabOrder := 1;
