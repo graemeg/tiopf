@@ -259,7 +259,7 @@ end;
 
 constructor TtiDataBuffer.Create;
 begin
-  inherited;
+  inherited Create;
   FRows  := TObjectList.Create(true);
   FFields := TtiDBMetaDataTable.Create;
 end;
@@ -268,7 +268,7 @@ destructor TtiDataBuffer.Destroy;
 begin
   FRows.Free;
   FFields.Free;
-  inherited;
+  inherited Destroy;
 end;
 
 function TtiDataBuffer.GetItems(AIndex: integer): TtiDataBufferRow;
@@ -349,14 +349,14 @@ end;
 
 constructor TtiDataBufferRow.Create;
 begin
-  inherited;
-  FList := TObjectList.Create;
+  inherited Create;
+  FList := TObjectList.Create(true);
 end;
 
 destructor TtiDataBufferRow.Destroy;
 begin
   FList.Free;
-  inherited;
+  inherited Destroy;
 end;
 
 function TtiDataBufferRow.FindByFieldName(const AName: string): TtiDataBufferCell;
