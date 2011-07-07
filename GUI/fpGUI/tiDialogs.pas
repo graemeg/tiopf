@@ -78,6 +78,7 @@ begin
   Name := 'ProcessingForm';
   SetPosition(317, 177, 400, 150);
   WindowTitle := 'Processing...';
+  Hint := '';
   WindowPosition := wpScreenCenter;
   BackgroundColor := clHilite1;
   WindowType := wtPopup;
@@ -86,22 +87,23 @@ begin
   with Bevel1 do
   begin
     Name := 'Bevel1';
-    SetPosition(8, 4, 232, 80);
+    SetPosition(0, 0, 400, 150);
     Align := alClient;
+    Hint := '';
   end;
 
   lblMessage := TfpgLabel.Create(Bevel1);
   with lblMessage do
   begin
     Name := 'lblMessage';
-    SetPosition(32, 28, 108, 32);
+    SetPosition(2, 2, 396, 146);
+    Align := alClient;
     Alignment := taCenter;
     FontDesc := '#Label1';
     Hint := '';
     Layout := tlCenter;
     Text := '...';
     WrapText := True;
-    Align := alClient;
     MouseCursor := mcHourGlass;
   end;
 
@@ -109,6 +111,59 @@ begin
   {%endregion}
 end;
 
+type
+  TFormShowStrings = class(TfpgForm)
+  private
+    {@VFD_HEAD_BEGIN: FormShowStrings}
+    Memo1: TfpgMemo;
+    {@VFD_HEAD_END: FormShowStrings}
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+  public
+    constructor Create(AOwner: TComponent); override;
+    procedure AfterCreate; override;
+  end;
+
+{ TFormShowStrings }
+
+procedure TFormShowStrings.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  gGUIINI.WriteFormState(self);
+  Action := caFree;
+end;
+
+constructor TFormShowStrings.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  OnClose := @FormClose;
+end;
+
+procedure TFormShowStrings.AfterCreate;
+begin
+  {%region 'Auto-generated GUI code' -fold}
+  {@VFD_BODY_BEGIN: FormShowStrings}
+  Name := 'FormShowStrings';
+  SetPosition(329, 371, 300, 300);
+  WindowTitle := 'Processing...';
+  Hint := '';
+  WindowPosition := wpScreenCenter;
+  BackgroundColor := clHilite1;
+
+  Memo1 := TfpgMemo.Create(self);
+  with Memo1 do
+  begin
+    Name := 'Memo1';
+    SetPosition(4, 4, 292, 294);
+    Anchors := [anLeft,anRight,anTop,anBottom];
+    FontDesc := '#Edit2';
+    Hint := '';
+    TabOrder := 1;
+  end;
+
+  {@VFD_BODY_END: FormShowStrings}
+  {%endregion}
+  
+  gGUIINI.ReadFormState(self);
+end;
 
 
 procedure tiShowMessage(const AArray: array of const);
@@ -153,27 +208,12 @@ end;
 
 procedure tiShowStrings(const AStrings: TStrings; const AHeading: TfpgString);
 var
-  lForm: TfpgForm;
-  lMemo: TfpgMemo;
+  lForm: TFormShowStrings;
 begin
-  lForm := TfpgForm.Create(nil);
-  lMemo := TfpgMemo.Create(lForm);
-  try
-    lForm.WindowTitle := AHeading;
-    lForm.Width       := 300;
-    lForm.Height      := 300;
-    lForm.WindowPosition := wpScreenCenter;
-    lForm.Name        := 'FormShowStrings';
-    lMemo.Lines.Assign(AStrings);
-    lMemo.FontDesc    := 'Courier New-10';
-    gGUIINI.ReadFormState(lForm);
-    lMemo.SetPosition(0, 0, lForm.Width, lForm.Height);
-    lMemo.Align       := alClient;
-    lForm.ShowModal;
-    gGUIINI.WriteFormState(lForm);
-  finally
-    lForm.free;
-  end;
+  lForm := TFormShowStrings.Create(nil);
+  lForm.WindowTitle := AHeading;
+  lForm.Memo1.Lines.Assign(AStrings);
+  lForm.Show;
 end;
 
 procedure tiShowString(const AStr: TfpgString; const AHeading: TfpgString);
