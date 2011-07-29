@@ -146,7 +146,7 @@ type
      typically used in the OS. }
   function tiWrap(const AString: string; const AColumnWidth: Integer): string;
   function tiStripNonAlphaCharacters(const AString: string): string;
-function tiReplaceFileNameReservedChars(const AString: string; 
+  function tiReplaceFileNameReservedChars(const AString: string; 
                                         const AReplaceWith: string;
                                         const AReplaceDot: Boolean = false; 
                                         const AReplaceSlashes: Boolean = false;

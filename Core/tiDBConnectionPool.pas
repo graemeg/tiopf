@@ -35,7 +35,6 @@ type
     FDBConnectionPools: TtiDBConnectionPools;
     FDBConnectionParams : TtiDBConnectionParams;
     FDatabaseAlias: string;
-
   protected
     function    PooledItemClass: TtiPooledItemClass; override;
     procedure   AfterAddPooledItem(const APooledItem: TtiPooledItem); override;
