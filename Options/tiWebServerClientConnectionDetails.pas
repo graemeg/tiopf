@@ -15,9 +15,11 @@
 unit tiWebServerClientConnectionDetails;
 
 interface
+
+{$I tiDefines.inc}
+
 uses
-   tiBaseObject
- ;
+  tiBaseObject;
 
 type
 
