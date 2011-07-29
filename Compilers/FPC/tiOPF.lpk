@@ -50,7 +50,7 @@
     <License Value="Mozilla Public License 1.1 or Modified LGPL
 "/>
     <Version Major="2" Release="4"/>
-    <Files Count="60">
+    <Files Count="63">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>
         <UnitName Value="tiBaseObject"/>
@@ -291,6 +291,18 @@
         <Filename Value="../../Core/tiPersistenceLayersIntf.inc"/>
         <Type Value="Include"/>
       </Item60>
+      <Item61>
+        <Filename Value="../../Options/tiWebServerClientConnectionDetails.pas"/>
+        <UnitName Value="tiWebServerClientConnectionDetails"/>
+      </Item61>
+      <Item62>
+        <Filename Value="../../Options/tiCRC32.pas"/>
+        <UnitName Value="tiCRC32"/>
+      </Item62>
+      <Item63>
+        <Filename Value="../../Options/tiHTTP.pas"/>
+        <UnitName Value="tiHTTP"/>
+      </Item63>
     </Files>
     <LazDoc Paths="../../../Docs/xml/core/;../../../Docs/xml/options/;../../../Docs/xml/gui/"/>
     <UsageOptions>
