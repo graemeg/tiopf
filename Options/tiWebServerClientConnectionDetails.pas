@@ -1,3 +1,17 @@
+{
+    This file is part of the tiOPF project.
+
+    See the file license.txt, included in this distribution,
+    for details about redistributing tiOPF.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+    Description:
+      This unit defines a class that keeps client connection details
+      to a web server.
+}
 unit tiWebServerClientConnectionDetails;
 
 interface

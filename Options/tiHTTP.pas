@@ -1,3 +1,19 @@
+{
+    This file is part of the tiOPF project.
+
+    See the file license.txt, included in this distribution,
+    for details about redistributing tiOPF.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+    Description:
+      This unit defines an abstart HTTP class as a wrapper around
+      other HTTP components like Indy, MSHTTPXML, Synapse etc. It
+      also defines a global HTTP class factory for registering
+      various HTTP component implementations.
+}
 unit tiHTTP;
 
 {$I tiDefines.inc}
