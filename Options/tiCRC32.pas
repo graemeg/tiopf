@@ -55,7 +55,8 @@ unit tiCRC32;
 
 interface
 
-uses Windows, SysUtils, Classes;
+uses
+  SysUtils, Classes;
 
 function tiCRC32FromFile(const AFilename: string): Longword;
 function tiCRC32FromStream(AStream: TStream): Longword;
@@ -149,6 +150,8 @@ begin
  end;
 end;
 
+{$IFDEF CPU32}
+{ This only works on 32-bit x86 processors. Not portable at all. }
 function AsmUpdateCrc32(AValue: integer; Buffer: pointer; Count: integer): integer; assembler;
 asm
  {Input = eax: AValue, edx: Points to Buffer, ecx: Count}
@@ -176,6 +179,7 @@ asm
  pop  edi
  pop  ebx
 end;
+{$ENDIF}
 
 function tiCRC32FromFile(const AFileName: string): Longword;
 var
@@ -194,6 +198,7 @@ begin
  Result:=not Result;
 end;
 
+{$IFDEF CPU32}
 function tiAsmGetFileCrc32(FileName: string): Longword;
 var
  Buffer: Pointer;
@@ -210,6 +215,7 @@ begin
  FreeMem(Buffer);
  Result:=not Result;
 end;
+{$ENDIF}
 
 function tiCRC32FromStream(AStream: TStream): Longword;
 var
@@ -244,12 +250,14 @@ begin
   Result:=not Result;
 end;
 
+{$IFDEF CPU32}
 function tiAsmGetMemoryStreamCrc32(Stream: TMemoryStream): Longword;
 begin
  Result:=$FFFFFFFF;
  Result:=AsmUpdateCrc32(Result,Stream.Memory,Stream.Size);
  Result:=not Result;
 end;
+{$ENDIF}
 
 function tiCRC32FromString(const AString : string): Longword;
 var
