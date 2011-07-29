@@ -196,16 +196,16 @@ var
 const
   cIBField_SHORT     = 7;
   cIBField_LONG      = 8;
+  cIBField_FLOAT     = 10;
+  cIBField_DATE      = 12;
+  cIBField_TIME      = 13;
+  cIBField_TEXT      = 14;
   cIBField_BIGINT    = 16;
   cIBField_DOUBLE    = 27;
   cIBField_TIMESTAMP = 35;
-  cIBField_DATE      = 12;
-  cIBField_TIME      = 13;
   cIBField_VARYING   = 37;
   cIBField_BLOB      = 261;
-  cIBField_TEXT      = 14;
 { cIBField_QUAD      = 9;
-  cIBField_FLOAT     = 10;
   cIBField_CSTRING   = 40;
   cIBField_BLOB_ID   = 45;}
 begin
@@ -242,11 +242,12 @@ begin
         case lFieldType of
           cIBField_SHORT,
           cIBField_LONG,
-          cIBField_BIGINT: lField.Kind := qfkInteger;
-          cIBField_DOUBLE: lField.Kind := qfkFloat;
+          cIBField_BIGINT:  lField.Kind := qfkInteger;
+          cIBField_DOUBLE,
+          cIBField_FLOAT:   lField.Kind := qfkFloat;
           cIBField_TIMESTAMP,
           cIBField_DATE,
-          cIBField_TIME: lField.Kind := qfkDateTime;
+          cIBField_TIME:    lField.Kind := qfkDateTime;
           cIBField_VARYING,
           cIBField_TEXT:
           begin
