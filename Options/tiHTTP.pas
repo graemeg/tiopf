@@ -24,11 +24,6 @@ uses
   ,Contnrs
   ,tiBaseObject
   ,tiConstants
-  ,IdBaseComponent
-  ,IdComponent
-  ,IdTCPConnection
-  ,IdTCPClient
-  ,IdHTTP
   ,tiWebServerClientConnectionDetails
  ;
 
@@ -181,8 +176,7 @@ var
 
 implementation
 uses
-  Windows
-  ,SysUtils
+  SysUtils
   ,tiUtils
   ,tiCRC32
   ,tiExcept
