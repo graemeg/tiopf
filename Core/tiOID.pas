@@ -38,8 +38,7 @@ type
     procedure AssignToTIQueryParam(const AFieldName: string; const AParams: TtiBaseObject); virtual; abstract;
     procedure AssignToTIQuery(const AFieldName: string; const AQuery: TtiBaseObject); overload; virtual; abstract;
     procedure AssignToTIQuery(const AQuery: TtiBaseObject); overload;
-    procedure AssignFromTIQuery(const AFieldName: string; const AQuery: TtiBaseObject);
-      overload; virtual; abstract;
+    procedure AssignFromTIQuery(const AFieldName: string; const AQuery: TtiBaseObject); overload; virtual; abstract;
     procedure AssignFromTIQuery(const AQuery: TtiBaseObject); overload;
 
     function EqualsQueryField(const AFieldName: string; const AQuery: TtiBaseObject): boolean; virtual; abstract;
