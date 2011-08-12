@@ -138,9 +138,13 @@ type
     function    InstanceOfThreadClassIsActive(const AThreadClass: TtiThreadClass): boolean;
   end;
 
+
 {$IFDEF MSWINDOWS}
 procedure SetIdeDebuggerThreadName(AThreadID: DWORD; AThreadName: PChar);
+{$ELSE}
+procedure SetIdeDebuggerThreadName(AThreadID: TThreadID; AThreadName: PChar);
 {$ENDIF}
+
 
 
 implementation
@@ -206,7 +210,7 @@ begin
   end;
 end;
 {$ELSE}
-procedure SetIdeDebuggerThreadName(AThreadID: Integer; const AThreadName: string);
+procedure SetIdeDebuggerThreadName(AThreadID: TThreadID; AThreadName: PChar);
 begin
   // In .NET there is a method... thread.setname or something
   // In Linux - who knows

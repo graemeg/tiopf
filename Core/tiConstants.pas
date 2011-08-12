@@ -229,10 +229,10 @@ const
   {$ELSE}
   AllFilesWildCard    = '*.*';
   {$ENDIF}
-  {$IFDEF UNIX}
+  {$IFDEF UNIX}{$IFNDEF DARWIN}
   cLineEnding         = #10;    // Unix type OSes (Linux, *BSD, ...)
   CMinFileDate        = 29221; {$MESSAGE 'ToDo: Supply correct value for min file date on Unix'}
-  {$ENDIF}
+  {$ENDIF}{$ENDIF}
   {$IFDEF DARWIN}
   cLineEnding         = #13;    // Mac OS
   CMinFileDate        = 29221;  {$MESSAGE 'ToDo: Supply correct value for min file date on Mac OS'}
