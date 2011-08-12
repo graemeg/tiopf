@@ -1960,6 +1960,7 @@ var
   Buffer : PByteOrChar;
   OldObject : Integer;
   lTempResult : Integer;
+  savestate: TDataSetState;
 begin
   oList := ObjectList;
   If Assigned(oList) Then
@@ -1969,7 +1970,7 @@ begin
       Buffer := TempBuffer;
       OldObject := FObjectIndex;
       FFilterBuffer := Buffer;
-      SetTempState(dsFilter);
+      savestate := SetTempState(dsFilter);
       lTempResult := 0;
       Try
         InternalFirst;
@@ -1980,7 +1981,7 @@ begin
             Inc(lTempResult);
         End;
       Finally
-        RestoreState(oldState);
+        RestoreState(savestate);
       End;
       Result := lTempResult;
       FObjectIndex := OldObject;
