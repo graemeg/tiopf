@@ -875,13 +875,13 @@ end;
 procedure tiMIMEEncodeStringToStream(const AString: string; const AStream: TStream);
 var
   lStream: TStringStream;
-  b64encoder: TBase64EncodingStream;
+  b64encoder: TBase64DecodingStream;
 begin
   lStream:= TStringStream.Create(AString);
   try
     AStream.Size := 0;
 
-    b64encoder := TBase64EncodingStream.Create(AStream);
+    b64encoder := TBase64DecodingStream.Create(AStream);
     b64encoder.CopyFrom(lStream, lStream.Size);
 
     AStream.Position := 0;
