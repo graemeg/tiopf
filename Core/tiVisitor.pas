@@ -60,7 +60,7 @@ type
 
   {** @exclude
     Counter for the depth of iteration. There is no theoretical limit, however
-    a limit is set as High(Word) = 64435 as it's unlikely that the depth
+    a limit is set as High(Word) = 65535 as it's unlikely that the depth
     will ever reach that limit. If it does, this type can be changed to Cardinal.}
   TIterationDepth = word;
 
