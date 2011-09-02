@@ -23,7 +23,7 @@ type
   TtiCustomListMediatorView = class;
 
   TtiObjectToGUIEvent = procedure(Sender: TtiMediatorView; Src: TtiObject; Dest: TComponent; var Handled: Boolean) of object;
-  TtiGUIToObjectEvent = procedure(Sender: TtiMediatorView; Src: TComponent; Dest: TtiObject; var Handled: Boolean) of object;
+  TtiBeforeGUIToObjectEvent = procedure(Sender: TtiMediatorView; Src: TComponent; Dest: TtiObject; var Handled: Boolean) of object;
   TtiMediatorEvent = procedure(AMediatorView: TtiMediatorView) of object;
   TtiComponentNotificationEvent = procedure(AComponent: TComponent; Operation: TOperation) of object;
 
@@ -37,7 +37,7 @@ type
     FActive: Boolean;
     FObjectUpdateMoment: TtiObjectUpdateMoment;
     FListObject: TtiObjectList;
-    FOnGUIToObject: TtiGUIToObjectEvent;
+    FOnBeforeGUIToObject: TtiBeforeGUIToObjectEvent;
     FOnObjectToGUI: TtiObjectToGUIEvent;
     FSettingUp: Boolean;
     FFieldName: string; // Published property of model used to get/set value
@@ -135,9 +135,7 @@ type
     // Property ObjectUpdateMoment : Do action e.g. in OnExit instead of OnChange.
     // Up to the descendent class to decide this.
     property ObjectUpdateMoment: TtiObjectUpdateMoment read FObjectUpdateMoment write SetObjectUpdateMoment default ouDefault;
-    // OnGUIToObject
-    property OnGUIToObject: TtiGUIToObjectEvent read FOnGUIToObject write FOnGUIToObject;
-    // OnObjectToGUI
+    property OnBeforeGUIToObject: TtiBeforeGUIToObjectEvent read FOnBeforeGUIToObject write FOnBeforeGUIToObject;
     property OnObjectToGUI: TtiObjectToGUIEvent read FOnObjectToGUI write FOnObjectToGUI;
     // Observing or not ?
     property Active: Boolean read FActive write SetActive;
@@ -705,8 +703,8 @@ begin
   Inc(FCopyingCount);
   try
     B := False;
-    if Assigned(FOnGUIToObject) then
-      FOnGUIToObject(Self, View, Subject, B);
+    if Assigned(FOnBeforeGUIToObject) then
+      FOnBeforeGUIToObject(Self, View, Subject, B);
     if not B then
       DoGUIToObject;
   finally
