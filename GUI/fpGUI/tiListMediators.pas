@@ -673,7 +673,8 @@ end;
 
 procedure TtiListBoxListMediatorView.ClearList;
 begin
-  MediatorList.Clear;
+  if Assigned(MediatorList) then
+    MediatorList.Clear;
   if View <> nil then
     View.Items.Clear;
 end;
@@ -684,7 +685,8 @@ begin
   View.BeginUpdate;
   try
     SetupGUIandObject;
-    MediatorList.Clear;
+    if Assigned(MediatorList) then
+      MediatorList.Clear;
 //    CreateColumns;
     CreateSubMediators;
   finally
