@@ -24,6 +24,7 @@ type
 
   TtiObjectToGUIEvent = procedure(Sender: TtiMediatorView; Src: TtiObject; Dest: TComponent; var Handled: Boolean) of object;
   TtiBeforeGUIToObjectEvent = procedure(Sender: TtiMediatorView; Src: TComponent; Dest: TtiObject; var Handled: Boolean) of object;
+  TtiAfterGUIToObjectEvent = procedure(Sender: TtiMediatorView; Src: TComponent; Dest: TtiObject) of object;
   TtiMediatorEvent = procedure(AMediatorView: TtiMediatorView) of object;
   TtiComponentNotificationEvent = procedure(AComponent: TComponent; Operation: TOperation) of object;
 
@@ -47,6 +48,7 @@ type
     FGUIFieldName: string;
     FViewHelper: TtiMediatorViewComponentHelper;
     FCopyingCount: integer;
+    FOnAfterGUIToObject: TtiAfterGUIToObjectEvent;
     procedure ViewNotification(AComponent: TComponent; Operation: TOperation);
   protected
     UseInternalOnChange: Boolean;
@@ -136,6 +138,7 @@ type
     // Up to the descendent class to decide this.
     property ObjectUpdateMoment: TtiObjectUpdateMoment read FObjectUpdateMoment write SetObjectUpdateMoment default ouDefault;
     property OnBeforeGUIToObject: TtiBeforeGUIToObjectEvent read FOnBeforeGUIToObject write FOnBeforeGUIToObject;
+    property OnAfterGUIToObject: TtiAfterGUIToObjectEvent read FOnAfterGUIToObject write FOnAfterGUIToObject;
     property OnObjectToGUI: TtiObjectToGUIEvent read FOnObjectToGUI write FOnObjectToGUI;
     // Observing or not ?
     property Active: Boolean read FActive write SetActive;
@@ -706,7 +709,11 @@ begin
     if Assigned(FOnBeforeGUIToObject) then
       FOnBeforeGUIToObject(Self, View, Subject, B);
     if not B then
+    begin
       DoGUIToObject;
+      if Assigned(FOnAfterGUIToObject) then
+        FOnAfterGUIToObject(Self, View, Subject);
+    end;
   finally
     Dec(FCopyingCount);
   end;

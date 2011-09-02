@@ -28,6 +28,7 @@ type
     FOnObjectToGUI: TtiObjectToGUIEvent;
     FOnSetupMediator: TtiMediatorEvent;
     FValueList: TtiObjectList;
+    FOnAfterGUIToObject: TtiAfterGUIToObjectEvent;
     procedure SetComponent(const AValue: TComponent);
     procedure SetComposite(const AValue: Boolean);
     procedure SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment);
@@ -35,6 +36,7 @@ type
     procedure SetOnBeforeGUIToObject(const AValue: TtiBeforeGUIToObjectEvent);
     procedure SetOnObjectToGUI(const AValue: TtiObjectToGUIEvent);
     procedure SetValueList(const AValue: TtiObjectList);
+    procedure SetOnAfterGUIToObject(const AValue: TtiAfterGUIToObjectEvent);
   protected
     function GetDisplayName: string; override;
     procedure CreateMediator; virtual;
@@ -53,6 +55,7 @@ type
     property Component: TComponent read FComponent write SetComponent;
     property ObjectUpdateMoment: TtiObjectUpdateMoment read FObjectUpdateMoment write SetObjectUpdateMoment default ouDefault;
     property OnBeforeGUIToObject: TtiBeforeGUIToObjectEvent read FOnBeforeGUIToObject write SetOnBeforeGUIToObject;
+    property OnAfterGUIToObject: TtiAfterGUIToObjectEvent read FOnAfterGUIToObject write SetOnAfterGUIToObject;
     property OnObjectToGUI: TtiObjectToGUIEvent read FOnObjectToGUI write SetOnObjectToGUI;
     Property OnSetupMediator: TtiMediatorEvent Read FOnSetupMediator Write FOnSetupMediator;
   end;
@@ -381,6 +384,13 @@ begin
     FMediator.ValueList := FValueList;
 end;
 
+procedure TtiPropertyLinkDef.SetOnAfterGUIToObject(const AValue: TtiAfterGUIToObjectEvent);
+begin
+  FOnAfterGUIToObject := AValue;
+  if Assigned(Mediator) then
+    Mediator.OnAfterGUIToObject := AValue;
+end;
+
 procedure TtiPropertyLinkDef.CreateMediator;
 begin
   if (FMediatorDef = nil) then
@@ -395,6 +405,7 @@ begin
     FMediator.RootFieldName := tiRootFieldName(FieldName);
   end;
   FMediator.OnBeforeGUIToObject := Self.OnBeforeGUIToObject;
+  FMediator.OnAfterGUIToObject := Self.OnAfterGUIToObject;
   FMediator.OnObjectToGUI := Self.OnObjectToGUI;
   FMediator.SetView(Self.Component);
   FMediator.ValueList := Self.ValueList;
@@ -429,6 +440,7 @@ begin
     FObjectUpdateMoment := D.ObjectUpdateMoment;
     FFieldName := D.FieldName;
     FOnBeforeGUIToObject := D.OnBeforeGUIToObject;
+    FOnAfterGUIToObject := D.OnAfterGUIToObject;
     FOnObjectToGUI := D.OnObjectToGUI;
     FValueList := D.ValueList;
     FCOmposite := D.Composite;
