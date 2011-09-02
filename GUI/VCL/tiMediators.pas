@@ -672,27 +672,28 @@ var
   lPropType: TTypeKind;
 begin
   SetOnChangeActive(false);
+  try
+    //  Set the index only (We're assuming the item is present in the list)
+    View.ItemIndex := -1;
+    if (Subject = nil) or (not Assigned(ValueList)) then
+      Exit; //==>
 
-  //  Set the index only (We're assuming the item is present in the list)
-  View.ItemIndex := -1;
-  if (Subject = nil) or (not Assigned(ValueList)) then
-    Exit; //==>
+    lValue := nil;
+    lPropType := typinfo.PropType(Subject, FieldName);
+    if lPropType = tkClass then
+      lValue := TtiObject(typinfo.GetObjectProp(Subject, FieldName))
+    else
+      RaiseMediatorError(cErrorPropertyNotClass);
 
-  lValue := nil;
-  lPropType := typinfo.PropType(Subject, FieldName);
-  if lPropType = tkClass then
-    lValue := TtiObject(typinfo.GetObjectProp(Subject, FieldName))
-  else
-    RaiseMediatorError(cErrorPropertyNotClass);
-
-  for i := 0 to ValueList.Count - 1 do
-    if ValueList.Items[i].Equals(lValue) then
-    begin
-      View.ItemIndex := i;
-      Break; //==>
-    end;
-
-  SetOnChangeActive(true);
+    for i := 0 to ValueList.Count - 1 do
+      if ValueList.Items[i].Equals(lValue) then
+      begin
+        View.ItemIndex := i;
+        Break; //==>
+      end;
+  finally
+    SetOnChangeActive(true);
+  end;
 end;
 
 procedure TtiDynamicComboBoxMediatorView.RefreshList;

@@ -669,28 +669,29 @@ var
   lPropType: TTypeKind;
 begin
   SetOnChangeActive(false);
+  try
+    //  Set the index only (We're assuming the item is present in the list)
+    View.ItemIndex := -1;
+    if (Subject = nil) or (not Assigned(ValueList)) then
+      Exit; //==>
 
-  //  Set the index only (We're assuming the item is present in the list)
-  View.ItemIndex := -1;
-  if (Subject = nil) or (not Assigned(ValueList)) then
-    Exit; //==>
+    lValue := nil;
+    lPropType := typinfo.PropType(Subject, FieldName);
+    if lPropType = tkClass then
+      lValue := TtiObject(typinfo.GetObjectProp(Subject, FieldName))
+    else
+      RaiseMediatorError(cErrorPropertyNotClass);
 
-  lValue := nil;
-  lPropType := typinfo.PropType(Subject, FieldName);
-  if lPropType = tkClass then
-    lValue := TtiObject(typinfo.GetObjectProp(Subject, FieldName))
-  else
-    RaiseMediatorError(cErrorPropertyNotClass);
-
-  // Can't use ValueList.Items[] when View has sorted = true, then the indices
-  // for ValueList and View.List are different for the same object
-  i := View.Items.count;
-  repeat
-     dec (i)
-  until (i < 0) or (View.Items.Objects[i] = lValue);
-  View.ItemIndex := i;
-
-  SetOnChangeActive(true);
+    // Can't use ValueList.Items[] when View has sorted = true, then the indices
+    // for ValueList and View.List are different for the same object
+    i := View.Items.count;
+    repeat
+       dec (i)
+    until (i < 0) or (View.Items.Objects[i] = lValue);
+    View.ItemIndex := i;
+  finally
+    SetOnChangeActive(true);
+  end;
 end;
 
 procedure TtiDynamicComboBoxMediatorView.RefreshList;
