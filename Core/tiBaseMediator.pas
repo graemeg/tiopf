@@ -515,7 +515,8 @@ var
 begin
   Errors := TtiObjectErrors.Create;
   try
-    Subject.IsValid(Errors);
+    if Assigned(Subject) then
+      Subject.IsValid(Errors);
     UpdateGUIValidStatus(Errors); // always execute this as it also resets View
   finally
     Errors.Free;
