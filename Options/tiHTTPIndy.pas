@@ -1,6 +1,6 @@
-{$I tiDefines.inc}
-
 unit tiHTTPIndy;
+
+{$I tiDefines.inc}
 
 interface
 uses
@@ -15,7 +15,7 @@ uses
 
 type
 
-  {:Uses the Adapter pattern to wrapper a TidHTTP giving a starndard interface.}
+  {:Uses the Adapter pattern to wrapper a TidHTTP giving a standard interface.}
   TtiHTTPIndy = class(TtiHTTPAbs)
   private
     FHTTP : TidHTTP;

@@ -1,6 +1,6 @@
-{$I tiDefines.inc}
-
 unit tiHTTPAutoDetect;
+
+{$I tiDefines.inc}
 
 interface
 uses
@@ -115,8 +115,7 @@ begin
   end;
 end;
 
-function tiHTTPTestConnection(
-  const AConnectionDetails: TtiWebServerClientConnectionDetails): Boolean;
+function tiHTTPTestConnection(const AConnectionDetails: TtiWebServerClientConnectionDetails): Boolean;
 var
   LHTTP: TtiHTTPAbs;
   LS : string;
