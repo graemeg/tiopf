@@ -80,9 +80,8 @@ Uses
 
 Constructor TtiDatabaseUIB_FB.create;
 Begin
-  Inherited;
+  Inherited Create;
   LayerName := cTIPersistUIB_FB;
-  UIBDatabase.LibraryName := 'FbClient.dll';
 End;
 
 Class Procedure TtiDatabaseUIB_FB.CreateDatabase(Const ADatabaseName, AUserName, APassword: String; const AParams: string);
