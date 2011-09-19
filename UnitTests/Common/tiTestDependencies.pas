@@ -104,6 +104,7 @@ uses
   ,tiOPFAsqlite3_TST
   //,tiOPFZeos_MySQL41_TST // No tests
   //,tiOPFZeos_MySQL50_TST // No tests
+  ,tiOPFUIB_FB_TST
   ;
 
 const
@@ -192,7 +193,8 @@ begin
   //tiOPFZeos_MySQL50_TST.RegisterTests; // No tests
   tiOPFDBISASM4_TST.RegisterTests;
   tiOPFAsqlite3_TST.RegisterTests;
-  
+  tiOPFUIB_FB_TST.RegisterTests;
+
 end;
 
 procedure tiRemoveUnSelectedPersistenceLayerSetups;
