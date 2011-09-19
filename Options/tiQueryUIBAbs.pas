@@ -827,7 +827,7 @@ Begin
     Database := FDatabase;
     AutoStart := False;
     AutoStop := False;
-    AutoRetain := False;
+//    AutoRetain := False;
   End;
 End;
 

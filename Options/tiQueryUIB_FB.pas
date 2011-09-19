@@ -71,6 +71,7 @@ Type
 Implementation
 
 Uses
+  uiblib,
   tiOPFManager,
   tiDBConnectionPool,
   tiConstants;
@@ -94,7 +95,7 @@ Begin
       DatabaseName := ADatabaseName;
       UserName := AUserName;
       PassWord := APassword;
-      CreateDatabase;
+      CreateDatabase(GetSystemCharacterset);
     End;
   Finally
     lDatabase.Free;
