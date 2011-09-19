@@ -678,8 +678,9 @@ end;
 
 procedure TtiDynamicComboBoxMediatorView.SetListObject(const AValue: TtiObjectList);
 begin
-  inherited;
-  InternalListRefresh;
+  inherited SetListObject(AValue);
+  if Assigned(AValue) then
+    InternalListRefresh;
 //  if Assigned(ValueList) then
 //    View.Enabled := ValueList.Count > 0;
 end;
