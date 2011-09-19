@@ -37,7 +37,7 @@
         <PackageName Value="tiOPF"/>
       </Item1>
       <Item2>
-        <PackageName Value="dunit2"/>
+        <PackageName Value="fptest"/>
       </Item2>
     </RequiredPackages>
     <Units Count="6">
