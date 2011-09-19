@@ -1,3 +1,6 @@
+{
+  TODO: Refactor this unit so it descends from tiQueryDataset classes.
+}
 unit tiQueryUIBAbs;
 
 {$I tiDefines.inc}
@@ -50,7 +53,7 @@ type
     Property LayerName : String Read FLayerName Write FLayerName;
   End;
 
-  // ---------------------------------------------------------------------------
+
   TtiQueryUIBAbs = Class(TtiQuerySQL)
   Private
     FActive : Boolean;
@@ -59,6 +62,10 @@ type
     FSQLParams : TSQLParams;
     Function IBFieldKindToTIFieldKind(pData : TUIBSQLVar) : TtiQueryFieldKind;
   Protected
+    { these two methods come from tiQueryDataset }
+    function ParamsAsStringList: TStringList;
+    procedure LogParams;
+
     Function GetActive : Boolean; Override;
     Function GetEOF : Boolean; Override;
     Function GetFieldAsBoolean(Const psName : String) : Boolean; Override;
@@ -122,7 +129,6 @@ Uses
   DB
   , Math
   , tiUtils
-  , tiDialogs
   , tiLog
   , TypInfo
   , tiOPFManager
@@ -374,7 +380,7 @@ Function TtiQueryUIBAbs.ExecSQL : Integer;
 Begin
   Log(ClassName + ': [Prepare] ' + tiNormalizeStr(self.SQLText), lsSQL);
   InternalPrepare;
-  Log(ClassName + ': [Params] ' + ParamsAsString, lsSQL);
+  LogParams;
   FQuery.Execute;
   Result := -1;
 End;
@@ -575,6 +581,43 @@ Begin
     Raise EtiOPFInternalException.Create('Invalid Interbase/Firebird/IBX sqltype');
   End;
 End;
+
+function TtiQueryUIBAbs.ParamsAsStringList: TStringList;
+var
+  i: integer;
+  s: string;
+begin
+  result := TStringList.Create;
+  try
+    for i := 0 to ParamCount-1 do
+    begin
+      if ParamIsNull[ ParamName(i)] then      // Display the fact
+        s := 'Null'
+      else
+        s := ParamAsString[ParamName(i)];
+      result.Add(ParamName(i) + '=' + s);
+    end;
+  except
+    on e: exception do
+      LogError(e, true);
+  end;
+end;
+
+procedure TtiQueryUIBAbs.LogParams;
+const
+  cLogLine = '%s: [Param %d] %s = %s';
+var
+  sl: TStringList;
+  i: integer;
+begin
+  sl := ParamsAsStringList;
+  try
+    for i := 0 to sl.Count-1 do
+      Log(Format(cLogLine, [ClassName, i+1, sl.Names[i], sl.ValueFromIndex[i]]), lsSQL);
+  finally
+    sl.Free;
+  end;
+end;
 
 Procedure TtiQueryUIBAbs.Next;
 Begin
@@ -782,7 +825,7 @@ Begin
     Database := FDatabase;
     AutoStart := False;
     AutoStop := False;
-    AutoRetain := False;
+//    AutoRetain := False;
   End;
 End;
 
@@ -861,20 +904,21 @@ Const
   //   where rdb$field_NAME = 'RDB$FIELD_TYPE'
   //   ORDER BY RDB$TYPE
 
-  cIBField_LONG = 8;
-  cIBField_DOUBLE = 27;
-  cIBField_TIMESTAMP = 35;
-  cIBField_DATE = 12;
-  cIBField_TIME = 13;
-  cIBField_VARYING = 37;
-  cIBField_BLOB = 261;
-
   cIBField_SHORT = 7;
+  cIBField_LONG = 8;
   cIBField_QUAD = 9;
   cIBField_FLOAT = 10;
+  cIBField_DATE = 12;
+  cIBField_TIME = 13;
   cIBField_TEXT = 14;
+  cIBField_BIGINT = 16;
+  cIBField_DOUBLE = 27;
+  cIBField_TIMESTAMP = 35;
+  cIBField_VARYING = 37;
   cIBField_CSTRING = 40;
   cIBField_BLOB_ID = 45;
+  cIBField_BLOB = 261;
+
 
 Begin
   lTable := (AData As TtiDBMetaDataTable);
@@ -908,22 +952,31 @@ Begin
         lField.Width := 0;
 
         Case lFieldType Of
-          cIBField_LONG : lField.Kind := qfkInteger;
-          cIBField_DOUBLE : lField.Kind := qfkFloat;
+          cIBField_SHORT,
+          cIBField_LONG,
+          cIBField_BIGINT : lField.Kind := qfkInteger;
+
+          cIBField_DOUBLE,
+          cIBField_FLOAT : lField.Kind := qfkFloat;
+
           cIBField_TIMESTAMP,
-            cIBField_DATE,
-            cIBField_TIME : lField.Kind := qfkDateTime;
+          cIBField_DATE,
+          cIBField_TIME : lField.Kind := qfkDateTime;
+
           cIBField_VARYING,
-            cIBField_TEXT :
+          cIBField_TEXT :
             Begin
               lField.Kind := qfkString;
               lField.Width := lFieldLength;
             End;
+
           cIBField_BLOB :
             Begin
               Assert(Not lQuery.FieldIsNull['field_sub_type'], 'field_sub_type is null');
               If lQuery.FieldAsInteger['field_sub_type'] = 1 Then
                 lField.Kind := qfkLongString
+              else if lQuery.FieldAsInteger['field_sub_type'] = 0 then
+                lField.Kind := qfkBinary
               Else
                 Raise EtiOPFInternalException.Create('Invalid field_sub_type <' + IntToStr(lQuery.FieldAsInteger['field_sub_type']) + '>');
             End;

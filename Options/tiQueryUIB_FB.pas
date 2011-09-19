@@ -71,6 +71,7 @@ Type
 Implementation
 
 Uses
+  uiblib,
   tiOPFManager,
   tiDBConnectionPool,
   tiConstants;
@@ -79,9 +80,8 @@ Uses
 
 Constructor TtiDatabaseUIB_FB.create;
 Begin
-  Inherited;
+  Inherited Create;
   LayerName := cTIPersistUIB_FB;
-  UIBDatabase.LibraryName := 'FbClient.dll';
 End;
 
 Class Procedure TtiDatabaseUIB_FB.CreateDatabase(Const ADatabaseName, AUserName, APassword: String; const AParams: string);
@@ -94,7 +94,7 @@ Begin
       DatabaseName := ADatabaseName;
       UserName := AUserName;
       PassWord := APassword;
-      CreateDatabase;
+      CreateDatabase(GetSystemCharacterset);
     End;
   Finally
     lDatabase.Free;
