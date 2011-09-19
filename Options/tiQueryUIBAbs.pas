@@ -906,20 +906,21 @@ Const
   //   where rdb$field_NAME = 'RDB$FIELD_TYPE'
   //   ORDER BY RDB$TYPE
 
-  cIBField_LONG = 8;
-  cIBField_DOUBLE = 27;
-  cIBField_TIMESTAMP = 35;
-  cIBField_DATE = 12;
-  cIBField_TIME = 13;
-  cIBField_VARYING = 37;
-  cIBField_BLOB = 261;
-
   cIBField_SHORT = 7;
+  cIBField_LONG = 8;
   cIBField_QUAD = 9;
   cIBField_FLOAT = 10;
+  cIBField_DATE = 12;
+  cIBField_TIME = 13;
   cIBField_TEXT = 14;
+  cIBField_BIGINT = 16;
+  cIBField_DOUBLE = 27;
+  cIBField_TIMESTAMP = 35;
+  cIBField_VARYING = 37;
   cIBField_CSTRING = 40;
   cIBField_BLOB_ID = 45;
+  cIBField_BLOB = 261;
+
 
 Begin
   lTable := (AData As TtiDBMetaDataTable);
@@ -953,22 +954,31 @@ Begin
         lField.Width := 0;
 
         Case lFieldType Of
-          cIBField_LONG : lField.Kind := qfkInteger;
-          cIBField_DOUBLE : lField.Kind := qfkFloat;
+          cIBField_SHORT,
+          cIBField_LONG,
+          cIBField_BIGINT : lField.Kind := qfkInteger;
+
+          cIBField_DOUBLE,
+          cIBField_FLOAT : lField.Kind := qfkFloat;
+
           cIBField_TIMESTAMP,
-            cIBField_DATE,
-            cIBField_TIME : lField.Kind := qfkDateTime;
+          cIBField_DATE,
+          cIBField_TIME : lField.Kind := qfkDateTime;
+
           cIBField_VARYING,
-            cIBField_TEXT :
+          cIBField_TEXT :
             Begin
               lField.Kind := qfkString;
               lField.Width := lFieldLength;
             End;
+
           cIBField_BLOB :
             Begin
               Assert(Not lQuery.FieldIsNull['field_sub_type'], 'field_sub_type is null');
               If lQuery.FieldAsInteger['field_sub_type'] = 1 Then
                 lField.Kind := qfkLongString
+              else if lQuery.FieldAsInteger['field_sub_type'] = 0 then
+                lField.Kind := qfkBinary
               Else
                 Raise EtiOPFInternalException.Create('Invalid field_sub_type <' + IntToStr(lQuery.FieldAsInteger['field_sub_type']) + '>');
             End;
