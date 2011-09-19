@@ -1,3 +1,6 @@
+{
+  TODO: Refactor this unit so it descends from tiQueryDataset classes.
+}
 unit tiQueryUIBAbs;
 
 {$I tiDefines.inc}
@@ -50,7 +53,7 @@ type
     Property LayerName : String Read FLayerName Write FLayerName;
   End;
 
-  // ---------------------------------------------------------------------------
+
   TtiQueryUIBAbs = Class(TtiQuerySQL)
   Private
     FActive : Boolean;
@@ -59,6 +62,10 @@ type
     FSQLParams : TSQLParams;
     Function IBFieldKindToTIFieldKind(pData : TUIBSQLVar) : TtiQueryFieldKind;
   Protected
+    { these two methods come from tiQueryDataset }
+    function ParamsAsStringList: TStringList;
+    procedure LogParams;
+
     Function GetActive : Boolean; Override;
     Function GetEOF : Boolean; Override;
     Function GetFieldAsBoolean(Const psName : String) : Boolean; Override;
@@ -375,7 +382,7 @@ Function TtiQueryUIBAbs.ExecSQL : Integer;
 Begin
   Log(ClassName + ': [Prepare] ' + tiNormalizeStr(self.SQLText), lsSQL);
   InternalPrepare;
-  Log(ClassName + ': [Params] ' + ParamsAsString, lsSQL);
+  LogParams;
   FQuery.Execute;
   Result := -1;
 End;
@@ -576,6 +583,43 @@ Begin
     Raise EtiOPFInternalException.Create('Invalid Interbase/Firebird/IBX sqltype');
   End;
 End;
+
+function TtiQueryUIBAbs.ParamsAsStringList: TStringList;
+var
+  i: integer;
+  s: string;
+begin
+  result := TStringList.Create;
+  try
+    for i := 0 to ParamCount-1 do
+    begin
+      if ParamIsNull[ ParamName(i)] then      // Display the fact
+        s := 'Null'
+      else
+        s := ParamAsString[ParamName(i)];
+      result.Add(ParamName(i) + '=' + s);
+    end;
+  except
+    on e: exception do
+      LogError(e, true);
+  end;
+end;
+
+procedure TtiQueryUIBAbs.LogParams;
+const
+  cLogLine = '%s: [Param %d] %s = %s';
+var
+  sl: TStringList;
+  i: integer;
+begin
+  sl := ParamsAsStringList;
+  try
+    for i := 0 to sl.Count-1 do
+      Log(Format(cLogLine, [ClassName, i+1, sl.Names[i], sl.ValueFromIndex[i]]), lsSQL);
+  finally
+    sl.Free;
+  end;
+end;
 
 Procedure TtiQueryUIBAbs.Next;
 Begin
