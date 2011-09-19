@@ -122,7 +122,6 @@ Uses
   DB
   , Math
   , tiUtils
-  , tiDialogs
   , tiLog
   , TypInfo
   , tiOPFManager
