@@ -1276,12 +1276,12 @@ procedure TtiListItemMediator.SetModel(const AValue: TtiObject);
 var
   B : Boolean;
 begin
-  if Avalue=FModel then
+  if AValue=FModel then
     Exit;
   B := Assigned(FModel);
   if B then
     FModel.DetachObserver(Self);
-  FModel := Avalue;
+  FModel := AValue;
   if Assigned(FModel) then
   begin
     FModel.AttachObserver(Self);

@@ -51,9 +51,6 @@ var
   r,c: integer;
   lsValue: string;
 begin
-  writeln('pDataSet.Count = ', pDataSet.Count);
-  writeln('pDataSet.Fields.Count = ', pDataSet.Fields.Count);
-
   for r := 0 to pDataSet.Count - 1 do
   begin
     for c := 0 to pDataSet.Fields.Count-1 do
