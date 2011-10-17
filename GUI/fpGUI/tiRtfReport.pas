@@ -347,7 +347,7 @@ type
     { day as string }
     procedure UdfSDay(AArgument: TRtfArgument);
     { string to date }
-    procedure UdfStod(AArgument: TRtfArgument);
+    procedure UdfStoD(AArgument: TRtfArgument);
     { date to string }
     procedure UdfDtoS(AArgument: TRtfArgument);
     procedure UdfDateToStr(AArgument: TRtfArgument);
@@ -4488,7 +4488,7 @@ begin
   AArgument.Value := Format('%0.4d',[AYear]);
 end;
 
-procedure TtiRtfParser.UdfStod(AArgument: TRtfArgument);
+procedure TtiRtfParser.UdfStoD(AArgument: TRtfArgument);
 var AYear, AMonth, ADay: word;
   AStr: string;
 begin
