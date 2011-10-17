@@ -43,7 +43,7 @@ begin
   Result := GetEnvironmentVariable('USERNAME');
   if Result = '' then
     Result := GetEnvironmentVariable('USER');
-  // Used it program is run from cron jobs
+  // Used if program is run from cron jobs
   if Result = '' then
     Result := GetEnvironmentVariable('LOGNAME');
 end;
