@@ -35,6 +35,8 @@ type
     procedure TestPerSQLCriteria_SQL_IgnoreEmptyCritera;
     procedure TestPerSQLCriteria_SQL_Or;
     procedure TestFieldName;
+    procedure TestPerSelectionCriteriaList_SQL;
+    procedure TestPerSelectionCriteriaList_via_AsSQLClause;
 
     // Testing order by sql generation
     procedure TestOrderByAscending;
@@ -1298,6 +1300,59 @@ begin
 
   finally
     lSelectionCriteria.Free;
+  end;
+end;
+
+procedure TTestTICriteria.TestPerSelectionCriteriaList_SQL;
+var
+  lList: TtiSelectionCriteriaList;
+  lItem: TtiEqualToCriteria;
+begin
+  lList := TtiSelectionCriteriaList.Create;
+  try
+    CheckEquals('', lList.AsSQL, 'Failed on 1');
+
+    lItem := TtiEqualToCriteria.Create('A', 'B');
+    lList.Add(lItem);
+    CheckEquals(' ( = ) ', lList.AsSQL, 'Failed on 2');
+
+    lItem := TtiEqualToCriteria.Create('C', 'D');
+    lList.Add(lItem);
+    CheckEquals(' ( =  AND  = ) ', lList.AsSQL, 'Failed on 3');
+
+    lList.Clear;
+    CheckEquals(0, lList.Count, 'Failed on 4');
+    CheckEquals('', lList.AsSQL, 'Failed on 5');
+  finally
+    lList.Free;
+  end;
+end;
+
+procedure TTestTICriteria.TestPerSelectionCriteriaList_via_AsSQLClause;
+var
+  vis: TVisObjectToSQL;
+  lList: TtiSelectionCriteriaList;
+  lItem: TtiEqualToCriteria;
+begin
+  vis := TVisObjectToSQL.Create(False);
+  lList := TtiSelectionCriteriaList.Create;
+  try
+    CheckEquals('', vis.AsSQLClause(lList), 'Failed on 1');
+
+    lItem := TtiEqualToCriteria.Create('A', 'B');
+    lList.Add(lItem);
+    CheckEquals('A = ''B''', vis.AsSQLClause(lList), 'Failed on 2');
+
+    lItem := TtiEqualToCriteria.Create('C', 'D');
+    lList.Add(lItem);
+    CheckEquals('(A = ''B'') AND (C = ''D'')', vis.AsSQLClause(lList), 'Failed on 3');
+
+    lList.Clear;
+    CheckEquals(0, lList.Count, 'Failed on 4');
+    CheckEquals('', vis.AsSQLClause(lList), 'Failed on 5');
+  finally
+    lList.Free;
+    vis.Free;
   end;
 end;
 
