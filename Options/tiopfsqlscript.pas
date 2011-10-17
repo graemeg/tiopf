@@ -1,5 +1,5 @@
 
-{ This unit works with the latest Free Pascal 2.3.x only. }
+{ This unit works with the latest Free Pascal 2.4.x and later releases only. }
 
 unit tiOPFSqlScript;
 
