@@ -172,7 +172,7 @@ type
     procedure   SetOwner(const Value: TtiCriteria); reintroduce; virtual;
   public
     function    Add(const AObject: TtiSelectionCriteriaAbs): integer; reintroduce;
-    function    AsSQL: string;
+    function    AsSQL: string; deprecated;
     property    Items[Index: Integer]: TtiSelectionCriteriaAbs read GetItems write SetItems; default;
     property    Owner: TtiCriteria read GetOwner write SetOwner;
   end;
@@ -821,11 +821,14 @@ function TtiSelectionCriteriaList.AsSQL: string;
 var
   i: Integer;
 begin
+  if count = 0 then
+    Exit;
   Result := ' (';
   for i := 0 to Count - 1 do
   begin
-    Result := Result + TtiSelectionCriteriaAbs(Items[i]).GetClause +
-      ' AND ';
+    if i > 0 then
+      Result := Result + ' AND ';
+    Result := Result + TtiSelectionCriteriaAbs(Items[i]).GetClause
   end;
   Result := Result + ') ';
 end;
