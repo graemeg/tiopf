@@ -5,7 +5,7 @@ TARGET="x86_64-linux"
 TIOPF="/opt/dailybuilds/tiopf"
 FBLIB="$TIOPF/3rdParty/FBLib/lib/$TARGET"
 FPC="/opt/fpc-2.4.5/$TARGET/bin/ppcx64"
-DUNIT2="/opt/git/dunit2/lib/$TARGET/"
+DUNIT2="/opt/git/fptest/lib/$TARGET/"
 
 $FPC -S2cgi -O1 -gl -ve -l \
   -Fu$TIOPF/Compilers/FPC/lib/$TARGET/ \
