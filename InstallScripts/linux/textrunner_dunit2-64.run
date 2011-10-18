@@ -15,8 +15,8 @@ $FPC -S2cgi -O1 -gl -ve -l \
   -Fu$FBLIB/ \
   -Fu/opt/fpc-2.4.5/src/packages/fcl-registry/src/ \
   -Fu/opt/fpc-2.4.5/src/packages/fcl-xml/src/ \
-  -Fu/opt/git/dunit2/src/ \
-  -Fu/opt/git/dunit2/3rdparty/epiktimer/ \
+  -Fu/opt/git/fptest/src/ \
+  -Fu/opt/git/fptest/3rdparty/epiktimer/ \
   -Fu. \
   -o$TIOPF/UnitTests/Text/textrunner64 \
   -FU$TIOPF/UnitTests/Text/_Dcu \
