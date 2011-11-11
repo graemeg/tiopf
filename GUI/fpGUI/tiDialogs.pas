@@ -118,6 +118,7 @@ type
     Memo1: TfpgMemo;
     {@VFD_HEAD_END: FormShowStrings}
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormShow(Sender: TObject);
   public
     constructor Create(AOwner: TComponent); override;
     procedure AfterCreate; override;
@@ -131,10 +132,16 @@ begin
   Action := caFree;
 end;
 
+procedure TFormShowStrings.FormShow(Sender: TObject);
+begin
+  gGUIINI.ReadFormState(self);
+end;
+
 constructor TFormShowStrings.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   OnClose := @FormClose;
+  OnShow := @FormShow;
 end;
 
 procedure TFormShowStrings.AfterCreate;
@@ -161,8 +168,6 @@ begin
 
   {@VFD_BODY_END: FormShowStrings}
   {%endregion}
-  
-  gGUIINI.ReadFormState(self);
 end;
 
 
