@@ -52,6 +52,7 @@ uses
   fpg_label,
   fpg_dialogs,
   fpg_panel,
+  fpg_button,
   tiGUIINI,
   tiUtils;
 
@@ -116,9 +117,13 @@ type
   private
     {@VFD_HEAD_BEGIN: FormShowStrings}
     Memo1: TfpgMemo;
+    btnCopyToClipboard: TfpgButton;
+    btnClose: TfpgButton;
     {@VFD_HEAD_END: FormShowStrings}
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormShow(Sender: TObject);
+    procedure CopyToClipboardClicked(Sender: TObject);
+    procedure CloseClicked(Sender: TObject);
   public
     constructor Create(AOwner: TComponent); override;
     procedure AfterCreate; override;
@@ -128,13 +133,22 @@ type
 
 procedure TFormShowStrings.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  gGUIINI.WriteFormState(self);
-  Action := caFree;
+  if not (WindowType = wtModalForm) then
+  	Action := caFree;
 end;
 
 procedure TFormShowStrings.FormShow(Sender: TObject);
 begin
-  gGUIINI.ReadFormState(self);
+end;
+
+procedure TFormShowStrings.CopyToClipboardClicked(Sender: TObject);
+begin
+  fpgClipboard.Text := Memo1.Text;
+end;
+
+procedure TFormShowStrings.CloseClicked(Sender: TObject);
+begin
+  Close;
 end;
 
 constructor TFormShowStrings.Create(AOwner: TComponent);
@@ -149,21 +163,48 @@ begin
   {%region 'Auto-generated GUI code' -fold}
   {@VFD_BODY_BEGIN: FormShowStrings}
   Name := 'FormShowStrings';
-  SetPosition(329, 371, 300, 300);
+  SetPosition(329, 371, 319, 314);
   WindowTitle := 'Processing...';
   Hint := '';
   WindowPosition := wpScreenCenter;
-  BackgroundColor := clHilite1;
 
   Memo1 := TfpgMemo.Create(self);
   with Memo1 do
   begin
     Name := 'Memo1';
-    SetPosition(0, 0, 300, 300);
-    Align := alClient;
+    SetPosition(0, 0, 319, 268);
+    Anchors := [anLeft,anRight,anTop,anBottom];
     FontDesc := '#Edit2';
     Hint := '';
     TabOrder := 1;
+  end;
+
+  btnCopyToClipboard := TfpgButton.Create(self);
+  with btnCopyToClipboard do
+  begin
+    Name := 'btnCopyToClipboard';
+    SetPosition(8, 278, 124, 24);
+    Anchors := [anLeft,anBottom];
+    Text := 'Copy to clipboard';
+    FontDesc := '#Label1';
+    Hint := '';
+    ImageName := '';
+    TabOrder := 1;
+    OnClick := @CopyToClipboardClicked;
+  end;
+
+  btnClose := TfpgButton.Create(self);
+  with btnClose do
+  begin
+    Name := 'btnClose';
+    SetPosition(231, 278, 80, 24);
+    Anchors := [anRight,anBottom];
+    Text := 'Close';
+    FontDesc := '#Label1';
+    Hint := '';
+    ImageName := '';
+    TabOrder := 2;
+    OnClick := @CloseClicked;
   end;
 
   {@VFD_BODY_END: FormShowStrings}
