@@ -19,11 +19,11 @@ uses
 
   
   // Show the contents of a TStringList - for debugging
-  procedure tiShowStringList(const AStringList: TStringList; const AHeading: TfpgString = 'Show string list');
+  procedure tiShowStringList(const AStringList: TStringList; const AHeading: TfpgString = 'Show string list'; const AShowModal: boolean = False);
   // Show the contents of a TStrings - for debugging
-  procedure tiShowStrings(const AStrings: TStrings; const AHeading: TfpgString = 'Show strings');
+  procedure tiShowStrings(const AStrings: TStrings; const AHeading: TfpgString = 'Show strings'; const AShowModal: boolean = False);
   // Show a long string - for debugging
-  procedure tiShowString(const AStr: TfpgString; const AHeading: TfpgString = 'Show string');
+  procedure tiShowString(const AStr: TfpgString; const AHeading: TfpgString = 'Show string'; const AShowModal: boolean = False);
   // Show a variant array of variants - for debugging
   procedure tiShowVariant(AValue: Variant; AHeading: TfpgString = 'Show variant');
   // Show the contents of a stream
@@ -247,29 +247,35 @@ begin
   ShowMessage(VarToStr(AValue));
 end;
 
-procedure tiShowStringList(const AStringList: TStringList; const AHeading: TfpgString);
+procedure tiShowStringList(const AStringList: TStringList; const AHeading: TfpgString; const AShowModal: boolean);
 begin
-  tiShowStrings(AStringList, AHeading);
+  tiShowStrings(AStringList, AHeading, AShowModal);
 end;
 
-procedure tiShowStrings(const AStrings: TStrings; const AHeading: TfpgString);
+procedure tiShowStrings(const AStrings: TStrings; const AHeading: TfpgString; const AShowModal: boolean);
 var
   lForm: TFormShowStrings;
 begin
   lForm := TFormShowStrings.Create(nil);
   lForm.WindowTitle := AHeading;
   lForm.Memo1.Lines.Assign(AStrings);
-  lForm.Show;
+  if AShowModal then
+  begin
+  	lForm.ShowModal;
+  	lForm.Free;
+  end
+  else
+  	lForm.Show;
 end;
 
-procedure tiShowString(const AStr: TfpgString; const AHeading: TfpgString);
+procedure tiShowString(const AStr: TfpgString; const AHeading: TfpgString; const AShowModal: boolean);
 var
   lSL: TStringList;
 begin
   lSL := TStringList.Create;
   try
     lSL.Text := AStr;
-    tiShowStringList(lSL, AHeading);
+    tiShowStringList(lSL, AHeading, AShowModal);
   finally
     lSL.Free;
   end;
