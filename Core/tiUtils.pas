@@ -2286,6 +2286,8 @@ var
   lDirName: string;
   s: string;
 begin
+  if AValue = '' then
+    exit;
   s := tiFixPathDelim(AValue);
   if tiLocateExtension (s) <> 0 then
     lDirName := ExtractFilePath(ExpandFileName(s))
