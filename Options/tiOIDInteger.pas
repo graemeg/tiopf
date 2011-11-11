@@ -59,6 +59,7 @@ type
     function NextOID(const ADatabaseAliasName: string; const APersistenceLayerName: string): integer;
   public
     constructor Create; override;
+    constructor CreateEx(const ALowRange: integer); reintroduce;
     destructor Destroy; override;
     class function OIDClass: TtiOIDClass; override;
     procedure AssignNextOID(const AAssignTo: TtiOID; const ADBConnectionName: string = '';
@@ -190,6 +191,12 @@ begin
   FDirty       := True;
   FNextOIDData := TNextOIDData.Create;
   FCritSect    := TCriticalSection.Create;
+end;
+
+constructor TtiOIDGeneratorInteger.CreateEx(const ALowRange: integer);
+begin
+  Create;
+  FLowRange := ALowRange;
 end;
 
 destructor TtiOIDGeneratorInteger.Destroy;
