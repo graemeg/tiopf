@@ -158,7 +158,7 @@ begin
   {@VFD_BODY_BEGIN: FormShowStrings}
   Name := 'FormShowStrings';
   SetPosition(329, 371, 319, 314);
-  WindowTitle := 'Processing...';
+  WindowTitle := 'Show String';
   Hint := '';
   WindowPosition := wpScreenCenter;
 
@@ -229,6 +229,7 @@ begin
         vtObject:     lsLine := lsLine + VObject.ClassName;
         vtClass:      lsLine := lsLine + VClass.ClassName;
         vtAnsiString: lsLine := lsLine + string(VAnsiString);
+        vtUnicodeString: lsLine := lsLine + UTF8Encode(UnicodeString(VUnicodeString));
         vtCurrency:   lsLine := lsLine + CurrToStr(VCurrency^);
         vtVariant:    lsLine := lsLine + string(VVariant^);
         vtInt64:      lsLine := lsLine + IntToStr(VInt64^);
