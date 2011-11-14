@@ -121,7 +121,6 @@ type
     btnClose: TfpgButton;
     {@VFD_HEAD_END: FormShowStrings}
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure FormShow(Sender: TObject);
     procedure CopyToClipboardClicked(Sender: TObject);
     procedure CloseClicked(Sender: TObject);
   public
@@ -135,10 +134,6 @@ procedure TFormShowStrings.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   if not (WindowType = wtModalForm) then
   	Action := caFree;
-end;
-
-procedure TFormShowStrings.FormShow(Sender: TObject);
-begin
 end;
 
 procedure TFormShowStrings.CopyToClipboardClicked(Sender: TObject);
@@ -155,7 +150,6 @@ constructor TFormShowStrings.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   OnClose := @FormClose;
-  OnShow := @FormShow;
 end;
 
 procedure TFormShowStrings.AfterCreate;
@@ -262,11 +256,11 @@ begin
   lForm.Memo1.Lines.Assign(AStrings);
   if AShowModal then
   begin
-  	lForm.ShowModal;
-  	lForm.Free;
+    lForm.ShowModal;
+    lForm.Free;
   end
   else
-  	lForm.Show;
+    lForm.Show;
 end;
 
 procedure tiShowString(const AStr: TfpgString; const AHeading: TfpgString; const AShowModal: boolean);
