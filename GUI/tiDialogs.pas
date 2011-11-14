@@ -462,7 +462,7 @@ begin
   lsLine := '';
   for I := 0 to High(AArray) do begin
     if lsLine <> '' then
-      lsLine := lsLine + Cr;
+      lsLine := lsLine + tiLineEnd;
     with AArray[i] do
       case VType of
         vtInteger:    lsLine := lsLine + IntToStr(VInteger);

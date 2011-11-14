@@ -220,9 +220,10 @@ var
   lsLine: string;
 begin
   lsLine := '';
-  for I := 0 to High(AArray) do begin
+  for I := 0 to High(AArray) do
+  begin
     if lsLine <> '' then
-      lsLine := lsLine + Cr;
+      lsLine := lsLine + tiLineEnd;
     with AArray[i] do
       case VType of
         vtInteger:    lsLine := lsLine + IntToStr(VInteger);
@@ -237,7 +238,7 @@ begin
         vtCurrency:   lsLine := lsLine + CurrToStr(VCurrency^);
         vtVariant:    lsLine := lsLine + string(VVariant^);
         vtInt64:      lsLine := lsLine + IntToStr(VInt64^);
-    end;
+      end;
   end;
   tiShowMessage(lsLine);
 end;
