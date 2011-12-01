@@ -466,8 +466,7 @@ end;
 
 function TtiDatabaseSQLDB.Test: Boolean;
 begin
-  Result := False;
-  Assert(False, 'Under construction');
+  Result := Connected;
 end;
 
 function TtiDatabaseSQLDB.TIQueryClass: TtiQueryClass;
