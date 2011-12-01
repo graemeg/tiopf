@@ -140,6 +140,8 @@
 
   {$MODE DELPHI}{$H+}
   {$ASMMODE intel}
+  // FPC includes this unit with the compiler
+  {$define USE_BASE64_UNIT}
 {$ENDIF}
 
 {$IFDEF FPC}

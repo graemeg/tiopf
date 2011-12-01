@@ -2,6 +2,10 @@ unit tiStreams;
 
 {$I tiDefines.inc}
 
+{ When defined, it will use the FPC copied base64.pas unit instead of
+  the jrMIME code (latter code not being very portable) }
+{$define USE_BASE64_UNIT}
+
 interface
 uses
    tiBaseObject
@@ -315,7 +319,7 @@ uses
   ,tiConstants
   ,SysUtils
   ,Math
-  {$IFDEF FPC}
+  {$IFDEF USE_BASE64_UNIT}
   ,base64
   {$ENDIF}
  ;
@@ -402,7 +406,7 @@ type
 { Wrapper functions & procedures }
 { **************************************************************************** }
 
-{$IFDEF FPC}
+{$IFDEF USE_BASE64_UNIT}
 { This is 32 & 64 bit safe }
 function MimeEncodeString (const s: AnsiString): AnsiString;
 var
@@ -463,7 +467,7 @@ begin
     Result := '';
 end;
 
-{$IFDEF FPC}
+{$IFDEF USE_BASE64_UNIT}
 { This is 32 & 64 bit safe }
 function MimeDecodeString(const s: AnsiString): AnsiString;
 var
@@ -515,7 +519,7 @@ begin
 end;
 {$ENDIF}
 
-{$IFDEF FPC}
+{$IFDEF USE_BASE64_UNIT}
 procedure MimeEncodeStream(const InputStream: TStream; const OutputStream: TStream);
 var
   b64encoder: TBase64EncodingStream;
@@ -577,7 +581,7 @@ begin
   end;
 end;
 
-{$IFDEF FPC}
+{$IFDEF USE_BASE64_UNIT}
 procedure MimeDecodeStream (const InputStream: TStream; const OutputStream: TStream);
 var
   b64decoder: TBase64DecodingStream;
@@ -823,7 +827,7 @@ begin
  end;
 end;
 
-{$IFDEF FPC}
+{$IFDEF USE_BASE64_UNIT}
 { This is 32 & 64 bit safe }
 function tiStreamToMIMEEncodeString(const AStream: TStream): string;
 var
@@ -870,7 +874,7 @@ begin
 end;
 {$ENDIF}
 
-{$IFDEF FPC}
+{$IFDEF USE_BASE64_UNIT}
 { This is 32 & 64 bit safe }
 procedure tiMIMEEncodeStringToStream(const AString: string; const AStream: TStream);
 var
