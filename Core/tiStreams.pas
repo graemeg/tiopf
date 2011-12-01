@@ -482,8 +482,9 @@ begin
   try
     outputstream := TStringStream.Create('');
     try
-      b64decoder := TBase64DecodingStream.Create(inputstream, bdmStrict);
-      OutputStream.CopyFrom(b64decoder, inputstream.Size);
+      b64decoder := TBase64DecodingStream.Create(inputstream, bdmMIME);
+      outputstream.CopyFrom(b64decoder, b64decoder.Size);
+      outputstream.Position := 0;
     finally
       b64decoder.Free;
       { destroying the decoder, flush'es the remained of the data, so don't read
@@ -586,9 +587,10 @@ procedure MimeDecodeStream (const InputStream: TStream; const OutputStream: TStr
 var
   b64decoder: TBase64DecodingStream;
 begin
-  b64decoder := TBase64DecodingStream.Create(InputStream, bdmStrict);
+  b64decoder := TBase64DecodingStream.Create(InputStream, bdmMIME);
   try
-    OutputStream.CopyFrom(b64decoder, InputStream.Size);
+    OutputStream.CopyFrom(b64decoder, b64decoder.Size);
+    OutputStream.Position:=0;
   finally
     b64decoder.Free;
   end;
