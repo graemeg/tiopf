@@ -692,11 +692,11 @@ procedure TtiWebServerAction.GetReturnPage(const ADocument: string; AResponse: T
     else if pExt = 'pdf' then
       Result := 'application/pdf'
     else if pExt = 'jpg' then
-      Result := '	image/jpeg'
+      Result := 'image/jpeg'
     else if pExt = 'ico' then
-      Result := '	image/ico'
+      Result := 'image/ico'
     else if pExt = 'png' then
-      Result := '	image/png'
+      Result := 'image/png'
     else
       raise ETIOPFDataException('Invalid MIME type ' + pExt);
   end;
