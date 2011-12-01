@@ -483,7 +483,9 @@ begin
         vtObject:     lsLine := lsLine + VObject.ClassName;
         vtClass:      lsLine := lsLine + VClass.ClassName;
         vtAnsiString: lsLine := lsLine + string(VAnsiString);
+        {$IF defined(VER2) and (fpc_release>5)}  // FPC 2.5.1 and above
         vtUnicodeString: lsLine := lsLine + UTF8Encode(UnicodeString(VUnicodeString));
+        {$ENDIF}
         vtCurrency:   lsLine := lsLine + CurrToStr(VCurrency^);
         vtVariant:    lsLine := lsLine + string(VVariant^);
         vtInt64:      lsLine := lsLine + IntToStr(VInt64^);
