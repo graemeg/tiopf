@@ -178,7 +178,7 @@ begin
   Result := INI.ReadString(cINILog, cINILog_CGIExtensionSeverityToLog, '');
 end;
 
-function TtiWebServerConfig.GetWebServiceDisplayName;
+function TtiWebServerConfig.GetWebServiceDisplayName: string;
 begin
   Result:= FINI.ReadString(cINIService, cINIService_DisplayName, cINIService_DisplayNameDefault);
 end;
