@@ -6,10 +6,10 @@ interface
 uses
   Classes
   ,tiHTTP
-  ,IdBaseComponent
+//  ,IdBaseComponent
   ,IdComponent
-  ,IdTCPConnection
-  ,IdTCPClient
+//  ,IdTCPConnection
+//  ,IdTCPClient
   ,IdHTTP
  ;
 
