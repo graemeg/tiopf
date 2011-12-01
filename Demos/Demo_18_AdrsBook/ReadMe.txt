@@ -1,11 +1,13 @@
-In this demo, we build a simple address book application (the object model design is shown on tiOPF web site)
+In this demo, we build a simple address book application (the object model
+design is shown on tiOPF web site)
 
 The demo focuses on creating a robust object model.
 
-Data is persisted to a Firebird database (with IBX), an XMLLight database and  with the remote persistence layer to an application server.
+Data is persisted to a Firebird database (with IBX), an XMLLight database and
+with the remote persistence layer to an application server.
 
 The demo includes:
-
+------------------
 a) Database create scripts;
 b) Sample XMLLight file;
 c) Modal forms client - that connects
@@ -20,7 +22,7 @@ h) Unit tests;
 i) Build & install scripts
 
 ToDo: 
-
+-----
 a) Implement demos for 
      Model-GUI-Mediator
      Application Menu System

@@ -42,7 +42,7 @@
   2. The HardCodedSQL is one of the original demos, but has not been
      DUnit tested as thoroughly as the AutoGenSQL approach. The
      HardCodedSQL will produce the most optimised application, but will
-     NOT work with the SQL database.
+     NOT work with the XML database.
 
   3. The QueryManager framework is also one of the original parts of the
      tiOPF, but is harder to get running. The advantage of the QueryManager
