@@ -1178,7 +1178,9 @@ begin
   try
     LRequestArgs := TStringList.Create;
     LRequestArgs.Delimiter := '/';
+    {$IFDEF DELPHI08ORABOVE}
     LRequestArgs.StrictDelimiter := true;
+    {$ENDIF}
     LRequestArgs.DelimitedText := ADocument;
     LPassThrough := PassThroughLocation + LRequestArgs[0];
     Log('Processing TtiWebServerAction_PassThrough.CanExecute <' + LPassThrough  + '>');
@@ -1211,7 +1213,9 @@ begin
     LRequestArgs := TStringList.Create;
     try
       LRequestArgs.Delimiter := '/';
+      {$IFDEF DELPHI08ORABOVE}
       LRequestArgs.StrictDelimiter := true;
+      {$ENDIF}
       LRequestArgs.DelimitedText := ADocument;
       LPassThroughApp := PassThroughLocation + LRequestArgs[0];
       LPassThroughTail := ADocument;
