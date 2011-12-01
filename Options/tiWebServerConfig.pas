@@ -86,7 +86,7 @@ const
   cINIService_PathToCGIBin = 'PathToCGIBin';
   cINIService_PathToPassThrough = 'PathToPassThrough';
   cINIService_DefaultPathToStaticPages = 'StaticPages';
-  cINIService_DefaultPathToCGIBin = 'CGI-Bin';
+  cINIService_DefaultPathToCGIBin = 'cgi-bin';    // DO NOT CHANGE THE CASE
   cINIService_DefaultPathToPassThrough = 'PathToPassThrough';
   CINILog_DefaultLogToApplicationSubDirectory = true;
   cINIService_SendBugReportEmailOnCGIFailure = 'SendBugReportEmailOnCGIFailure';
