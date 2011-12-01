@@ -249,6 +249,7 @@ begin
   WriteLn('a <Title>, <First Name>, <Last Name>  - Add a new entry');
   WriteLn('d <Index number>                      - Delete an entry');
   WriteLn('c                                     - Clear the screen');
+  WriteLn('e or q                                - Quit the application');
 end;
 
 end.
