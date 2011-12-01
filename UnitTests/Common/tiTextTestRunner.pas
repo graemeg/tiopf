@@ -105,7 +105,7 @@ uses
   ,Classes
   ,SysUtils
   ,INIFiles
-  ,textprogressrunner
+//  ,textprogressrunner
  ;
 
 const
@@ -144,7 +144,7 @@ begin
       begin
         inc(i);
         SetLength(aListeners, i);
-        aListeners[i-1] := TTextProgressTestListener.Create;
+//        aListeners[i-1] := TTextProgressTestListener.Create;
       end;
       { output test report to XML }
       if gCommandLineParams.IsParam(CCommandLineParamXML) then
