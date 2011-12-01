@@ -91,7 +91,7 @@ ImageBase=4194304
 ExeDescription=
 [Directories]
 OutputDir=
-UnitOutputDir=
+UnitOutputDir=_dcu
 PackageDLLOutputDir=
 PackageDCPOutputDir=
 SearchPath=..\..\3rdParty\FastMM;..\..\3rdParty\DUnit;..\..\3rdParty\Indy\Core;..\..\3rdParty\Indy\Protocols;..\..\3rdParty\Indy\System;..\..\UnitTests\Common;..\..\UnitTests\Tests;..\..\ApplicationServer\tiDBProxyServerExtension;..\..\3rdParty\JCL\common;..\..\3rdParty\JCL\include;..\..\3rdParty\JCL\windows
