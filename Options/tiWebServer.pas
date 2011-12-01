@@ -8,12 +8,13 @@ uses
   tiStreams,
   tiThread,
   SysUtils,
-  SyncObjs,
   IdHTTPServer,
   IdCustomHTTPServer,
   IdContext,
+  IdGlobal,
   Contnrs,
-  Classes;
+  Classes,
+  SyncObjs;
 
 const
   cErrorInvalidCachedBlockStreamTransID = 'Invalid cached block TransID "%d"';
@@ -323,6 +324,11 @@ begin
   FIdHTTPServer := TIdHTTPServer.Create(Nil);
   FIdHTTPServer.OnCommandGet := DoIDHTTPServerCommandGet;
   FIdHTTPServer.KeepAlive := False;
+  {$IFDEF UNIX}
+  // This seems to be some bug in Indy 10 under Linux. Don't enable this for
+  // Windows though, because then it kills it there too.
+  FIdHTTPServer.Bindings.Add.IPVersion := id_IPv4;
+  {$ENDIF}
   Port:= APort;
 
   FBlockStreamCache:= TtiBlockStreamCache.Create;
