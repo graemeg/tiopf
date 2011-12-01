@@ -37,11 +37,11 @@ begin
   if FAppServer.Active then
   begin
     FAppServer.Stop;
-    btnStartStop.Caption:= '&Stop'
+    btnStartStop.Caption:= '&Start'
   end else
   begin
     FAppServer.Start;
-    btnStartStop.Caption:= '&Start';
+    btnStartStop.Caption:= '&Stop';
   end;
 end;
 
