@@ -322,6 +322,7 @@ begin
   FServerActions.Add(TtiWebServerAction_CanNotFindPage.Create(Self, High(Byte)));
 
   FIdHTTPServer := TIdHTTPServer.Create(Nil);
+  Port:= APort;
   FIdHTTPServer.OnCommandGet := DoIDHTTPServerCommandGet;
   FIdHTTPServer.KeepAlive := False;
   {$IFDEF UNIX}
@@ -329,7 +330,6 @@ begin
   // Windows though, because then it kills it there too.
   FIdHTTPServer.Bindings.Add.IPVersion := id_IPv4;
   {$ENDIF}
-  Port:= APort;
 
   FBlockStreamCache:= TtiBlockStreamCache.Create;
 end;
