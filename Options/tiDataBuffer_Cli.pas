@@ -17,7 +17,7 @@ type
   TTextFileMetaDatas = set of TTextFileMetaData;
 
 // ToDo: Merge with tiXMLToTIDataset.pas
-//       There are more routines to convert TtiDataSets to an from XML in tiXMLToTIDataSets.pas
+//       There are more routines to convert TtiDataSets to an from XML in tiXMLToTIDataset.pas
 function  tiQueryToTIDataSet(const AQuery: TtiQuery; const pDataSet: TtiDataBuffer): Integer;
 function  tiDataSetToString(pDataSet : TtiDataBuffer): string;
 procedure tiDataSetToTextFile(pDataSet : TtiDataBuffer; AFileName : TFileName);

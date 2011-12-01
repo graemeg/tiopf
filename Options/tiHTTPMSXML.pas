@@ -16,7 +16,7 @@ const
 
 type
 
-  {:Uses the Adapter pattern to wrapper a IXMLHttpRequest giving a starndard interface.}
+  {:Uses the Adapter pattern to wrapper a IXMLHttpRequest giving a standard interface.}
   TtiHTTPMSXML = class(TtiHTTPAbs)
   private
     FHTTP : IXMLHttpRequest;
