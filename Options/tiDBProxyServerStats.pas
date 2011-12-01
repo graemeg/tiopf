@@ -1,5 +1,7 @@
 unit tiDBProxyServerStats;
 
+{$I tiDefines.inc}
+
 interface
 uses
   tiBaseObject

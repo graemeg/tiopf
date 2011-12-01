@@ -18,7 +18,7 @@ const
   cErrorCanNotFindLogFile        = '<body><html>Can not find log file: s</body></html>';
   cErrorOnCallingServerExtension = '<html><body>Error calling server extension: %s<p>Error message: %s</body></html>';
   cStaticPageDir                 = 'StaticPages';
-  cCGIBinDir                     = 'CGI-Bin';
+  cCGIBinDir                     = 'cgi-bin'; // DO NOT CHANGE THE CASE
 
   cHTTPResponseCodeOK            = 200;                       
   cHTTPResponseCodePageNotFound  = 404;

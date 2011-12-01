@@ -87,7 +87,7 @@ type
     function  GetSize: Int64; override;
     function  GetPosition: Int64; override;
   public
-    constructor Create(ASource: TStream); overload; override;
+    constructor Create(ASource: TStream); overload;
     constructor Create(ASource: TStream; AMode: TBase64DecodingMode); reintroduce; overload;
     procedure Reset;
 
@@ -484,6 +484,7 @@ end;
 
 { TOwnerStream }
 
+{$IFNDEF FPC}
 constructor TOwnerStream.Create(ASource: TStream);
 begin
   inherited Create;
@@ -501,6 +502,7 @@ function TOwnerStream.GetPosition: Int64;
 begin
   Result := Seek(0, soCurrent);
 end;
+{$ENDIF}
 
 end.
 

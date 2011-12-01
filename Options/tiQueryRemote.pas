@@ -8,9 +8,12 @@ uses
   ,Classes
   ,tiHTTP
   ,tiQueryXMLLight
-  ,tiXMLToTIDataSet
+  ,tiXMLToTIDataset
   ,tiXML
+  {$IFNDEF FPC}
+  { TODO -oGraeme -cAbstraction : Required due to GetCurrentThreadID. Abstract this out. }
   ,Windows
+  {$ENDIF}
   ,tiPersistenceLayers
   ,tiDBConnectionPool
   ,tiUtils

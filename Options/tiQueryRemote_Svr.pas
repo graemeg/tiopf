@@ -7,13 +7,11 @@ uses
   tiBaseObject
   ,tiQueryRemote
   ,tiQuery
-  ,tiDBConnectionPool
   ,Contnrs
   ,tiQueryXMLLight
   ,Classes
-  ,Windows
-  ,tiXMLToTIDataSet
-  ,tiStreams
+  ,Types  // required due to DWORD definition
+  ,tiXMLToTIDataset
   ,SyncObjs
  ;
 
@@ -382,10 +380,10 @@ begin
       lSQL:= tiStrTran(lSQL, #13, ' ');
       lSQL:= tiAddEllipsis(lSQL, 975);
       Log('About to run SQL: ' + lSQL);
-      lStart:= GetTickCount;
+      lStart:= tiGetTickCount;
       lQuery.Active := true;
       FRowCount := FXMLWriterData.AssignFromTIQuery(uXMLTags.TableNameResultSet, lQuery);
-      Log('  Rows returned: ' + IntToStr(FRowCount) + ' taking ' + IntToStr(GetTickCount-lStart) + 'ms');
+      Log('  Rows returned: ' + IntToStr(FRowCount) + ' taking ' + IntToStr(tiGetTickCount-lStart) + 'ms');
     finally
       lSavedDBConnectionHolder.InUse := false;
     end;
