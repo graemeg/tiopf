@@ -55,9 +55,9 @@
 
 }
 
-{$I tiDefines.inc}
-
 unit Adrs_Dependencies;
+
+{$I tiDefines.inc}
 
 interface
 

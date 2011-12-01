@@ -1,6 +1,6 @@
 unit Adrs_Singleton;
 
-{.$I tiDefines.inc}
+{$I tiDefines.inc}
 
 interface
 uses

@@ -1,6 +1,6 @@
 unit Adrs_BOM;
 
-{.$I tiDefines.inc}
+{$I tiDefines.inc}
 
 interface
 uses
