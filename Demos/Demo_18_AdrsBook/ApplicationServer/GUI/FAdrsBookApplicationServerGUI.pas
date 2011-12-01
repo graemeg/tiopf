@@ -53,7 +53,7 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   GLog.RegisterLog(TtiLogToEventHandler.Create(DoLog));
-  FAppServer:= TtiDBProxyServer.Create(80);
+  FAppServer:= TtiDBProxyServer.Create(8088);
   FAppServer.ReadPageLocationAtStartup:= False;
   // ToDo: These are only accessable through the config object
   //       This change was made to tidy the app server, but it's broken this

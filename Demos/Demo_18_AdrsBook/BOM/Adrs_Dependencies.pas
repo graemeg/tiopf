@@ -95,7 +95,7 @@ begin
   end else if LResult = CTIPersistRemote then
   begin
     GTIOPFManager.DefaultPersistenceLayerName:= CTIPersistRemote;
-    GTIOPFManager.ConnectDatabase('adrs', 'http:\\localhost', '', '', '', '');
+    GTIOPFManager.ConnectDatabase('adrs', 'http:\\localhost:8088', '', '', '', '');
   end ;
   // To: Add Cancel...
 end;
