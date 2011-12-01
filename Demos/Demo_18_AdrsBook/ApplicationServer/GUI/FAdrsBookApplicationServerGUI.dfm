@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 0
   Top = 0
+  Width = 685
+  Height = 228
   Caption = 'Form1'
-  ClientHeight = 201
-  ClientWidth = 677
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,6 +13,9 @@ object Form1: TForm1
   OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  DesignSize = (
+    677
+    201)
   PixelsPerInch = 96
   TextHeight = 13
   object btnStartStop: TButton
@@ -30,6 +33,7 @@ object Form1: TForm1
     Width = 661
     Height = 154
     Anchors = [akLeft, akTop, akRight, akBottom]
+    ScrollBars = ssBoth
     TabOrder = 1
   end
 end
