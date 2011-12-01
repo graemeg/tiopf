@@ -10,9 +10,35 @@ uses
   Classes,
   SysUtils,
   Variants,
-  fpg_base;
+  fpg_base,
+  fpg_main,
+  fpg_form,
+  fpg_memo,
+  fpg_dialogs;
 
-  
+type
+  // TtiMessageDlg - A replacement for MessageDlg which gives better control
+  // over the message text, and user definable text on the buttons.
+  TtiMessageDlg = class(TComponent)
+  private
+    FForm   : TfpgForm;
+    FBtns   : TList;
+    FMemo   : TfpgMemo;
+    FImage  : TfpgImage;
+    FsResult : TfpgString;
+    FFont: TfpgFont;
+    FImgString: TfpgString;
+    procedure   Clear;
+    procedure   DoOnClick(Sender: TObject);
+    procedure   FormPaint(Sender: TObject);
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor  Destroy; override;
+    function Execute(const AMessage: TfpgString; AOptions: array of TfpgString;
+        ACaption: TfpgString; ADialogType: TfpgMsgDlgType): TfpgString;
+  end;
+
+
   // Call showMessage, but accepts a variant. Good for debugging.
   procedure tiShowMessage(const AArray: Array of Const); overload;
   procedure tiShowMessage(const AValue: variant); overload;
@@ -38,6 +64,12 @@ uses
   // Show a error message
   procedure tiAppError(const AMessage: TfpgString; ATitle: TfpgString = '');
 
+  // Similar to message dialog of fpGUI, but with fixed width font, and custom buttons
+  function tiMessageTextDlg(const AMessage: string; AOptions: array of string;
+      ADialogType: TfpgMsgDlgType = mtInformation;
+      const ACaption: string = 'Information'): string;
+
+
   // A type of notification window that will disappear by itself
   procedure tiProcessing(const AMessage: TfpgString);
   procedure tiProcessingUpdate(const AUpdateMessage: TfpgString);
@@ -46,15 +78,13 @@ uses
 implementation
 
 uses
-  fpg_main,
-  fpg_form,
-  fpg_memo,
+  Math,
   fpg_label,
-  fpg_dialogs,
   fpg_panel,
   fpg_button,
   tiGUIINI,
-  tiUtils;
+  tiUtils,
+  tiConstants;
 
 var
   pWorkingForm: TfpgForm;
@@ -69,6 +99,230 @@ type
   public
     procedure AfterCreate; override;
   end;
+
+{ TtiMessageDlg }
+
+procedure TtiMessageDlg.Clear;
+var
+  i : integer;
+begin
+  for i := 0 to FBtns.Count - 1 do
+    TObject(FBtns.Items[i]).Free;
+end;
+
+procedure TtiMessageDlg.DoOnClick(Sender: TObject);
+begin
+  FsResult := TfpgButton(Sender).Text;
+  FForm.ModalResult := mrOK;
+end;
+
+procedure TtiMessageDlg.FormPaint(Sender: TObject);
+begin
+  FForm.Canvas.DrawImage(cuiBorder, (FForm.Height - cuiImageWidth) div 2,
+      fpgImages.GetImage(FImgString));
+end;
+
+constructor TtiMessageDlg.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+
+  FFont := fpgGetFont('#Edit1');
+
+  FForm := TfpgForm.Create(nil);
+  with FForm do
+  begin
+    Name := 'Form_';
+    WindowTitle := ' Application error log - ' + ApplicationName;
+    WindowPosition := wpScreenCenter;
+    OnPaint := @FormPaint;
+  end;
+
+  FImage := TfpgImage.Create;
+
+  FMemo := TfpgMemo.Create(FForm);
+  with FMemo do
+  begin
+    Name := 'Memo_';
+    BorderStyle := ebsNone;
+    FontDesc := '#Edit2';
+    SetPosition(cuiImageWidth + cuiBorder*2,
+               cuiBorder,
+               FForm.Width - cuiImageWidth - cuiBorder*3,
+               FForm.Height - cuiBtnHeight - cuiBorder*3);
+    ReadOnly   := True;
+    TabOrder   := 9999;
+    Focusable := False;
+//    TabStop    := False;
+  end;
+
+  FBtns := TList.Create;
+  FsResult := '';
+end;
+
+destructor TtiMessageDlg.Destroy;
+begin
+  Clear;
+  FForm.Free;
+  FBtns.Free;
+  FFont.Free;
+  inherited Destroy;
+end;
+
+function TtiMessageDlg.Execute(const AMessage: TfpgString;
+    AOptions: array of TfpgString; ACaption: TfpgString;
+    ADialogType: TfpgMsgDlgType): TfpgString;
+
+const
+  cScrollBarHeight = 24;
+
+  function _GetButtonWidth(AOptions: array of TfpgString): integer;
+  var
+    i : integer;
+  begin
+    result := 75;
+    for i := Low(AOptions) to High(AOptions) do
+      result := Max(result, FFont.TextWidth(AOptions[i]));
+    result := result + cuiBtnBorder * 2;
+  end;
+
+  function _GetMaxLineWidth(ALines: TStrings): integer;
+  var
+    i : integer;
+  begin
+    Result := 250; // the default width
+    for i := 0 to ALines.Count-1 do
+      result := Max(result, FMemo.Font.TextWidth(ALines[i]));
+    result := result + cScrollBarHeight;
+  end;
+
+var
+  i : integer;
+  lBtn : TfpgButton;
+  lTextRect : TRect;
+  lTextWidth : integer;
+  lTextHeight : integer;
+  lBtnWidth : integer;
+  lTotalBtnWidth : integer;
+  lBorderWidth : integer;
+  lBtnTop  : integer;
+  lLHBtn : integer;
+  lFormWidth : integer;
+  lFormHeight : integer;
+  lTextStyle: TfpgTextFlags;
+begin
+  Clear;
+
+  // Load the correct icon for display
+  case ADialogType of
+    mtWarning: FImgString := 'stdimg.dlg.warning';
+    mtError: FImgString := 'stdimg.dlg.critical';
+    mtConfirmation: FImgString := 'stdimg.dlg.help';
+    mtInformation: FImgString := 'stdimg.dlg.info';
+    else
+      FImgString := 'stdimg.dlg.info';
+  end;
+
+  lTextStyle := [txtLeft, txtTop, txtWrap];
+  FMemo.Text := AMessage;
+
+  lTextWidth := _GetMaxLineWidth(FMemo.Lines);
+  lTextHeight := (FMemo.Font.Height * FMemo.Lines.Count) + cScrollBarHeight;
+
+  // Get the required dimenstions of the AMessage
+(*
+  {$IFNDEF FPC}
+  SetRect(lTextRect, 0, 0, Screen.Width div 2, 0);
+  DrawText(FForm.Canvas.Handle, PChar(AMessage), Length(AMessage)+1, lTextRect,
+    DT_EXPANDTABS or DT_CALCRECT or DT_WORDBREAK or
+    FForm.DrawTextBiDiModeFlagsReadingOnly);
+  {$ELSE}
+  lTextRect := Bounds(0, 0, Screen.Width div 2, 0);
+  lTextStyle.ExpandTabs := True;
+  lTextStyle.Wordbreak := True;
+  lTextStyle.Alignment := taCenter;
+  FForm.Canvas.TextRect(lTextRect, lTextRect.Left, lTextRect.Top, AMessage, lTextStyle);
+  {$ENDIF}
+
+  lTextWidth := lTextRect.Right;
+  lTextHeight := lTextRect.Bottom;
+
+  if lTextWidth < 250 then
+    lTextWidth := 250
+  else
+    lTextWidth := lTextWidth + 25;
+*)
+
+  lBtnWidth := _GetButtonWidth(AOptions);
+  lTotalBtnWidth := (lBtnWidth+cuiBorder)*(High(AOptions)+1);
+  lBorderWidth  := cuiBorder*3 + cuiImageWidth + 1;
+
+  lFormWidth :=
+    Max(lBorderWidth + lTextWidth,
+         lTotalBtnWidth + cuiBorder);
+
+  if lFormWidth > (fpgApplication.ScreenWidth div 2) then
+  begin
+    lFormWidth := fpgApplication.ScreenWidth div 2;
+//    FMemo.ScrollBars := ssHorizontal;
+//    FMemo.BorderStyle := bsSingle;
+    lTextWidth := lFormWidth - lBorderWidth;
+    lTextHeight:= lTextHeight + cScrollBarHeight;
+  end;
+
+  FForm.Width := lFormWidth;
+
+  lFormHeight :=
+    Max(lTextHeight, cuiImageWidth) +
+    cuiBorder * 3 + cuiBtnHeight;
+
+  if lFormHeight > (fpgApplication.ScreenHeight div 2) then
+  begin
+    lFormHeight := fpgApplication.ScreenHeight div 2;
+//    if FMemo.ScrollBars = ssHorizontal  then
+//      FMemo.ScrollBars := ssBoth
+//    else
+//      FMemo.ScrollBars := ssVertical;
+//    FMemo.BorderStyle := bsSingle;
+    FForm.Height := lFormHeight;
+    lTextHeight := lFormHeight - FMemo.Top - cuiBtnHeight - cuiBorder*2;
+  end;
+
+  FForm.Height := lFormHeight;
+  FMemo.SetPosition(cuiBorder*2 + cuiImageWidth, cuiBorder, lTextWidth, lTextHeight);
+
+  lBtnTop := FForm.Height - cuiBtnHeight - cuiBorder;
+
+//  FImage.Top := (lBtnTop - cuiImageWidth) div 2;
+
+//  FMemo.Lines.Text := AMessage;
+
+  lLHBtn := (FForm.Width -
+              (lBtnWidth + cuiBorder) * (High(AOptions)+1)) div 2;
+
+  for i := Low(AOptions) to High (AOptions) do
+  begin
+    lBtn := TfpgButton.Create(FForm);
+//    lBtn.ParentFont := False;
+//    lBtn.Parent    := FForm;
+    lBtn.Top       := lBtnTop;
+    lBtn.Width     := lBtnWidth;
+    lBtn.Left      := lLHBtn + (lBtn.Width + cuiBorder) * i;
+    lBtn.Anchors   := [anBottom, anLeft];
+    lBtn.Text      := AOptions[i];
+    lBtn.OnClick   := @DoOnClick;
+    lBtn.TabOrder  := i;
+    if i = Low(AOptions) then
+      lBtn.Default := True;
+//    if i = High(AOptions) then
+//      lBtn.Cancel := True;
+    FBtns.Add(lBtn);
+  end;
+  FForm.WindowTitle := ' ' + ACaption;
+  FMemo.Anchors := [ anTop, anLeft, anBottom, anRight ];
+
+  FForm.ShowModal;
+  Result := FsResult;
+end;
 
 { TProcessingForm }
 
@@ -323,6 +577,22 @@ end;
 procedure tiAppError(const AMessage: TfpgString; ATitle: TfpgString = '');
 begin
   TfpgMessageDialog.Critical(ATitle, AMessage);
+end;
+
+function tiMessageTextDlg(const AMessage: string; AOptions: array of string;
+    ADialogType: TfpgMsgDlgType = mtInformation;
+    const ACaption: string = 'Information'): string;
+var
+  lForm : TtiMessageDlg;
+begin
+  lForm := TtiMessageDlg.Create(nil);
+  try
+//    lForm.FForm.Font.Name := cDefaultFixedFontName;
+//    lForm.FForm.Font.Size := 8;
+    result := lForm.Execute(AMessage, AOptions, ACaption, ADialogType);
+  finally
+    lForm.Free;
+  end;
 end;
 
 procedure tiProcessing(const AMessage: TfpgString);
