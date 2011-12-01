@@ -47,7 +47,7 @@ constructor TtiHTTPIndy.Create;
 begin
   inherited;
   FHTTP := TidHTTP.Create(nil);
-  FHTTP.ProtocolVersion := pv1_0;
+  FHTTP.ProtocolVersion := pv1_1;
 end;
 
 destructor TtiHTTPIndy.Destroy;
