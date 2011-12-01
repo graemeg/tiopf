@@ -381,7 +381,12 @@ begin
       lSQL:= tiAddEllipsis(lSQL, 975);
       Log('About to run SQL: ' + lSQL);
       lStart:= tiGetTickCount;
-      lQuery.Active := true;
+      { TODO : How can we improve this? Some backends differentiate between SQL
+statements that return a resultset, and some that down. }
+      if Pos('select ', lSQL) > 0 then
+        lQuery.Active := true  // select statements that return a resultset
+      else
+        lQuery.ExecSQL;  // any other sql (eg: update) that doesn't return a resultset
       FRowCount := FXMLWriterData.AssignFromTIQuery(uXMLTags.TableNameResultSet, lQuery);
       Log('  Rows returned: ' + IntToStr(FRowCount) + ' taking ' + IntToStr(tiGetTickCount-lStart) + 'ms');
     finally
