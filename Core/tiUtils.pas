@@ -4119,8 +4119,7 @@ end;
 function tiGetCommonAppDataDir(const AAppDataSubDir: string): string;
 begin
   {$IFDEF FPC}
-  //TODO: Change to point at the correct subfolder
-  result := GetAppConfigDir(True);
+  result := tiAddTrailingSlash(GetAppConfigDir(True)) + AAppDataSubDir;
   {$ELSE}
   result := tiWin32GetCommonAppDir + AAppDataSubDir;
   {$ENDIF}
@@ -4129,8 +4128,7 @@ end;
 function tiGetUserLocalAppDataDir(const AAppDataSubDir: string): string;
 begin
   {$IFDEF FPC}
-  //TODO: Change to point at the correct subfolder
-  result := GetAppConfigDir(False);
+  result := tiAddTrailingSlash(GetAppConfigDir(False)) + AAppDataSubDir;
   {$ELSE}
   result := tiWin32GetUserLocalAppDir + AAppDataSubDir;
   {$ENDIF}
