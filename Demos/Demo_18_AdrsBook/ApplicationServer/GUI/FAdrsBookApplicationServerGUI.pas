@@ -28,7 +28,8 @@ uses
   tiLogToEventHandler,
   tiUtils,
   tiOPFManager,
-  tiQueryIBX;
+  tiQueryIBX,
+  tiConstants;
 
 {$R *.dfm}
 
@@ -60,8 +61,9 @@ begin
   //       demo. Fix.
   //FAppServer.StaticPageLocation:= tiGetEXEPath + '\StaticPages\';
   //FAppServer.CGIBinLocation:= tiGetEXEPath + '\CGI-Bin\';
+  GTIOPFManager.DefaultPersistenceLayerName := cTIPersistIBX;
   GTIOPFManager.ConnectDatabase(
-    'adrs', 'adrs.fdb', 'SYSDBA', 'masterkey', '', '');
+    'adrs', 'localhost:adrs.fdb', 'SYSDBA', 'masterkey', '', '');
   Log('Connected to database ' + GTIOPFManager.DefaultDBConnectionPool.DetailsAsString);
 end;
 
