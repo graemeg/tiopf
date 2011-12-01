@@ -68,7 +68,11 @@ uses
   tiOPFManager,
   tiDialogs,
   tiUtils,
+  {$IFDEF FPC}
+  tiQuerySqldbIB,  // Firebird via SqlDB
+  {$ELSE}
   tiQueryIBX,      // Firebird via IBX
+  {$ENDIF}
   tiQueryXMLLight, // XMLLight
   tiQueryRemote,   // Remote
   tiHTTPIndy,      // Link one of the two available connection libraries (tiHTTPIndy & tiHTTPMSXML)
@@ -83,16 +87,23 @@ begin
   LResult:=
     tiMessageTextDlg('Which persistence layer do you want to use?' + tiLineEnd(2) +
                      'Firebird, XMLLight or Remote?',
-                     [CTIPersistIBX, CTIPersistXMLLight, CTIPersistRemote]);
+                     [{$IFDEF FPC}cTIPersistSqldbIB{$ELSE}CTIPersistIBX{$ENDIF}, CTIPersistXMLLight, CTIPersistRemote]);
   if LResult = CTIPersistIBX then
   begin
     GTIOPFManager.DefaultPersistenceLayerName:= CTIPersistIBX;
     GTIOPFManager.ConnectDatabase('adrs', 'adrs.fdb', 'SYSDBA', 'masterkey', '', '');
-  end else if LResult = CTIPersistXMLLight then
+  end
+  else if LResult = cTIPersistSqldbIB then
+  begin
+    GTIOPFManager.DefaultPersistenceLayerName:= cTIPersistSqldbIB;
+    GTIOPFManager.ConnectDatabase('adrs', 'localhost:adrs.fdb', 'SYSDBA', 'masterkey', '', '');
+  end
+  else if LResult = CTIPersistXMLLight then
   begin
     GTIOPFManager.DefaultPersistenceLayerName:= CTIPersistXMLLight;
     GTIOPFManager.ConnectDatabase('adrs', 'adrs.xmllight', '', '', '', '');
-  end else if LResult = CTIPersistRemote then
+  end
+  else if LResult = CTIPersistRemote then
   begin
     GTIOPFManager.DefaultPersistenceLayerName:= CTIPersistRemote;
     GTIOPFManager.ConnectDatabase('adrs', 'http://localhost:8088', '', '', '', '');
