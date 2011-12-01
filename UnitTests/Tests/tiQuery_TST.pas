@@ -1774,7 +1774,7 @@ begin
         lParams.SetValueAsStream('param1', lStream1);
         CheckEquals(1, lParams.Count, 'Count');
         lParam := lParams.Items[0];
-        CheckNotNull(lParams, 'NotNull failed');
+        CheckNotNull(lParam, 'NotNull failed');
         CheckIs(lParam, TtiQueryParamStream, 'Wrong class');
         lStream2 := lParams.GetValueAsStream('param1');
         CheckStreamContentsSame(lStream1, lStream2);
