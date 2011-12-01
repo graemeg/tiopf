@@ -67,7 +67,11 @@ implementation
 uses
   tiOPFManager,
   tiUtils,
-  tiQueryIBX,
+  tiConstants,
+//  tiQueryIBX,
+  tiQueryXMLLight, // XMLLight
+  tiQueryRemote,   // Remote
+  tiHTTPIndy,      // Link one of the two available connection libraries (tiHTTPIndy & tiHTTPMSXML)
   Adrs_SrvAutoMap,
   SysUtils;
 
@@ -77,7 +81,10 @@ constructor TAdrsBookUIConsole.Create;
 begin
   inherited;
   Adrs_SrvAutoMap.RegisterMappings;
-  GTIOPFManager.ConnectDatabase('adrs.fdb', 'SYSDBA', 'masterkey');
+//  GTIOPFManager.ConnectDatabase('adrs.fdb', 'SYSDBA', 'masterkey');
+
+  GTIOPFManager.DefaultPersistenceLayerName:= CTIPersistRemote;
+  GTIOPFManager.ConnectDatabase('adrs', 'http://localhost:8088', '', '', '', '');
 
   FCommandList:= TObjectList.Create;
   FCommandList.Add(TAdrsBookConsoleCommandList.Create);
