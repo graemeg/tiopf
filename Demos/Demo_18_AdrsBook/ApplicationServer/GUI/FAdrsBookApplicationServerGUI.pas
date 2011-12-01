@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, tiDBProxyServer, tiLog;
+  Dialogs, StdCtrls, tiHTTPIndy, tiDBProxyServer, tiLog;
 
 type
   TForm1 = class(TForm)
