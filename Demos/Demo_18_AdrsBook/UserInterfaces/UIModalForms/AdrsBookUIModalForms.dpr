@@ -8,7 +8,10 @@ uses
   FEAdrsEdit in 'FEAdrsEdit.pas' {FormEAdrsEdit},
   FAdrsAbs in 'FAdrsAbs.pas' {FormAdrsAbs},
   FtiPerEditDialog in '..\..\..\..\GUI\VCLForms\FtiPerEditDialog.pas' {FormTIPerEditDialog},
-  FtiDialogAbs in '..\..\..\..\GUI\VCLForms\FtiDialogAbs.pas' {FormTiDialogAbs};
+  FtiDialogAbs in '..\..\..\..\GUI\VCLForms\FtiDialogAbs.pas' {FormTiDialogAbs},
+  AdrsType_BOM in '..\..\BOM\AdrsType_BOM.pas',
+  Adrs_BOM in '..\..\BOM\Adrs_BOM.pas',
+  Adrs_Dependencies in '..\..\BOM\Adrs_Dependencies.pas';
 
 {$R *.res}
 
