@@ -693,6 +693,8 @@ procedure TtiWebServerAction.GetReturnPage(const ADocument: string; AResponse: T
       Result := '	image/jpeg'
     else if pExt = 'ico' then
       Result := '	image/ico'
+    else if pExt = 'png' then
+      Result := '	image/png'
     else
       raise ETIOPFDataException('Invalid MIME type ' + pExt);
   end;
@@ -705,6 +707,7 @@ begin
   //       jpg, exe or zip pages. Extend this functionality
   if (lExt = 'gif') or
      (lExt = 'jpg') or
+     (lExt = 'png') or
      (lExt = 'ico') or
      (lExt = 'exe') or
      (lExt = 'pdf') or
