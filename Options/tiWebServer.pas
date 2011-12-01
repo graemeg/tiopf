@@ -284,7 +284,9 @@ uses
   tiWebServerConstants,
   tiUtils,
   tiLog,
-  tiConsoleApp,
+  {$IFNDEF FPC}
+  tiConsoleApp,  // Delphi and Windows specific unit
+  {$ENDIF}
   tiHTTP,
   tiCRC32,
   Math;
@@ -1281,7 +1283,11 @@ function TtiWebServerAction_PassThrough.ExecutePassThrough(const APassThroughApp
   ARequestParams: string; out AResponse: string): Cardinal;
 begin
   if Length(APassThroughApp) + Length(ARequestParams) <= CMaximumCommandLineLength then
+    {$IFDEF FPC}
+    tiWebServerExecuteCGIApp(ARequestParams, AResponse, APassThroughApp, Result)
+    {$ELSE}
     Result:= tiExecConsoleApp(APassThroughApp, ARequestParams, AResponse, nil, false)
+    {$ENDIF}
   else
     raise ETIWebServerPassThroughException.CreateFmt(
       'PassThrough error: command-line too long: <%s>',
