@@ -459,7 +459,7 @@ begin
       tiDeleteFile(LFileName);
       tiStringToFile(LPage, LFileName);
       LResult:= TestHTTPRequest(cgTIDBProxyGetLog);
-      CheckEquals('<HTML><PRE>'+LPage+'</PRE></HTML>', LResult);
+      CheckEquals('<HTML><head><title>Log File</title></head><body><PRE>'+LPage+'</PRE></body></HTML>', LResult);
     finally
       LO.Free;
     end;

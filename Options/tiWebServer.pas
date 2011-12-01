@@ -852,7 +852,7 @@ begin
   lFileName := gLog.LogToFileName;
   if FileExists(lFileName) then
     tiStringToStream(
-      '<HTML><PRE>' + tiFileToString(lFileName) + '</PRE></HTML>',
+      '<HTML><head><title>Log File</title></head><body><PRE>' + tiFileToString(lFileName) + '</PRE></body></HTML>',
       AResponse)
   else
     tiStringToStream(
