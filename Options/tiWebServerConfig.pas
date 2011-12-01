@@ -16,8 +16,6 @@ type
     function GetLogToApplicationSubDirectory: boolean;
     function GetLogFullHTTPRequest: boolean;
   protected
-    function  GetRegistryKey: string; virtual;
-    function  GetRegistryValue(const AName, ADefault: string): string; virtual;
     function  GetINIFileName: string; virtual;
     property  INI: TtiINIFile Read FINI;
 
@@ -62,15 +60,12 @@ uses
   ,tiLogToFile
   ,tiUtils
   ,SysUtils
-  ,Registry
-  ,Windows
  ;
 
 const
   // Logging
   cINILog = 'Log';
   cINILog_PathToSharedFiles = 'PathToSharedFiles';
-  cINILog_DefaultPathToSharedFiles = 'C:\TechInsite\Log';
   cINILog_CGIExtensionLogging = 'CGIExtensionLogging';
   cINILog_CGIExtensionSeverityToLog = 'CGIExtensionSeverityToLog';
   CINILog_LogToApplicationSubDirectory = 'LogToApplicationSubDirectory';
@@ -95,6 +90,9 @@ const
   cINIService_IdentPort = 'Port';
   cINIService_DefaultPort = 80;
 
+var
+  cINILog_DefaultPathToSharedFiles: string;
+
 { TtiWebServerConfig }
 
 constructor TtiWebServerConfig.Create;
@@ -110,10 +108,13 @@ begin
 end;
 
 function TtiWebServerConfig.GetINIFileName: string;
+var
+  d: string;
 begin
-  Result:= GetRegistryValue('Shared INI File Location', '\TechInsite\Shared\Config.ini');
-  if not DirectoryExists(ExtractFilePath(Result)) then
-    ForceDirectories(ExtractFilePath(Result));
+  d := tiGetCommonAppDataDir('');
+  Result:= tiFixPathDelim(tiAddTrailingSlash(d) + 'tiopf\webserver.ini');
+  if not DirectoryExists(d) then
+    ForceDirectories(d);
 end;
 
 function TtiWebServerConfig.INIFilePath: string;
@@ -124,30 +125,6 @@ end;
 function TtiWebServerConfig.ApplicationINISectionName: string;
 begin
   result := tiRemoveExtension(ExtractFileName(tiGetModuleFileName));
-end;
-
-function TtiWebServerConfig.GetRegistryKey: string;
-begin
-  result:= 'SOFTWARE\TechInsite\Shared';
-end;
-
-function TtiWebServerConfig.GetRegistryValue(const AName, ADefault: string): string;
-var
-  LRegistry: TRegistry;
-begin
-  LRegistry := TRegistry.Create(HKEY_LOCAL_MACHINE);
-  try
-    LRegistry.RootKey := HKEY_LOCAL_MACHINE;
-    LRegistry.OpenKey(GetRegistryKey, True);
-    Result := LRegistry.ReadString(AName);
-    if Result = '' then
-    begin
-      Result:= ExtractFileDrive(ParamStr(0)) + ADefault;
-      LRegistry.WriteString(AName, Result);
-    end;
-  finally
-    LRegistry.Free;
-  end;
 end;
 
 function TtiWebServerConfig.GetLogFullHTTPRequest: boolean;
@@ -238,6 +215,10 @@ begin
   Result:= INI.ReadBool(cINIService, cINIService_SendBugReportEmailOnCGIFailure,
       cINIService_SendBugReportEmailOnCGIFailureDefault);
 end;
+
+
+initialization
+  cINILog_DefaultPathToSharedFiles := tiFixPathDelim(tiGetTempDir + '\TechInsite\Log');
 
 end.
 
