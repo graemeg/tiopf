@@ -1,5 +1,7 @@
 unit TiOPFManager_TST;
 
+{$I tiDefines.inc}
+
 interface
 uses
   tiTestFramework;
