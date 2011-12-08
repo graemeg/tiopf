@@ -1,7 +1,9 @@
 program tiOPFUnitTestsGUI;
 
 uses
+{$IFDEF FASTMM}
   FastMM4,
+{$ENDIF}
   tiBaseObject,
   tiLog,
   Forms,
