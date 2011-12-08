@@ -3,9 +3,9 @@ program fpcUnitTIOPFGui;
 {$I tiDefines.inc}
 
 uses
-  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  {$IFDEF UNIX}
   cthreads,
-  {$ENDIF}{$ENDIF}
+  {$ENDIF}
   Interfaces
   ,Forms
   ,GuiTestRunner
