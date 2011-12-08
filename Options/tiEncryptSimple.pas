@@ -16,7 +16,9 @@ type
 
   TEncryptSimple = class(TtiEncryptAbs)
   private
+    lSeed: Int64;
     function  SimpleEncrypt(const Source: AnsiString): AnsiString;
+    function  MyRandom(const AMax: integer): integer;
   protected
     procedure SetSeed   (const AValue: ansistring); override;
   public
@@ -42,7 +44,7 @@ uses
 constructor TEncryptSimple.Create;
 begin
   inherited;
-  Randomize;
+  lSeed := 1;
   Seed := cDefaultEncryptSeedString;
 end;
 
@@ -56,6 +58,20 @@ begin
     Result[Index]:= ansichar((Ord(Seed[Index mod Length(Seed)]) xor Ord(Source[Index])));
 end;
 
+{ This custom random generator is based on the OpenBSD and NetBSD rand()
+  function. We use this custom implementation because the FPC Random()
+  implementation is based on the Mersenne Twister generator - which is
+  statistically much better than Delphi's Random() call, but with the side
+  effect that it is MUCH slower. We use this custom generator to speed up the
+  EncryptString() method under FPC. After all, the TEncryptSimple class is just
+  an example/demo encryption implementation - not meant for real-world
+  applications. }
+function TEncryptSimple.MyRandom(const AMax: integer): integer;
+begin
+  lSeed := lSeed * 1103515245 + 12345;
+  Result :=  (lSeed mod AMax);
+end;
+
 
 function TEncryptSimple.EncryptString(const psData : AnsiString): AnsiString;
 var
@@ -66,7 +82,7 @@ var
   ByteValue: Byte;
   Source: ansiString;
 begin
-  ByteValue := Random(255) + 1;
+  ByteValue := MyRandom(255) + 1;
   Source := SimpleEncrypt(psData);
   SetLength(Result, Length(Source) * 8);
   for Index := 1 to Length(Source) do
@@ -76,18 +92,16 @@ begin
     begin
       BitValue := Byte(OrdValue and (1 shl BitCount) = 1 shl BitCount);
       RandSeed := ByteValue;
-      ByteValue := (((Random(255) + 1) div 2) * 2) + BitValue;
+      ByteValue := (((MyRandom(255) + 1) div 2) * 2) + BitValue;
       Result[(Index - 1) * 8 + BitCount + 1]:= AnsiChar(ByteValue);
     end;
   end;
 
   {null values so string length is not always divisible by 8.. a dead giveaway}
-  Randomize;
-  for Index := 1 to Random(7) + 1 do
+  for Index := 1 to MyRandom(7) + 1 do
   begin
     Sleep(1);
-    Randomize;
-    Result := Result + AnsiChar(Random(256));
+    Result := Result + AnsiChar(MyRandom(256));
   end;
 end;
 
