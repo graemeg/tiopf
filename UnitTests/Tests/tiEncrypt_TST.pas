@@ -18,11 +18,8 @@ type
   published
     procedure None_StringEncryption;
     procedure None_StreamEncryption;
-    { will add these back shortly }
-    {$IFNDEF FPC}
     procedure Simple_StringEncryption;
     procedure Simple_StreamEncryption;
-    {$ENDIF}
     procedure DES_StreamEncryption;
     procedure DES_StringEncryption;
     procedure Blowfish_StreamEncryption;
@@ -164,22 +161,18 @@ begin
 end;
 
 
-{$IFNDEF FPC}
 procedure TTestTIEncrypt.Simple_StreamEncryption;
 begin
   Do_StreamEncryption(cgsEncryptionSimple);
   Do_StreamEncryption(cgsEncryptionSimple, uSeed, uIntSeed);
 end;
-{$ENDIF}
 
 
-{$IFNDEF FPC}
 procedure TTestTIEncrypt.Simple_StringEncryption;
 begin
   Do_StringEncryption(cgsEncryptionSimple);
   Do_StringEncryption(cgsEncryptionSimple, uSeed, uIntSeed);
 end;
-{$ENDIF}
 
 
 procedure TTestTIEncrypt.DES_StreamEncryption;
