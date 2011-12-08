@@ -100,7 +100,6 @@ begin
   {null values so string length is not always divisible by 8.. a dead giveaway}
   for Index := 1 to MyRandom(7) + 1 do
   begin
-    Sleep(1);
     Result := Result + AnsiChar(MyRandom(256));
   end;
 end;
