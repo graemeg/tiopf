@@ -35,16 +35,10 @@ const
 implementation
 uses
   SysUtils
-  {$IFDEF MSWINDOWS}
-  ,Windows
-  {$ENDIF MSWINDOWS}
  ;
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// *  TEncryptSimple
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+{ TEncryptSimple }
+
 constructor TEncryptSimple.Create;
 begin
   inherited;
