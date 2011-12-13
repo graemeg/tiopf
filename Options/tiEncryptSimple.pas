@@ -67,6 +67,7 @@ var
   Source: AnsiString;
 begin
   ByteValue := Random(255) + 1;
+  RandSeed := ByteValue;
   Source := SimpleEncrypt(psData);
   SetLength(Result, Length(Source) * 8);
   for Index := 1 to Length(Source) do
@@ -75,7 +76,6 @@ begin
     for BitCount := 0 to 7 do
     begin
       BitValue := Byte(OrdValue and (1 shl BitCount) = 1 shl BitCount);
-      RandSeed := ByteValue;
       ByteValue := (((Random(255) + 1) div 2) * 2) + BitValue;
       Result[(Index - 1) * 8 + BitCount + 1]:= AnsiChar(ByteValue);
     end;
@@ -83,9 +83,7 @@ begin
 
   {null values so string length is not always divisible by 8.. a dead giveaway}
   for Index := 1 to Random(7) + 1 do
-  begin
     Result := Result + AnsiChar(Random(256));
-  end;
 end;
 
 
