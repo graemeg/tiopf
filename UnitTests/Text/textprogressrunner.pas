@@ -26,8 +26,8 @@ type
       procedure TestingStarts;
       procedure StartTest(Test: ITestProxy);
       procedure EndTest(Test: ITestProxy);
-      procedure TestingEnds(TestResult: TTestResult);
-      function  ShouldRunTest(const ATest :ITestProxy):Boolean;
+      procedure TestingEnds(TestResult: ITestResult);
+      function  ShouldRunTest(const ATest: ITestProxy):Boolean;
     end;
 
 implementation
@@ -75,7 +75,7 @@ begin
 
 end;
 
-procedure TTextProgressTestListener.TestingEnds(TestResult: TTestResult);
+procedure TTextProgressTestListener.TestingEnds(TestResult: ITestResult);
 begin
 
 end;

@@ -51,8 +51,8 @@ type
     procedure Write2Table(const pCell1, pCell2, pCell3, pCell4, pCell5 : string); overload;
     procedure Write2Table(const pCell1 : string); overload;
     procedure IncPos;
-    function  PrintHeader(r: TTestResult): string; override;
-    procedure WriteSummaryToINIFile(testResult: TTestResult);
+    function  PrintHeader(r: ITestResult): string; override;
+    procedure WriteSummaryToINIFile(testResult: ITestResult);
     function  FormatTestName(ATest: ITest): string;
     function  ShouldRunTest(const ATest :ITest):boolean; override;
     procedure TestingStarts; override;
@@ -63,7 +63,7 @@ type
     procedure AddFailure(failure: TTestFailure); override;
     procedure AddWarning(AWarning: TTestFailure); override;
 
-    procedure TestingEnds(testResult: TTestResult);override;
+    procedure TestingEnds(testResult: ITestResult);override;
     procedure StartSuite(suite: ITest); override;
     procedure EndSuite(suite: ITest); override;
     procedure EndTest(test: ITest); override;
@@ -71,8 +71,8 @@ type
     constructor Create; virtual;
   end;
 
-function  tiRunTest(suite: ITest; exitBehavior: TRunnerExitBehavior = rxbContinue): TTestResult; overload;
-function  RunRegisteredTests(exitBehavior: TRunnerExitBehavior = rxbContinue): TTestResult; overload;
+function  tiRunTest(suite: ITest; exitBehavior: TRunnerExitBehavior = rxbContinue): ITestResult; overload;
+function  RunRegisteredTests(exitBehavior: TRunnerExitBehavior = rxbContinue): ITestResult; overload;
 procedure WriteEmptyLogs(AExitBehavior: TRunnerExitBehavior);
 
 // ToDo: We must be able to do better than this...
@@ -118,7 +118,7 @@ begin
   ReadLn;
 end;
 
-function tiRunTest(suite: ITest; exitBehavior: TRunnerExitBehavior = rxbContinue): TTestResult;
+function tiRunTest(suite: ITest; exitBehavior: TRunnerExitBehavior = rxbContinue): ITestResult;
 var
   aListeners: array of ITestListener;
   i: integer;
@@ -184,7 +184,7 @@ begin
   end;
 end;
 
-function RunRegisteredTests(exitBehavior: TRunnerExitBehavior = rxbContinue): TTestResult;
+function RunRegisteredTests(exitBehavior: TRunnerExitBehavior = rxbContinue): ITestResult;
 begin
   Result := tiRunTest(RegisteredTests, exitBehavior);
 end;
@@ -192,7 +192,7 @@ end;
 procedure WriteEmptyLogs(AExitBehavior: TRunnerExitBehavior);
 var
   LTestListner: TtiTextTestListener;
-  LTestResults: TTestResult;
+  LTestResults: ITestResult;
 begin
   WriteLn('The command line parameter -notests was passed, so no tests where run.');
   {$IFDEF DUNIT2}
@@ -315,7 +315,7 @@ begin
   end;
 end;
 
-function TtiTextTestListener.PrintHeader(r: TTestResult): string;
+function TtiTextTestListener.PrintHeader(r: ITestResult): string;
 begin
   result := '';
   if r.wasSuccessful then
@@ -428,7 +428,7 @@ begin
   Write2Short(AStr+ tiLineEnd, pWriteTo);
 end;
 
-procedure TtiTextTestListener.TestingEnds(testResult: TTestResult);
+procedure TtiTextTestListener.TestingEnds(testResult: ITestResult);
 var
   h, m, s, l :Word;
 begin
@@ -472,7 +472,7 @@ begin
 
 end;
 
-procedure TtiTextTestListener.WriteSummaryToINIFile(testResult: TTestResult);
+procedure TtiTextTestListener.WriteSummaryToINIFile(testResult: ITestResult);
 var
   lINIFile : TINIFile;
   LLong : string;
