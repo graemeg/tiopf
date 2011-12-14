@@ -320,7 +320,7 @@ uses
   ,SysUtils
   ,Math
   {$IFDEF USE_BASE64_UNIT}
-  ,base64
+  ,tiBase64
   {$ENDIF}
  ;
 

@@ -21,7 +21,7 @@
      (C) 2007 Hexis BV, by Bram Kuijvenhoven (bkuijvenhoven@hexis.nl)
 }
 
-unit base64;
+unit tiBase64;
 
 {$IFDEF FPC}
   {$MODE objfpc}{$H+}
