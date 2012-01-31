@@ -458,6 +458,7 @@ begin
     C:=View.Columns.Add;// as TGridColumn;
     C.Width    := FieldsInfo[i].FieldWidth;
     C.Title.Caption  := FieldsInfo[i].Caption;
+    c.Title.Alignment := taCenter;  // looks better and behaves like spreasheets do.
     C.Alignment := FieldsInfo[i].Alignment;
     //resize the last column to fill the grid.
     if i = FieldsInfo.Count - 1 then
