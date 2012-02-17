@@ -8,7 +8,7 @@ uses
   TextTestRunner,
   Adrs_SrvAutoMap,
   tiUtils,
-  DUnitAdrsBookDependencies in 'DUnitAdrsBookDependencies.pas ';
+  DUnitAdrsBookDependencies in 'DUnitAdrsBookDependencies.pas';
 
 begin
   try

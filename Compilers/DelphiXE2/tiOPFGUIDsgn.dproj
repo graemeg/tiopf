@@ -1,4 +1,4 @@
-	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
 			<ProjectGuid>{5a3dafa5-dd98-4823-8704-3cae1f033f6f}</ProjectGuid>
 			<MainSource>tiOPFGUIDsgn.dpk</MainSource>
