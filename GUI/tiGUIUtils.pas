@@ -136,6 +136,7 @@ uses
   {$IFDEF UNIX}
   ,unix
   {$ENDIF}
+  ,Types
   ;
 
 

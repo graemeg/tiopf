@@ -11,75 +11,56 @@ unit ADOX_TLB;
 // manual modifications will be lost.                                         
 // ************************************************************************ //
 
-// PASTLWTR : 1.2
-// File generated on 30/12/2003 10:08:49 PM from Type Library described below.
+// $Rev: 41960 $
+// File generated on 05/01/2012 12:43:53 from Type Library described below.
 
 // ************************************************************************  //
-// Type Lib: C:\Program Files\Common Files\System\ADO\msadox.dll (1)
+// Type Lib: C:\Program Files\Common Files\System\ado\msADOX.dll (1)
 // LIBID: {00000600-0000-0010-8000-00AA006D2EA4}
 // LCID: 0
-// Helpfile: C:\Program Files\Common Files\System\ADO\ado270.chm
-// HelpString: Microsoft ADO Ext. 2.7 for DDL and Security
+// Helpfile: C:\Program Files\Common Files\System\ado\ado270.chm
+// HelpString: Microsoft ADO Ext. 2.8 for DDL and Security
 // DepndLst: 
-//   (1) v2.0 stdole, (C:\WINNT\System32\stdole2.tlb)
+//   (1) v2.0 stdole, (C:\WINDOWS\system32\STDOLE2.TLB)
 // Errors:
 //   Hint: TypeInfo 'Property' changed to 'Property_'
 //   Hint: TypeInfo 'Procedure' changed to 'Procedure_'
 //   Hint: Parameter 'Object' of _DynaCollection.Append changed to 'Object_'
 //   Hint: Symbol 'Type' renamed to 'type_'
 //   Hint: Parameter 'Type' of Columns.Append changed to 'Type_'
-//   Hint: Symbol 'Type' renamed to 'type_'
-//   Hint: Symbol 'Type' renamed to 'type_'
-//   Hint: Symbol 'Type' renamed to 'type_'
 //   Hint: Parameter 'Type' of Keys.Append changed to 'Type_'
-//   Hint: Symbol 'Type' renamed to 'type_'
-//   Hint: Symbol 'Type' renamed to 'type_'
-//   Error creating palette bitmap of (TADOXTable): Server C:\Program Files\Common Files\System\ADO\msadox.dll contains no icons
-//   Error creating palette bitmap of (TADOXColumn): Server C:\Program Files\Common Files\System\ADO\msadox.dll contains no icons
-//   Error creating palette bitmap of (TADOXIndex): Server C:\Program Files\Common Files\System\ADO\msadox.dll contains no icons
-//   Error creating palette bitmap of (TADOXKey): Server C:\Program Files\Common Files\System\ADO\msadox.dll contains no icons
-//   Error creating palette bitmap of (TADOXGroup): Server C:\Program Files\Common Files\System\ADO\msadox.dll contains no icons
-//   Error creating palette bitmap of (TADOXUser): Server C:\Program Files\Common Files\System\ADO\msadox.dll contains no icons
-//   Error creating palette bitmap of (TADOXCatalog): Server C:\Program Files\Common Files\System\ADO\msadox.dll contains no icons
+//   Error creating palette bitmap of (TADOXTable) : Server C:\Program Files\Common Files\System\ado\msadox.dll contains no icons
+//   Error creating palette bitmap of (TADOXColumn) : Server C:\Program Files\Common Files\System\ado\msadox.dll contains no icons
+//   Error creating palette bitmap of (TADOXIndex) : Server C:\Program Files\Common Files\System\ado\msadox.dll contains no icons
+//   Error creating palette bitmap of (TADOXKey) : Server C:\Program Files\Common Files\System\ado\msadox.dll contains no icons
+//   Error creating palette bitmap of (TADOXGroup) : Server C:\Program Files\Common Files\System\ado\msadox.dll contains no icons
+//   Error creating palette bitmap of (TADOXUser) : Server C:\Program Files\Common Files\System\ado\msadox.dll contains no icons
+//   Error creating palette bitmap of (TADOXCatalog) : Server C:\Program Files\Common Files\System\ado\msadox.dll contains no icons
 // ************************************************************************ //
-// *************************************************************************//
-// NOTE:                                                                      
-// Items guarded by $IFDEF_LIVE_SERVER_AT_DESIGN_TIME are used by properties  
-// which return objects that may need to be explicitly created via a function 
-// call prior to any access via the property. These items have been disabled  
-// in order to prevent accidental use from within the object inspector. You   
-// may enable them by defining LIVE_SERVER_AT_DESIGN_TIME or by selectively   
-// removing them from the $IFDEF blocks. However, such items must still be    
-// programmatically created via a method of the appropriate CoClass before    
-// they can be used.                                                          
 {$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers. 
-{$IFNDEF VER130}
-  {$WARN SYMBOL_PLATFORM OFF}
-{$ENDIF}
+{$WARN SYMBOL_PLATFORM OFF}
 {$WRITEABLECONST ON}
-{$IFDEF VER150}
-  {$VARPROPSETTER ON}
-{$ENDIF}
+{$VARPROPSETTER ON}
+{$ALIGN 4}
 
 {$i tiDefines.inc}
 
 interface
 
-uses Windows, ActiveX, Classes, Graphics, OleServer, StdVCL
-     {$IFNDEF VER130} , Variants {$ENDIF};
+uses Windows, ActiveX, Classes, Graphics, OleServer, StdVCL, Variants;
   
 
 // *********************************************************************//
 // GUIDS declared in the TypeLibrary. Following prefixes are used:        
-//   Type Libraries    : LIBID_xxxx                                      
-//   CoClasses         : CLASS_xxxx                                      
-//   DISPInterfaces    : DIID_xxxx                                       
+//   Type Libraries     : LIBID_xxxx                                      
+//   CoClasses          : CLASS_xxxx                                      
+//   DISPInterfaces     : DIID_xxxx                                       
 //   Non-DISP interfaces: IID_xxxx                                        
 // *********************************************************************//
 const
   // TypeLibrary Major and minor versions
   ADOXMajorVersion = 2;
-  ADOXMinorVersion = 7;
+  ADOXMinorVersion = 8;
 
   LIBID_ADOX: TGUID = '{00000600-0000-0010-8000-00AA006D2EA4}';
 
@@ -390,6 +371,7 @@ type
     procedure SetObjectOwner(const ObjectName: WideString; ObjectType: ObjectTypeEnum; 
                              const UserName: WideString; ObjectTypeId: OleVariant); safecall;
     property Tables: Tables read Get_Tables;
+    // Skipped Property "ActiveConnection"
     property Procedures: Procedures read Get_Procedures;
     property Views: Views read Get_Views;
     property Groups: Groups read Get_Groups;
@@ -615,7 +597,7 @@ type
     function Get_type_: DataTypeEnum; safecall;
     function Get_Attributes: Integer; safecall;
     procedure Set_Attributes(plAttributes: Integer); safecall;
-    property AValue: OleVariant read Get_Value write Set_Value;
+    property Value: OleVariant read Get_Value write Set_Value;
     property Name: WideString read Get_Name;
     property type_: DataTypeEnum read Get_type_;
     property Attributes: Integer read Get_Attributes write Set_Attributes;
@@ -628,7 +610,7 @@ type
 // *********************************************************************//
   Property_Disp = dispinterface
     ['{00000503-0000-0010-8000-00AA006D2EA4}']
-    property AValue: OleVariant dispid 0;
+    property Value: OleVariant dispid 0;
     property Name: WideString readonly dispid 1;
     property type_: DataTypeEnum readonly dispid 2;
     property Attributes: Integer dispid 3;
@@ -818,6 +800,7 @@ type
     function Get_Name: WideString; safecall;
     function Get_DateCreated: OleVariant; safecall;
     function Get_DateModified: OleVariant; safecall;
+    // Skipped Property "Command"
     property Name: WideString read Get_Name;
     property DateCreated: OleVariant read Get_DateCreated;
     property DateModified: OleVariant read Get_DateModified;
@@ -877,6 +860,7 @@ type
     function Get_Name: WideString; safecall;
     function Get_DateCreated: OleVariant; safecall;
     function Get_DateModified: OleVariant; safecall;
+    // Skipped Property "Command"
     property Name: WideString read Get_Name;
     property DateCreated: OleVariant read Get_DateCreated;
     property DateModified: OleVariant read Get_DateModified;
@@ -961,18 +945,6 @@ type
 // *********************************************************************//
   _Group = interface(_Group25)
     ['{00000628-0000-0010-8000-00AA006D2EA4}']
-    procedure GhostMethod__Group_0_1; safecall;
-    procedure GhostMethod__Group_4_2; safecall;
-    procedure GhostMethod__Group_8_3; safecall;
-    procedure GhostMethod__Group_12_4; safecall;
-    procedure GhostMethod__Group_16_5; safecall;
-    procedure GhostMethod__Group_20_6; safecall;
-    procedure GhostMethod__Group_24_7; safecall;
-    procedure GhostMethod__Group_28_8; safecall;
-    procedure GhostMethod__Group_32_9; safecall;
-    procedure GhostMethod__Group_36_10; safecall;
-    procedure GhostMethod__Group_40_11; safecall;
-    procedure GhostMethod__Group_44_12; safecall;
     function Get_Properties: Properties; safecall;
     function Get_ParentCatalog: _Catalog; safecall;
     procedure Set_ParentCatalog(const ppvObject: _Catalog); safecall;
@@ -988,18 +960,6 @@ type
 // *********************************************************************//
   _GroupDisp = dispinterface
     ['{00000628-0000-0010-8000-00AA006D2EA4}']
-    procedure GhostMethod__Group_0_1; dispid 1610678272;
-    procedure GhostMethod__Group_4_2; dispid 1610678273;
-    procedure GhostMethod__Group_8_3; dispid 1610678274;
-    procedure GhostMethod__Group_12_4; dispid 1610678275;
-    procedure GhostMethod__Group_16_5; dispid 1610678276;
-    procedure GhostMethod__Group_20_6; dispid 1610678277;
-    procedure GhostMethod__Group_24_7; dispid 1610678278;
-    procedure GhostMethod__Group_28_8; dispid 1610678279;
-    procedure GhostMethod__Group_32_9; dispid 1610678280;
-    procedure GhostMethod__Group_36_10; dispid 1610678281;
-    procedure GhostMethod__Group_40_11; dispid 1610678282;
-    procedure GhostMethod__Group_44_12; dispid 1610678283;
     property Properties: Properties readonly dispid 5;
     property ParentCatalog: _Catalog dispid 6;
     property Name: WideString dispid 0;
@@ -1077,19 +1037,6 @@ type
 // *********************************************************************//
   _User = interface(_User25)
     ['{00000627-0000-0010-8000-00AA006D2EA4}']
-    procedure GhostMethod__User_0_1; safecall;
-    procedure GhostMethod__User_4_2; safecall;
-    procedure GhostMethod__User_8_3; safecall;
-    procedure GhostMethod__User_12_4; safecall;
-    procedure GhostMethod__User_16_5; safecall;
-    procedure GhostMethod__User_20_6; safecall;
-    procedure GhostMethod__User_24_7; safecall;
-    procedure GhostMethod__User_28_8; safecall;
-    procedure GhostMethod__User_32_9; safecall;
-    procedure GhostMethod__User_36_10; safecall;
-    procedure GhostMethod__User_40_11; safecall;
-    procedure GhostMethod__User_44_12; safecall;
-    procedure GhostMethod__User_48_13; safecall;
     function Get_Properties: Properties; safecall;
     function Get_ParentCatalog: _Catalog; safecall;
     procedure Set_ParentCatalog(const ppvObject: _Catalog); safecall;
@@ -1105,19 +1052,6 @@ type
 // *********************************************************************//
   _UserDisp = dispinterface
     ['{00000627-0000-0010-8000-00AA006D2EA4}']
-    procedure GhostMethod__User_0_1; dispid 1610678272;
-    procedure GhostMethod__User_4_2; dispid 1610678273;
-    procedure GhostMethod__User_8_3; dispid 1610678274;
-    procedure GhostMethod__User_12_4; dispid 1610678275;
-    procedure GhostMethod__User_16_5; dispid 1610678276;
-    procedure GhostMethod__User_20_6; dispid 1610678277;
-    procedure GhostMethod__User_24_7; dispid 1610678278;
-    procedure GhostMethod__User_28_8; dispid 1610678279;
-    procedure GhostMethod__User_32_9; dispid 1610678280;
-    procedure GhostMethod__User_36_10; dispid 1610678281;
-    procedure GhostMethod__User_40_11; dispid 1610678282;
-    procedure GhostMethod__User_44_12; dispid 1610678283;
-    procedure GhostMethod__User_48_13; dispid 1610678284;
     property Properties: Properties readonly dispid 6;
     property ParentCatalog: _Catalog dispid 7;
     property Name: WideString dispid 0;
@@ -1143,24 +1077,17 @@ type
 
 // *********************************************************************//
 // OLE Server Proxy class declaration
-// Server Object   : TADOXTable
-// Help String     : 
+// Server Object    : TADOXTable
+// Help String      : 
 // Default Interface: _Table
-// Def. Intf. DISP?: No
+// Def. Intf. DISP? : No
 // Event   Interface: 
-// TypeFlags       : (2) CanCreate
+// TypeFlags        : (2) CanCreate
 // *********************************************************************//
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-  TADOXTableProperties= class;
-{$ENDIF}
   TADOXTable = class(TOleServer)
   private
-    FIntf:        _Table;
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-    FProps:       TADOXTableProperties;
-    function      GetServerProperties: TADOXTableProperties;
-{$ENDIF}
-    function      GetDefaultInterface: _Table;
+    FIntf: _Table;
+    function GetDefaultInterface: _Table;
   protected
     procedure InitServerData; override;
     function Get_Columns: Columns;
@@ -1192,44 +1119,7 @@ type
     property Name: WideString read Get_Name write Set_Name;
     property ParentCatalog: _Catalog read Get_ParentCatalog write Set_ParentCatalog;
   published
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-    property Server: TADOXTableProperties read GetServerProperties;
-{$ENDIF}
   end;
-
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-// *********************************************************************//
-// OLE Server Properties Proxy Class
-// Server Object   : TADOXTable
-// (This object is used by the IDE's Property Inspector to allow editing
-//  of the properties of this server)
-// *********************************************************************//
- TADOXTableProperties = class(TPersistent)
-  private
-    FServer:    TADOXTable;
-    function    GetDefaultInterface: _Table;
-    constructor Create(AServer: TADOXTable);
-  protected
-    function Get_Columns: Columns;
-    function Get_Name: WideString;
-    procedure Set_Name(const pVal: WideString);
-    function Get_type_: WideString;
-    function Get_Indexes: Indexes;
-    function Get_Keys: Keys;
-    function Get_Properties: Properties;
-    function Get_DateCreated: OleVariant;
-    function Get_DateModified: OleVariant;
-    function Get_ParentCatalog: _Catalog;
-    procedure Set_ParentCatalog(const ppvObject: _Catalog);
-    procedure _Set_ParentCatalog(const ppvObject: _Catalog);
-  public
-    property DefaultInterface: _Table read GetDefaultInterface;
-  published
-    property Name: WideString read Get_Name write Set_Name;
-    property ParentCatalog: _Catalog read Get_ParentCatalog write Set_ParentCatalog;
-  end;
-{$ENDIF}
-
 
 // *********************************************************************//
 // The Class CoColumn provides a Create and CreateRemote method to          
@@ -1246,24 +1136,17 @@ type
 
 // *********************************************************************//
 // OLE Server Proxy class declaration
-// Server Object   : TADOXColumn
-// Help String     : 
+// Server Object    : TADOXColumn
+// Help String      : 
 // Default Interface: _Column
-// Def. Intf. DISP?: No
+// Def. Intf. DISP? : No
 // Event   Interface: 
-// TypeFlags       : (2) CanCreate
+// TypeFlags        : (2) CanCreate
 // *********************************************************************//
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-  TADOXColumnProperties= class;
-{$ENDIF}
   TADOXColumn = class(TOleServer)
   private
-    FIntf:        _Column;
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-    FProps:       TADOXColumnProperties;
-    function      GetServerProperties: TADOXColumnProperties;
-{$ENDIF}
-    function      GetDefaultInterface: _Column;
+    FIntf: _Column;
+    function GetDefaultInterface: _Column;
   protected
     procedure InitServerData; override;
     function Get_Name: WideString;
@@ -1304,59 +1187,7 @@ type
     property type_: DataTypeEnum read Get_type_ write Set_type_;
     property ParentCatalog: _Catalog read Get_ParentCatalog write Set_ParentCatalog;
   published
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-    property Server: TADOXColumnProperties read GetServerProperties;
-{$ENDIF}
   end;
-
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-// *********************************************************************//
-// OLE Server Properties Proxy Class
-// Server Object   : TADOXColumn
-// (This object is used by the IDE's Property Inspector to allow editing
-//  of the properties of this server)
-// *********************************************************************//
- TADOXColumnProperties = class(TPersistent)
-  private
-    FServer:    TADOXColumn;
-    function    GetDefaultInterface: _Column;
-    constructor Create(AServer: TADOXColumn);
-  protected
-    function Get_Name: WideString;
-    procedure Set_Name(const pVal: WideString);
-    function Get_Attributes: ColumnAttributesEnum;
-    procedure Set_Attributes(pVal: ColumnAttributesEnum);
-    function Get_DefinedSize: Integer;
-    procedure Set_DefinedSize(pVal: Integer);
-    function Get_NumericScale: Byte;
-    procedure Set_NumericScale(pVal: Byte);
-    function Get_Precision: Integer;
-    procedure Set_Precision(pVal: Integer);
-    function Get_RelatedColumn: WideString;
-    procedure Set_RelatedColumn(const pVal: WideString);
-    function Get_SortOrder: SortOrderEnum;
-    procedure Set_SortOrder(pVal: SortOrderEnum);
-    function Get_type_: DataTypeEnum;
-    procedure Set_type_(pVal: DataTypeEnum);
-    function Get_Properties: Properties;
-    function Get_ParentCatalog: _Catalog;
-    procedure Set_ParentCatalog(const ppvObject: _Catalog);
-    procedure _Set_ParentCatalog(const ppvObject: _Catalog);
-  public
-    property DefaultInterface: _Column read GetDefaultInterface;
-  published
-    property Name: WideString read Get_Name write Set_Name;
-    property Attributes: ColumnAttributesEnum read Get_Attributes write Set_Attributes;
-    property DefinedSize: Integer read Get_DefinedSize write Set_DefinedSize;
-    property NumericScale: Byte read Get_NumericScale write Set_NumericScale;
-    property Precision: Integer read Get_Precision write Set_Precision;
-    property RelatedColumn: WideString read Get_RelatedColumn write Set_RelatedColumn;
-    property SortOrder: SortOrderEnum read Get_SortOrder write Set_SortOrder;
-    property type_: DataTypeEnum read Get_type_ write Set_type_;
-    property ParentCatalog: _Catalog read Get_ParentCatalog write Set_ParentCatalog;
-  end;
-{$ENDIF}
-
 
 // *********************************************************************//
 // The Class CoIndex provides a Create and CreateRemote method to          
@@ -1373,24 +1204,17 @@ type
 
 // *********************************************************************//
 // OLE Server Proxy class declaration
-// Server Object   : TADOXIndex
-// Help String     : 
+// Server Object    : TADOXIndex
+// Help String      : 
 // Default Interface: _Index
-// Def. Intf. DISP?: No
+// Def. Intf. DISP? : No
 // Event   Interface: 
-// TypeFlags       : (2) CanCreate
+// TypeFlags        : (2) CanCreate
 // *********************************************************************//
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-  TADOXIndexProperties= class;
-{$ENDIF}
   TADOXIndex = class(TOleServer)
   private
-    FIntf:        _Index;
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-    FProps:       TADOXIndexProperties;
-    function      GetServerProperties: TADOXIndexProperties;
-{$ENDIF}
-    function      GetDefaultInterface: _Index;
+    FIntf: _Index;
+    function GetDefaultInterface: _Index;
   protected
     procedure InitServerData; override;
     function Get_Name: WideString;
@@ -1420,47 +1244,7 @@ type
     property PrimaryKey: WordBool read Get_PrimaryKey write Set_PrimaryKey;
     property Unique: WordBool read Get_Unique write Set_Unique;
   published
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-    property Server: TADOXIndexProperties read GetServerProperties;
-{$ENDIF}
   end;
-
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-// *********************************************************************//
-// OLE Server Properties Proxy Class
-// Server Object   : TADOXIndex
-// (This object is used by the IDE's Property Inspector to allow editing
-//  of the properties of this server)
-// *********************************************************************//
- TADOXIndexProperties = class(TPersistent)
-  private
-    FServer:    TADOXIndex;
-    function    GetDefaultInterface: _Index;
-    constructor Create(AServer: TADOXIndex);
-  protected
-    function Get_Name: WideString;
-    procedure Set_Name(const pVal: WideString);
-    function Get_Clustered: WordBool;
-    procedure Set_Clustered(pVal: WordBool);
-    function Get_IndexNulls: AllowNullsEnum;
-    procedure Set_IndexNulls(pVal: AllowNullsEnum);
-    function Get_PrimaryKey: WordBool;
-    procedure Set_PrimaryKey(pVal: WordBool);
-    function Get_Unique: WordBool;
-    procedure Set_Unique(pVal: WordBool);
-    function Get_Columns: Columns;
-    function Get_Properties: Properties;
-  public
-    property DefaultInterface: _Index read GetDefaultInterface;
-  published
-    property Name: WideString read Get_Name write Set_Name;
-    property Clustered: WordBool read Get_Clustered write Set_Clustered;
-    property IndexNulls: AllowNullsEnum read Get_IndexNulls write Set_IndexNulls;
-    property PrimaryKey: WordBool read Get_PrimaryKey write Set_PrimaryKey;
-    property Unique: WordBool read Get_Unique write Set_Unique;
-  end;
-{$ENDIF}
-
 
 // *********************************************************************//
 // The Class CoKey provides a Create and CreateRemote method to          
@@ -1477,24 +1261,17 @@ type
 
 // *********************************************************************//
 // OLE Server Proxy class declaration
-// Server Object   : TADOXKey
-// Help String     : 
+// Server Object    : TADOXKey
+// Help String      : 
 // Default Interface: _Key
-// Def. Intf. DISP?: No
+// Def. Intf. DISP? : No
 // Event   Interface: 
-// TypeFlags       : (2) CanCreate
+// TypeFlags        : (2) CanCreate
 // *********************************************************************//
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-  TADOXKeyProperties= class;
-{$ENDIF}
   TADOXKey = class(TOleServer)
   private
-    FIntf:        _Key;
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-    FProps:       TADOXKeyProperties;
-    function      GetServerProperties: TADOXKeyProperties;
-{$ENDIF}
-    function      GetDefaultInterface: _Key;
+    FIntf: _Key;
+    function GetDefaultInterface: _Key;
   protected
     procedure InitServerData; override;
     function Get_Name: WideString;
@@ -1522,46 +1299,7 @@ type
     property RelatedTable: WideString read Get_RelatedTable write Set_RelatedTable;
     property UpdateRule: RuleEnum read Get_UpdateRule write Set_UpdateRule;
   published
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-    property Server: TADOXKeyProperties read GetServerProperties;
-{$ENDIF}
   end;
-
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-// *********************************************************************//
-// OLE Server Properties Proxy Class
-// Server Object   : TADOXKey
-// (This object is used by the IDE's Property Inspector to allow editing
-//  of the properties of this server)
-// *********************************************************************//
- TADOXKeyProperties = class(TPersistent)
-  private
-    FServer:    TADOXKey;
-    function    GetDefaultInterface: _Key;
-    constructor Create(AServer: TADOXKey);
-  protected
-    function Get_Name: WideString;
-    procedure Set_Name(const pVal: WideString);
-    function Get_DeleteRule: RuleEnum;
-    procedure Set_DeleteRule(pVal: RuleEnum);
-    function Get_type_: KeyTypeEnum;
-    procedure Set_type_(pVal: KeyTypeEnum);
-    function Get_RelatedTable: WideString;
-    procedure Set_RelatedTable(const pVal: WideString);
-    function Get_UpdateRule: RuleEnum;
-    procedure Set_UpdateRule(pVal: RuleEnum);
-    function Get_Columns: Columns;
-  public
-    property DefaultInterface: _Key read GetDefaultInterface;
-  published
-    property Name: WideString read Get_Name write Set_Name;
-    property DeleteRule: RuleEnum read Get_DeleteRule write Set_DeleteRule;
-    property type_: KeyTypeEnum read Get_type_ write Set_type_;
-    property RelatedTable: WideString read Get_RelatedTable write Set_RelatedTable;
-    property UpdateRule: RuleEnum read Get_UpdateRule write Set_UpdateRule;
-  end;
-{$ENDIF}
-
 
 // *********************************************************************//
 // The Class CoGroup provides a Create and CreateRemote method to          
@@ -1578,24 +1316,17 @@ type
 
 // *********************************************************************//
 // OLE Server Proxy class declaration
-// Server Object   : TADOXGroup
-// Help String     : 
+// Server Object    : TADOXGroup
+// Help String      : 
 // Default Interface: _Group
-// Def. Intf. DISP?: No
+// Def. Intf. DISP? : No
 // Event   Interface: 
-// TypeFlags       : (2) CanCreate
+// TypeFlags        : (2) CanCreate
 // *********************************************************************//
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-  TADOXGroupProperties= class;
-{$ENDIF}
   TADOXGroup = class(TOleServer)
   private
-    FIntf:        _Group;
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-    FProps:       TADOXGroupProperties;
-    function      GetServerProperties: TADOXGroupProperties;
-{$ENDIF}
-    function      GetDefaultInterface: _Group;
+    FIntf: _Group;
+    function GetDefaultInterface: _Group;
   protected
     procedure InitServerData; override;
     function Get_Properties: Properties;
@@ -1612,35 +1343,7 @@ type
     property Properties: Properties read Get_Properties;
     property ParentCatalog: _Catalog read Get_ParentCatalog write Set_ParentCatalog;
   published
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-    property Server: TADOXGroupProperties read GetServerProperties;
-{$ENDIF}
   end;
-
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-// *********************************************************************//
-// OLE Server Properties Proxy Class
-// Server Object   : TADOXGroup
-// (This object is used by the IDE's Property Inspector to allow editing
-//  of the properties of this server)
-// *********************************************************************//
- TADOXGroupProperties = class(TPersistent)
-  private
-    FServer:    TADOXGroup;
-    function    GetDefaultInterface: _Group;
-    constructor Create(AServer: TADOXGroup);
-  protected
-    function Get_Properties: Properties;
-    function Get_ParentCatalog: _Catalog;
-    procedure Set_ParentCatalog(const ppvObject: _Catalog);
-    procedure _Set_ParentCatalog(const ppvObject: _Catalog);
-  public
-    property DefaultInterface: _Group read GetDefaultInterface;
-  published
-    property ParentCatalog: _Catalog read Get_ParentCatalog write Set_ParentCatalog;
-  end;
-{$ENDIF}
-
 
 // *********************************************************************//
 // The Class CoUser provides a Create and CreateRemote method to          
@@ -1657,24 +1360,17 @@ type
 
 // *********************************************************************//
 // OLE Server Proxy class declaration
-// Server Object   : TADOXUser
-// Help String     : 
+// Server Object    : TADOXUser
+// Help String      : 
 // Default Interface: _User
-// Def. Intf. DISP?: No
+// Def. Intf. DISP? : No
 // Event   Interface: 
-// TypeFlags       : (2) CanCreate
+// TypeFlags        : (2) CanCreate
 // *********************************************************************//
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-  TADOXUserProperties= class;
-{$ENDIF}
   TADOXUser = class(TOleServer)
   private
-    FIntf:        _User;
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-    FProps:       TADOXUserProperties;
-    function      GetServerProperties: TADOXUserProperties;
-{$ENDIF}
-    function      GetDefaultInterface: _User;
+    FIntf: _User;
+    function GetDefaultInterface: _User;
   protected
     procedure InitServerData; override;
     function Get_Properties: Properties;
@@ -1691,35 +1387,7 @@ type
     property Properties: Properties read Get_Properties;
     property ParentCatalog: _Catalog read Get_ParentCatalog write Set_ParentCatalog;
   published
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-    property Server: TADOXUserProperties read GetServerProperties;
-{$ENDIF}
   end;
-
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-// *********************************************************************//
-// OLE Server Properties Proxy Class
-// Server Object   : TADOXUser
-// (This object is used by the IDE's Property Inspector to allow editing
-//  of the properties of this server)
-// *********************************************************************//
- TADOXUserProperties = class(TPersistent)
-  private
-    FServer:    TADOXUser;
-    function    GetDefaultInterface: _User;
-    constructor Create(AServer: TADOXUser);
-  protected
-    function Get_Properties: Properties;
-    function Get_ParentCatalog: _Catalog;
-    procedure Set_ParentCatalog(const ppvObject: _Catalog);
-    procedure _Set_ParentCatalog(const ppvObject: _Catalog);
-  public
-    property DefaultInterface: _User read GetDefaultInterface;
-  published
-    property ParentCatalog: _Catalog read Get_ParentCatalog write Set_ParentCatalog;
-  end;
-{$ENDIF}
-
 
 // *********************************************************************//
 // The Class CoCatalog provides a Create and CreateRemote method to          
@@ -1736,24 +1404,17 @@ type
 
 // *********************************************************************//
 // OLE Server Proxy class declaration
-// Server Object   : TADOXCatalog
-// Help String     : 
+// Server Object    : TADOXCatalog
+// Help String      : 
 // Default Interface: _Catalog
-// Def. Intf. DISP?: No
+// Def. Intf. DISP? : No
 // Event   Interface: 
-// TypeFlags       : (2) CanCreate
+// TypeFlags        : (2) CanCreate
 // *********************************************************************//
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-  TADOXCatalogProperties= class;
-{$ENDIF}
   TADOXCatalog = class(TOleServer)
   private
-    FIntf:        _Catalog;
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-    FProps:       TADOXCatalogProperties;
-    function      GetServerProperties: TADOXCatalogProperties;
-{$ENDIF}
-    function      GetDefaultInterface: _Catalog;
+    FIntf: _Catalog;
+    function GetDefaultInterface: _Catalog;
   protected
     procedure InitServerData; override;
     function Get_Tables: Tables;
@@ -1785,38 +1446,7 @@ type
     property Groups: Groups read Get_Groups;
     property Users: Users read Get_Users;
   published
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-    property Server: TADOXCatalogProperties read GetServerProperties;
-{$ENDIF}
   end;
-
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-// *********************************************************************//
-// OLE Server Properties Proxy Class
-// Server Object   : TADOXCatalog
-// (This object is used by the IDE's Property Inspector to allow editing
-//  of the properties of this server)
-// *********************************************************************//
- TADOXCatalogProperties = class(TPersistent)
-  private
-    FServer:    TADOXCatalog;
-    function    GetDefaultInterface: _Catalog;
-    constructor Create(AServer: TADOXCatalog);
-  protected
-    function Get_Tables: Tables;
-    function Get_ActiveConnection: OleVariant;
-    procedure Set_ActiveConnection(pVal: OleVariant);
-    procedure _Set_ActiveConnection(const pVal: IDispatch);
-    function Get_Procedures: Procedures;
-    function Get_Views: Views;
-    function Get_Groups: Groups;
-    function Get_Users: Users;
-  public
-    property DefaultInterface: _Catalog read GetDefaultInterface;
-  published
-  end;
-{$ENDIF}
-
 
 procedure Register;
 
@@ -1880,202 +1510,79 @@ function TADOXTable.GetDefaultInterface: _Table;
 begin
   if FIntf = nil then
     Connect;
-  Assert(FIntf <> nil, 'DefaultInterface is NULL. Component is not connected to Server. You must call ''Connect'' or ''ConnectTo'' before this operation');
+  Assert(FIntf <> nil, 'DefaultInterface is NULL. Component is not connected to Server. You must call "Connect" or "ConnectTo" before this operation');
   Result := FIntf;
 end;
 
 constructor TADOXTable.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-  FProps := TADOXTableProperties.Create(Self);
-{$ENDIF}
 end;
 
 destructor TADOXTable.Destroy;
 begin
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-  FProps.Free;
-{$ENDIF}
   inherited Destroy;
 end;
 
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-function TADOXTable.GetServerProperties: TADOXTableProperties;
-begin
-  Result := FProps;
-end;
-{$ENDIF}
-
 function TADOXTable.Get_Columns: Columns;
 begin
-    Result := DefaultInterface.Columns;
+  Result := DefaultInterface.Columns;
 end;
 
 function TADOXTable.Get_Name: WideString;
 begin
-    Result := DefaultInterface.Name;
+  Result := DefaultInterface.Name;
 end;
 
 procedure TADOXTable.Set_Name(const pVal: WideString);
-  { Warning: The property Name has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
 begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.Name := pVal;
+  DefaultInterface.Name := pVal;
 end;
 
 function TADOXTable.Get_type_: WideString;
 begin
-    Result := DefaultInterface.type_;
+  Result := DefaultInterface.type_;
 end;
 
 function TADOXTable.Get_Indexes: Indexes;
 begin
-    Result := DefaultInterface.Indexes;
+  Result := DefaultInterface.Indexes;
 end;
 
 function TADOXTable.Get_Keys: Keys;
 begin
-    Result := DefaultInterface.Keys;
+  Result := DefaultInterface.Keys;
 end;
 
 function TADOXTable.Get_Properties: Properties;
 begin
-    Result := DefaultInterface.Properties;
+  Result := DefaultInterface.Properties;
 end;
 
 function TADOXTable.Get_DateCreated: OleVariant;
-var
-  InterfaceVariant : OleVariant;
 begin
-  InterfaceVariant := DefaultInterface;
-  Result := InterfaceVariant.DateCreated;
+  Result := DefaultInterface.DateCreated;
 end;
 
 function TADOXTable.Get_DateModified: OleVariant;
-var
-  InterfaceVariant : OleVariant;
 begin
-  InterfaceVariant := DefaultInterface;
-  Result := InterfaceVariant.DateModified;
+  Result := DefaultInterface.DateModified;
 end;
 
 function TADOXTable.Get_ParentCatalog: _Catalog;
 begin
-    Result := DefaultInterface.ParentCatalog;
+  Result := DefaultInterface.ParentCatalog;
 end;
 
 procedure TADOXTable.Set_ParentCatalog(const ppvObject: _Catalog);
 begin
-  DefaultInterface.Set_ParentCatalog(ppvObject);
+  DefaultInterface.ParentCatalog := ppvObject;
 end;
 
 procedure TADOXTable._Set_ParentCatalog(const ppvObject: _Catalog);
-  { Warning: The property ParentCatalog has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
 begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.ParentCatalog := ppvObject;
+  DefaultInterface.ParentCatalog := ppvObject;
 end;
-
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-constructor TADOXTableProperties.Create(AServer: TADOXTable);
-begin
-  inherited Create;
-  FServer := AServer;
-end;
-
-function TADOXTableProperties.GetDefaultInterface: _Table;
-begin
-  Result := FServer.DefaultInterface;
-end;
-
-function TADOXTableProperties.Get_Columns: Columns;
-begin
-    Result := DefaultInterface.Columns;
-end;
-
-function TADOXTableProperties.Get_Name: WideString;
-begin
-    Result := DefaultInterface.Name;
-end;
-
-procedure TADOXTableProperties.Set_Name(const pVal: WideString);
-  { Warning: The property Name has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
-begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.Name := pVal;
-end;
-
-function TADOXTableProperties.Get_type_: WideString;
-begin
-    Result := DefaultInterface.type_;
-end;
-
-function TADOXTableProperties.Get_Indexes: Indexes;
-begin
-    Result := DefaultInterface.Indexes;
-end;
-
-function TADOXTableProperties.Get_Keys: Keys;
-begin
-    Result := DefaultInterface.Keys;
-end;
-
-function TADOXTableProperties.Get_Properties: Properties;
-begin
-    Result := DefaultInterface.Properties;
-end;
-
-function TADOXTableProperties.Get_DateCreated: OleVariant;
-var
-  InterfaceVariant : OleVariant;
-begin
-  InterfaceVariant := DefaultInterface;
-  Result := InterfaceVariant.DateCreated;
-end;
-
-function TADOXTableProperties.Get_DateModified: OleVariant;
-var
-  InterfaceVariant : OleVariant;
-begin
-  InterfaceVariant := DefaultInterface;
-  Result := InterfaceVariant.DateModified;
-end;
-
-function TADOXTableProperties.Get_ParentCatalog: _Catalog;
-begin
-    Result := DefaultInterface.ParentCatalog;
-end;
-
-procedure TADOXTableProperties.Set_ParentCatalog(const ppvObject: _Catalog);
-begin
-  DefaultInterface.Set_ParentCatalog(ppvObject);
-end;
-
-procedure TADOXTableProperties._Set_ParentCatalog(const ppvObject: _Catalog);
-  { Warning: The property ParentCatalog has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
-begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.ParentCatalog := ppvObject;
-end;
-
-{$ENDIF}
 
 class function CoColumn.Create: _Column;
 begin
@@ -2128,282 +1635,119 @@ function TADOXColumn.GetDefaultInterface: _Column;
 begin
   if FIntf = nil then
     Connect;
-  Assert(FIntf <> nil, 'DefaultInterface is NULL. Component is not connected to Server. You must call ''Connect'' or ''ConnectTo'' before this operation');
+  Assert(FIntf <> nil, 'DefaultInterface is NULL. Component is not connected to Server. You must call "Connect" or "ConnectTo" before this operation');
   Result := FIntf;
 end;
 
 constructor TADOXColumn.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-  FProps := TADOXColumnProperties.Create(Self);
-{$ENDIF}
 end;
 
 destructor TADOXColumn.Destroy;
 begin
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-  FProps.Free;
-{$ENDIF}
   inherited Destroy;
 end;
 
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-function TADOXColumn.GetServerProperties: TADOXColumnProperties;
-begin
-  Result := FProps;
-end;
-{$ENDIF}
-
 function TADOXColumn.Get_Name: WideString;
 begin
-    Result := DefaultInterface.Name;
+  Result := DefaultInterface.Name;
 end;
 
 procedure TADOXColumn.Set_Name(const pVal: WideString);
-  { Warning: The property Name has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
 begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.Name := pVal;
+  DefaultInterface.Name := pVal;
 end;
 
 function TADOXColumn.Get_Attributes: ColumnAttributesEnum;
 begin
-    Result := DefaultInterface.Attributes;
+  Result := DefaultInterface.Attributes;
 end;
 
 procedure TADOXColumn.Set_Attributes(pVal: ColumnAttributesEnum);
 begin
-  DefaultInterface.Set_Attributes(pVal);
+  DefaultInterface.Attributes := pVal;
 end;
 
 function TADOXColumn.Get_DefinedSize: Integer;
 begin
-    Result := DefaultInterface.DefinedSize;
+  Result := DefaultInterface.DefinedSize;
 end;
 
 procedure TADOXColumn.Set_DefinedSize(pVal: Integer);
 begin
-  DefaultInterface.Set_DefinedSize(pVal);
+  DefaultInterface.DefinedSize := pVal;
 end;
 
 function TADOXColumn.Get_NumericScale: Byte;
 begin
-    Result := DefaultInterface.NumericScale;
+  Result := DefaultInterface.NumericScale;
 end;
 
 procedure TADOXColumn.Set_NumericScale(pVal: Byte);
 begin
-  DefaultInterface.Set_NumericScale(pVal);
+  DefaultInterface.NumericScale := pVal;
 end;
 
 function TADOXColumn.Get_Precision: Integer;
 begin
-    Result := DefaultInterface.Precision;
+  Result := DefaultInterface.Precision;
 end;
 
 procedure TADOXColumn.Set_Precision(pVal: Integer);
 begin
-  DefaultInterface.Set_Precision(pVal);
+  DefaultInterface.Precision := pVal;
 end;
 
 function TADOXColumn.Get_RelatedColumn: WideString;
 begin
-    Result := DefaultInterface.RelatedColumn;
+  Result := DefaultInterface.RelatedColumn;
 end;
 
 procedure TADOXColumn.Set_RelatedColumn(const pVal: WideString);
-  { Warning: The property RelatedColumn has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
 begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.RelatedColumn := pVal;
+  DefaultInterface.RelatedColumn := pVal;
 end;
 
 function TADOXColumn.Get_SortOrder: SortOrderEnum;
 begin
-    Result := DefaultInterface.SortOrder;
+  Result := DefaultInterface.SortOrder;
 end;
 
 procedure TADOXColumn.Set_SortOrder(pVal: SortOrderEnum);
 begin
-  DefaultInterface.Set_SortOrder(pVal);
+  DefaultInterface.SortOrder := pVal;
 end;
 
 function TADOXColumn.Get_type_: DataTypeEnum;
 begin
-    Result := DefaultInterface.type_;
+  Result := DefaultInterface.type_;
 end;
 
 procedure TADOXColumn.Set_type_(pVal: DataTypeEnum);
 begin
-  DefaultInterface.Set_type_(pVal);
+  DefaultInterface.type_ := pVal;
 end;
 
 function TADOXColumn.Get_Properties: Properties;
 begin
-    Result := DefaultInterface.Properties;
+  Result := DefaultInterface.Properties;
 end;
 
 function TADOXColumn.Get_ParentCatalog: _Catalog;
 begin
-    Result := DefaultInterface.ParentCatalog;
+  Result := DefaultInterface.ParentCatalog;
 end;
 
 procedure TADOXColumn.Set_ParentCatalog(const ppvObject: _Catalog);
 begin
-  DefaultInterface.Set_ParentCatalog(ppvObject);
+  DefaultInterface.ParentCatalog := ppvObject;
 end;
 
 procedure TADOXColumn._Set_ParentCatalog(const ppvObject: _Catalog);
-  { Warning: The property ParentCatalog has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
 begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.ParentCatalog := ppvObject;
+  DefaultInterface.ParentCatalog := ppvObject;
 end;
-
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-constructor TADOXColumnProperties.Create(AServer: TADOXColumn);
-begin
-  inherited Create;
-  FServer := AServer;
-end;
-
-function TADOXColumnProperties.GetDefaultInterface: _Column;
-begin
-  Result := FServer.DefaultInterface;
-end;
-
-function TADOXColumnProperties.Get_Name: WideString;
-begin
-    Result := DefaultInterface.Name;
-end;
-
-procedure TADOXColumnProperties.Set_Name(const pVal: WideString);
-  { Warning: The property Name has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
-begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.Name := pVal;
-end;
-
-function TADOXColumnProperties.Get_Attributes: ColumnAttributesEnum;
-begin
-    Result := DefaultInterface.Attributes;
-end;
-
-procedure TADOXColumnProperties.Set_Attributes(pVal: ColumnAttributesEnum);
-begin
-  DefaultInterface.Set_Attributes(pVal);
-end;
-
-function TADOXColumnProperties.Get_DefinedSize: Integer;
-begin
-    Result := DefaultInterface.DefinedSize;
-end;
-
-procedure TADOXColumnProperties.Set_DefinedSize(pVal: Integer);
-begin
-  DefaultInterface.Set_DefinedSize(pVal);
-end;
-
-function TADOXColumnProperties.Get_NumericScale: Byte;
-begin
-    Result := DefaultInterface.NumericScale;
-end;
-
-procedure TADOXColumnProperties.Set_NumericScale(pVal: Byte);
-begin
-  DefaultInterface.Set_NumericScale(pVal);
-end;
-
-function TADOXColumnProperties.Get_Precision: Integer;
-begin
-    Result := DefaultInterface.Precision;
-end;
-
-procedure TADOXColumnProperties.Set_Precision(pVal: Integer);
-begin
-  DefaultInterface.Set_Precision(pVal);
-end;
-
-function TADOXColumnProperties.Get_RelatedColumn: WideString;
-begin
-    Result := DefaultInterface.RelatedColumn;
-end;
-
-procedure TADOXColumnProperties.Set_RelatedColumn(const pVal: WideString);
-  { Warning: The property RelatedColumn has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
-begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.RelatedColumn := pVal;
-end;
-
-function TADOXColumnProperties.Get_SortOrder: SortOrderEnum;
-begin
-    Result := DefaultInterface.SortOrder;
-end;
-
-procedure TADOXColumnProperties.Set_SortOrder(pVal: SortOrderEnum);
-begin
-  DefaultInterface.Set_SortOrder(pVal);
-end;
-
-function TADOXColumnProperties.Get_type_: DataTypeEnum;
-begin
-    Result := DefaultInterface.type_;
-end;
-
-procedure TADOXColumnProperties.Set_type_(pVal: DataTypeEnum);
-begin
-  DefaultInterface.Set_type_(pVal);
-end;
-
-function TADOXColumnProperties.Get_Properties: Properties;
-begin
-    Result := DefaultInterface.Properties;
-end;
-
-function TADOXColumnProperties.Get_ParentCatalog: _Catalog;
-begin
-    Result := DefaultInterface.ParentCatalog;
-end;
-
-procedure TADOXColumnProperties.Set_ParentCatalog(const ppvObject: _Catalog);
-begin
-  DefaultInterface.Set_ParentCatalog(ppvObject);
-end;
-
-procedure TADOXColumnProperties._Set_ParentCatalog(const ppvObject: _Catalog);
-  { Warning: The property ParentCatalog has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
-begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.ParentCatalog := ppvObject;
-end;
-
-{$ENDIF}
 
 class function CoIndex.Create: _Index;
 begin
@@ -2456,178 +1800,79 @@ function TADOXIndex.GetDefaultInterface: _Index;
 begin
   if FIntf = nil then
     Connect;
-  Assert(FIntf <> nil, 'DefaultInterface is NULL. Component is not connected to Server. You must call ''Connect'' or ''ConnectTo'' before this operation');
+  Assert(FIntf <> nil, 'DefaultInterface is NULL. Component is not connected to Server. You must call "Connect" or "ConnectTo" before this operation');
   Result := FIntf;
 end;
 
 constructor TADOXIndex.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-  FProps := TADOXIndexProperties.Create(Self);
-{$ENDIF}
 end;
 
 destructor TADOXIndex.Destroy;
 begin
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-  FProps.Free;
-{$ENDIF}
   inherited Destroy;
 end;
 
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-function TADOXIndex.GetServerProperties: TADOXIndexProperties;
-begin
-  Result := FProps;
-end;
-{$ENDIF}
-
 function TADOXIndex.Get_Name: WideString;
 begin
-    Result := DefaultInterface.Name;
+  Result := DefaultInterface.Name;
 end;
 
 procedure TADOXIndex.Set_Name(const pVal: WideString);
-  { Warning: The property Name has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
 begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.Name := pVal;
+  DefaultInterface.Name := pVal;
 end;
 
 function TADOXIndex.Get_Clustered: WordBool;
 begin
-    Result := DefaultInterface.Clustered;
+  Result := DefaultInterface.Clustered;
 end;
 
 procedure TADOXIndex.Set_Clustered(pVal: WordBool);
 begin
-  DefaultInterface.Set_Clustered(pVal);
+  DefaultInterface.Clustered := pVal;
 end;
 
 function TADOXIndex.Get_IndexNulls: AllowNullsEnum;
 begin
-    Result := DefaultInterface.IndexNulls;
+  Result := DefaultInterface.IndexNulls;
 end;
 
 procedure TADOXIndex.Set_IndexNulls(pVal: AllowNullsEnum);
 begin
-  DefaultInterface.Set_IndexNulls(pVal);
+  DefaultInterface.IndexNulls := pVal;
 end;
 
 function TADOXIndex.Get_PrimaryKey: WordBool;
 begin
-    Result := DefaultInterface.PrimaryKey;
+  Result := DefaultInterface.PrimaryKey;
 end;
 
 procedure TADOXIndex.Set_PrimaryKey(pVal: WordBool);
 begin
-  DefaultInterface.Set_PrimaryKey(pVal);
+  DefaultInterface.PrimaryKey := pVal;
 end;
 
 function TADOXIndex.Get_Unique: WordBool;
 begin
-    Result := DefaultInterface.Unique;
+  Result := DefaultInterface.Unique;
 end;
 
 procedure TADOXIndex.Set_Unique(pVal: WordBool);
 begin
-  DefaultInterface.Set_Unique(pVal);
+  DefaultInterface.Unique := pVal;
 end;
 
 function TADOXIndex.Get_Columns: Columns;
 begin
-    Result := DefaultInterface.Columns;
+  Result := DefaultInterface.Columns;
 end;
 
 function TADOXIndex.Get_Properties: Properties;
 begin
-    Result := DefaultInterface.Properties;
+  Result := DefaultInterface.Properties;
 end;
-
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-constructor TADOXIndexProperties.Create(AServer: TADOXIndex);
-begin
-  inherited Create;
-  FServer := AServer;
-end;
-
-function TADOXIndexProperties.GetDefaultInterface: _Index;
-begin
-  Result := FServer.DefaultInterface;
-end;
-
-function TADOXIndexProperties.Get_Name: WideString;
-begin
-    Result := DefaultInterface.Name;
-end;
-
-procedure TADOXIndexProperties.Set_Name(const pVal: WideString);
-  { Warning: The property Name has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
-begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.Name := pVal;
-end;
-
-function TADOXIndexProperties.Get_Clustered: WordBool;
-begin
-    Result := DefaultInterface.Clustered;
-end;
-
-procedure TADOXIndexProperties.Set_Clustered(pVal: WordBool);
-begin
-  DefaultInterface.Set_Clustered(pVal);
-end;
-
-function TADOXIndexProperties.Get_IndexNulls: AllowNullsEnum;
-begin
-    Result := DefaultInterface.IndexNulls;
-end;
-
-procedure TADOXIndexProperties.Set_IndexNulls(pVal: AllowNullsEnum);
-begin
-  DefaultInterface.Set_IndexNulls(pVal);
-end;
-
-function TADOXIndexProperties.Get_PrimaryKey: WordBool;
-begin
-    Result := DefaultInterface.PrimaryKey;
-end;
-
-procedure TADOXIndexProperties.Set_PrimaryKey(pVal: WordBool);
-begin
-  DefaultInterface.Set_PrimaryKey(pVal);
-end;
-
-function TADOXIndexProperties.Get_Unique: WordBool;
-begin
-    Result := DefaultInterface.Unique;
-end;
-
-procedure TADOXIndexProperties.Set_Unique(pVal: WordBool);
-begin
-  DefaultInterface.Set_Unique(pVal);
-end;
-
-function TADOXIndexProperties.Get_Columns: Columns;
-begin
-    Result := DefaultInterface.Columns;
-end;
-
-function TADOXIndexProperties.Get_Properties: Properties;
-begin
-    Result := DefaultInterface.Properties;
-end;
-
-{$ENDIF}
 
 class function CoKey.Create: _Key;
 begin
@@ -2680,180 +1925,74 @@ function TADOXKey.GetDefaultInterface: _Key;
 begin
   if FIntf = nil then
     Connect;
-  Assert(FIntf <> nil, 'DefaultInterface is NULL. Component is not connected to Server. You must call ''Connect'' or ''ConnectTo'' before this operation');
+  Assert(FIntf <> nil, 'DefaultInterface is NULL. Component is not connected to Server. You must call "Connect" or "ConnectTo" before this operation');
   Result := FIntf;
 end;
 
 constructor TADOXKey.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-  FProps := TADOXKeyProperties.Create(Self);
-{$ENDIF}
 end;
 
 destructor TADOXKey.Destroy;
 begin
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-  FProps.Free;
-{$ENDIF}
   inherited Destroy;
 end;
 
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-function TADOXKey.GetServerProperties: TADOXKeyProperties;
-begin
-  Result := FProps;
-end;
-{$ENDIF}
-
 function TADOXKey.Get_Name: WideString;
 begin
-    Result := DefaultInterface.Name;
+  Result := DefaultInterface.Name;
 end;
 
 procedure TADOXKey.Set_Name(const pVal: WideString);
-  { Warning: The property Name has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
 begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.Name := pVal;
+  DefaultInterface.Name := pVal;
 end;
 
 function TADOXKey.Get_DeleteRule: RuleEnum;
 begin
-    Result := DefaultInterface.DeleteRule;
+  Result := DefaultInterface.DeleteRule;
 end;
 
 procedure TADOXKey.Set_DeleteRule(pVal: RuleEnum);
 begin
-  DefaultInterface.Set_DeleteRule(pVal);
+  DefaultInterface.DeleteRule := pVal;
 end;
 
 function TADOXKey.Get_type_: KeyTypeEnum;
 begin
-    Result := DefaultInterface.type_;
+  Result := DefaultInterface.type_;
 end;
 
 procedure TADOXKey.Set_type_(pVal: KeyTypeEnum);
 begin
-  DefaultInterface.Set_type_(pVal);
+  DefaultInterface.type_ := pVal;
 end;
 
 function TADOXKey.Get_RelatedTable: WideString;
 begin
-    Result := DefaultInterface.RelatedTable;
+  Result := DefaultInterface.RelatedTable;
 end;
 
 procedure TADOXKey.Set_RelatedTable(const pVal: WideString);
-  { Warning: The property RelatedTable has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
 begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.RelatedTable := pVal;
+  DefaultInterface.RelatedTable := pVal;
 end;
 
 function TADOXKey.Get_UpdateRule: RuleEnum;
 begin
-    Result := DefaultInterface.UpdateRule;
+  Result := DefaultInterface.UpdateRule;
 end;
 
 procedure TADOXKey.Set_UpdateRule(pVal: RuleEnum);
 begin
-  DefaultInterface.Set_UpdateRule(pVal);
+  DefaultInterface.UpdateRule := pVal;
 end;
 
 function TADOXKey.Get_Columns: Columns;
 begin
-    Result := DefaultInterface.Columns;
+  Result := DefaultInterface.Columns;
 end;
-
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-constructor TADOXKeyProperties.Create(AServer: TADOXKey);
-begin
-  inherited Create;
-  FServer := AServer;
-end;
-
-function TADOXKeyProperties.GetDefaultInterface: _Key;
-begin
-  Result := FServer.DefaultInterface;
-end;
-
-function TADOXKeyProperties.Get_Name: WideString;
-begin
-    Result := DefaultInterface.Name;
-end;
-
-procedure TADOXKeyProperties.Set_Name(const pVal: WideString);
-  { Warning: The property Name has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
-begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.Name := pVal;
-end;
-
-function TADOXKeyProperties.Get_DeleteRule: RuleEnum;
-begin
-    Result := DefaultInterface.DeleteRule;
-end;
-
-procedure TADOXKeyProperties.Set_DeleteRule(pVal: RuleEnum);
-begin
-  DefaultInterface.Set_DeleteRule(pVal);
-end;
-
-function TADOXKeyProperties.Get_type_: KeyTypeEnum;
-begin
-    Result := DefaultInterface.type_;
-end;
-
-procedure TADOXKeyProperties.Set_type_(pVal: KeyTypeEnum);
-begin
-  DefaultInterface.Set_type_(pVal);
-end;
-
-function TADOXKeyProperties.Get_RelatedTable: WideString;
-begin
-    Result := DefaultInterface.RelatedTable;
-end;
-
-procedure TADOXKeyProperties.Set_RelatedTable(const pVal: WideString);
-  { Warning: The property RelatedTable has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
-begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.RelatedTable := pVal;
-end;
-
-function TADOXKeyProperties.Get_UpdateRule: RuleEnum;
-begin
-    Result := DefaultInterface.UpdateRule;
-end;
-
-procedure TADOXKeyProperties.Set_UpdateRule(pVal: RuleEnum);
-begin
-  DefaultInterface.Set_UpdateRule(pVal);
-end;
-
-function TADOXKeyProperties.Get_Columns: Columns;
-begin
-    Result := DefaultInterface.Columns;
-end;
-
-{$ENDIF}
 
 class function CoGroup.Create: _Group;
 begin
@@ -2906,98 +2045,39 @@ function TADOXGroup.GetDefaultInterface: _Group;
 begin
   if FIntf = nil then
     Connect;
-  Assert(FIntf <> nil, 'DefaultInterface is NULL. Component is not connected to Server. You must call ''Connect'' or ''ConnectTo'' before this operation');
+  Assert(FIntf <> nil, 'DefaultInterface is NULL. Component is not connected to Server. You must call "Connect" or "ConnectTo" before this operation');
   Result := FIntf;
 end;
 
 constructor TADOXGroup.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-  FProps := TADOXGroupProperties.Create(Self);
-{$ENDIF}
 end;
 
 destructor TADOXGroup.Destroy;
 begin
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-  FProps.Free;
-{$ENDIF}
   inherited Destroy;
 end;
 
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-function TADOXGroup.GetServerProperties: TADOXGroupProperties;
-begin
-  Result := FProps;
-end;
-{$ENDIF}
-
 function TADOXGroup.Get_Properties: Properties;
 begin
-    Result := DefaultInterface.Properties;
+  Result := DefaultInterface.Properties;
 end;
 
 function TADOXGroup.Get_ParentCatalog: _Catalog;
 begin
-    Result := DefaultInterface.ParentCatalog;
+  Result := DefaultInterface.ParentCatalog;
 end;
 
 procedure TADOXGroup.Set_ParentCatalog(const ppvObject: _Catalog);
 begin
-  DefaultInterface.Set_ParentCatalog(ppvObject);
+  DefaultInterface.ParentCatalog := ppvObject;
 end;
 
 procedure TADOXGroup._Set_ParentCatalog(const ppvObject: _Catalog);
-  { Warning: The property ParentCatalog has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
 begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.ParentCatalog := ppvObject;
+  DefaultInterface.ParentCatalog := ppvObject;
 end;
-
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-constructor TADOXGroupProperties.Create(AServer: TADOXGroup);
-begin
-  inherited Create;
-  FServer := AServer;
-end;
-
-function TADOXGroupProperties.GetDefaultInterface: _Group;
-begin
-  Result := FServer.DefaultInterface;
-end;
-
-function TADOXGroupProperties.Get_Properties: Properties;
-begin
-    Result := DefaultInterface.Properties;
-end;
-
-function TADOXGroupProperties.Get_ParentCatalog: _Catalog;
-begin
-    Result := DefaultInterface.ParentCatalog;
-end;
-
-procedure TADOXGroupProperties.Set_ParentCatalog(const ppvObject: _Catalog);
-begin
-  DefaultInterface.Set_ParentCatalog(ppvObject);
-end;
-
-procedure TADOXGroupProperties._Set_ParentCatalog(const ppvObject: _Catalog);
-  { Warning: The property ParentCatalog has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
-begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.ParentCatalog := ppvObject;
-end;
-
-{$ENDIF}
 
 class function CoUser.Create: _User;
 begin
@@ -3050,98 +2130,39 @@ function TADOXUser.GetDefaultInterface: _User;
 begin
   if FIntf = nil then
     Connect;
-  Assert(FIntf <> nil, 'DefaultInterface is NULL. Component is not connected to Server. You must call ''Connect'' or ''ConnectTo'' before this operation');
+  Assert(FIntf <> nil, 'DefaultInterface is NULL. Component is not connected to Server. You must call "Connect" or "ConnectTo" before this operation');
   Result := FIntf;
 end;
 
 constructor TADOXUser.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-  FProps := TADOXUserProperties.Create(Self);
-{$ENDIF}
 end;
 
 destructor TADOXUser.Destroy;
 begin
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-  FProps.Free;
-{$ENDIF}
   inherited Destroy;
 end;
 
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-function TADOXUser.GetServerProperties: TADOXUserProperties;
-begin
-  Result := FProps;
-end;
-{$ENDIF}
-
 function TADOXUser.Get_Properties: Properties;
 begin
-    Result := DefaultInterface.Properties;
+  Result := DefaultInterface.Properties;
 end;
 
 function TADOXUser.Get_ParentCatalog: _Catalog;
 begin
-    Result := DefaultInterface.ParentCatalog;
+  Result := DefaultInterface.ParentCatalog;
 end;
 
 procedure TADOXUser.Set_ParentCatalog(const ppvObject: _Catalog);
 begin
-  DefaultInterface.Set_ParentCatalog(ppvObject);
+  DefaultInterface.ParentCatalog := ppvObject;
 end;
 
 procedure TADOXUser._Set_ParentCatalog(const ppvObject: _Catalog);
-  { Warning: The property ParentCatalog has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
 begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.ParentCatalog := ppvObject;
+  DefaultInterface.ParentCatalog := ppvObject;
 end;
-
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-constructor TADOXUserProperties.Create(AServer: TADOXUser);
-begin
-  inherited Create;
-  FServer := AServer;
-end;
-
-function TADOXUserProperties.GetDefaultInterface: _User;
-begin
-  Result := FServer.DefaultInterface;
-end;
-
-function TADOXUserProperties.Get_Properties: Properties;
-begin
-    Result := DefaultInterface.Properties;
-end;
-
-function TADOXUserProperties.Get_ParentCatalog: _Catalog;
-begin
-    Result := DefaultInterface.ParentCatalog;
-end;
-
-procedure TADOXUserProperties.Set_ParentCatalog(const ppvObject: _Catalog);
-begin
-  DefaultInterface.Set_ParentCatalog(ppvObject);
-end;
-
-procedure TADOXUserProperties._Set_ParentCatalog(const ppvObject: _Catalog);
-  { Warning: The property ParentCatalog has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
-begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.ParentCatalog := ppvObject;
-end;
-
-{$ENDIF}
 
 class function CoCatalog.Create: _Catalog;
 begin
@@ -3194,86 +2215,58 @@ function TADOXCatalog.GetDefaultInterface: _Catalog;
 begin
   if FIntf = nil then
     Connect;
-  Assert(FIntf <> nil, 'DefaultInterface is NULL. Component is not connected to Server. You must call ''Connect'' or ''ConnectTo'' before this operation');
+  Assert(FIntf <> nil, 'DefaultInterface is NULL. Component is not connected to Server. You must call "Connect" or "ConnectTo" before this operation');
   Result := FIntf;
 end;
 
 constructor TADOXCatalog.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-  FProps := TADOXCatalogProperties.Create(Self);
-{$ENDIF}
 end;
 
 destructor TADOXCatalog.Destroy;
 begin
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-  FProps.Free;
-{$ENDIF}
   inherited Destroy;
 end;
 
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-function TADOXCatalog.GetServerProperties: TADOXCatalogProperties;
-begin
-  Result := FProps;
-end;
-{$ENDIF}
-
 function TADOXCatalog.Get_Tables: Tables;
 begin
-    Result := DefaultInterface.Tables;
+  Result := DefaultInterface.Tables;
 end;
 
 function TADOXCatalog.Get_ActiveConnection: OleVariant;
-var
-  InterfaceVariant : OleVariant;
 begin
-  InterfaceVariant := DefaultInterface;
-  Result := InterfaceVariant.ActiveConnection;
+  Result := DefaultInterface.Get_ActiveConnection;
 end;
 
 procedure TADOXCatalog.Set_ActiveConnection(pVal: OleVariant);
-  { Warning: The property ActiveConnection has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
 begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.ActiveConnection := pVal;
+  DefaultInterface.Set_ActiveConnection(pVal);
 end;
 
 procedure TADOXCatalog._Set_ActiveConnection(const pVal: IDispatch);
-  { Warning: The property ActiveConnection has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
 begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.ActiveConnection := pVal;
+  DefaultInterface._Set_ActiveConnection(pVal);
 end;
 
 function TADOXCatalog.Get_Procedures: Procedures;
 begin
-    Result := DefaultInterface.Procedures;
+  Result := DefaultInterface.Procedures;
 end;
 
 function TADOXCatalog.Get_Views: Views;
 begin
-    Result := DefaultInterface.Views;
+  Result := DefaultInterface.Views;
 end;
 
 function TADOXCatalog.Get_Groups: Groups;
 begin
-    Result := DefaultInterface.Groups;
+  Result := DefaultInterface.Groups;
 end;
 
 function TADOXCatalog.Get_Users: Users;
 begin
-    Result := DefaultInterface.Users;
+  Result := DefaultInterface.Users;
 end;
 
 function TADOXCatalog.Create1(const ConnectString: WideString): OleVariant;
@@ -3282,7 +2275,10 @@ begin
 end;
 
 function TADOXCatalog.GetObjectOwner(const ObjectName: WideString; ObjectType: ObjectTypeEnum): WideString;
+var
+  EmptyParam: OleVariant;
 begin
+  EmptyParam := Variants.EmptyParam;
   Result := DefaultInterface.GetObjectOwner(ObjectName, ObjectType, EmptyParam);
 end;
 
@@ -3294,7 +2290,10 @@ end;
 
 procedure TADOXCatalog.SetObjectOwner(const ObjectName: WideString; ObjectType: ObjectTypeEnum; 
                                       const UserName: WideString);
+var
+  EmptyParam: OleVariant;
 begin
+  EmptyParam := Variants.EmptyParam;
   DefaultInterface.SetObjectOwner(ObjectName, ObjectType, UserName, EmptyParam);
 end;
 
@@ -3303,75 +2302,6 @@ procedure TADOXCatalog.SetObjectOwner(const ObjectName: WideString; ObjectType: 
 begin
   DefaultInterface.SetObjectOwner(ObjectName, ObjectType, UserName, ObjectTypeId);
 end;
-
-{$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
-constructor TADOXCatalogProperties.Create(AServer: TADOXCatalog);
-begin
-  inherited Create;
-  FServer := AServer;
-end;
-
-function TADOXCatalogProperties.GetDefaultInterface: _Catalog;
-begin
-  Result := FServer.DefaultInterface;
-end;
-
-function TADOXCatalogProperties.Get_Tables: Tables;
-begin
-    Result := DefaultInterface.Tables;
-end;
-
-function TADOXCatalogProperties.Get_ActiveConnection: OleVariant;
-var
-  InterfaceVariant : OleVariant;
-begin
-  InterfaceVariant := DefaultInterface;
-  Result := InterfaceVariant.ActiveConnection;
-end;
-
-procedure TADOXCatalogProperties.Set_ActiveConnection(pVal: OleVariant);
-  { Warning: The property ActiveConnection has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
-begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.ActiveConnection := pVal;
-end;
-
-procedure TADOXCatalogProperties._Set_ActiveConnection(const pVal: IDispatch);
-  { Warning: The property ActiveConnection has a setter and a getter whose
-    types do not match. Delphi was unable to generate a property of
-    this sort and so is using a Variant as a passthrough. }
-var
-  InterfaceVariant: OleVariant;
-begin
-  InterfaceVariant := DefaultInterface;
-  InterfaceVariant.ActiveConnection := pVal;
-end;
-
-function TADOXCatalogProperties.Get_Procedures: Procedures;
-begin
-    Result := DefaultInterface.Procedures;
-end;
-
-function TADOXCatalogProperties.Get_Views: Views;
-begin
-    Result := DefaultInterface.Views;
-end;
-
-function TADOXCatalogProperties.Get_Groups: Groups;
-begin
-    Result := DefaultInterface.Groups;
-end;
-
-function TADOXCatalogProperties.Get_Users: Users;
-begin
-    Result := DefaultInterface.Users;
-end;
-
-{$ENDIF}
 
 procedure Register;
 begin

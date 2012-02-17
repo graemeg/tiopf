@@ -65,6 +65,11 @@ const
   CTIProtocolFile = 'file';
   CTIProtocolSelf = 'self';
 
+{$IFDEF DELPHIXE2}
+  cPackageSuffix = '230';
+  cCompilerName = 'Delphi XE2';
+{$ENDIF}
+
 {$IFDEF DELPHIXE}
   cPackageSuffix = '220';
   cCompilerName = 'Delphi XE';

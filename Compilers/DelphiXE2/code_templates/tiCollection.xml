@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<codetemplate	xmlns="http://schemas.borland.com/Delphi/2005/codetemplates"
+				version="1.0.0">
+	<template name="tic" invoke="auto">
+		<description>
+			TtiObjectList & TtiObject template;
+		</description>
+		<author>
+			Peter Hinrichsen
+		</author>
+		<point name="ObjectClass">
+			<hint>
+				Object's class
+			</hint>
+			<text>
+				ObjectClass
+			</text>
+		</point>
+		<point name="ObjectListParentClass">
+			<hint>
+				Item's class
+			</hint>
+			<text>
+				ObjectListParentClass
+			</text>
+		</point>
+		<code language="Delphi" context="methodbody" delimiter="|">
+		<![CDATA[
+
+
+T|ObjectClass|List = class;
+T|ObjectClass| = class;
+
+T|ObjectClass|List = class(TtiObjectList)
+private
+protected
+  function    GetItems(i: integer): T|ObjectClass|; reintroduce;
+  procedure   SetItems(i: integer; const AValue: T|ObjectClass|); reintroduce;
+  function    GetParent: T|ObjectListParentClass|; reintroduce;
+public
+  property    Items[i:integer] : T|ObjectClass| read GetItems write SetItems;
+  procedure   Add(const AObject : T|ObjectClass|); reintroduce;
+  property    Parent: T|ObjectListParentClass| read GetParent;
+published
+end;
+
+T|ObjectClass| = class(TtiObject)
+private
+protected
+  function    GetParent: T|ObjectClass|List; reintroduce;
+public
+  property    Parent: T|ObjectClass|List read GetParent;
+  function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
+published
+end;
+		]]>
+		</code>
+	</template>
+</codetemplate>

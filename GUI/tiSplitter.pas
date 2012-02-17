@@ -159,7 +159,8 @@ implementation
 uses
   SysUtils
   ,Math
- ;
+  ,Types
+  ;
 
 const
   cuiMinSize = 3;

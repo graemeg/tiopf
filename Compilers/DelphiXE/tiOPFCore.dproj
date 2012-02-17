@@ -37,7 +37,7 @@
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;$(DCC_UnitAlias)</DCC_UnitAlias>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DesignOnlyPackage>false</DesignOnlyPackage>
-			<DCC_DependencyCheckOutputName>C:\Documents and Settings\All Users\Documents\RAD Studio\7.0\Bpl\tiOPFCoreXE.bpl</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>C:\Documents and Settings\All Users\Documents\RAD Studio\8.0\Bpl\tiOPFCoreXE.bpl</DCC_DependencyCheckOutputName>
 			<DCC_Alignment>1</DCC_Alignment>
 			<RuntimeOnlyPackage>true</RuntimeOnlyPackage>
 			<DCC_WriteableConstants>true</DCC_WriteableConstants>

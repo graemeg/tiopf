@@ -1,0 +1,98 @@
+package tiOPFGUI;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST ON}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE PACKAGE}
+{$ENDIF IMPLICITBUILDING}
+{$LIBSUFFIX 'XE2'}
+{$RUNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  vcl,
+  rtl,
+  designide,
+  vclactnband,
+  vclx,
+  tiOPFCore,
+  tiOPFOptions,
+  bdertl,
+  dbrtl,
+  xmlrtl,
+  vclimg;
+
+contains
+  tiDialogs in '..\..\GUI\tiDialogs.pas',
+  tiVirtualTrees in '..\..\GUI\tiVirtualTrees.pas',
+  tiButtons in '..\..\GUI\tiButtons.pas',
+  tiCtrlButtonPanel in '..\..\GUI\tiCtrlButtonPanel.pas',
+  tiFocusPanel in '..\..\GUI\tiFocusPanel.pas',
+  tiHyperlink in '..\..\GUI\tiHyperlink.pas',
+  tiImageMgr in '..\..\GUI\tiImageMgr.pas',
+  tiJVBrowseFolder in '..\..\GUI\tiJVBrowseFolder.pas',
+  tiListView in '..\..\GUI\tiListView.pas',
+  tiListViewCtrls in '..\..\GUI\tiListViewCtrls.pas',
+  tiListViewDif in '..\..\GUI\tiListViewDif.pas',
+  tiListViewPlus in '..\..\GUI\tiListViewPlus.pas',
+  tiMemoReadOnly in '..\..\GUI\tiMemoReadOnly.pas',
+  tiMulticastEvent in '..\..\GUI\tiMulticastEvent.pas',
+  tiPerAwareCombosAbs in '..\..\GUI\tiPerAwareCombosAbs.pas',
+  tiPerAwareCtrls in '..\..\GUI\tiPerAwareCtrls.pas',
+  tiPerAwareDateRange in '..\..\GUI\tiPerAwareDateRange.pas',
+  tiPerAwareDirectoryCombos in '..\..\GUI\tiPerAwareDirectoryCombos.pas',
+  tiPerAwareFileCombos in '..\..\GUI\tiPerAwareFileCombos.pas',
+  tiPerAwareMultiSelect in '..\..\GUI\tiPerAwareMultiSelect.pas',
+  tiReadOnly in '..\..\GUI\tiReadOnly.pas',
+  tiResources in '..\..\GUI\tiResources.pas',
+  tiRoundedPanel in '..\..\GUI\tiRoundedPanel.pas',
+  tiSpeedButton in '..\..\GUI\tiSpeedButton.pas',
+  tiSplitter in '..\..\GUI\tiSplitter.pas',
+  tiTreeView in '..\..\GUI\tiTreeView.pas',
+  tiTreeViewChildForm in '..\..\GUI\tiTreeViewChildForm.pas',
+  tiVTListView in '..\..\GUI\tiVTListView.pas',
+  tiVTTreeView in '..\..\GUI\tiVTTreeView.pas',
+  tiGUIUtils in '..\..\GUI\tiGUIUtils.pas',
+  tiTreeBuildVisitor in '..\..\GUI\tiTreeBuildVisitor.pas',
+  tiGenericTreeViewMediator in '..\..\GUI\tiGenericTreeViewMediator.pas',
+  tiSpin in '..\..\GUI\tiSpin.pas',
+  tiHyperlinkWithImage in '..\..\GUI\tiHyperlinkWithImage.pas',
+  tiHotImage in '..\..\GUI\tiHotImage.pas',
+  tiVTExportCSV in '..\..\GUI\tiVTExportCSV.pas',
+  tiVTExportHTML in '..\..\GUI\tiVTExportHTML.pas',
+  tiLogToGUI in '..\..\GUI\tiLogToGUI.pas',
+  tiLogReg in '..\..\GUI\tiLogReg.pas',
+  tiLogToErrorDialog in '..\..\GUI\tiLogToErrorDialog.pas',
+  tiGUIConstants in '..\..\GUI\tiGUIConstants.pas',
+  tiVTFilter in '..\..\GUI\tiVTFilter.pas',
+  tiGUIINI in '..\..\GUI\tiGUIINI.pas',
+  tiVTAbstract in '..\..\GUI\tiVTAbstract.pas',
+  tiAnimatedGIF in '..\..\GUI\tiAnimatedGIF.pas',
+  tiMediators in '..\..\GUI\VCL\tiMediators.pas',
+  tiListMediators in '..\..\GUI\VCL\tiListMediators.pas',
+  tiVTSearch in '..\..\GUI\tiVTSearch.pas',
+  tiVTAccessibilityFactory in '..\..\GUI\tiVTAccessibilityFactory.pas';
+
+{$I tiDefines.inc}
+
+end.

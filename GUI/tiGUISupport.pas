@@ -196,6 +196,7 @@ uses
   ,tiExcept
   ,Graphics
   ,StdCtrls
+  ,Types
  ;
 
 var

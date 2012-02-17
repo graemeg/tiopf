@@ -563,7 +563,7 @@ type
     procedure   SetOwnsObjects(const AValue: boolean);
     function    DoCompareByProps(AItem1  : Pointer; AItem2  : Pointer;
                 const ASortProps : array of string; AAscendingOrder : Boolean = True): integer;
-    procedure   QuickSortByProps(SortList: PPointerList; L, R: Integer;
+    procedure   QuickSortByProps(SortList: {$IFDEF DELPHIXE2ORABOVE}TPointerList{$ELSE}PPointerList{$ENDIF}; L, R: Integer;
                 const ASortProps : array of string; AAscendingOrder : Boolean = True);
   protected
     function    GetCount: integer; virtual;
@@ -2285,7 +2285,7 @@ end;
 // was added here to introduce an array of strings to
 // hold property names for the sort.
 procedure TtiObjectList.QuickSortByProps(
-  SortList: PPointerList;
+  SortList: {$IFDEF DELPHIXE2ORABOVE}TPointerList{$ELSE}PPointerList{$ENDIF};
   L, R: Integer;
   const ASortProps: array of string;
   AAscendingOrder : Boolean = True);
@@ -2296,17 +2296,17 @@ begin
   repeat
     I := L;
     J := R;
-    P := SortList^[(L + R) shr 1];
+    P := SortList{$IFNDEF DELPHIXE2ORABOVE}^{$ENDIF}[(L + R) shr 1];
     repeat
-      while DoCompareByProps(SortList^[I], P, ASortProps, AAscendingOrder) < 0 do
+      while DoCompareByProps(SortList{$IFNDEF DELPHIXE2ORABOVE}^{$ENDIF}[I], P, ASortProps, AAscendingOrder) < 0 do
         Inc(I);
-      while DoCompareByProps(SortList^[J], P, ASortProps, AAscendingOrder) > 0 do
+      while DoCompareByProps(SortList{$IFNDEF DELPHIXE2ORABOVE}^{$ENDIF}[J], P, ASortProps, AAscendingOrder) > 0 do
         Dec(J);
       if I <= J then
       begin
-        T := SortList^[I];
-        SortList^[I]:= SortList^[J];
-        SortList^[J]:= T;
+        T := SortList{$IFNDEF DELPHIXE2ORABOVE}^{$ENDIF}[I];
+        SortList{$IFNDEF DELPHIXE2ORABOVE}^{$ENDIF}[I]:= SortList{$IFNDEF DELPHIXE2ORABOVE}^{$ENDIF}[J];
+        SortList{$IFNDEF DELPHIXE2ORABOVE}^{$ENDIF}[J]:= T;
         Inc(I);
         Dec(J);
       end;

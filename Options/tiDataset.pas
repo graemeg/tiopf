@@ -156,7 +156,7 @@ type
     function CreateBlobStream(Field: TField;Mode: TBlobStreamMode): TStream;override;
     function Locate(const KeyFields: string;const KeyValues: Variant;Options: TLocateOptions): boolean;override;
     function Lookup(const KeyFields: string;const KeyValues: Variant;const ResultFields: string): Variant;override;
-    procedure DataEvent(Event: TDataEvent;Info: ptrint);override;
+    procedure DataEvent(Event: TDataEvent; Info: {$IFDEF DELPHIXE2ORABOVE}NativeInt{$ELSE}ptrint{$ENDIF}); override;
     property ObjectClass: TtiObjectClass read GetObjectClass write SetObjectClass;
   published
     property StringWidth: integer read FStringWidth write FStringWidth;
@@ -237,7 +237,7 @@ type
     procedure DoBeforeInsert;override;
     procedure OpenCursor(InfoQuery: boolean);override;
   public
-    procedure DataEvent(Event: TDataEvent;Info: ptrint);override;
+    procedure DataEvent(Event: TDataEvent; Info: {$IFDEF DELPHIXE2ORABOVE}NativeInt{$ELSE}ptrint{$ENDIF});override;
   published
     property DataSetField;
   end;
@@ -272,7 +272,7 @@ type
     procedure OpenCursor(InfoQuery: boolean);override;
     function GetObjectRecord: TtiObject;override;
   public
-    procedure DataEvent(Event: TDataEvent;Info: Ptrint);override;
+    procedure DataEvent(Event: TDataEvent;Info: {$IFDEF DELPHIXE2ORABOVE}NativeInt{$ELSE}ptrint{$ENDIF});override;
   published
     property DataSetField;
   end;
@@ -1376,7 +1376,7 @@ begin
   end;
 end;
 
-procedure TTiCustomDataset.DataEvent(Event: TDataEvent;Info: ptrint);
+procedure TTiCustomDataset.DataEvent(Event: TDataEvent; Info: {$IFDEF DELPHIXE2ORABOVE}NativeInt{$ELSE}ptrint{$ENDIF});
 
 
   procedure CheckIfParentScrolled;
@@ -2076,7 +2076,7 @@ begin
   else Result := nil;
 end;
 
-procedure TTiNestedDataset.DataEvent(Event: TDataEvent;Info: ptrint);
+procedure TTiNestedDataset.DataEvent(Event: TDataEvent; Info: {$IFDEF DELPHIXE2ORABOVE}NativeInt{$ELSE}ptrint{$ENDIF});
 begin
   inherited;
   if Assigned(DataSetField) then begin
@@ -2088,7 +2088,7 @@ end;
 
 { TTiNestedRecordDataset }
 
-procedure TTiNestedRecordDataset.DataEvent(Event: TDataEvent;Info: integer);
+procedure TTiNestedRecordDataset.DataEvent(Event: TDataEvent;Info: {$IFDEF DELPHIXE2ORABOVE}NativeInt{$ELSE}ptrint{$ENDIF});
 begin
   inherited;
   if Assigned(DataSetField) then begin

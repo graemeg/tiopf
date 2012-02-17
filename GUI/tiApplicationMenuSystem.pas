@@ -306,7 +306,8 @@ procedure CreateAMS(
 
 implementation
 uses
-  HTMLHelpViewer
+  Types
+  ,HTMLHelpViewer
   ,tiImageMgr
   ,tiThreadProgress
   ,tiResources
@@ -317,6 +318,7 @@ uses
   ,tiDialogs
   // HTML Viewer
   ,HTMLUn2
+  ,URLSubs
  ;
 
 const

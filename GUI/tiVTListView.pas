@@ -1698,7 +1698,7 @@ begin
   FRowSelect:= True;
   VT.TreeOptions.SelectionOptions := [toFullRowSelect, toExtendedFocus];
   FMultiSelect:= False;
-  VT.Header.Style := hsXPStyle;
+  VT.Header.Style := hsThickButtons;
 
   // Editing
   VT.OnCreateEditor := VTCreateEditor;

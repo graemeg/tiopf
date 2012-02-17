@@ -203,7 +203,11 @@ begin
   ControlStyle := ControlStyle - [csAcceptsControls, csSetCaption] +
     [csFramed, csOpaque];
   { Frames don't look good around the buttons when themes are on }
-  if ThemeServices.ThemesEnabled then
+  {$IFDEF DELPHIXE2ORABOVE}
+    if StyleServices.Enabled then
+  {$ELSE}
+    if ThemeServices.ThemesEnabled then
+  {$ENDIF}
     ControlStyle := ControlStyle - [csFramed];
   FUpButton := CreateButton;
   FDownButton := CreateButton;

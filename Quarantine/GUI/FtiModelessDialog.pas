@@ -20,8 +20,11 @@ type
   end;
 
 implementation
+
 uses
-  tiApplicationMenuSystem;
+  UITypes
+  ,tiApplicationMenuSystem
+  ;
   
 const
   cPopupFormHeight = 320;

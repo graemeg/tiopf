@@ -650,6 +650,7 @@ uses
   ,Math
   ,ClipBrd
   ,INIFiles
+  ,Types
   ,tiResources
   ,tiImageMgr
   ,tiUtils

@@ -144,7 +144,7 @@ uses
   ,tiWin32
   {$IFNDEF FPC}
   ,Forms // Hack to work around problem in TtiActiveThreadList.WaitForAll
-  {$ENDIF}
+  {$ENDIF FPC}
   {$ENDIF MSWINDOWS}
   ,tiUtils
   ,SysUtils    // Used by FPC for the Sleep method.
