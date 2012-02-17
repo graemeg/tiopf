@@ -67,6 +67,7 @@ type
     FPerformanceCounter: TtiPerformanceCounter;
     FTempDirectory: string;
     function GetLongString: string;
+    function  MakeDifferenceMessage(const AField1, AField2: TtiFieldAbs): string;
   protected
     procedure   SetUpOnce; {$IFDEF FPC}virtual;{$ELSE}override;{$ENDIF}
     procedure   SetUp; override;
@@ -107,6 +108,8 @@ type
     procedure CheckNearEnough(const AExpected: TDateTime; const AField: TtiFieldDateTime); overload;
     procedure CheckNearEnough(const AExpected: Real; const AField: TtiFieldFloat); overload;
     procedure CheckNearEnough(const AExpected, AActual: TtiFieldFloat); overload;
+    procedure CheckNearestMillisecond(const AExpected: TDateTime; const AActual: TDateTime; const AMessage: string; AArgs: array of const); overload;
+    procedure CheckNearestMillisecond(const AExpected: TDateTime; const AActual: TDateTime; const AMessage: string = ''); overload;
     procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const APropName: String); overload;
     procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldString); overload;
     procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldInteger); overload;
@@ -114,6 +117,13 @@ type
     procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldDateTime); overload;
     procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldDate); overload;
     procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldBoolean); overload;
+
+    procedure CheckTIObjectEqualsWithMessage(const AObj1: TtiObject; const AObj2: TtiObject; const AField1: TtiFieldString;   const AField2: TtiFieldString); overload;
+    procedure CheckTIObjectEqualsWithMessage(const AObj1: TtiObject; const AObj2: TtiObject; const AField1: TtiFieldInteger;  const AField2: TtiFieldInteger); overload;
+    procedure CheckTIObjectEqualsWithMessage(const AObj1: TtiObject; const AObj2: TtiObject; const AField1: TtiFieldFloat;    const AField2: TtiFieldFloat); overload;
+    procedure CheckTIObjectEqualsWithMessage(const AObj1: TtiObject; const AObj2: TtiObject; const AField1: TtiFieldBoolean;  const AField2: TtiFieldBoolean); overload;
+    procedure CheckTIObjectEqualsWithMessage(const AObj1: TtiObject; const AObj2: TtiObject; const AField1: TtiFieldDateTime; const AField2: TtiFieldDateTime); overload;
+
 {$IFDEF OID_AS_INT64}
     procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; var AField1, AField2: TtiOID); overload;
 {$ELSE}
@@ -198,8 +208,10 @@ uses
    tiUtils
   ,tiINI
   ,tiRTTI
+  ,tiLog
   ,StrUtils
   ,TypInfo
+  ,Types
   {$IFDEF MSWINDOWS}
   ,Windows
   ,tiConsoleApp
@@ -280,7 +292,7 @@ begin
         'Expected Output ="" but got "%s"', [LOutput]);
 
     {$ENDIF MSWINDOWS}
-    
+
     {$IFDEF LINUX}
     tiUtils.tiRunEXEAndWait('rm -f -R ' + ADirectory);
     {$ENDIF LINUX}
@@ -459,6 +471,7 @@ begin
   inherited;
   if DirectoryExists(FTempDirectory) then
     try tiForceRemoveDir(FTempDirectory) except end;
+  GLog.Purge;
 end;
 
 procedure TtiTestCase.TearDownOnce;
@@ -625,7 +638,7 @@ function TtiTestCase.PerformanceCounter: TtiPerformanceCounter;
 begin
   if FPerformanceCounter=nil then
     FPerformanceCounter:= TtiPerformanceCounter.Create;
-  result:= FPerformanceCounter;  
+  result:= FPerformanceCounter;
 end;
 
 procedure TtiTestCase.CheckNearEnough(const AExpected, AActual: Double);
@@ -708,6 +721,21 @@ end;
 procedure TtiTestCase.CheckNearEnough(const AExpected, AActual: Double; const AMessage: string; pArgs: array of const);
 begin
   CheckNearEnough(AExpected, AActual, Format(AMessage, pArgs));
+end;
+
+procedure TtiTestCase.CheckNearestMillisecond(const AExpected: TDateTime;
+  const AActual: TDateTime; const AMessage: string);
+begin
+  Check(tiCompareDateTimeToMilliSecond(AExpected, AActual) = EqualsValue,
+        NotEqualsErrorMessage(
+            FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', AExpected),
+            FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', AActual), AMessage));
+end;
+
+procedure TtiTestCase.CheckNearestMillisecond(const AExpected: TDateTime;
+  const AActual: TDateTime; const AMessage: string; AArgs: array of const);
+begin
+  CheckNearestMillisecond(AExpected, AActual, Format(AMessage, AArgs));
 end;
 
 procedure TtiTestCase.TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldString);
@@ -821,6 +849,145 @@ begin
   Check(not AObj1.Equals(AObj2), 'Equals returned TRUE when it should have returned FALSE after changing field ' + lFieldName);
   AField1.AsString := AField2.AsString;
   Check(AObj1.Equals(AObj2), 'Equals returned FALSE when it should have returned True');
+end;
+
+procedure TtiTestCase.CheckTIObjectEqualsWithMessage(
+  const AObj1: TtiObject;
+  const AObj2: TtiObject;
+  const AField1: TtiFieldString;
+  const AField2: TtiFieldString);
+var
+  LMessage: string;
+  LSave: string;
+  LDifferenceMessageActual: string;
+  LDifferenceMessageExpected: string;
+begin
+  LMessage := AObj1.ClassName + '.' + Copy(AField1.ClassName, 2, Length(AField1.ClassName));
+  Check(AObj1.Equals(AObj2, LDifferenceMessageActual), LMessage);
+  CheckEquals('', LDifferenceMessageActual);
+  LSave := AField1.AsString ;
+  LDifferenceMessageActual:= '';
+  AField1.AsString := AField1.AsString + 'x';
+  LDifferenceMessageExpected:= MakeDifferenceMessage(AField1, AField2);
+  Check(not AObj1.Equals(AObj2, LDifferenceMessageActual), LMessage);
+  CheckEquals(LDifferenceMessageExpected, LDifferenceMessageActual);
+  AField1.AsString := LSave;
+  LDifferenceMessageActual:= '';
+  Check(AObj1.Equals(AObj2, LDifferenceMessageActual), LMessage);
+  CheckEquals('', LDifferenceMessageActual);
+end;
+
+procedure TtiTestCase.CheckTIObjectEqualsWithMessage(
+  const AObj1: TtiObject;
+  const AObj2: TtiObject;
+  const AField1: TtiFieldFloat;
+  const AField2: TtiFieldFloat);
+var
+  LMessage: string;
+  LSave: real;
+  LDifferenceMessageActual: string;
+  LDifferenceMessageExpected: string;
+begin
+  LMessage := AObj1.ClassName + '.' + Copy(AField1.ClassName, 2, Length(AField1.ClassName));
+  Check(AObj1.Equals(AObj2, LDifferenceMessageActual), LMessage);
+  CheckEquals('', LDifferenceMessageActual);
+  LSave := AField1.AsFloat;
+  LDifferenceMessageActual:= '';
+  AField1.AsFloat:= AField1.AsFloat + 1;
+  LDifferenceMessageExpected:= MakeDifferenceMessage(AField1, AField2);
+  Check(not AObj1.Equals(AObj2, LDifferenceMessageActual), LMessage);
+  CheckEquals(LDifferenceMessageExpected, LDifferenceMessageActual);
+  AField1.AsFloat := LSave;
+  LDifferenceMessageActual:= '';
+  Check(AObj1.Equals(AObj2, LDifferenceMessageActual), LMessage);
+  CheckEquals('', LDifferenceMessageActual);
+end;
+
+procedure TtiTestCase.CheckTIObjectEqualsWithMessage(
+  const AObj1: TtiObject;
+  const AObj2: TtiObject;
+  const AField1: TtiFieldInteger;
+  const AField2: TtiFieldInteger);
+var
+  LMessage: string;
+  LSave: integer;
+  LDifferenceMessageActual: string;
+  LDifferenceMessageExpected: string;
+begin
+  LMessage := AObj1.ClassName + '.' + Copy(AField1.ClassName, 2, Length(AField1.ClassName));
+  Check(AObj1.Equals(AObj2, LDifferenceMessageActual), LMessage);
+  CheckEquals('', LDifferenceMessageActual);
+  LSave := AField1.AsInteger;
+  LDifferenceMessageActual:= '';
+  AField1.AsInteger := AField1.AsInteger + 1;
+  LDifferenceMessageExpected:= MakeDifferenceMessage(AField1, AField2);
+  Check(not AObj1.Equals(AObj2, LDifferenceMessageActual), LMessage);
+  CheckEquals(LDifferenceMessageExpected, LDifferenceMessageActual);
+  AField1.AsInteger := LSave;
+  LDifferenceMessageActual:= '';
+  Check(AObj1.Equals(AObj2, LDifferenceMessageActual), LMessage);
+  CheckEquals('', LDifferenceMessageActual);
+end;
+
+procedure TtiTestCase.CheckTIObjectEqualsWithMessage(
+  const AObj1: TtiObject;
+  const AObj2: TtiObject;
+  const AField1: TtiFieldDateTime;
+  const AField2: TtiFieldDateTime);
+var
+  LMessage: string;
+  LSave: TDateTime;
+  LDifferenceMessageActual: string;
+  LDifferenceMessageExpected: string;
+begin
+  LMessage := AObj1.ClassName + '.' + Copy(AField1.ClassName, 2, Length(AField1.ClassName));
+  Check(AObj1.Equals(AObj2, LDifferenceMessageActual), LMessage);
+  CheckEquals('', LDifferenceMessageActual);
+  LSave := AField1.AsDateTime;
+  LDifferenceMessageActual:= '';
+  AField1.AsDateTime:= AField1.AsDateTime + 1;
+  LDifferenceMessageExpected:= MakeDifferenceMessage(AField1, AField2);
+  Check(not AObj1.Equals(AObj2, LDifferenceMessageActual), LMessage);
+  CheckEquals(LDifferenceMessageExpected, LDifferenceMessageActual);
+  AField1.AsDateTime := LSave;
+  LDifferenceMessageActual:= '';
+  Check(AObj1.Equals(AObj2, LDifferenceMessageActual), LMessage);
+  CheckEquals('', LDifferenceMessageActual);
+end;
+
+procedure TtiTestCase.CheckTIObjectEqualsWithMessage(
+  const AObj1: TtiObject;
+  const AObj2: TtiObject;
+  const AField1: TtiFieldBoolean;
+  const AField2: TtiFieldBoolean);
+var
+  LMessage: string;
+  LSave: Boolean;
+  LDifferenceMessageActual: string;
+  LDifferenceMessageExpected: string;
+begin
+  LMessage := AObj1.ClassName + '.' + Copy(AField1.ClassName, 2, Length(AField1.ClassName));
+  Check(AObj1.Equals(AObj2, LDifferenceMessageActual), LMessage);
+  CheckEquals('', LDifferenceMessageActual);
+  LSave := AField1.AsBoolean;
+  LDifferenceMessageActual:= '';
+  AField1.AsBoolean:= not AField1.AsBoolean;
+  LDifferenceMessageExpected:= MakeDifferenceMessage(AField1, AField2);
+  Check(not AObj1.Equals(AObj2, LDifferenceMessageActual), LMessage);
+  CheckEquals(LDifferenceMessageExpected, LDifferenceMessageActual);
+  AField1.AsBoolean := LSave;
+  LDifferenceMessageActual:= '';
+  Check(AObj1.Equals(AObj2, LDifferenceMessageActual), LMessage);
+  CheckEquals('', LDifferenceMessageActual);
+end;
+
+function TtiTestCase.MakeDifferenceMessage(const AField1,
+  AField2: TtiFieldAbs): string;
+begin
+  result:=
+    AField1.FieldName + ': "' +
+    AField1.AsString + '" -> "' +
+    AField2.AsString + '"';
 end;
 
 procedure TtiTestCase.TestTIObjectIsValid(const AObj: TtiObject; const AField: TtiFieldInteger);
@@ -1020,7 +1187,7 @@ begin
   CheckEquals(True, AData1.Equals(AData2));
 end;
 
-procedure TtiTestCase.CheckTIObjectEqualsMethod(const AData1, AData2: TtiObject; const APropName: string; const ANewValue: Real); 
+procedure TtiTestCase.CheckTIObjectEqualsMethod(const AData1, AData2: TtiObject; const APropName: string; const ANewValue: Real);
 var
   LSaved: Real;
 begin

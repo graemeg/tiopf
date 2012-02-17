@@ -84,6 +84,7 @@ uses
   ,tiConsoleApp
   ,tiConstants
   ,tiCRC32
+  ,tiXML
 
   ,SysUtils
   ,Classes
@@ -831,6 +832,10 @@ const
   CProxyServerPort= 4;
   CBlockSize = 5;
   CRetryLimit = 6;
+  CResolveTimeout = 7;
+  CConnectTimeout = 8;
+  CSendTimeout = 9;
+  CReceiveTimeout = 10;
 
 begin
   LA:= nil;
@@ -846,6 +851,10 @@ begin
     LA.ProxyServerPort:= CProxyServerPort;
     LA.BlockSize:= CBlockSize;
     LA.RetryLimit:= CRetryLimit;
+    LA.ResolveTimeout := CResolveTimeout;
+    LA.ConnectTimeout := CConnectTimeout;
+    LA.SendTimeout := CSendTimeout;
+    LA.ReceiveTimeout := CReceiveTimeout;
 
     LB.Assign(LA);
 
@@ -856,7 +865,10 @@ begin
     CheckEquals(CProxyServerPort, LA.ProxyServerPort);
     CheckEquals(CBlockSize, LA.BlockSize);
     CheckEquals(CRetryLimit, LA.RetryLimit);
-
+    CheckEquals(CResolveTimeout, LA.ResolveTimeout);
+    CheckEquals(CConnectTimeout, LA.ConnectTimeout);
+    CheckEquals(CSendTimeout, LA.SendTimeout);
+    CheckEquals(CReceiveTimeout, LA.ReceiveTimeout);
   finally
     LA.Free;
     LB.Free;
@@ -875,6 +887,10 @@ const
   CProxyServerPort= 4;
   CBlockSize = 5;
   CRetryLimit = 6;
+  CResolveTimeout = 7;
+  CConnectTimeout = 8;
+  CSendTimeout = 9;
+  CReceiveTimeout = 10;
 
 begin
   LA:= nil;
@@ -890,6 +906,10 @@ begin
     LA.ProxyServerPort:= CProxyServerPort;
     LA.BlockSize:= CBlockSize;
     LA.RetryLimit:= CRetryLimit;
+    LA.ResolveTimeout := CResolveTimeout;
+    LA.ConnectTimeout := CConnectTimeout;
+    LA.SendTimeout := CSendTimeout;
+    LA.ReceiveTimeout := CReceiveTimeout;
 
     LB.AppServerURL:= CAppServerURL;
     LB.ConnectWith:= CConnectWith;
@@ -898,6 +918,10 @@ begin
     LB.ProxyServerPort:= CProxyServerPort;
     LB.BlockSize:= CBlockSize;
     LB.RetryLimit:= CRetryLimit;
+    LB.ResolveTimeout := CResolveTimeout;
+    LB.ConnectTimeout := CConnectTimeout;
+    LB.SendTimeout := CSendTimeout;
+    LB.ReceiveTimeout := CReceiveTimeout;
 
     Check(LA.Equals(LB));
     LB.AppServerURL:= 'test';
@@ -934,6 +958,25 @@ begin
     Check(not LA.Equals(LB));
     LB.RetryLimit:= CRetryLimit;
 
+    Check(LA.Equals(LB));
+    LB.ResolveTimeout:= LB.ResolveTimeout+1;
+    Check(not LA.Equals(LB));
+    LB.ResolveTimeout:= CResolveTimeout;
+
+    Check(LA.Equals(LB));
+    LB.ConnectTimeout:= LB.ConnectTimeout+1;
+    Check(not LA.Equals(LB));
+    LB.ConnectTimeout:= CConnectTimeout;
+
+    Check(LA.Equals(LB));
+    LB.SendTimeout:= LB.SendTimeout+1;
+    Check(not LA.Equals(LB));
+    LB.SendTimeout:= CSendTimeout;
+
+    Check(LA.Equals(LB));
+    LB.ReceiveTimeout:= LB.ReceiveTimeout+1;
+    Check(not LA.Equals(LB));
+    LB.ReceiveTimeout:= CReceiveTimeout;
   finally
     LA.Free;
     LB.Free;

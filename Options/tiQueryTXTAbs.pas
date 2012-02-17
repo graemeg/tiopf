@@ -443,11 +443,19 @@ end;
 
 
 function TtiQueryTXTAbs.FieldIndex(const AName: string): integer;
+var
+  LCell: TtiDataBufferCell;
 begin
   if CurrentRow = nil then
     raise EtiOPFProgrammerException.Create(cErrorNoRowsSelected)
   else
-    result := CurrentRow.FindByFieldName(AName).Index;
+  begin
+    LCell := CurrentRow.FindByFieldName(AName);
+    if Assigned(LCell) then
+      result := LCell.Index
+    else
+      result := -1;
+  end;
 end;
 
 

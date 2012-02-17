@@ -50,6 +50,12 @@ type
     procedure XMLRemoveReservedCharsXML2;
     procedure XMLInsertReservedCharsXML2;
 
+    // Checks that we are still able to decode xml files that have invalid
+    // '&lf;' and '&cr;' character encodings now that we correctly encode with
+    // '&#10;' and '&#13;'. We need to support decoding of the invalid escapings
+    // for backwards compatibility.
+    procedure XMLInsertReservedCharsXML_InvalidCharEscapings;
+
     // These will give an indication of how much faster you are
 {
     procedure XMLRemoveReservedCharsXMLPerformance;
@@ -103,8 +109,9 @@ uses
 
 const
 
-  cWithResCharsXML    = 'yet &another <test> "string''ie"';
-  cWithoutResCharsXML = 'yet &amp;another &lt;test&gt; &quot;string&apos;ie&quot;';
+  cWithResCharsXML    = 'yet &another <test> "string''ie"'#13#10'line 2';
+  cWithoutResCharsXML = 'yet &amp;another &lt;test&gt; &quot;string&apos;ie&quot;&#13;&#10;line 2';
+  cWithoutResCharsXMLInvalidEscapings = 'yet &amp;another &lt;test&gt; &quot;string&apos;ie&quot;&cr;&lf;line 2';
 
   cWithResCharsCSV    = 'yet, another'#13#10'test,'#10'string'#13;
   cWithoutResCharsCSV = 'yet&com; another&cr;&lf;test&com;&lf;string&cr;';
@@ -253,6 +260,18 @@ begin
   lBefore  := 'X&apos;d';
   lAfter   := FXMLRCTrans.InsertReserved(rcXML, lBefore);
   lExpected  := 'X''d';
+  CheckEquals(lExpected, lAfter);
+end;
+
+procedure TTestTIXML.XMLInsertReservedCharsXML_InvalidCharEscapings;
+var
+  lBefore  : string;
+  lAfter   : string;
+  lExpected : string;
+begin
+  lBefore  := cWithoutResCharsXMLInvalidEscapings;
+  lAfter   := FXMLRCTrans.InsertReserved(rcXML, lBefore);
+  lExpected  := cWithResCharsXML;
   CheckEquals(lExpected, lAfter);
 end;
 

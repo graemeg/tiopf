@@ -99,6 +99,8 @@ type
     property  FormInfoMessage: string read FFormInfoMessage Write SetFormInfoMessage;
     property  FormMgr: TtiFormMgr read FFormMgr Write FFormMgr;
     procedure SetEscapeKeyEnabled(const AValue: boolean);
+
+    property AL: TActionList read FAL;
   end;
 
   TtiFormMgrFormClass = class of TtiFormMgrForm;
@@ -137,7 +139,8 @@ type
                               const AOnEditsSave   : TtiObjectEvent = nil;
                               const AOnEditsCancel : TtiObjectEvent = nil;
                                     AReadOnly      : boolean = False;
-                              const AFormSettings  : TtiObject = nil): TtiFormMgrForm; overload;
+                              const AFormSettings  : TtiObject = nil;
+                              const AReferenceData : TtiObject = nil): TtiFormMgrForm; overload;
     procedure   ShowForm(     const AForm          : TtiFormMgrForm;
                               const AData          : TtiObject;
                                     AModal         : Boolean = False;
@@ -149,7 +152,8 @@ type
                               const AData          : TtiObject;
                               const AOnEditsSave   : TtiObjectEvent = nil;
                               const AOnEditsCancel : TtiObjectEvent = nil;
-                              const AFormSettings  : TtiObject = nil): TtiFormMgrForm;
+                              const AFormSettings  : TtiObject = nil;
+                              const AReferenceData : TtiObject = nil): TtiFormMgrForm;
     procedure   BringToFront(const pForm : TtiFormMgrForm; pFocusFirstControl : Boolean);
 
     function    FindForm(const pFormClass : TtiFormMgrFormClass; const AData : TtiObject): TtiFormMgrForm;
@@ -234,8 +238,8 @@ begin
   // shutting down, then the parent will be destroyed when the main form
   // is destroyed. This will cause the active form to be destroyed twice,
   // with the associated AV. The If statement below stops this.
-  if FormMgr.IndexOf(Self) <> -1 then
-    FormMgr.RemoveForm(Self);
+  if Assigned(FFormMgr) and (FFormMgr.IndexOf(Self) <> -1) then
+    FFormMgr.RemoveForm(Self);
   inherited;
 end;
 
@@ -294,7 +298,8 @@ begin
     if Assigned(ACloseHandler) then
       ACloseHandler;
   finally
-    FormMgr.CloseForm(Self);
+    if Assigned(FFormMgr)  then
+      FFormMgr.CloseForm(Self);
   end;
 end;
 
@@ -604,7 +609,8 @@ function TtiFormMgr.ShowForm(
       const AOnEditsSave: TtiObjectEvent = nil;
       const AOnEditsCancel: TtiObjectEvent = nil;
             AReadOnly: boolean = False;
-      const AFormSettings: TtiObject = nil
+      const AFormSettings: TtiObject = nil;
+      const AReferenceData: TtiObject = nil
      ): TtiFormMgrForm;
 var
   LForm : TtiFormMgrForm;
@@ -649,6 +655,10 @@ begin
              (LForm is TtiFormMgrDataForm) and
              (TtiFormMgrDataForm(LForm).FormSettings <> AFormSettings) then
             TtiFormMgrDataForm(LForm).FormSettings := AFormSettings;
+          if (AReferenceData <> nil) and
+             (LForm is TtiFormMgrDataForm) and
+             (TtiFormMgrDataForm(LForm).ReferenceData <> AReferenceData) then
+            TtiFormMgrDataForm(LForm).ReferenceData := AReferenceData;
           if (AData <> nil) and
              (LForm is TtiFormMgrDataForm) and
              (TtiFormMgrDataForm(LForm).Data <> AData) then
@@ -676,9 +686,9 @@ end;
 
 function TtiFormMgr.ShowFormModal(const AFormClass: TtiFormMgrFormClass;
   const AData: TtiObject; const AOnEditsSave,
-  AOnEditsCancel: TtiObjectEvent; const AFormSettings: TtiObject): TtiFormMgrForm;
+  AOnEditsCancel: TtiObjectEvent; const AFormSettings, AReferenceData: TtiObject): TtiFormMgrForm;
 begin
-  Result := ShowForm(AFormClass, AData, True {AModal}, AOnEditsSave, AOnEditsCancel, False {AReadOnly}, AFormSettings);
+  Result := ShowForm(AFormClass, AData, True {AModal}, AOnEditsSave, AOnEditsCancel, False {AReadOnly}, AFormSettings, AReferenceData);
 end;
 
 procedure TtiFormMgr.CloseForm(const pForm: TtiFormMgrForm);

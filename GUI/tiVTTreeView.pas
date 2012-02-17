@@ -370,11 +370,7 @@ begin
   SetVT(TVirtualStringTree.Create(self));
   VT.Parent := Self;
   VT.Name := Name + '_TV';
-  VT.Top := 1;
-  VT.Left := 2;
-  VT.Height := Height - 2 - SP.Height;
-  VT.Width := Width - 2;
-  VT.Anchors := [akLeft, akTop, akRight, akBottom];
+  VT.Align := alClient;
 
   VT.NodeDataSize := SizeOf(TNodeDataRec);
   FVTDataMappings := TtiVTTVDataMappings.Create(self);
@@ -1480,7 +1476,10 @@ end;
 
 function TtiVTTreeView.GetObjectFromNode(Node: PVirtualNode): TtiObject;
 begin
-  Result := PNodeDataRec(VT.GetNodeData(Node)){$IFDEF FPC}^{$ENDIF}.NodeData;
+  if Assigned(Node) then
+    Result:= PNodeDataRec(VT.GetNodeData(Node)){$IFDEF FPC}^{$ENDIF}.NodeData
+  else
+    Result:= nil;
 end;
 
 procedure TtiVTTreeView.SetObjectForNode(pNode: PVirtualNode; AObject: TtiObject);

@@ -15,7 +15,7 @@ uses
 
 
 const
-  cTIOPFXMLVersion= '2.0';
+  cTIOPFXMLVersion= '2.1';
   cErrorInvalidOptXMLDBSizeValue = 'Invalid OptXMLDBSize value';
   cErrorInvalidOptXMLDBSizeStringValue = 'Invalid OptXMLDBSize value <%s>';
   cErrorInvalidParamToCompressEncode   = 'Invalid param to tiCompressEncode <%s>';
@@ -118,6 +118,7 @@ type
     FFieldNameMetaDataFieldWidth: string;
     FTableNameMetaData: string;
     FFieldNameParamName: string;
+    FFieldNameParamIsNull: string;
     FFieldNameComputerName: string;
     FTableNameResultMessage: string;
     FFieldNameMetaDataTableName: string;
@@ -200,6 +201,7 @@ type
     property    FieldNameParamName : string read FFieldNameParamName;
     property    FieldNameParamKind : string read FFieldNameParamKind;
     property    FieldNameParamValue : string read FFieldNameParamValue;
+    property    FieldNameParamIsNull: string read FFieldNameParamIsNull;
 
     // Response message table
     property    TableNameResultMessage : string read FTableNameResultMessage;
@@ -444,16 +446,32 @@ type
     EscLen : Byte;
   end;
 
-// redeclare these arrays (local to this unit) to pick up redefinition above..
+// redeclare these arrays (local to this unit) to pick up redefinition above.. huh?
 
-const cTIXMLReservedChr: array [0..6] of TtiXMLReservedChar1 =
+// Reserved char arrays are split into encoding and decoding constants because
+// we still need to be able to decode xml files that have invalid
+// '&lf;' and '&cr;' character encodings now that we correctly encode with
+// '&#10;' and '&#13;'. We need to support decoding of the invalid escapings
+// for backwards compatibility.
+const cTIXMLReservedChrEncoding: array [0..6] of TtiXMLReservedChar1 =
+  ((ResChar: '&';  EscWith: '&amp;';  EscLen: 5),
+   (ResChar: '<';  EscWith: '&lt;';   EscLen: 4),
+   (ResChar: '>';  EscWith: '&gt;';   EscLen: 4),
+   (ResChar: '"';  EscWith: '&quot;'; EscLen: 6),
+   (ResChar: ''''; EscWith: '&apos;'; EscLen: 6),
+   (ResChar: #10;  EscWith: '&#10;';   EscLen: 5),
+   (ResChar: #13;  EscWith: '&#13;';   EscLen: 5));
+
+const cTIXMLReservedChrDecoding: array [0..8] of TtiXMLReservedChar1 =
   ((ResChar: '&';  EscWith: '&amp;';  EscLen: 5),
    (ResChar: '<';  EscWith: '&lt;';   EscLen: 4),
    (ResChar: '>';  EscWith: '&gt;';   EscLen: 4),
    (ResChar: '"';  EscWith: '&quot;'; EscLen: 6),
    (ResChar: ''''; EscWith: '&apos;'; EscLen: 6),
    (ResChar: #10;  EscWith: '&lf;';   EscLen: 4),
-   (ResChar: #13;  EscWith: '&cr;';   EscLen: 4));
+   (ResChar: #13;  EscWith: '&cr;';   EscLen: 4),
+   (ResChar: #10;  EscWith: '&#10;';   EscLen: 5),
+   (ResChar: #13;  EscWith: '&#13;';   EscLen: 5));
 
 const cTIMSXMLReservedChr: array [0..1] of TtiXMLReservedChar1 =
   ((ResChar: #10;  EscWith: '&lf;';   EscLen: 4),
@@ -745,7 +763,7 @@ function TtiXMLReservedCharsTranslator.InsertReserved(
   const ACharKind: TtiReservedChar; const AString: string): string;
 begin
   case ACharKind of
-    rcXML: Result := Insert(AString, cTIXMLReservedChr);
+    rcXML: Result := Insert(AString, cTIXMLReservedChrDecoding);
     rcMSXML: Result := Insert(AString, cTIMSXMLReservedChr);
     rcCSV: Result := Insert(AString, cTICSVReservedChr);
     rcTAB: Result := Insert(AString, cTITABReservedChr);
@@ -879,7 +897,7 @@ end;
 constructor TtiXMLReservedCharsTranslator.Create;
 begin
   inherited Create;
-  InitialiseLookup(FXMLReservedLookup, cTIXMLReservedChr);
+  InitialiseLookup(FXMLReservedLookup, cTIXMLReservedChrEncoding);
   InitialiseLookup(FMSXMLReservedLookup, cTIMSXMLReservedChr);
   InitialiseLookup(FCSVReservedLookup, cTICSVReservedChr);
   InitialiseLookup(FTABReservedLookup, cTITABReservedChr);
@@ -990,6 +1008,7 @@ begin
                    FFieldNameParamName         := 'param_name';
                    FFieldNameParamKind         := 'param_kind';
                    FFieldNameParamValue        := 'param_value';
+                   FFieldNameParamIsNull       := 'param_null';
 
                    // Response message table
                    FTableNameResultMessage     := 'result_message';
@@ -1032,21 +1051,22 @@ begin
                    FFieldNameParamName         := 'u';
                    FFieldNameParamKind         := 'v';
                    FFieldNameParamValue        := 'w';
+                   FFieldNameParamIsNull       := 'x';
 
                    // Response message table
-                   FTableNameResultMessage     := 'x';
-                   FFieldNameResultError       := 'y';
-                   FFieldNameResultRowCount    := 'z';
+                   FTableNameResultMessage     := 'y';
+                   FFieldNameResultError       := 'z';
+                   FFieldNameResultRowCount    := 'aa';
 
                    // MetaData structure
-                   FTableNameMetaData          := 'aa';
-                   FFieldNameMetaDataTableName := 'ab';
-                   FFieldNameMetaDataFieldName := 'ac';
-                   FFieldNameMetaDataFieldKind := 'ad';
-                   FFieldNameMetaDataFieldWidth := 'ae';
+                   FTableNameMetaData          := 'ab';
+                   FFieldNameMetaDataTableName := 'ac';
+                   FFieldNameMetaDataFieldName := 'ad';
+                   FFieldNameMetaDataFieldKind := 'ae';
+                   FFieldNameMetaDataFieldWidth:= 'af';
 
                    // Response set table
-                   FTableNameResultSet         := 'af';
+                   FTableNameResultSet         := 'ag';
                  end;
   else
     raise Exception.Create(cErrorInvalidOptXMLDBSizeValue);

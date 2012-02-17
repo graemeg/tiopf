@@ -10,8 +10,8 @@ uses
  ;
 
 const
-  cStreamStartSize = 2000000;
-  cStreamGrowBy    =  500000;
+  cStreamStartSize = 1024;
+  cStreamGrowBy    = 1024;
 
   cErrorBlockSizeMismatch = 'BlockSize/BlockAsString size mismatch. BlockSize=%d, Lenght(BlockAsString)=%d';
   cErrorBlockMissing = 'Block %d of %d missing from sequence';
@@ -34,6 +34,7 @@ type
     procedure   WriteLn(const AStr: string = '');
     function    AsString: string;
     procedure   SaveToFile(const AFileName: string);
+    procedure   AssignTo(const AStreamTo: TStream);
     property    Size: Int64 read FDataSize;
     property    Position: Int64 read GetPosition;
   end;
@@ -1131,6 +1132,18 @@ end;
 constructor TtiFileStream.CreateReadOnly(const AFileName: string);
 begin
   Create(AFileName, fmOpenRead or fmShareDenyNone);
+end;
+
+procedure TtiPreSizedStream.AssignTo(const AStreamTo: TStream);
+var
+  LSavePosition: Integer;
+begin
+  Assert(AStreamTo <> nil, 'AStreamTo not assigned');
+  LSavePosition:= FStream.Position;
+  FStream.Position:= 0;
+  AStreamTo.Size:= 0;
+  AStreamTo.CopyFrom(FStream, FDataSize);
+  FStream.Position:= LSavePosition;
 end;
 
 function TtiPreSizedStream.AsString: string;

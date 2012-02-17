@@ -57,6 +57,10 @@ type
     FOnCheckTerminated: TtiHTTPCheckTerminatedEvent;
     FRetryLimit: Byte;
     FBlockSize: Longword;
+    FResolveTimeout: Longword;
+    FConnectTimeout: Longword;
+    FSendTimeout: Longword;
+    FReceiveTimeout: Longword;
     function    GetResponseHeader(const AName: string): string;
     procedure   SetResponseHeader(const AName, AValue: string);
     function    GetResponseTIOPFBlockHeader: string;
@@ -118,6 +122,10 @@ type
     property    FormatExceptions: Boolean read FFormatExceptions Write FFormatExceptions;
     property    RetryLimit: Byte read FRetryLimit write FRetryLimit;
     property    BlockSize: Longword read FBlockSize write FBlockSize;
+    property    ResolveTimeout: Longword read FResolveTimeout write FResolveTimeout;
+    property    ConnectTimeout: Longword read FConnectTimeout write FConnectTimeout;
+    property    SendTimeout: Longword read FSendTimeout write FSendTimeout;
+    property    ReceiveTimeout: Longword read FReceiveTimeout write FReceiveTimeout;
 
     property    ResponseHeaders: TStringList Read GetResponseHeaders;
     property    ResponseHeader[const AName: string]: string Read GetResponseHeader Write SetResponseHeader;
@@ -285,6 +293,10 @@ begin
   result:= CreateInstance(AConnectionDetails.ConnectWith);
   result.BlockSize:= AConnectionDetails.BlockSize;
   result.RetryLimit:= AConnectionDetails.RetryLimit;
+  result.ResolveTimeout:= AConnectionDetails.ResolveTimeout;
+  result.ConnectTimeout:= AConnectionDetails.ConnectTimeout;
+  result.SendTimeout:= AConnectionDetails.SendTimeout;
+  result.ReceiveTimeout:= AConnectionDetails.ReceiveTimeout;
   if AConnectionDetails.ProxyServerActive then
   begin
     result.ProxyServer := AConnectionDetails.ProxyServerName;

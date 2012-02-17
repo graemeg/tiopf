@@ -29,6 +29,7 @@ type
     FUpdateEvent: TEvent;
     FThreadInstanceID: Integer;
   protected
+    procedure Execute; override;
     procedure WakeUpAndTerminate;
     function SleepAndCheckTerminated(ASleepFor: Cardinal): boolean;
     property UpdateEvent: TEvent read FUpdateEvent;
@@ -87,20 +88,18 @@ type
   end;
 
   TtiThreadClass = class of TtiThread;
+  TtiActiveThreadList = class;
 
-  TtiThreadCountChangeEvent = procedure(const AThreadCount: integer) of object;
+  TtiThreadCountChangeEvent = procedure(AActiveThreadList: TtiActiveThreadList) of object;
 
   TtiActiveThreadList = class(TtiBaseObject)
   private
     FList: TtiThreadList;
     FCritSect : TCriticalSection;
     FOnThreadCountChange: TtiThreadCountChangeEvent;
-    FThreadCount: integer;
-
     FNewThreadInstanceID: Integer;
 
-    procedure DoThreadCountChange(AThreadCount: Integer; const AThread: TThread);
-    procedure DoThreadCountChangeSynchronized;
+    procedure DoThreadCountChange(const AThread: TThread);
     procedure SetOnThreadCountChange(const AValue: TtiThreadCountChangeEvent);
     function GetThreadCount: integer;
     function GetActiveThreadNames: string;
@@ -216,7 +215,7 @@ begin
   {$IFDEF MSWINDOWS}
   tiWin32CoUnInitialize; // You never know, perhpas COM was used in this thread.
   {$ENDIF}
-  if FInActiveThreadList then
+  if FInActiveThreadList and (not ShuttingDown) then
     gTIOPFManager.ActiveThreadList.Remove(Self);
   inherited;
 end;
@@ -335,11 +334,15 @@ begin
   FCritSect.Enter;
   try
     FList.Add(AThread);
-    FList.Capacity:= FList.Count; // To suppress a memory leak being reported by DUnit2
-    DoThreadCountChange(FList.Count, AThread);
+    FList.Capacity := FList.Count; // To suppress a memory leak being reported by DUnit2
   finally
     FCritSect.Leave;
   end;
+
+  // Do this outside the critical section to avoid deadlocks where both the
+  // main thread and another thread are creating threads as we synchronize
+  // with the main thread to notify thread count change.
+  DoThreadCountChange(AThread);
 end;
 
 
@@ -349,7 +352,6 @@ begin
   FList := TtiThreadList.Create;
   FList.OwnsObjects := False;
   FCritSect := TCriticalSection.Create;
-  FThreadCount:= 0;
   FNewThreadInstanceID := 0;
 end;
 
@@ -361,34 +363,27 @@ begin
   inherited;
 end;
 
-procedure TtiActiveThreadList.DoThreadCountChange(AThreadCount: integer; const AThread: TThread);
+procedure TtiActiveThreadList.DoThreadCountChange(const AThread: TThread);
 begin
-  // We should be called whilst the critical section lock is acquired so
-  // this is just protection in case we forget!
-  FCritSect.Enter;
-  try
-    if FThreadCount <> AThreadCount then
-    begin
-      FThreadCount:= AThreadCount;
-      if Assigned(FOnThreadCountChange) then
-        TThread.Synchronize(AThread, DoThreadCountChangeSynchronized);
-    end;
-  finally
-    FCritSect.Leave;
-  end;
-end;
+  // Call the thread count change event handler in the context of the main
+  // thread. The handler can retrieve the thread count (which temporarily
+  // locks the list).
 
-procedure TtiActiveThreadList.DoThreadCountChangeSynchronized;
-begin
-  Assert(GetCurrentThreadID = MainThreadID, 'Current thread not main thread');
-
-  // Call the thread count change event handler passing the thread count.
-  // We pass the thread count so that the main thread does not need to
-  // retrieve it as this would require a lock on the critical section which
-  // would cause a deadlock as the thread that was added/removed in the list
-  // that caused the thread count change already has the lock.
+  // ***** NOTE: Be careful not to create a potential deadlock. *****
+  // Threads are typically added to the list from their constructor which is
+  // called in the context of the thread that created it. Threads are removed
+  // from the list from their destructor which is called in the context of the
+  // thread itself. Because we synchronize for the notification event a
+  // deadlock could occur if a thread is removing itself from the list while
+  // the main thread is creating a new thread if we were to acquire the lock
+  // for the duration of the notification for example.
   if Assigned(FOnThreadCountChange) then
-    FOnThreadCountChange(FThreadCount);
+    TThread.Synchronize(AThread,
+        procedure
+        begin
+          FOnThreadCountChange(Self);
+        end
+        );
 end;
 
 procedure TtiActiveThreadList.ForEach(AMethod: TtiThreadEvent);
@@ -487,7 +482,7 @@ function TtiActiveThreadList.GetThreadCount: integer;
 begin
   FCritSect.Enter;
   try
-    result:= FThreadCount;
+    result:= FList.Count;
   finally
     FCritSect.Leave;
   end;
@@ -518,16 +513,21 @@ var
 begin
   FCritSect.Enter;
   try
-    LIndex:= FList.IndexOf(AThread);
+    LIndex := FList.IndexOf(AThread);
     if LIndex <> -1 then
     begin
       FList.Delete(LIndex);
-      FList.Capacity:= FList.Count; // To suppress a memory leak being reported by DUnit2
-      DoThreadCountChange(FList.Count, AThread);
+      FList.Capacity := FList.Count; // To suppress a memory leak being reported by DUnit2
     end;
   finally
     FCritSect.Leave;
   end;
+
+  // Do this outside the critical section to avoid deadlocks where the main
+  // thread is creating threads and we're synchronizing with the main thread
+  // to notify thread count change.
+  if LIndex <> -1 then
+    DoThreadCountChange(AThread);
 end;
 
 procedure TtiActiveThreadList.SetOnThreadCountChange(
@@ -600,6 +600,11 @@ begin
 end;
 
 
+procedure TtiSleepThread.Execute;
+begin
+  SetThreadName(Self.ClassName);
+end;
+
 procedure TtiSleepThread.WakeUp;
 begin
   FUpdateEvent.SetEvent;
@@ -623,3 +628,4 @@ begin
 end;
 
 end.
+

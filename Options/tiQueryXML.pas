@@ -8,7 +8,7 @@ uses
   ,tiXML
   ,tiUtils
   ,Classes
-  ,MSXML_TLB
+  ,msxml
   {$IFNDEF VER130}
   ,Variants
   {$ENDIF}

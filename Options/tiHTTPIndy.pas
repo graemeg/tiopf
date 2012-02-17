@@ -19,6 +19,9 @@ type
   TtiHTTPIndy = class(TtiHTTPAbs)
   private
     FHTTP : TidHTTP;
+    FProxyPort: integer;
+    FProxyServer: string;
+    procedure CreateHTTP;
   protected
     procedure   DoGet(const AURL : string; AInput, AOutput: TStringStream); override;
     procedure   DoPost(const AURL : string; AInput, AOutput: TStringStream); override;
@@ -31,7 +34,6 @@ type
     function    GetResponseText: string; override;
     function    GetResponseHeaders: TStringList; override;
   public
-    Constructor Create; override;
     Destructor  Destroy; override;
     class function MappingName: string; override;
   end;
@@ -43,16 +45,20 @@ uses
   ,tiExcept
  ;
 
-constructor TtiHTTPIndy.Create;
+procedure TtiHTTPIndy.CreateHTTP;
 begin
-  inherited;
+  FreeAndNil(FHTTP);
   FHTTP := TidHTTP.Create(nil);
   FHTTP.ProtocolVersion := pv1_0;
+  FHTTP.ProxyParams.ProxyPort:= FProxyPort;
+  FHTTP.ProxyParams.ProxyServer:= FProxyServer;
+  FHTTP.ConnectTimeout := ConnectTimeout;
+  FHTTP.ReadTimeout := ReceiveTimeout;
 end;
 
 destructor TtiHTTPIndy.Destroy;
 begin
-  FHTTP.Free;
+  FreeAndNil(FHTTP);
   inherited;
 end;
 
@@ -61,6 +67,7 @@ begin
   Assert(AURL<>'', 'AURL not assigned');
   Assert(AInput<>nil, 'AInput not assigned');
   Assert(AOutput<>nil, 'AInput not assigned');
+  CreateHTTP;
   AOutput.Size:= 0;
   try
     FHTTP.Response.KeepAlive:= False;
@@ -78,6 +85,7 @@ begin
   Assert(AURL<>'', 'AURL not assigned');
   Assert(AInput<>nil, 'AInput not assigned');
   Assert(AOutput<>nil, 'AInput not assigned');
+  CreateHTTP;
   AOutput.Size:= 0;
   try
     // Had problem with this error after the app being idle for a period:
@@ -105,12 +113,12 @@ end;
 
 function TtiHTTPIndy.GetProxyPort: integer;
 begin
-  result := FHTTP.ProxyParams.ProxyPort;
+  result:= FProxyPort;
 end;
 
 function TtiHTTPIndy.GetProxyServer: string;
 begin
-  result := FHTTP.ProxyParams.ProxyServer;
+  result:= FProxyServer;
 end;
 
 function TtiHTTPIndy.GetResponseCode: Integer;
@@ -130,12 +138,12 @@ end;
 
 procedure TtiHTTPIndy.SetProxyPort(const AValue: integer);
 begin
-  FHTTP.ProxyParams.ProxyPort := AValue;
+  FProxyPort:= AValue;
 end;
 
 procedure TtiHTTPIndy.SetProxyServer(const AValue: string);
 begin
-  FHTTP.ProxyParams.ProxyServer := AValue;
+  FProxyServer:= AValue;
 end;
 
 initialization

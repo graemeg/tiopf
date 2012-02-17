@@ -219,6 +219,7 @@ uses
   Contnrs
   ,TypInfo
   ,SyncObjs
+  ,DateUtils
   ,tiUtils
   ,tiConstants
   ,tiPersistenceLayers
@@ -771,7 +772,7 @@ end;
 procedure TTestTIDatabase.tiOPFManager_DoExecInsertSQLCheckDateTime(
   const AQuery: TtiQuery);
 begin
-  CheckEquals(EncodeDate(2010, 01, 01), AQuery.FieldAsDateTime[cTIQueryColName]);
+  CheckEquals(EncodeDateTime(2010, 12, 31, 12, 34, 56, 0), AQuery.FieldAsDateTime[cTIQueryColName]);
 end;
 
 procedure TTestTIDatabase.tiOPFManager_DoExecInsertSQLCheckFloat(
@@ -808,11 +809,11 @@ procedure TTestTIDatabase.tiOPFManager_ExecInsertSQLDateTime;
 begin
   CreateTableDateTime;
   // The TVarRec container used to pass parameter values does not support
-  // TDateTime, but date as string appears to work.
+  // TDateTime directly, but wrapping it in a variant works.
   GTIOPFManager.ExecInsertSQL(
     cTIQueryTableName,
     [cTIQueryColName],
-    [FormatDateTime('dd/mm/yyyy hh:nn:ss', EncodeDate(2010, 01, 01))],
+    [Variant(EncodeDateTime(2010, 12, 31, 12, 34, 56, 0))],
     TestSetupData.DBName,
     TestSetupData.PersistenceLayerName);
   tiOPFManager_DoExecInsertSQLCheck(tiOPFManager_DoExecInsertSQLCheckDateTime);

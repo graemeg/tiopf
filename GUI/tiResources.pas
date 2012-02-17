@@ -94,6 +94,9 @@ const
   cResTI_FileOpen16D             = 'ti_FileOpen_16D';
   cResTI_FileOpen16H             = 'ti_FileOpen_16H';
   cResTI_FileOpen16N             = 'ti_FileOpen_16N';
+  cResTI_FolderOpen16D           = 'ti_FolderOpen_16D';
+  cResTI_FolderOpen16H           = 'ti_FolderOpen_16H';
+  cResTI_FolderOpen16N           = 'ti_FolderOpen_16N';
   cResTI_Find                    = 'ti_Find';
   cResTI_Find16D                 = 'ti_Find_16D';
   cResTI_Find16H                 = 'ti_Find_16H';

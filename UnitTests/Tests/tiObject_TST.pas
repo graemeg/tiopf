@@ -19,14 +19,10 @@ type
   TtiObjectTestCase = class(TtiTestCase)
   private
     procedure CheckTSTPerObjAbs(AData: TtiObjectForTesting; AValue: integer);
-    procedure SetTSTPerObjAbs(AData: TtiObjectForTesting; AValue: integer);
     procedure CheckTSTPerObjList(AData: TtiObjectListForTesting; AValue: integer);
-    procedure SetTSTPerObjList(AData: TtiObjectListForTesting; AValue: integer);
     procedure TstFindMethod(AObject : TtiObject; var AFound : boolean);
     procedure TstFindMethodWithParam(AObject : TtiObject; var AFound : boolean; AUserContext: Pointer);
     procedure TstFindAll(AObject : TtiObject; var AFound : boolean);
-    function  CreateTestDataList: TtiObjectListForTesting;
-  protected
   published
     procedure Owner;
     procedure Parent_InheritsFromVsIs;
@@ -120,9 +116,11 @@ type
     FIn2Only: TtiObjectList;
 
     procedure InBothAndEqualsEvent(AItem1, AItem2: TtiObject);
-    procedure InBothAndNotEqualsEvent(AItem1, AItem2: TtiObject);
+    procedure InBothAndNotEqualsEvent(const AItem1, AItem2: TtiObject; var ADifferenceMessage: string);
     procedure In1OnlyEvent(AItem1, AItem2: TtiObject);
     procedure In2OnlyEvent(AItem1, AItem2: TtiObject);
+    function ItemMatchFunc(const AItem1, AItem2: TtiObject): Boolean;
+    function ItemCompareFunc(const AItem1, AItem2: TtiObject): Boolean;
 
     function  CreateList: TtiObjectListForTesting;
     procedure DoForEachMethod(const AData: TtiObject);
@@ -296,6 +294,7 @@ uses
   tiOIDGUID,
   tiRTTI,
   tiExcept,
+  tiSmartPointer,
 
   // Delphi
   SysUtils,
@@ -334,6 +333,37 @@ begin
   end;
 end;
 
+procedure SetTSTPerObjList(AData: TtiObjectListForTesting; AValue: integer);
+begin
+  AData.OID.AsString := IntToStr(AValue);
+end;
+
+procedure SetTSTPerObjAbs(AData: TtiObjectForTesting; AValue: integer);
+begin
+  AData.StrProp  := IntToStr(AValue);
+  AData.IntProp  := AValue;
+  AData.FloatProp := AValue + AValue / 10 + AValue / 100 + AValue + AValue / 1000;
+  AData.DateProp := AValue;
+  AData.BoolProp := (AValue mod 2) = 0;
+  AData.OID.AsString       := IntToStr(AValue);
+end;
+
+function CreateTestDataList: TtiObjectListForTesting;
+var
+  lItem : TtiObjectWithOwnedForTesting;
+  i     : integer;
+begin
+  result := TtiObjectListForTesting.Create;
+  SetTSTPerObjList(Result, -1);
+  for i := 0 to 4 do
+  begin
+    lItem := TtiObjectWithOwnedForTesting.Create;
+    Result.Add(lItem);
+    SetTSTPerObjAbs(lItem, i*2);
+    SetTSTPerObjAbs(lItem.ObjProp, i*2+1);
+  end;
+end;
+
 type
 
   TtstAsDebugStringObject = class(TtiObject)
@@ -366,6 +396,8 @@ function TtstAsDebugStringObjectList.GetCaption: string;
 begin
   result:= 'Class name for ' + ClassName;
 end;
+
+{ TtiObjectForTestingOID }
 
 function TtiObjectForTestingOID.GetOID: TtiOID;
 begin
@@ -474,6 +506,8 @@ type
     function GetCaption: string; override;
   end;
 
+  { TtiObjectForTestingAssignCaptions }
+
   function TtiObjectForTestingAssignCaptions.GetCaption: string;
   begin
     result:= IntToStr(Index);
@@ -577,17 +611,6 @@ begin
 end;
 
 
-procedure TtiObjectTestCase.SetTSTPerObjAbs(AData : TtiObjectForTesting; AValue : integer);
-begin
-  AData.StrProp  := IntToStr(AValue);
-  AData.IntProp  := AValue;
-  AData.FloatProp := AValue + AValue / 10 + AValue / 100 + AValue + AValue / 1000;
-  AData.DateProp := AValue;
-  AData.BoolProp := (AValue mod 2) = 0;
-  AData.OID.AsString       := IntToStr(AValue);
-end;
-
-
 procedure TtiObjectTestCase.CheckTSTPerObjAbs(AData : TtiObjectForTesting; AValue : integer);
 begin
   CheckEquals(IntToStr(AValue), AData.StrProp, 'Failed on StrField');
@@ -596,12 +619,6 @@ begin
   CheckEquals(AValue, AData.DateProp, 0.00001, 'Failed on DateField');
   CheckEquals((AValue mod 2) = 0, AData.BoolProp, 'Failed on Bool');
   CheckEquals(IntToStr(AValue), AData.OID.AsString,'Failed on OID');
-end;
-
-
-procedure TtiObjectTestCase.SetTSTPerObjList(AData : TtiObjectListForTesting; AValue : integer);
-begin
-  AData.OID.AsString       := IntToStr(AValue);
 end;
 
 
@@ -779,6 +796,8 @@ type
   published
     property Data: TtiObject read FData write FData;
   end;
+
+  { TTestTIObjectDeleteOwned }
 
   constructor TTestTIObjectDeleteOwned.Create(const AOwnsData: Boolean);
   begin
@@ -1128,23 +1147,6 @@ begin
     end;
   finally
     lData.Free;
-  end;
-end;
-
-
-function TtiObjectTestCase.CreateTestDataList : TtiObjectListForTesting;
-var
-  lItem : TtiObjectWithOwnedForTesting;
-  i     : integer;
-begin
-  result := TtiObjectListForTesting.Create;
-  SetTSTPerObjList(Result, -1);
-  for i := 0 to 4 do
-  begin
-    lItem := TtiObjectWithOwnedForTesting.Create;
-    Result.Add(lItem);
-    SetTSTPerObjAbs(lItem, i*2);
-    SetTSTPerObjAbs(lItem.ObjProp, i*2+1);
   end;
 end;
 
@@ -2883,6 +2885,8 @@ begin
   end;
 end;
 
+{ TtiObjectListTestCase }
+
 procedure TtiObjectListTestCase.Add;
 var
   lList : TtiObjectListForTesting;
@@ -4236,39 +4240,52 @@ begin
   end;
 end;
 
+function _ObjectListItemMatchFunc(const AItem1, AItem2: TtiObject): Boolean;
+begin
+  result := TtiObjectForTesting(AItem1).StrProp = TtiObjectForTesting(AItem2).StrProp;
+end;
+
 procedure TtiObjectListTestCase.Find;
 var
-  lData : TtiObjectListForTesting;
-  lTarget: TtiObjectForTesting;
-  lOID: TtiOID;
-  i : integer;
+  LData: TtiObjectListForTesting;
+  LTarget: TtiObjectForTesting;
+  LOrigToFind: ItiSmartPointer<TtiObjectForTesting>;
+  i: integer;
 begin
-  lData := CreateTestData;
+  LData := CreateTestDataList;
   try
-    for i := 0 to lData.Count - 1 do
+    for i := 0 to LData.Count - 1 do
     begin
-      lTarget := lData.Items[i];
-      lOID := lTarget.OID;
-      CheckSame(lTarget, lData.Find(lOID), '#' + lOID.AsString);
+      LTarget := LData.Items[i];
+      CheckSame(LTarget, LData.Find(LTarget.OID), '#' + LTarget.OID.AsString);
 
-      lTarget := (lData.Items[i] as TtiObjectWithOwnedForTesting).ObjProp;
-      lOID := lTarget.OID;
-      CheckNull(lData.Find(lOID), '#' + lOID.AsString);
+      LTarget := (LData.Items[i] as TtiObjectWithOwnedForTesting).ObjProp;
+      CheckNull(LData.Find(LTarget.OID), '#' + LTarget.OID.AsString);
     end;
 
-    lData.SortByOID;
-    for i := 0 to lData.Count - 1 do
+    LData.SortByOID;
+    for i := 0 to LData.Count - 1 do
     begin
-      lTarget := lData.Items[i];
-      lOID := lTarget.OID;
-      CheckSame(lTarget, lData.Find(lOID), '#' + lOID.AsString);
+      LTarget := LData.Items[i];
+      CheckSame(LTarget, LData.Find(LTarget.OID), '#' + LTarget.OID.AsString);
 
-      lTarget := (lData.Items[i] as TtiObjectWithOwnedForTesting).ObjProp;
-      lOID := lTarget.OID;
-      CheckNull(lData.Find(lOID), '#' + lOID.AsString);
+      LTarget := (LData.Items[i] as TtiObjectWithOwnedForTesting).ObjProp;
+      CheckNull(LData.Find(LTarget.OID), '#' + LTarget.OID.AsString);
+    end;
+
+    LOrigToFind := TtiSmartPointer<TtiObjectForTesting>.Create();
+    for i := 0 to LData.Count - 1 do
+    begin
+      LTarget := LData.Items[i];
+      CheckSame(LTarget, LData.Find(LTarget, _ObjectListItemMatchFunc), '#' + LTarget.OID.AsString);
+
+      LOrigToFind.StrProp := LTarget.StrProp;
+      LTarget.StrProp := LTarget.StrProp + 'a';
+      CheckSame(LTarget, LData.Find(LTarget, _ObjectListItemMatchFunc), '#' + LTarget.OID.AsString);
+      CheckNull(LData.Find(TtiObject(LOrigToFind), _ObjectListItemMatchFunc), '#' + LTarget.OID.AsString);
     end;
   finally
-    lData.Free;
+    LData.Free;
   end;
 end;
 
@@ -4684,19 +4701,19 @@ begin
       LItemIn2Only      := TtiObjectForTesting.Create;
 
       LItemInBothSame1.OID.AsString   := '1';
-      LItemInBothSame2.OID.AsString   := '1';
-      LItemInBothNotSame1.OID.AsString := '2';
-      LItemInBothNotSame2.OID.AsString := '2';
-
-      LItemIn1Only.OID.AsString       := '3';
-      LItemIn2Only.OID.AsString       := '4';
-
       LItemInBothSame1.StrProp        := 'A';
+      LItemInBothSame2.OID.AsString   := '1';
       LItemInBothSame2.StrProp        := 'A';
+
+      LItemInBothNotSame1.OID.AsString := '2';
       LItemInBothNotSame1.StrProp     := 'B';
+      LItemInBothNotSame2.OID.AsString := '2';
       LItemInBothNotSame2.StrProp     := 'C';
 
+      LItemIn1Only.OID.AsString       := '3';
       LItemIn1Only.StrProp            := 'D';
+
+      LItemIn2Only.OID.AsString       := '4';
       LItemIn2Only.StrProp            := 'E';
 
       LList1.Add(LItemInBothSame1);
@@ -4706,7 +4723,9 @@ begin
       LList1.Add(LItemIn1Only);
       LList2.Add(LItemIn2Only);
 
-      LList1.CompareWith(LList2, InBothAndEqualsEvent, InBothAndNotEqualsEvent, In1OnlyEvent, In2OnlyEvent);
+      // OID matching and Item.Equals() comparison
+      LList1.CompareWith(LList2, InBothAndEqualsEvent, InBothAndNotEqualsEvent,
+          In1OnlyEvent, In2OnlyEvent);
 
       CheckEquals(1, FInBothAndEquals.Count,    'FInBothAndEquals.Count');
       CheckEquals(1, FInBothAndNotEquals.Count, 'FInBothAndNotEquals.Count');
@@ -4718,6 +4737,48 @@ begin
       CheckSame(LItemIn1Only, FIn1Only.Items[0], 'LItemIn1Only');
       CheckSame(LItemIn2Only, FIn2Only.Items[0], 'LItemIn2Only');
 
+      // Custom item matching and item comparison
+      // To test this and make sure that we're not doing the default OID
+      // matching and full Equals() comparison we make all OID's different,
+      // do matching of IntProp (not OID) and comparison of StrProp (only).
+      LItemInBothSame1.OID.AsString   := '1';
+      LItemInBothSame1.IntProp        :=  1;
+      LItemInBothSame1.StrProp        := 'A';
+      LItemInBothSame2.OID.AsString   := '2';
+      LItemInBothSame2.IntProp        :=  1;
+      LItemInBothSame2.StrProp        := 'A';
+
+      LItemInBothNotSame1.OID.AsString:= '3';
+      LItemInBothNotSame1.IntProp     :=  2;
+      LItemInBothNotSame1.StrProp     := 'B';
+      LItemInBothNotSame2.OID.AsString:= '4';
+      LItemInBothNotSame2.IntProp     :=  2;
+      LItemInBothNotSame2.StrProp     := 'C';
+
+      LItemIn1Only.OID.AsString       := '5';
+      LItemIn1Only.IntProp            :=  5;
+      LItemIn1Only.StrProp            := 'D';
+
+      LItemIn2Only.OID.AsString       := '6';
+      LItemIn2Only.IntProp            :=  6;
+      LItemIn2Only.StrProp            := 'E';
+
+      FInBothAndEquals.Clear;
+      FInBothAndNotEquals.Clear;
+      FIn1Only.Clear;
+      FIn2Only.Clear;
+      LList1.CompareWith(LList2, InBothAndEqualsEvent, InBothAndNotEqualsEvent,
+          In1OnlyEvent, In2OnlyEvent, ItemMatchFunc, ItemCompareFunc);
+
+      CheckEquals(1, FInBothAndEquals.Count,    'FInBothAndEquals.Count');
+      CheckEquals(1, FInBothAndNotEquals.Count, 'FInBothAndNotEquals.Count');
+      CheckEquals(1, FIn1Only.Count,            'FIn1Only.Count');
+      CheckEquals(1, FIn2Only.Count,            'FIn2Only.Count');
+
+      CheckSame(LItemInBothSame1, FInBothAndEquals.Items[0], 'LItemInBothSame1');
+      CheckSame(LItemInBothNotSame1, FInBothAndNotEquals.Items[0], 'LItemInBothNotSame1');
+      CheckSame(LItemIn1Only, FIn1Only.Items[0], 'LItemIn1Only');
+      CheckSame(LItemIn2Only, FIn2Only.Items[0], 'LItemIn2Only');
     finally
       LList2.Free;
     end;
@@ -4778,23 +4839,29 @@ begin
   FInBothAndEquals.Add(AItem1);
 end;
 
-procedure TtiObjectListTestCase.InBothAndNotEqualsEvent(AItem1, AItem2: TtiObject);
+procedure TtiObjectListTestCase.InBothAndNotEqualsEvent(
+  const AItem1, AItem2: TtiObject; var ADifferenceMessage: string);
 begin
+  {$MESSAGE 'Unit test TtiObject.Compare() with new DifferenceMessage parameter'}
   Assert(AItem1.TestValid, CTIErrorInvalidObject);
   Assert(AItem2.TestValid, CTIErrorInvalidObject);
   Assert(FInBothAndNotEquals.TestValid, CTIErrorInvalidObject);
   FInBothAndNotEquals.Add(AItem1);
 end;
 
-{ TTestTIObjectDeleteOwned }
+function TtiObjectListTestCase.ItemMatchFunc(const AItem1, AItem2: TtiObject): Boolean;
+begin
+  Assert(AItem1.TestValid((TtiObjectForTesting)), CTIErrorInvalidObject);
+  Assert(AItem2.TestValid(TtiObjectForTesting), CTIErrorInvalidObject);
+  result := TtiObjectForTesting(AItem1).IntProp = TtiObjectForTesting(AItem2).IntProp;
+end;
 
-{ TtiObjectForTestingOID }
-
-{ TtiObjectForTestingAssignCaptions }
+function TtiObjectListTestCase.ItemCompareFunc(const AItem1, AItem2: TtiObject): Boolean;
+begin
+  Assert(AItem1.TestValid((TtiObjectForTesting)), CTIErrorInvalidObject);
+  Assert(AItem2.TestValid(TtiObjectForTesting), CTIErrorInvalidObject);
+  result := TtiObjectForTesting(AItem1).StrProp = TtiObjectForTesting(AItem2).StrProp;
+end;
 
 end.
-
-
-
-
 

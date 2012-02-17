@@ -75,7 +75,6 @@
 			<DCCReference Include="bdertl.dcp"/>
 			<DCCReference Include="tiOPFCore.dcp"/>
 			<DCCReference Include="..\..\Options\ADOX_TLB.pas"/>
-			<DCCReference Include="..\..\Options\MSXML_TLB.pas"/>
 			<DCCReference Include="..\..\Options\tiCompressNone.pas"/>
 			<DCCReference Include="..\..\Options\tiCompressZLib.pas"/>
 			<DCCReference Include="..\..\Options\tiConsoleApp.pas"/>

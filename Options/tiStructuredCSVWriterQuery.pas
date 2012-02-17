@@ -31,13 +31,26 @@ type
     procedure WriteDRow; virtual; abstract;
   end;
 
+  TtiStructuredCSVWriterRowMethod = procedure of object;
+
+  TtiStructuredCSVWriterMultipleQuery = class(TtiStructuredCSVWriterQueryList)
+  protected
+    procedure DoExecute; override;
+    procedure WriteSection(
+        const ADataBlockName: string;
+        const AFieldNames: array of string;
+        const ASelectSQL: string;
+        const AWriteRowMethod: TtiStructuredCSVWriterRowMethod);
+    procedure WriteAll; virtual; abstract;
+  end;
+
 implementation
 
 uses
   tiOPFManager,
   tiConstants;
 
-{ TtiStructuredCSVWriterQueryListSingleQuery }
+{ TtiStructuredCSVWriterQueryList }
 
 constructor TtiStructuredCSVWriterQueryList.Create;
 begin
@@ -64,6 +77,21 @@ begin
   end;
 end;
 
+procedure TtiStructuredCSVWriterQueryList.LockDatabaseConnection;
+begin
+  FDatabase := GTIOPFManager.DefaultPerLayer.DBConnectionPools.Lock(DatabaseAlias);
+  FQuery.AttachDatabase(FDatabase);
+  FDatabase.StartTransaction;
+end;
+
+procedure TtiStructuredCSVWriterQueryList.UnLockDatabaseConnection;
+begin
+  FDatabase.Commit;
+  GTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(DatabaseAlias, FDatabase);
+end;
+
+{ TtiStructuredCSVWriterSingleQuery }
+
 procedure TtiStructuredCSVWriterSingleQuery.DoExecute;
 begin
   WriteIRow;
@@ -81,17 +109,38 @@ begin
   end;
 end;
 
-procedure TtiStructuredCSVWriterQueryList.LockDatabaseConnection;
+{ TtiStructuredCSVWriterMultipleQuery }
+
+procedure TtiStructuredCSVWriterMultipleQuery.DoExecute;
 begin
-  FDatabase := GTIOPFManager.DefaultPerLayer.DBConnectionPools.Lock(DatabaseAlias);
-  FQuery.AttachDatabase(FDatabase);
-  FDatabase.StartTransaction;
+  LockDatabaseConnection;
+  try
+    WriteAll;
+  finally
+    UnlockDatabaseConnection;
+  end;
 end;
 
-procedure TtiStructuredCSVWriterQueryList.UnLockDatabaseConnection;
+procedure TtiStructuredCSVWriterMultipleQuery.WriteSection(
+  const ADataBlockName: string;
+  const AFieldNames: array of string;
+  const ASelectSQL: string;
+  const AWriteRowMethod: TtiStructuredCSVWriterRowMethod);
 begin
-  FDatabase.Commit;
-  GTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(DatabaseAlias, FDatabase);
+  WriteI(ADataBlockName, AFieldNames);
+
+  Query.SQLText := ASelectSQL;
+  Query.Open;
+  try
+    while not Query.EOF do
+    begin
+      AWriteRowMethod;
+      Query.Next;
+    end;
+  finally
+    Query.Close;
+  end;
 end;
 
 end.
+

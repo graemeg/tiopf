@@ -38,6 +38,7 @@ uses
   ,tiOPFTestManager
   ,tiLog // Confirm which of these must be referenced here
   ,tiLogToFile
+  ,tiUtils
   ,tiBOMsForTesting
   ,tiOIDForTesting
 
@@ -73,6 +74,7 @@ uses
   ,tiCriteria_TST
   ,tiRTTI_TST
   ,tiTokenLibrary_TST
+  ,tiAtomicFileSave_tst
   ,tiBaseMediator_TST
   {$IFNDEF FPC}
   ,tiXMLToTIDataSet_TST
@@ -107,7 +109,7 @@ uses
   ,tiOPFAsqlite3_TST
   //,tiOPFZeos_MySQL41_TST // No tests
   //,tiOPFZeos_MySQL50_TST // No tests
-  ,tiOPFUIB_FB_TST
+  //,tiOPFUIB_FB_TST
   ;
 
 const
@@ -158,6 +160,7 @@ begin
   tiXML_TST.RegisterTests;
   tiCriteria_TST.RegisterTests;
   tiTokenLibrary_TST.RegisterTests;
+  tiAtomicFileSave_tst.RegisterTests;
   tiLogToFile_TST.RegisterTests;
   tiBaseMediator_TST.RegisterTests;
   {$IFNDEF FPC}
@@ -195,7 +198,7 @@ begin
   //tiOPFZeos_MySQL50_TST.RegisterTests; // No tests
   tiOPFDBISASM4_TST.RegisterTests;
   tiOPFAsqlite3_TST.RegisterTests;
-  tiOPFUIB_FB_TST.RegisterTests;
+  //tiOPFUIB_FB_TST.RegisterTests;
 
 end;
 

@@ -66,6 +66,9 @@ type
     function  OriginalData: TtiObject; virtual;
     function  EditedData: TtiObject; virtual;
 
+    procedure SetReferenceData(const AValue: TtiObject); virtual;
+    function  GetReferenceData: TtiObject; virtual;
+
     // Implement these in the concrete...
     procedure DoClearControlDataBindings; virtual;
     procedure DoSetControlDataBindings; virtual;
@@ -82,8 +85,13 @@ type
     property  OnEditsSave: TtiObjectEvent read GetOnEditsSave write SetOnEditsSave;
     property  OnEditsCancel: TtiObjectEvent read GetOnEditsCancel write SetOnEditsCancel;
     property  Data: TtiObject read GetData write SetData;
+    property  ReferenceData: TtiObject read GetReferenceData write SetReferenceData;
     property  FormSettings: TtiObject read FFormSettings write SetFormSettings;
     property  FormData: TtiDataFormData read FFormData;
+
+    property aUndo: TtiAMSAction read FaUndo;
+    property aSaveClose: TtiAMSAction read FaSaveClose;
+    property aCancelClose: TtiAMSAction read FaCancelClose;
   end;
 
 implementation
@@ -202,10 +210,22 @@ begin
   Result := FFormData.OnEditsSave;
 end;
 
+function TtiFormMgrDataForm.GetReferenceData: TtiObject;
+begin
+  Assert(FFormData.TestValid(TtiDataFormData), CTIErrorInvalidObject);
+  Result := FFormData.ReferenceData;
+end;
+
 procedure TtiFormMgrDataForm.SetOnEditsSave(AOnEditsSave: TtiObjectEvent);
 begin
   Assert(FFormData.TestValid(TtiDataFormData), CTIErrorInvalidObject);
   FFormData.OnEditsSave := AOnEditsSave;
+end;
+
+procedure TtiFormMgrDataForm.SetReferenceData(const AValue: TtiObject);
+begin
+  Assert(FFormData.TestValid(TtiDataFormData), CTIErrorInvalidObject);
+  FFormData.ReferenceData := AValue;
 end;
 
 function TtiFormMgrDataForm.GetOnEditsCancel: TtiObjectEvent;

@@ -35,7 +35,6 @@ requires
 
 contains
   ADOX_TLB in '..\..\Options\ADOX_TLB.pas',
-  MSXML_TLB in '..\..\Options\MSXML_TLB.pas',
   tiCompressNone in '..\..\Options\tiCompressNone.pas',
   tiCompressZLib in '..\..\Options\tiCompressZLib.pas',
   tiConsoleApp in '..\..\Options\tiConsoleApp.pas',

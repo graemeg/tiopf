@@ -255,6 +255,7 @@ type
     destructor  Destroy; override;
     procedure   RegisterLog(ALogTo : TtiLogToAbs); overload;
     procedure   RegisterLog(ALogTo : TtiLogToClass); overload;
+    procedure   UnregisterLog(ALogTo : TtiLogToClass);
     function    IsRegistered(const ALogToClass : TtiLogToClass): boolean;
     function    FindByLogClass(ALogToClass : TtiLogToClass): TtiLogToAbs;
     procedure   Log(const AMessage : string;
@@ -1062,6 +1063,8 @@ begin
   // log entries.
   WorkingListCritSect.Enter;
   try
+    // Note: Potential for deadlock. Logging classes must lock both critical
+    // sections in the same order if they need both (they normally wouldn't).
     EventsCritSect.Enter;
     try
       while Count > 0 do
@@ -1069,18 +1072,13 @@ begin
         LItem:= Items[0];
         Assert(LItem.TestValid, CTIErrorInvalidObject);
         Extract(LItem);
-        FWorkingList.Add(LItem);
+        WorkingList.Add(LItem);
       end;
     finally
       EventsCritSect.Leave;
     end;
-  finally
-    WorkingListCritSect.Leave;
-  end;
 
-  // Write out the events from the working list.
-  WorkingListCritSect.Enter;
-  try
+    // Write out the events from the working list.
     if WorkingList.Count > 0 then
     begin
       // NOTE: If you need to do anything in WorkingListToOutput that accesses
@@ -1225,6 +1223,7 @@ end;
 
 procedure TtiThrdLog.Execute;
 begin
+  inherited;
   while SleepAndCheckTerminated(200) do
     if FLogTo.Synchronized then
       Synchronize(WriteToOutput)
@@ -1286,6 +1285,21 @@ procedure TtiLog.RegisterLog(ALogTo : TtiLogToClass);
 begin
   Assert(ALogTo <> nil, 'ALogTo not assigned');
   RegisterLog(ALogTo.Create);
+end;
+
+
+procedure TtiLog.UnregisterLog(ALogTo: TtiLogToClass);
+var
+  i: integer;
+begin
+  FCritSect.Enter;
+  try
+    for i := FLogToList.Count - 1 downto 0 do
+      if TtiLogToAbs(FLogToList.Items[i]).ClassType = ALogTo then
+        FLogToList.Delete(i);
+  finally
+    FCritSect.Leave;
+  end;
 end;
 
 

@@ -9,10 +9,12 @@ uses
   SysUtils,
   Windows;
 
-  procedure tiWin32RunEXEAndWait(const AEXE : string);
+  procedure tiWin32RunEXEAndWait(const AEXE : string); overload;
+  procedure tiWin32RunEXEAndWait(const AEXEPathAndName, AParameters, ACurrentDir : string); overload;
   function tiCreateProcess(const AProcessName: string;
       const ACommandLineParams: string;
       var AProcessInfo: TProcessInformation): Boolean;
+  function  tiWin32ThreadRunning(const AThreadHandle: THandle): Boolean;
   function  tiWin32FileGetAttr(const AFileName : string): integer;
   function  tiWin32FileSetAttr(const AFileName: string; pAttr: Integer): Integer;
   function  tiWin32FindFirstFile(const APath: string; var  ASearchRec: TSearchRec): Integer;
@@ -32,11 +34,29 @@ uses
   function  tiWin32GetCurrentUserPersonalDir: string;
 
   {$IFNDEF FPC}
+type
+
+  TtiCreateProcessParams = record
+    CommandLine: string;
+    CommandLineParams: string;
+    WorkingDirectory: string;
+    TimeoutAfterSecs: cardinal;
+  end;
+
+  TtiCreateProcessResult = record
+    ErrorCode: Cardinal;
+    WaitResult: DWord;
+  end;
+
   //Start a process, wait until timeout reached then kill a process
-  function tiWin32RunProcessWithTimeout(const AProcessCommandLine: string;
-        const AParams: string = '';
-        const AProcessCurrentDirectory: string = '';
-        const ATimeoutIntervalSecs: Cardinal = 0): DWORD;
+  function tiWin32RunProcessWithTimeout(const AParams: TtiCreateProcessParams;
+        out AResults: TtiCreateProcessResult): Boolean;
+
+//  function tiWin32RunProcessWithTimeout(const AProcessCommandLine: string;
+//        out AResults: TtiCreateProcessResult;
+//        const AParams: string = '';
+//        const AProcessCurrentDirectory: string = '';
+//        const ATimeoutIntervalSecs: Cardinal = INFINITE): DWORD;
 
 
   function tiWin32KillProcess(const AEXEName: String): Integer;
@@ -48,6 +68,7 @@ uses
   tiUtils,
   tiConstants,
   tiExcept,
+  tiLog,
   ComObj,
   ActiveX,
   Classes,
@@ -65,7 +86,7 @@ const
   CSIDL_FLAG_CREATE   = $8000; { (force creation of requested folder if it doesn't exist yet)}
   CSIDL_PERSONAL = $0005;
 
-  CErrorCanNotExecuteApplication = 'Can not execute application "%s". Error code "%d". Error message "%s"';
+  CErrorCanNotExecuteApplication = 'System error executing application "%s". Error code "%d". Error message "%s"';
 
   {$IFDEF FPC}
   // Graeme [2007-11-27]: This constant is missing from FPC 2.2.0. I created
@@ -178,6 +199,30 @@ begin
   WaitForSingleObject(PI.hProcess, Infinite);
 end;
 
+procedure tiWin32RunEXEAndWait(const AEXEPathAndName, AParameters, ACurrentDir : string);
+var
+  SI: TStartupInfo;
+  PI: TProcessInformation;
+  LExePathNameAndParameters: string;
+begin
+  LEXEPathNameAndParameters:=
+    Trim(AEXEPathAndName + ' ' + AParameters);
+  GetStartupInfo(SI);
+  CreateProcess(
+    nil,                              // lpApplicationName
+    PChar(LEXEPathNameAndParameters), // lpCommandLine
+    nil,                              // lpProcessAttributes
+    nil,                              // lpThreadAttributes
+    False,                            // bInheritHandles
+    0,                                // dwCreationFlags
+    nil,                              // lpEnvironment
+    PChar(ACurrentDir),               // lpCurrentDirectory
+    SI,                               // lpStartupInfo
+    PI);                              // lpProcessInformation
+  WaitForInputIdle(PI.hProcess, Infinite);
+  WaitForSingleObject(PI.hProcess, Infinite);
+end;
+
 function tiCreateProcess(const AProcessName: string;
   const ACommandLineParams: string;
   var AProcessInfo: TProcessInformation): Boolean;
@@ -194,17 +239,17 @@ begin
 end;
 
 {$IFNDEF FPC}
-function tiWin32RunProcessWithTimeout(const AProcessCommandLine,
-  AParams, AProcessCurrentDirectory: string;
-  const ATimeoutIntervalSecs: Cardinal): DWORD;
+function tiWin32RunProcessWithTimeout(
+  const AParams: TtiCreateProcessParams;
+  out AResults: TtiCreateProcessResult): Boolean;
 
 var
   SI: TStartupInfo;
   LProcessInfo: TProcessInformation;
-  SA: TSecurityAttributes;
   LPProcessCurrentDirectory: PChar;
   LCommandLine: string;
-  LWaitResult: DWORD;
+  LTimeOutAfterMS: Cardinal;
+  LCreateOK: Boolean;
 const
   // WAIT_ABANDONED, 0x00000080L, 128
   // WAIT_OBJECT_0, 0x00000000L, 0
@@ -215,50 +260,107 @@ const
 
   procedure _RaiseLastSystemError(const ACommandLine: string);
   var
-    LErrorCode: DWord;
+    LError: DWord;
     LErrorMessage: string;
   begin
-    LErrorCode:= GetLastError;
-    LErrorMessage:= sysErrorMessage(LErrorCode);
+    LError:= GetLastError;
+    LErrorMessage:= sysErrorMessage(LError);
     raise EtiOPFFileSystemException.CreateFmt(CErrorCanNotExecuteApplication,
-      [LCommandLine, LErrorCode, LErrorMessage]);
+      [LCommandLine, LError, LErrorMessage]);
   end;
 
 begin
+  Result := false;
+  AResults.ErrorCode := 0;
+  AResults.WaitResult := 0;
 
-  LCommandLine := '"' + AProcessCommandLine + '" ' + AParams;
+  LCommandLine := '"' + AParams.CommandLine + '" ' + AParams.CommandLineParams;
 
-  if AProcessCurrentDirectory = '' then
+  if AParams.WorkingDirectory = '' then
     LPProcessCurrentDirectory := nil
   else
-    LPProcessCurrentDirectory := PChar(tiRemoveTrailingSlash(AProcessCurrentDirectory));
+    LPProcessCurrentDirectory := PChar(tiRemoveTrailingSlash(AParams.WorkingDirectory));
 
   GetStartupInfo(SI);
-  FillChar(SA, SizeOf(SA), 0);
-  SA.nLength:= Sizeof(SA);
-  SA.bInheritHandle:= true;
 
   try
     // CreateProcess docs are here: http://msdn.microsoft.com/en-us/library/ms682425.aspx
-    if not CreateProcess(
-      nil, PChar(LCommandLine), nil, nil,
-      cInheritParentHandlesFalse, CREATE_NO_WINDOW, nil,
-      LPProcessCurrentDirectory, SI, LProcessInfo) then
-      _RaiseLastSystemError(LCommandLine);
+    Log(Format('About to create process %s', [LCommandLine]), lsUserInfo);
+    LCreateOK := CreateProcess(
+        nil,                        // Application name
+        PChar(LCommandLine),        // Command line (Includes application name if application name param value is nil).
+        nil,                        // Process security attributes
+        nil,                        // Thread security attributes
+        cInheritParentHandlesFalse, // Inherit handles
+        CREATE_NEW_PROCESS_GROUP+NORMAL_PRIORITY_CLASS+CREATE_NO_WINDOW+SYNCHRONIZE, // Creation flags
+        nil,                        // Environment block for the new process. (Uses environment of calling process if value is nil).
+        LPProcessCurrentDirectory,  // Current directory
+        SI,                         // Startup info
+        LProcessInfo                // Process info
+    );
 
-    LWaitResult := WaitForSingleObject(LProcessInfo.hProcess, ATimeoutIntervalSecs * 1000);
-
-    if  LWaitResult = cExitWithoutTimeout then
-      GetExitCodeProcess(LProcessInfo.hProcess, Result)
-    else
+    if LCreateOK then
     begin
-      Result := LWaitResult;
-      if not TerminateProcess(LProcessInfo.hProcess, 0) then
+      Log(Format('Process created successfully %s', [LCommandLine]), lsUserInfo);
+
+      // Let the process run for TimeoutIntervalSecs.
+      if AParams.TimeoutAfterSecs > 0 then
+        LTimeOutAfterMS := AParams.TimeoutAfterSecs * 1000
+      else
+        LTimeOutAfterMS := INFINITE;
+
+      Log(Format('Waiting up to %u seconds for process to finish.', [LTimeOutAfterMS div 1000]), lsUserInfo);
+      AResults.WaitResult := WaitForSingleObject(LProcessInfo.hProcess, LTimeOutAfterMS);
+
+      // Check the status of WaitForSingleObject
+      if AResults.WaitResult = WAIT_OBJECT_0 then // WAIT_OBJECT_0, 0x00000000L, 0
       begin
-        Sleep(1000);
-        if not TerminateProcess(LProcessInfo.hProcess, 0) then
+        // Program has exited. Get exit code.
+        if GetExitCodeProcess(LProcessInfo.hProcess, AResults.ErrorCode) then
+        begin
+          Log(Format('Process exited with error code %u.', [AResults.ErrorCode]), lsUserInfo);
+          Result := AResults.ErrorCode = 0;
+        end else
+        begin
+          Log(Format('Could not get exit code for process %s.', [LCommandLine]));
           _RaiseLastSystemError(LCommandLine);
+        end;
+      end else
+      if AResults.WaitResult = WAIT_TIMEOUT then // WAIT_TIMEOUT, 0x00000102L, 258
+      begin
+        // Program has timed-out. Wait for a second then terminate that sucker!
+        Sleep(1000);
+        Log('Process timed out. Attempting to kill it...', lsUserInfo);
+        if TerminateProcess(LProcessInfo.hProcess, 0) then
+        begin
+          Log('Process terminated successfully.', lsUserInfo)
+        end else
+        begin
+          // Raise an exception if we're stuck with some invincible process that can't be killed.
+          Log('Process could not be killed.', lsError);
+          _RaiseLastSystemError(LCommandLine);
+        end;
+      end else
+      if AResults.WaitResult = WAIT_ABANDONED then // WAIT_ABANDONED, 0x00000080L, 128
+      begin
+        Log('Wait abaondoned.', lsError);
+        _RaiseLastSystemError(LCommandLine);
+      end else
+      if AResults.WaitResult = WAIT_FAILED then // WAIT_FAILED, 0xFFFFFFFF, High(DWord), 4294967295
+      begin
+        Log('Wait failed.', lsError);
+        _RaiseLastSystemError(LCommandLine);
+      end else
+      begin
+        Log(Format('Invalid wait status result %u', [AResults.WaitResult]), lsError);
+        _RaiseLastSystemError(LCommandLine);
       end;
+
+    end else
+    begin
+      // Raise an exception if the process couldn't be created.
+      Log(Format('Error creating process %s', [LCommandLine]), lsError);
+      _RaiseLastSystemError(LCommandLine);
     end;
 
   finally
@@ -267,6 +369,16 @@ begin
   end;
 end;
 {$ENDIF}
+
+function tiWin32ThreadRunning(const AThreadHandle: THandle): Boolean;
+begin
+  {$IFDEF MSWINDOWS}
+  result := WaitForSingleObject(AThreadHandle, 0) = WAIT_OBJECT_0;
+  {$ENDIF}
+  {$IFDEF UNIX}
+    {$Warning This needs to be completed! }
+  {$ENDIF}
+end;
 
 function tiWin32FileGetAttr(const AFileName : string): integer;
 begin

@@ -73,6 +73,7 @@ type
     procedure tiAddTrailingSlash;
     procedure tiAddTrailingSpace;
     procedure tiAddTrailingValue;
+    procedure tiAppendStr;
     procedure tiAppendStringToStream;
     procedure tiApplicationName;
     procedure tiAusFinancialYearDayCount;
@@ -125,6 +126,7 @@ type
     procedure tiHasRTTIOnObject;
     procedure tiHasSubDirectory;
     procedure tiHTMLEncode;
+    procedure tiHTMLDecode;
     procedure tiIfInteger;
     procedure tiIfReal;
     procedure tiIfString;
@@ -141,6 +143,7 @@ type
     procedure tiIsFileNameValid;
     procedure tiIsFileReadOnly;
     procedure tiIsNearEnough;
+    procedure tiIsNearEnoughDecimalPlaces;
     procedure tiIsVariantOfType;
     procedure tiJoinPath;
     procedure tiLocateExtension;
@@ -167,6 +170,8 @@ type
     procedure tiReplicate;
     procedure tiRound;
     procedure tiRoundDateToPreviousMinute;
+    procedure tiRoundDateToNextMinute;
+    procedure tiRoundDateToNearestMinute;
     procedure tiNextInterval;
     procedure tiDecodeDateTimeToNearestMilliSecond;
     procedure tiRoundDateTimeToNearestMilliSecond;
@@ -188,6 +193,7 @@ type
     procedure tiStrPos;
     procedure tiStrToBool;
     procedure tiStrToFloat;
+    procedure tiStrToHex;
     procedure tiStrToInt;
     procedure tiStrToIntPrefix;
     procedure tiStrTran;
@@ -197,6 +203,7 @@ type
     procedure tiTestStreamsIdentical;
     procedure tiTimeToStr;
     procedure tiToken;
+    procedure tiTokens;
     procedure tiTrim;
     procedure tiTrimL;
     procedure tiTrimR;
@@ -298,6 +305,48 @@ begin
   CheckEquals('', tiUtils.tiToken('aa,bb,cc', ',', 4), 'Failed on 9');
 end;
 
+
+procedure TTestTIUtils.tiTokens;
+var
+  LTokens: ItiTokens;
+begin
+  LTokens := tiUtils.CreateTiTokens;
+  CheckEquals(0, LTokens.Count, 'Failed on empty Text, both default args');
+
+  LTokens := tiUtils.CreateTiTokens('');
+  CheckEquals(0, LTokens.Count, 'Failed on empty Text, first explicit, second default arg');
+
+  LTokens := tiUtils.CreateTiTokens('',',');
+  CheckEquals(0, LTokens.Count, 'Failed on empty Text, both explicit args');
+
+  LTokens.SetText(',',',');
+  CheckEquals(1, LTokens.Count, 'Failed on Text=","');
+  CheckEquals('', LTokens[1], 'Failed on empty first token for Text=","');
+
+  LTokens.SetText('a',',');
+  CheckEquals(1, LTokens.Count, 'Failed on Text="a"');
+  CheckEquals('a', LTokens[1], 'Failed on empty first token for Text="a"');
+
+  LTokens.SetText('| ','|');
+  CheckEquals(2, LTokens.Count, 'Failed on Text="| "');
+  CheckEquals('', LTokens[1], 'Failed on empty first token for Text="| "');
+  CheckEquals(' ', LTokens[2], 'Failed on second token for Text="| "');
+
+  LTokens.SetText(' ,',',');
+  CheckEquals(1, LTokens.Count, 'Failed on Text=" ,"');
+  CheckEquals(' ', LTokens[1], 'Failed on empty first token for Text=" ,"');
+
+  LTokens.SetText(' ;;',';');
+  CheckEquals(2, LTokens.Count, 'Failed on Text=" ;;"');
+  CheckEquals(' ', LTokens[1], 'Failed on empty first token for Text=" ;;"');
+  CheckEquals('', LTokens[2], 'Failed on second token for Text=" ;;"');
+
+  LTokens.SetText('bobbyseparatorseparatorsox','separator');
+  CheckEquals(3, LTokens.Count, 'Failed on Text="bobbyseparatorseparatorsox"');
+  CheckEquals('bobby', LTokens[1], 'Failed on empty first token for Text="bobbyseparatorseparatorsox"');
+  CheckEquals('', LTokens[2], 'Failed on second token for Text="bobbyseparatorseparatorsox"');
+  CheckEquals('sox', LTokens[3], 'Failed on third token for Text="bobbyseparatorseparatorsox"');
+end;
 
 procedure TTestTIUtils.tiSpace;
 begin
@@ -1419,11 +1468,23 @@ procedure TTestTIUtils.tiHTMLEncode;
 begin
   CheckEquals('', tiUtils.tiHTMLEncode(''), '1');
   CheckEquals(
-      '!@#$%^*()_+-={}[]|\:;,.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 ',
-      tiUtils.tiHTMLEncode('!@#$%^*()_+-={}[]|\:;,.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 '),
+      '!@#$%^*()_+-={}[]|\:;,.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 '#13#10,
+      tiUtils.tiHTMLEncode('!@#$%^*()_+-={}[]|\:;,.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 '#13#10),
       '2');
   CheckEquals('A&amp;&lt;&gt;&quot;&apos;Z', tiUtils.tiHTMLEncode('A&<>"''Z'), '3');
 end;
+
+
+procedure TTestTIUtils.tiHTMLDecode;
+begin
+  CheckEquals('', tiUtils.tiHTMLDecode(''), '1');
+  CheckEquals(
+      '!@#$%^*()_+-={}[]|\:;,.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 ',
+      tiUtils.tiHTMLDecode('!@#$%^*()_+-={}[]|\:;,.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 '),
+      '2');
+  CheckEquals('A&<>"'''#13#10'Z', tiUtils.tiHTMLDecode('A&amp;&lt;&gt;&quot;&apos;&cr;&lf;Z'), '3');
+end;
+
 
 procedure TTestTIUtils.tiStringToFile;
 var
@@ -1649,6 +1710,19 @@ begin
   CheckEquals(1000, tiUtils.tiStrToFloat('1,000'), 'Failed on ''1,000''');
   CheckEquals(1000000, tiUtils.tiStrToFloat('1,000,000'), 'Failed on ''1,000,000''');
   CheckEquals(1000, tiUtils.tiStrToFloat('$ 1,000'), 'Failed on ''$ 1,000''');
+end;
+
+
+procedure TTestTIUtils.tiStrToHex;
+begin
+  CheckEquals('', tiUtils.tiStrToHex(''), '1');
+{$IFDEF UNICODE}
+  CheckEquals('0041000D005A', tiUtils.tiStrToHex('A'#13'Z'), '2');
+  CheckEquals('$0041$000D$005A', tiUtils.tiStrToHex('A'#13'Z', '$'), '3');
+{$ELSE}
+  CheckEquals('410D5A', tiUtils.tiStrToHex('A'#13'Z'), '2');
+  CheckEquals('$41$0D$5A', tiUtils.tiStrToHex('A'#13'Z', '$'), '3');
+{$ENDIF}
 end;
 
 
@@ -2625,9 +2699,20 @@ begin
   CheckEquals('$1 alpha', tiUtils.tiStripIntPrefix('$1 alpha'));
 end;
 
+procedure TTestTIUtils.tiAppendStr;
+begin
+  CheckEquals('', tiUtils.tiAppendStr('', ''));
+  CheckEquals('', tiUtils.tiAppendStr('', '', '-'));
+  CheckEquals('a', tiUtils.tiAppendStr('a', '', ''));
+  CheckEquals('a', tiUtils.tiAppendStr('a', ''));
+  CheckEquals('a b', tiUtils.tiAppendStr('a', 'b'));
+  CheckEquals('a-b', tiUtils.tiAppendStr('a', 'b', '-'));
+  CheckEquals('aax-xbb', tiUtils.tiAppendStr('aa', 'bb', 'x-x'));
+end;
+
 procedure TTestTIUtils.tiAppendStringToFile;
 begin
-
+  Assert(false, 'Under construction');
 end;
 
 procedure TTestTIUtils.tiAppendStringToStream;
@@ -2968,6 +3053,13 @@ begin
   CheckEquals(True, tiUtils.tiIsNearEnough(0.0,  0.0000013));
   CheckEquals(True, tiUtils.tiIsNearEnough(0.0, -0.0000013));
 
+  // FEPS in tiIsNearEnough controls the number of significant digits, not
+  // the number of decimal places. A few tests to make this clear:
+  CheckEquals(True, tiUtils.tiIsNearEnough(11111.111111, 11112.11111, 0.0001));
+  CheckEquals(True, tiUtils.tiIsNearEnough(11112.111111, 11111.11111, 0.0001));
+  CheckEquals(False, tiUtils.tiIsNearEnough(11111.111111, 11112.11111, 0.00001));
+  CheckEquals(False, tiUtils.tiIsNearEnough(11112.111111, 11111.11111, 0.00001));
+
   CheckEquals(True, tiUtils.tiIsNearEnough(39.5620019, 39.5621821, 0.0001));
   CheckEquals(False, tiUtils.tiIsNearEnough(39.5620019, 39.5621821, 0.000001));
 
@@ -2976,6 +3068,41 @@ begin
   CheckEquals(True, tiUtils.tiIsNearEnough(3.141592654e20, 3.141593915e20));
   CheckEquals(True, tiUtils.tiIsNearEnough(3.141592654e-20, 3.141593915e-20));
 
+end;
+
+
+procedure TTestTIUtils.tiIsNearEnoughDecimalPlaces;
+begin
+  CheckTrue(tiUtils.tiIsNearEnoughDecimalPlaces(0.0,  0.0));
+  CheckTrue(tiUtils.tiIsNearEnoughDecimalPlaces(0.0,  0.0049));
+  CheckTrue(tiUtils.tiIsNearEnoughDecimalPlaces(0.0, -0.0049));
+  CheckTrue(tiUtils.tiIsNearEnoughDecimalPlaces(1.123, 1.124));
+  CheckFalse(tiUtils.tiIsNearEnoughDecimalPlaces(1.0, -1.0));
+  CheckFalse(tiUtils.tiIsNearEnoughDecimalPlaces(0.0, 0.0051));
+  CheckFalse(tiUtils.tiIsNearEnoughDecimalPlaces(0.0, -0.0051));
+  CheckFalse(tiUtils.tiIsNearEnoughDecimalPlaces(1.123, 1.125));
+
+  CheckTrue(tiUtils.tiIsNearEnoughDecimalPlaces(1234.5678, 1234.5678, 2));
+  CheckTrue(tiUtils.tiIsNearEnoughDecimalPlaces(1234.567, 1234.567, 2));
+  CheckTrue(tiUtils.tiIsNearEnoughDecimalPlaces(1234.56, 1234.56, 2));
+  CheckTrue(tiUtils.tiIsNearEnoughDecimalPlaces(1234.5, 1234.5, 2));
+  CheckTrue(tiUtils.tiIsNearEnoughDecimalPlaces(1234, 1234, 2));
+
+  CheckTrue(tiUtils.tiIsNearEnoughDecimalPlaces(1234.5678, 1234.5679, 2));
+  CheckTrue(tiUtils.tiIsNearEnoughDecimalPlaces(1234.567, 1234.568, 2));
+  CheckFalse(tiUtils.tiIsNearEnoughDecimalPlaces(1234.56, 1234.57, 2));
+  CheckFalse(tiUtils.tiIsNearEnoughDecimalPlaces(1234.5, 1234.6, 2));
+  CheckFalse(tiUtils.tiIsNearEnoughDecimalPlaces(1234, 1235, 2));
+  CheckFalse(tiUtils.tiIsNearEnoughDecimalPlaces(1234.56, 1235.56, 2));
+
+  CheckTrue(tiUtils.tiIsNearEnoughDecimalPlaces(3.141592654e-10, 3.141593e-10, 10));
+  CheckTrue(tiUtils.tiIsNearEnoughDecimalPlaces(3.141592654e-10, 3.141593e-10, 11));
+  CheckTrue(tiUtils.tiIsNearEnoughDecimalPlaces(3.141592654e-10, 3.141593e-10, 12));
+  CheckTrue(tiUtils.tiIsNearEnoughDecimalPlaces(3.141592654e-10, 3.141593e-10, 13));
+  CheckTrue(tiUtils.tiIsNearEnoughDecimalPlaces(3.141592654e-10, 3.141593e-10, 14));
+  CheckTrue(tiUtils.tiIsNearEnoughDecimalPlaces(3.141592654e-10, 3.141593e-10, 15));
+  CheckTrue(tiUtils.tiIsNearEnoughDecimalPlaces(3.141592654e-10, 3.141593e-10, 16));
+  CheckFalse(tiUtils.tiIsNearEnoughDecimalPlaces(3.141592654e-10, 3.141593e-10, 17));
 end;
 
 
@@ -2990,16 +3117,86 @@ end;
 
 procedure TTestTIUtils.tiRoundDateToPreviousMinute;
 begin
+  // Mid-minute
   CheckEquals(EncodeDateTime(2007, 06, 02, 12, 30, 00, 000),
              tiUtils.tiRoundDateToPreviousMinute(
                EncodeDateTime(2007, 06, 02, 12, 30, 30, 000)));
+  // Exact minute
   CheckEquals(EncodeDateTime(2007, 06, 02, 12, 30, 00, 000),
              tiUtils.tiRoundDateToPreviousMinute(
                EncodeDateTime(2007, 06, 02, 12, 30, 00, 000)));
+  // One millisecond after minute
   CheckEquals(EncodeDateTime(2007, 06, 02, 12, 30, 00, 000),
              tiUtils.tiRoundDateToPreviousMinute(
                EncodeDateTime(2007, 06, 02, 12, 30, 00, 001)));
+  // Sub-millisecond after minute
+  CheckEquals(EncodeDateTime(2007, 06, 02, 12, 30, 00, 000),
+             tiUtils.tiRoundDateToPreviousMinute(
+               EncodeDateTime(2007, 06, 02, 12, 30, 00, 000) + 0.4 / MSecsPerDay));
+  // One millisecond before minute
+  CheckEquals(EncodeDateTime(2007, 06, 02, 12, 29, 00, 000),
+             tiUtils.tiRoundDateToPreviousMinute(
+               EncodeDateTime(2007, 06, 02, 12, 29, 59, 999)));
 end;
+
+
+procedure TTestTIUtils.tiRoundDateToNextMinute;
+begin
+  // Mid-minute
+  CheckEquals(EncodeDateTime(2007, 06, 02, 12, 31, 00, 000),
+             tiUtils.tiRoundDateToNextMinute(
+               EncodeDateTime(2007, 06, 02, 12, 30, 30, 000)));
+  // Exact minute (not rounded)
+  CheckEquals(EncodeDateTime(2007, 06, 02, 12, 30, 00, 000),
+             tiUtils.tiRoundDateToNextMinute(
+               EncodeDateTime(2007, 06, 02, 12, 30, 00, 000)));
+  // One millisecond after minute
+  CheckEquals(EncodeDateTime(2007, 06, 02, 12, 31, 00, 000),
+             tiUtils.tiRoundDateToNextMinute(
+               EncodeDateTime(2007, 06, 02, 12, 30, 00, 001)));
+  // Sub-millisecond after minute (not rounded, sub-millisecond truncated)
+  CheckEquals(EncodeDateTime(2007, 06, 02, 12, 30, 00, 000),
+             tiUtils.tiRoundDateToNextMinute(
+               EncodeDateTime(2007, 06, 02, 12, 30, 00, 000) + 0.4 / MSecsPerDay));
+  // One millisecond before minute
+  CheckEquals(EncodeDateTime(2007, 06, 02, 12, 30, 00, 000),
+             tiUtils.tiRoundDateToNextMinute(
+               EncodeDateTime(2007, 06, 02, 12, 29, 59, 999)));
+end;
+
+
+procedure TTestTIUtils.tiRoundDateToNearestMinute;
+begin
+  // On mid-minute
+  CheckEquals(EncodeDateTime(2007, 06, 02, 12, 31, 00, 000),
+             tiUtils.tiRoundDateToNearestMinute(
+               EncodeDateTime(2007, 06, 02, 12, 30, 30, 000)));
+  // Before mid-minute
+  CheckEquals(EncodeDateTime(2007, 06, 02, 12, 30, 00, 000),
+             tiUtils.tiRoundDateToNearestMinute(
+               EncodeDateTime(2007, 06, 02, 12, 30, 29, 999)));
+  // After mid-minute
+  CheckEquals(EncodeDateTime(2007, 06, 02, 12, 31, 00, 000),
+             tiUtils.tiRoundDateToNearestMinute(
+               EncodeDateTime(2007, 06, 02, 12, 30, 30, 001)));
+  // Exact minute
+  CheckEquals(EncodeDateTime(2007, 06, 02, 12, 30, 00, 000),
+             tiUtils.tiRoundDateToNearestMinute(
+               EncodeDateTime(2007, 06, 02, 12, 30, 00, 000)));
+  // One millisecond after minute
+  CheckEquals(EncodeDateTime(2007, 06, 02, 12, 30, 00, 000),
+             tiUtils.tiRoundDateToNearestMinute(
+               EncodeDateTime(2007, 06, 02, 12, 30, 00, 001)));
+  // Sub-millisecond after minute
+  CheckEquals(EncodeDateTime(2007, 06, 02, 12, 30, 00, 000),
+             tiUtils.tiRoundDateToNearestMinute(
+               EncodeDateTime(2007, 06, 02, 12, 30, 00, 000) + 0.4 / MSecsPerDay));
+  // One millisecond before minute
+  CheckEquals(EncodeDateTime(2007, 06, 02, 12, 30, 00, 000),
+             tiUtils.tiRoundDateToNearestMinute(
+               EncodeDateTime(2007, 06, 02, 12, 29, 59, 999)));
+end;
+
 
 procedure TTestTIUtils.tiNextInterval;
 begin

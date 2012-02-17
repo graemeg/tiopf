@@ -46,6 +46,7 @@ const
   cFieldNameParamName          = 'param_name'     ;
   cFieldNameParamKind          = 'param_kind'     ;
   cFieldNameParamValue         = 'param_value'    ;
+  cFieldNameParamIsNull        = 'param_null'     ;
 
   // Response message table
   cTableNameResultMessage      = 'result_message' ;
@@ -127,7 +128,7 @@ type
     FQueryKindAsString: string;
   protected
   public
-    function    AddInstance(AName, pKind, AValue : string): TtiQueryParamAbs;
+    function    AddInstance(const AName, AKind, AValue: string; const AIsNull: Boolean): TtiQueryParamAbs;
     procedure   AssignToQuery(const AQuery : TtiQuery);
   published
     property    SQL : string read FSQL write FSQL;
@@ -325,6 +326,7 @@ begin
     GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiQueryParamAbs, uXMLTags.TableNameQueryParam, 'Name',          'Name', [pktDB]);
     GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiQueryParamAbs, uXMLTags.TableNameQueryParam, 'KindAsStr',     'Kind');
     GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiQueryParamAbs, uXMLTags.TableNameQueryParam, 'ValueAsString', 'AValue');
+    GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiQueryParamAbs, uXMLTags.TableNameQueryParam, 'IsNull',        'IsNull');
     GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiQueryTransParams, TtiQueryParamAbs);
   end;
 end;
@@ -394,23 +396,25 @@ end;
 
 { TtiQueryTransParams }
 
-function TtiQueryTransParams.AddInstance(AName, pKind,
-  AValue: string): TtiQueryParamAbs;
+function TtiQueryTransParams.AddInstance(const AName, AKind, AValue: string;
+  const AIsNull: Boolean): TtiQueryParamAbs;
 begin
-  case StrToQueryFieldKind(pKind) of
-  qfkString  : result := TtiQueryParamString.Create;
-  qfkInteger : result := TtiQueryParamInteger.Create;
-  qfkFloat   : result := TtiQueryParamFloat.Create;
-  qfkDateTime : result := TtiQueryParamDateTime.Create;
-  qfkLogical : result := TtiQueryParamBoolean.Create;
-  qfkBinary  : result := TtiQueryParamStream.Create;
+  case StrToQueryFieldKind(AKind) of
+    qfkString  : result := TtiQueryParamString.Create;
+    qfkInteger : result := TtiQueryParamInteger.Create;
+    qfkFloat   : result := TtiQueryParamFloat.Create;
+    qfkDateTime: result := TtiQueryParamDateTime.Create;
+    qfkLogical : result := TtiQueryParamBoolean.Create;
+    qfkBinary  : result := TtiQueryParamStream.Create;
   else
     raise Exception.Create('Invalid ParamKind');
   end;
   result.Name := AName;
-  result.SetValueAsString(AValue);
+  if AIsNull then
+    result.IsNull := true
+  else
+    result.SetValueAsString(AValue);
   Add(result);
-
 end;
 
 procedure TtiQueryTransParams.AssignToQuery(const AQuery: TtiQuery);
@@ -492,6 +496,7 @@ begin
     lTableMetaData.AddInstance(uXMLTags.FieldNameParamName,       qfkString, 9999);
     lTableMetaData.AddInstance(uXMLTags.FieldNameParamKind,       qfkString, 9999);
     lTableMetaData.AddInstance(uXMLTags.FieldNameParamValue,      qfkString, 9999);
+    lTableMetaData.AddInstance(uXMLTags.FieldNameParamIsNull,     qfkString, 9999);
     DBRequestXML.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
@@ -871,6 +876,10 @@ begin
 
     FHTTP.BlockSize:= StrToInt64Def(Params.Values[CHTTPBlockSize], 0);
     FHTTP.RetryLimit:= StrToIntDef(Params.Values[CHTTPRetryLimit], 1);
+    FHTTP.ResolveTimeout:= StrToIntDef(Params.Values[CHTTPResolveTimeout], 0);
+    FHTTP.ConnectTimeout:= StrToIntDef(Params.Values[CHTTPConnectTimeout], 0);
+    FHTTP.SendTimeout:= StrToIntDef(Params.Values[CHTTPSendTimeout], 0);
+    FHTTP.ReceiveTimeout:= StrToIntDef(Params.Values[CHTTPReceiveTimeout], 0);
 
     if not SameText(cHTTPMSXML, FHTTP.MappingName) then
     begin
@@ -926,6 +935,7 @@ function TtiQueryRemoteXML.ExecSQL: integer;
           lParams.SetValueAsString(uXMLTags.FieldNameParamName, FParams.Items[i].Name);
           lParams.SetValueAsString(uXMLTags.FieldNameParamKind, FParams.Items[i].KindAsStr);
           lParams.SetValueAsString(uXMLTags.FieldNameParamValue, FParams.Items[i].GetValueAsString);
+          lParams.SetValueAsString(uXMLTags.FieldNameParamIsNull, tiBooleanToStr(FParams.Items[i].IsNull));
           lQuery.InsertRow(uXMLTags.TableNameQueryParam, lParams);
         end;
       finally
@@ -1122,7 +1132,12 @@ end;
 
 procedure TtiQueryRemoteXML.SetParamIsNull(const AName: String; const AValue: Boolean);
 begin
-  FParams.ParamIsNull[ AName ]:= AValue;
+  // Create the param if it doesn't exist because setting to ParamIsNull won't
+  // create it. We can use a string param in all cases as we just need the
+  // 'null' status.
+  if FParams.FindParamByName(AName) = nil then
+    FParams.SetValueAsString(AName, '');
+  FParams.ParamIsNull[AName] := AValue;
 end;
 
 procedure TtiQueryRemoteXML.SetSQL(const AValue: TStrings);

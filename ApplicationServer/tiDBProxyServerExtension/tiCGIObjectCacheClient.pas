@@ -13,6 +13,9 @@ uses
   ,SyncObjs
   ;
 
+const
+  CErrorCanNotCreateCacheDataDirectory = 'Can not create cache data directory "%s"';
+
 type
 
   TtiCGIObjectCacheClient = class( TtiObjectCacheAbs )
@@ -95,7 +98,7 @@ begin
   if not DirectoryExists(CacheDirectory) then
     ForceDirectories(CacheDirectory);
   if not DirectoryExists(CacheDirectory) then
-    raise EtiCGIException.Create(cTICGIExitCodeCanNotCreateCacheDirectory);
+    raise EtiCGIException.CreateFmt(CErrorCanNotCreateCacheDataDirectory, [CacheDirectory]);
   inherited;
 end;
 

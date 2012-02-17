@@ -172,10 +172,9 @@ begin
   ThisBlockSize := BlockSize;
   Count := pSrc.Size - pSrc.Position;
   if (Count = 0) or (Count mod ThisBlockSize <> 0) then
-  begin
-    raise Exception.CreateFmt('Ciphertext length is not a multiple of %d.',
-                              [ThisBlockSize]);
-  end;
+    raise Exception.CreateFmt('Ciphertext length %d is not a multiple of %d bytes.',
+        [Count, ThisBlockSize]);
+
   BufSize := ThisBlockSize * BlocksPerBuf;
   GetMem(Buf, BufSize);
   for I := 1 to Count div BufSize do begin
@@ -290,10 +289,9 @@ begin
   lNumCiphertextBytes := Length(psData) * SizeOf(Char);
   if (lNumCiphertextBytes = 0) or
      (lNumCiphertextBytes mod SizeOf(Int64) <> 0) then
-  begin
-    raise Exception.CreateFmt('Ciphertext is not a multiple of %d bytes.',
-                              [SizeOf(Int64)]);
-  end;
+    raise Exception.CreateFmt('Ciphertext length %d is not a multiple of %d bytes.',
+        [lNumCiphertextBytes, SizeOf(Int64)]);
+
   { Decrypt last block first. This tells us how many padding bytes there are. }
   lPS := Pointer(psData);
   Inc(lPS, Pred(lNumCiphertextBytes div SizeOf(Int64)));

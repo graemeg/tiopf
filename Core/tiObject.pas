@@ -415,7 +415,8 @@ type
     constructor CreateNew(const ADatabaseName: string = ''; const APersistenceLayerName: string = ''); overload; virtual;
     destructor  Destroy; override;
     {: Does this object equal another? }
-    function    Equals(const AData : TtiObject): boolean; reintroduce; virtual;
+    function    Equals(const AData : TtiObject): boolean; reintroduce; overload; virtual;
+    function    Equals(const AData : TtiObject; var ADifferenceMessage: string): boolean; reintroduce; overload; virtual;
     {: The OID of this object }
    {$IFDEF OID_AS_INT64}
       property    OID        : TtiOID                   read GetOID write SetOID;
@@ -533,7 +534,10 @@ type
 
 
   TtiObjectListCompareEvent = procedure(AItem1, AItem2: TtiObject) of object;
+  TtiObjectListCompareWithDifferenceMessageEvent = procedure(const AItem1, AItem2: TtiObject; var ADifferenceMessage: string) of object;
   TtiObjectListFindCompareFunc = function(const AObject: TtiObject; const AValue): integer of object;
+  TtiObjectListItemMatchFunc = reference to function(const AItem1, AItem2: TtiObject): Boolean;
+  TtiObjectListItemCompareFunc = reference to function(const AItem1, AItem2: TtiObject): Boolean;
 
 
   TtiEnumerator = class(TtiBaseObject)
@@ -568,6 +572,7 @@ type
     function    GetItems(i: integer): TtiObject; virtual;
     procedure   SetItems(i: integer; const AValue: TtiObject); virtual;
     procedure   SetItemOwner(const AValue: TtiObject); virtual;
+    function    CreateAssignItem(const ASource: TtiObject): TtiObject; virtual;
     procedure   AssignPublicProps(ASource : TtiObject); override;
     procedure   AssignClassProps(ASource: TtiObject); override;
     function    IndexOfBinary(AOIDToFind : TtiOID): integer; virtual;
@@ -602,6 +607,8 @@ type
     function    Find(const AOIDToFind : TtiOID): TtiObject; override;
     {: Finds the object in the list whose OID value matches. Faster search if sorted by OID. }
     function    Find(AOIDToFind : TtiOID; ASortType: TtiPerObjListSortType): TtiObject; overload;
+    {: Finds the first object in the list that matches the given object according to the called match function. }
+    function    Find(const AObject: TtiObject; const AItemMatchFunc: TtiObjectListItemMatchFunc): TtiObject; overload;
     {: Finds the object in the list whose OID value matches. Will search the list, and if not found, will search all owned objects }
     function    FindInHierarchy(AOIDToFind : TtiOID): TtiObject; overload;
     {: Finds the object in the sorted list given a comparison function. If not found the index is the insertion point.
@@ -658,9 +665,11 @@ type
     {: Compare Self with AList. Fire an event for each object depending on the differences}
     procedure   CompareWith(const AList: TtiObjectList;
                             const AInBothAndEquals: TtiObjectListCompareEvent;
-                            const AInBothAndNotEquals: TtiObjectListCompareEvent;
+                            const AInBothAndNotEquals: TtiObjectListCompareWithDifferenceMessageEvent;
                             const AIn1Only: TtiObjectListCompareEvent;
-                            const AIn2Only: TtiObjectListCompareEvent); virtual;
+                            const AIn2Only: TtiObjectListCompareEvent;
+                            const AItemMatchFunc: TtiObjectListItemMatchFunc = nil;
+                            const AItemCompareFunc: TtiObjectListItemCompareFunc = nil); virtual;
 
     {: Compare Self with AList. Add each object to the appropriate list depending on the differences}
 //    procedure   CompareWith(AList: TtiObjectList;
@@ -1987,28 +1996,33 @@ begin
     AStrings.AddObject(Items[i].Caption, Items[i]);
 end;
 
+// Uses the parameterless constructor
+function TtiObjectList.CreateAssignItem(const ASource: TtiObject): TtiObject;
+var
+  LClass: TtiClass;
+begin
+  LClass := TtiClass(ASource.ClassType);
+  Result := TtiObject(LClass.Create);
+end;
+
 procedure TtiObjectList.AssignClassProps(ASource: TtiObject);
 var
-  i : integer;
-  lClass : TtiClass;
-  lSource : TtiObject;
-  lTarget : TtiObject;
+  i: integer;
+  LSource: TtiObject;
+  LTarget: TtiObject;
 begin
-  Assert(ASource is TtiObjectList,
-          'ASource not a TtiObjectList');
+  Assert(ASource is TtiObjectList, 'ASource not a TtiObjectList');
 
   if OwnsObjects then
   begin
     for i := 0 to TtiObjectList(ASource).Count - 1 do
     begin
-      lSource := TtiObjectList(ASource).Items[i];
-      lClass := TtiClass(lSource.ClassType);
-      lTarget := TtiObject(lClass.Create);
-      Add(lTarget);
-      lTarget.Assign(lSource);
+      LSource := TtiObjectList(ASource).Items[i];
+      LTarget := CreateAssignItem(LSource);
+      Add(LTarget);
+      LTarget.Assign(LSource);
       if AutoSetItemOwner then
-        lTarget.Owner := ItemOwner;
-
+        LTarget.Owner := ItemOwner;
     end;
   end
   else
@@ -2742,6 +2756,18 @@ begin
     Result := Items[FindIndex]
   else
     Result := nil;
+end;
+
+function TtiObjectList.Find(const AObject: TtiObject;
+  const AItemMatchFunc: TtiObjectListItemMatchFunc): TtiObject;
+var
+  i: Integer;
+begin
+  Assert(Assigned(AItemMatchFunc), 'AItemMatchFunc must be assigned');
+  for i := 0 to Count - 1 do
+    if AItemMatchFunc(AObject, Items[i]) then
+      Exit(Items[i]); //==>
+  result := nil;
 end;
 
 function TtiObjectList.FindInHierarchy(AOIDToFind: TtiOID): TtiObject;
@@ -4052,11 +4078,19 @@ begin
   result := nil;
 end;
 
-procedure TtiObjectList.CompareWith(const AList: TtiObjectList; const AInBothAndEquals,
-  AInBothAndNotEquals, AIn1Only, AIn2Only: TtiObjectListCompareEvent);
+procedure TtiObjectList.CompareWith(
+  const AList: TtiObjectList;
+  const AInBothAndEquals: TtiObjectListCompareEvent;
+  const AInBothAndNotEquals: TtiObjectListCompareWithDifferenceMessageEvent;
+  const AIn1Only: TtiObjectListCompareEvent;
+  const AIn2Only: TtiObjectListCompareEvent;
+  const AItemMatchFunc: TtiObjectListItemMatchFunc;
+  const AItemCompareFunc: TtiObjectListItemCompareFunc);
 var
   i: Integer;
   L: TtiObject;
+  LDifferenceMessage: string;
+  LEquals: Boolean;
 begin
   Assert(AList.TestValid, CTIErrorInvalidObject);
   Assert(Assigned(AInBothAndEquals),    'AInBothAndEquals not assigned');
@@ -4064,20 +4098,33 @@ begin
   Assert(Assigned(AIn1Only),            'AIn1Onlynot assigned');
   Assert(Assigned(AIn2Only),            'AIn2Onlynot assigned');
 
-  for i:= 0 to Count - 1 do
+  for i := 0 to Count - 1 do
   begin
-    L:= AList.Find(Items[i].OID);
+    if Assigned(AItemMatchFunc) then
+      L := AList.Find(Items[i], AItemMatchFunc)
+    else
+      L := AList.Find(Items[i].OID);
     if L = nil then
       AIn1Only(Items[i], nil)
-    else if Items[i].Equals(L) then
-      AInBothAndEquals(Items[i], L)
     else
-      AInBothAndNotEquals(Items[i], L);
+    begin
+      if Assigned(AItemCompareFunc) then
+        LEquals := AItemCompareFunc(Items[i], L)
+      else
+        LEquals := Items[i].Equals(L, LDifferenceMessage);
+      if LEquals then
+        AInBothAndEquals(Items[i], L)
+      else
+        AInBothAndNotEquals(Items[i], L, LDifferenceMessage);
+    end;
   end;
 
-  for i:= 0 to AList.Count - 1 do
+  for i := 0 to AList.Count - 1 do
   begin
-    L:= Find(AList.Items[i].OID);
+    if Assigned(AItemMatchFunc) then
+      L := Find(AList.Items[i], AItemMatchFunc)
+    else
+      L := Find(AList.Items[i].OID);
     if L = nil then
       AIn2Only(nil, AList.Items[i]);
   end;
@@ -4119,6 +4166,20 @@ begin
     Dec(FUpdateCount);
     if FUpdateCount = 0 then
       NotifyObservers;
+  end;
+end;
+
+function TtiObject.Equals(const AData: TtiObject;
+  var ADifferenceMessage: string): boolean;
+begin
+  result:= Equals(AData);
+  if not result then
+  begin
+    if ADifferenceMessage <> '' then
+      ADifferenceMessage:= ADifferenceMessage + '; ';
+    ADifferenceMessage :=
+      ADifferenceMessage + '"' + ClassName + ': ' +
+      Caption + ' <> ' + AData.Caption + '"';
   end;
 end;
 

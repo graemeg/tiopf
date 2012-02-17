@@ -33,32 +33,46 @@ type
   PtrUInt = cardinal;
 {$ENDIF}
 
+  ItiTokens = interface
+    ['{9E3F0CF7-1430-4A8B-B204-80AD03A4F567}']
+    function Count: integer;
+    function GetToken(const AIndex: integer): string;
+    // AText is a collection of Tokens separated by ASeparator
+    procedure SetText(const AText, ASeparator: string);
+    // note: AIndex is 1-based index of AIndex-th Token in AText
+    property Tokens[const AIndex: integer]: string read GetToken; default;
+  end;
+
+  function CreateTiTokens(const AText: string = ''; const ASeparator: string = ','): ItiTokens;
+
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
   // *
   // * String manipulation
   // *
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-  { ToDo 5 -cUtils: Convert params to const }
+    { ToDo 5 -cUtils: Convert params to const }
   // Scan the string AValue, and replace any characters ADel with AIns (Case sensitive)
   function  tiStrTran(        AValue, ADel, AIns : string): string;
   function  tiStrTran1(AValue, ADel, AIns : string): string;
   // Scan the string AValue, and replace any characters ADel with AIns (Case insensitive)
   function  tiCIStrTran(      AValue, ADel, AIns : string): string;
-  // Count the number of blocks of text in AValue seperated by AToken
-  function  tiNumToken(       const AValue, AToken : string): integer;
-  // Extract the APos(th) block of text in AValue, seperated by AToken
-  function  tiToken(          const AValue, AToken : string; const APos : integer): string;
+  // Count the number of blocks of text (tokens) in AValue separated by ASeparator
+  function  tiNumToken(       const AValue, ASeparator : string): integer;
+  // Extract the 1-based ATokenIndex(th) block of text (token) in AValue, seperated by ASeparator
+  function  tiToken(          const AValue, ASeparator : string; const ATokenIndex : integer): string;
   // Return a string of spaces ALen long
   function  tiSpace(          ALen : integer): string;
+
   // Pad AValue with spaces on the RHS to make it ALen long
-  function  tiPadR(const AValue : string; ALen : integer): string;
-  // Pad AValue with spaces on the LHS to make it ALen long
-  function  tiPadL(           AValue : string; ALen : integer): string;
+  function  tiPadR(AValue: string; const ALen: integer; const APadChar: Char = ' '): string;
+  // Pad AValue with specified character on the LHS to make it ALen long
+  function  tiPadL(AValue: string; const ALen: integer; const APadChar: Char = ' '): string;
   // Pad AValue with spaces on both sides to make it ALen long
-  function  tiPadC(           AValue : string; ALen : integer): string;
+  function  tiPadC(AValue: string; const ALen : integer; const APadChar: Char = ' '): string;
   // Pad AValue with zeros on the LHS to make it ALen long
-  function  tiPad0(           AValue : string; ALen : integer): string;
+  function  tiPad0(const AValue: string; const ALen : integer): string;
+
   // Remove any leading zeros from a string
   function  tiRemoveLeading0( AValue : string): string;
   // Convert a string into mized case using a simple algorithm
@@ -130,6 +144,8 @@ type
   function tiURIDecodeAll(const AString: string): string;
   {: Encode a string for display in HTML, replacing reserved characters with &xyz; as appropriate }
   function tiHTMLEncode(const AString: string): string;
+  {: Decode &xyz; reserved characters in a HTML string. }
+  function tiHTMLDecode(const AString: string): string;
   {: Add the given prefix and suffix to the given string, optionally only if
     they are not already present }
   function tiEnclose(const AString: string;
@@ -144,13 +160,17 @@ type
      typically used in the OS. }
   function tiWrap(const AString: string; const AColumnWidth: Integer): string;
   function tiStripNonAlphaCharacters(const AString: string): string;
-function tiReplaceFileNameReservedChars(const AString: string; 
-                                        const AReplaceWith: string;
-                                        const AReplaceDot: Boolean = false; 
-                                        const AReplaceSlashes: Boolean = false;
-                                        const AReplaceColons: Boolean = false): string;
+  function tiStripNonNumericCharacters(const AString: string): string;
+  function tiReplaceFileNameReservedChars(const AString: string;
+                                          const AReplaceWith: string;
+                                          const AReplaceDot: Boolean = false;
+                                          const AReplaceSlashes: Boolean = false;
+                                          const AReplaceColons: Boolean = false): string;
   {: Remove sequence of digits from start of string. }
   function tiStripIntPrefix(const AString : string): string;
+  {: Append value onto existing string. If the existing string is not empty
+     add the separator first }
+  function tiAppendStr(const AString: string; const AValue: string; const ASeparator: string = ' '): string;
 
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
   // *
@@ -355,6 +375,8 @@ function tiReplaceFileNameReservedChars(const AString: string;
   function tiRoundDateToPreviousMinute(const ADateTime: TDateTime): TDateTime;
   {: Round a date time to the next whole minute (not rounded if already a whole minute) }
   function tiRoundDateToNextMinute(const ADateTime: TDateTime): TDateTime;
+  {: Round a date time to the nearest whole minute }
+  function tiRoundDateToNearestMinute(const ADateTime: TDateTime): TDateTime;
   {: Increment a date time to the next specified interval}
   function tiNextInterval(const ADateTime: TDateTime;
       const AInterval: TtiTimeInterval): TDateTime;
@@ -478,6 +500,8 @@ function tiReplaceFileNameReservedChars(const AString: string;
   function tiBitToString(const AValue: longint; const ABit: byte): string;
   // Convert a Int32 to a string of 0s and 1s
   function tiInt32ToBinString(const AValue : longInt): string;
+  // Display characters in the string as hex values, each with optional prefix.
+  function tiStrToHex(const AString: string; const AHexPrefix: string = ''): string;
 
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
   // *
@@ -491,7 +515,9 @@ function tiReplaceFileNameReservedChars(const AString: string;
                  FEPS value of 0.00001 means 5 significant digits. @br
                  FEPS value of 0.01 means 2 significant digits.)
      Note: This test is based on significant figures, not number of decimal places. }
-  function tiIsNearEnough(N, D: Double;  FEPS: Double = 0.00001): Boolean;
+  function tiIsNearEnough(N, D: Double;  FEPS: Double = 0.00001): Boolean; overload;
+  {: Compare two float values for equality, using a given number of decimal places. }
+  function tiIsNearEnoughDecimalPlaces(const AValue1, AValue2: Double; ADecimalPlaces: Integer = 2): Boolean; overload;
   {: Compare two TDateTimes. Returns True if they are within 0.5 sec}
   function tiIsDateTimeNearEnough(AVal1, AVal2: TDateTime): Boolean;
   {: If ACondition is true, return AResultTrue, otherwise, return AResultFalse.
@@ -775,7 +801,7 @@ begin
 end;
 
 
-function tiNumToken(const AValue, AToken : string): integer;
+function tiNumToken(const AValue, ASeparator : string): integer;
 var
   i, iCount : integer;
   lsValue : string;
@@ -786,29 +812,29 @@ begin
 
   iCount := 0;
   lsValue := AValue;
-  i := pos(AToken, lsValue);
+  i := pos(ASeparator, lsValue);
   while i <> 0 do begin
-    delete(lsValue, i, length(AToken));
+    delete(lsValue, i, length(ASeparator));
     inc(iCount);
-    i := pos(AToken, lsValue);
+    i := pos(ASeparator, lsValue);
   end;
   Result := iCount + 1;
 end;
 
 
-function tiToken(const AValue, AToken : string; const APos : integer): string;
+function tiToken(const AValue, ASeparator : string; const ATokenIndex : integer): string;
 var
   i, iCount, iNumToken : integer;
   lsValue : string;
 begin
   result := '';
 
-  iNumToken := tiNumToken(AValue, AToken);
-  if APos = 1 then begin
-    if pos(AToken, AValue) = 0 then result := AValue
-    else result := copy(AValue, 1, pos(AToken, AValue)-1);
+  iNumToken := tiNumToken(AValue, ASeparator);
+  if ATokenIndex = 1 then begin
+    if pos(ASeparator, AValue) = 0 then result := AValue
+    else result := copy(AValue, 1, pos(ASeparator, AValue)-1);
     end
-  else if (iNumToken < APos-1) or (APos<1) then begin
+  else if (iNumToken < ATokenIndex-1) or (ATokenIndex<1) then begin
     result := '';
     end
   else begin
@@ -816,21 +842,20 @@ begin
     { Remove leading blocks }
     iCount := 1;
     lsValue := AValue;
-    i := pos(AToken, lsValue);
-    while (i<>0) and (iCount<APos) do begin
-      delete(lsValue, 1, i + length(AToken) - 1);
+    i := pos(ASeparator, lsValue);
+    while (i<>0) and (iCount<ATokenIndex) do begin
+      delete(lsValue, 1, i + length(ASeparator) - 1);
       inc(iCount);
-      i := pos(AToken, lsValue);
+      i := pos(ASeparator, lsValue);
     end;
 
-    if (i=0) and (iCount=APos) then result := lsValue
-    else if (i=0) and (iCount<>APos) then
+    if (i=0) and (iCount=ATokenIndex) then result := lsValue
+    else if (i=0) and (iCount<>ATokenIndex) then
       result := ''
     else
       result := copy(lsValue, 1, i-1);
   end;
 end;
-
 
 function tiSpace(ALen : integer): string;
 var i : integer;
@@ -843,14 +868,14 @@ begin
 end;
 
 
-function tiPadR(const AValue : string; ALen : integer): string;
+function tiPadR(AValue: string; const ALen: integer; const APadChar: Char = ' '): string;
 var
   ls : string;
 begin
   ls := AValue;
   if length(ls) < ALen then begin
     while length(ls) < ALen do begin
-      ls := ls + ' ';
+      ls := ls + APadChar;
     end;
   end
   else if length(ls) > ALen then
@@ -859,11 +884,11 @@ begin
 end;
 
 
-function tiPadL(AValue : string; ALen : integer): string;
+function tiPadL(AValue: string; const ALen: integer; const APadChar: Char = ' '): string;
 begin
   if length(AValue) < ALen then begin
     while length(AValue) < ALen do begin
-      AValue := ' ' + AValue;
+      AValue := APadChar + AValue;
     end;
   end
   else if length(AValue) > ALen then
@@ -872,7 +897,7 @@ begin
 end;
 
 
-function  tiPadC(AValue : string; ALen : integer): string;
+function  tiPadC(AValue: string; const ALen : integer; const APadChar: Char = ' '): string;
 var
   liPad : integer;
 begin
@@ -884,7 +909,7 @@ begin
   
   if Length(AValue) + 1 = ALen then
   begin
-    result := AValue + ' ';
+    result := AValue + APadChar;
     Exit; //==>
   end;
 
@@ -894,25 +919,17 @@ begin
 
   liPad := (ALen - length(AValue)) div 2;
   if liPad > 0 then
-    result := tiSpace(liPad) + AValue + tiSpace(liPad);
+    result := DupeString(APadChar, liPad) + AValue + DupeString(APadChar, liPad);
 
   // To handle situations where ALen < length(AValue) and
   // when length(AValue) is an odd number
-  result := tiPadR(result, ALen);
+  result := tiPadR(result, ALen, APadChar);
 end;
 
 
-function tiPad0(AValue : string; ALen : integer): string;
+function tiPad0(const AValue: string; const ALen: integer): string;
 begin
-  if length(AValue) < ALen then begin
-    while length(AValue) < ALen do begin
-      AValue := '0' + AValue;
-    end;
-  end
-  else if length(AValue) > ALen then begin
-    AValue := copy(AValue, length(AValue)-ALen, ALen);
-  end;
-  result := AValue;
+  Result := tiPadL(AValue, ALen, '0');
 end;
 
 
@@ -1016,12 +1033,23 @@ var
 begin
   LDate:= Trunc(ADateTime);
   DecodeTime(ADateTime, LH, LM, LS, LMS);
-  if (LS = 0) and (LMS = 0) then
-    Result := ADateTime
-  else
-    Result:= LDate +
-      ((LH * MinsPerHour * SecsPerMin * MSecsPerSec +
-        (LM+1) * SecsPerMin * MSecsPerSec) / MSecsPerDay); // Allow for values out of range
+  // Round up a minute unless within a millisecond past the minute
+  if (LS <> 0) or (LMS <> 0) then
+    Inc(LM);
+  // Calculate absolute minute
+  // Note: Whatever the outcome above we need to drop sub-milliseconds. ie. If
+  // LS and LMS are both 0, ADateTime could still be say 200 microseconds past
+  // the minute which we need to drop.
+  Result := LDate +
+    ((LH * MinsPerHour * SecsPerMin * MSecsPerSec +
+      LM * SecsPerMin * MSecsPerSec) / MSecsPerDay); // Allow for values out of range
+end;
+
+function tiRoundDateToNearestMinute(const ADateTime: TDateTime): TDateTime;
+const
+  CHalfMinuteOfDay = 1/24/60/2;
+begin
+  result := tiRoundDateToPreviousMinute(ADateTime + CHalfMinuteOfDay);
 end;
 
 function tiNextInterval(const ADateTime: TDateTime;
@@ -1596,6 +1624,14 @@ begin
     Result := (((1-feps) < (N/D)) and ((N/D) < (1+feps)));
 end;
 
+
+function tiIsNearEnoughDecimalPlaces(const AValue1, AValue2: Double; ADecimalPlaces: Integer): Boolean;
+begin
+  result := SimpleRoundTo(AValue1, -ADecimalPlaces) =
+      SimpleRoundTo(AValue2, -ADecimalPlaces);
+end;
+
+
 function tiIsDateTimeNearEnough(AVal1, AVal2: TDateTime): Boolean;
 begin
   result:= Abs(AVal1-AVal2) <= cdtOneSecond / 2;
@@ -1927,6 +1963,16 @@ begin
   for i := 31 downto 0 do begin
     result := result + tiBitToString(AValue, i);
   end;
+end;
+
+
+function tiStrToHex(const AString: string; const AHexPrefix: string): string;
+var
+  I: Integer;
+begin
+  Result := '';
+  for I := 1 to Length(AString) do
+    Result := Result + AHexPrefix + IntToHex(Ord(AString[I]), SizeOf(Char) * 2);
 end;
 
 
@@ -3491,6 +3537,18 @@ begin
   end;
 end;
 
+function tiHTMLDecode(const AString: string): string;
+begin
+  Result := AString;
+  Result := tiStrTran(Result, '&lt;', '<');
+  Result := tiStrTran(Result, '&gt;', '>');
+  Result := tiStrTran(Result, '&quot;', '"');
+  Result := tiStrTran(Result, '&apos;', '''');
+  Result := tiStrTran(Result, '&cr;', #13);
+  Result := tiStrTran(Result, '&lf;', #10);
+  Result := tiStrTran(Result, '&amp;', '&');
+end;
+
 function tiEnclose(
     const AString: string;
     const APrefix: string;
@@ -3549,6 +3607,18 @@ begin
   Result := LResult;
 end;
 
+function tiStripNonNumericCharacters(const AString: string): string;
+var
+  i: integer;
+  LResult: string;
+begin
+  LResult := '';
+  for i := 1 to Length(AString) do
+    if CharInSet(AString[i], ['0'..'9']) then
+      LResult := LResult + AString[i];
+  Result := LResult;
+end;
+
 function tiReplaceFileNameReservedChars(
     const AString: string; const AReplaceWith: string;
     const AReplaceDot: Boolean = false; const AReplaceSlashes: Boolean = false;
@@ -3584,6 +3654,18 @@ begin
       Exit; //==>
     end;
   result := '';
+end;
+
+function tiAppendStr(const AString: string; const AValue: string;
+  const ASeparator: string = ' '): string;
+begin
+  result := AString;
+  if AValue <> '' then
+  begin
+    if result <> '' then
+      result := result + ASeparator;
+    result := result + AValue;
+  end;
 end;
 
 function tiDateTimeAsXMLString(const ADateTime: TDateTime): string;
@@ -4430,6 +4512,91 @@ begin
   finally
     FCritSect.Leave;
   end;
+end;
+
+
+//ItiTokens = interface
+//    ['{9E3F0CF7-1430-4A8B-B204-80AD03A4F567}']
+//    function Count: integer;
+//    function GetToken(const AIndex: integer): string;
+//    procedure SetText(const AText, ASeparator: string);
+//    property Tokens[const AIndex: integer]: string read GetToken; default;
+//  end;
+
+type
+  TtiTokens = class(TInterfacedObject, ItiTokens)
+  private
+    FTokens: TStrings;
+  protected
+    function Count: integer;
+    function GetToken(const AIndex: integer): string;
+    procedure SetText(const AText, ASeparator: string);
+  public
+    constructor Create(const AText: string = ''; const ASeparator: string = ',');
+    destructor Destroy; override;
+  end;
+
+  function CreateTiTokens(const AText, ASeparator: string): ItiTokens;
+  begin
+    Result := TtiTokens.Create(AText, ASeparator);
+  end;
+
+{ TtiTokens }
+
+function TtiTokens.Count: integer;
+begin
+  Result := FTokens.Count;
+end;
+
+constructor TtiTokens.Create(const AText, ASeparator: string);
+begin
+  inherited Create;
+  FTokens := TStringList.Create;
+  SetText(AText, ASeparator);
+end;
+
+destructor TtiTokens.Destroy;
+begin
+  FTokens.Free;
+  inherited;
+end;
+
+function TtiTokens.GetToken(const AIndex: integer): string;
+begin
+  if (AIndex < 1) or (AIndex > Count) then
+    raise ERangeError.Create('AIndex outside valid range')
+  else
+  begin
+    Result := FTokens[AIndex - 1];
+  end;
+
+
+end;
+
+procedure TtiTokens.SetText(const AText, ASeparator: string);
+var
+  idxSeparator : integer;
+  LText : string;
+  lLenSeparator: integer;
+begin
+  FTokens.Clear;
+
+  if AText = '' then
+    Exit; //==>
+
+  LText := AText;
+  lLenSeparator := Length(ASeparator);
+  idxSeparator := pos(ASeparator, LText);
+
+  while idxSeparator <> 0 do begin
+    FTokens.Add(Copy(LText, 1, idxSeparator - 1));
+    delete(LText, 1, idxSeparator - 1 + lLenSeparator);
+    idxSeparator := pos(ASeparator, LText);
+  end;
+
+  if Length(LText) > 0 then
+    FTokens.Add(LText);
+
 end;
 
 end.

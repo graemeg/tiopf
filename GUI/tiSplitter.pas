@@ -118,6 +118,8 @@ type
     {$ELSE}
     procedure WMSize(var Message: TLMSize); message LM_SIZE;
     {$ENDIF}
+//    procedure DoResize(Sender: TObject);
+//    procedure AlignControls(AControl: TControl; var Rect: TRect); override;
 
   public
     Constructor Create(AOwner : TComponent); override;
@@ -374,6 +376,7 @@ begin
   FiSaveSplitterPosPercent := 50;
   FPanelBorderStyle := spsFramed;
 
+//  OnResize := DoResize;
 end;
 
 destructor TtiSplitterPanel.Destroy;
@@ -488,10 +491,23 @@ begin
   LValue:= Min(AValue, 95);
   if SplitterPosPercent = LValue then
     Exit; //==>
+
+  // NOTE: Setting panel width or height messes with the auto alignment
+  // resizing so we need to set both and call Realign to put it all together.
   case FSplitterOrientation of
-  spoVertical  : FPanel1.Width := (Self.ClientWidth  - FSplitter.Width) * LValue div 100;
-  spoHorizontal : FPanel1.Height := (Self.ClientHeight - FSplitter.Height) * LValue div 100;
+  spoVertical:
+    begin
+      FPanel1.Width := (Self.ClientWidth  - FSplitter.Width) * LValue div 100;
+      FPanel1.Height := Self.ClientHeight;
+    end;
+  spoHorizontal:
+    begin
+      FPanel1.Height := (Self.ClientHeight - FSplitter.Height) * LValue div 100;
+      FPanel1.Width := Self.ClientWidth;
+    end;
   end;
+  FPanel1.Realign;
+
   if FiSaveSplitterPosPercent <> LValue then
     FiSaveSplitterPosPercent := SplitterPosPercent;
 end;
@@ -600,6 +616,17 @@ begin
     ExecuteOnMoveSplitter;
   end;
 end;
+//procedure TtiSplitterPanel.AlignControls(AControl: TControl; var Rect: TRect);
+//procedure TtiSplitterPanel.DoResize(Sender: TObject);
+//begin
+//  inherited;
+//  if FbKeepSplitterPosPercent and
+//     (FiSaveSplitterPosPercent <> -1) then
+//  begin
+//    SplitterPosPercent := FiSaveSplitterPosPercent;
+//    ExecuteOnMoveSplitter;
+//  end;
+//end;
 
 procedure TtiSplitterPane.Paint;
 var

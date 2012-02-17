@@ -8,8 +8,10 @@ uses
   SysUtils
   ,tiGenericBase
   ,tiObject
-  , tiBaseObject
-  , Generics.Collections;
+  ,tiBaseObject
+  ,tiOID
+  ,Generics.Collections
+  ;
 
 type
 
@@ -24,6 +26,9 @@ type
     class function ObjectAsGeneric(const Value): T;
   public
     function Add(const AObject: T): integer; reintroduce;
+    function Find(AOIDToFindAsString: string): T;  reintroduce; overload;
+    function Find(const AOIDToFind: TtiOID): T; reintroduce; overload;
+    function Find(AOIDToFind: TtiOID; ASortType: TtiPerObjListSortType): T; reintroduce; overload;
 
     function  Last : T; reintroduce;
     function  First : T; reintroduce;
@@ -50,6 +55,27 @@ begin
   result:= inherited Add(obj);
   // replaces the following which gets overload errors
 //   result:= inherited Add(TtiObject(AObject));
+end;
+
+function TtiGenericObjectList<T>.Find(AOIDToFindAsString: string): T;
+var obj: TtiObject;
+begin
+  obj:= inherited Find(AOIDToFindAsString);
+  result:= ObjectAsGeneric(obj);
+end;
+
+function TtiGenericObjectList<T>.Find(const AOIDToFind: TtiOID): T;
+var obj: TtiObject;
+begin
+  obj:= inherited Find(AOIDToFind);
+  result:= ObjectAsGeneric(obj);
+end;
+
+function TtiGenericObjectList<T>.Find(AOIDToFind: TtiOID; ASortType: TtiPerObjListSortType): T;
+var obj: TtiObject;
+begin
+  obj:= inherited Find(AOIDToFind, ASortType);
+  result:= ObjectAsGeneric(obj);
 end;
 
 function TtiGenericObjectList<T>.FilteredEnumerator(APredicate: TPredicate<T>): TGenericEnumeratorHost<T>;

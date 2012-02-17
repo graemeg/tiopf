@@ -11,8 +11,9 @@ type
 
   TPopupDisplayPosition = (
     pdpCoveringAndAbove,
-    pdpCoveringAndBelow,// was pdpAbove
-    pdpBelow);
+    pdpCoveringAndBelow,
+    pdpBelow,
+    pdpCenter);
 
   TFormTIPopupData = class(TForm)
     pnlBorder: TtiRoundedPanel;
@@ -253,11 +254,27 @@ end;
 
 procedure TFormTIPopupData.SetFormPosition;
 begin
-  Left := TriggeredByRect.Left;
   case FFormDisplayPosition of
-    pdpCoveringAndAbove: Top:= TriggeredByRect.Bottom - Height;
-    pdpCoveringAndBelow: Top := TriggeredByRect.Top;
-    pdpBelow: Top := TriggeredByRect.Bottom;
+    pdpCoveringAndAbove:
+      begin
+        Left := TriggeredByRect.Left;
+        Top:= TriggeredByRect.Bottom - Height;
+      end;
+    pdpCoveringAndBelow:
+      begin
+        Left := TriggeredByRect.Left;
+        Top := TriggeredByRect.Top;
+      end;
+    pdpBelow:
+      begin
+        Left := TriggeredByRect.Left;
+        Top := TriggeredByRect.Bottom;
+      end;
+    pdpCenter:
+      begin
+        Left := TriggeredByRect.Left + (TriggeredByRect.Right - TriggeredByRect.Left - Width) div 2;
+        Top := TriggeredByRect.Top + (TriggeredByRect.Bottom - TriggeredByRect.Top - Height) div 2;
+      end;
   end;
 end;
 

@@ -1701,11 +1701,19 @@ end;
 
 procedure TtiApplicationMenuSystem.DoLblMessageOnHotSpotClick(ASender: TObject;
   const ASRC: string; var AHandled: boolean);
+var
+  LSrc: string;
 begin
   // 'file://...'
   if Pos(CTIProtocolFile + ':', ASrc) = 1 then
   begin
-    tiOpenFile(HTMLToDos(ASrc));
+    LSrc := HTMLToDos(ASrc);
+    try
+      tiOpenFile(LSrc);
+    except
+      on E: Exception do
+        FormErrorMessage := E.Message + CrLf + LSrc;
+    end;
     AHandled := true;
   end
   // 'self://...'
@@ -1760,5 +1768,7 @@ end;
 initialization
 finalization
   uAMS.Free;
+  uAMS := nil;
 
 end.
+

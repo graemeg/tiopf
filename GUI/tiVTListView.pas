@@ -157,6 +157,11 @@ type
                                         const AData : TtiObject;
                                         const ptiListColumn : TtiVTColumn;
                                         var   pResult : string) of object;
+  TtiAdvancedDeriveListColumnValue = procedure(const AVT: TtiCustomVirtualTree;
+                                                const AData : TtiObject;
+                                                const ANode : PVirtualNode;
+                                                const AtiListColumn : TtiVTColumn;
+                                                var   AResult : string) of object;
 
   //TtiVTInfoTipEvent = procedure (const pVT: TtiCustomVirtualTree;
   //                               const AData: TtiObject;
@@ -230,13 +235,13 @@ type
     FAllowInlineEdit: boolean;
     FDerived: boolean;
     FOnDeriveColumn: TtiDeriveListColumnValue;
+    FOnAdvancedDeriveColumn: TtiAdvancedDeriveListColumnValue;
     FOnIsValidValue: TtiVTOnIsValidColumnValue;
     FStoredWidth: Integer;
     procedure   SetFieldName(const AValue: string);
     procedure   SetDataType(const AValue: TvtTypeKind);
     procedure   SetDerived(const AValue: boolean);
-    procedure   SetOnDeriveColumn(const AValue: TtiDeriveListColumnValue);
-  protected
+    function    GetHasDerivedHandler: boolean;
   public
     constructor Create(Collection : TCollection); override;
     destructor  Destroy; override;
@@ -251,7 +256,9 @@ type
     property    AllowInlineEdit : boolean read FAllowInlineEdit write FAllowInlineEdit ;
     property    OnIsValidValue: TtiVTOnIsValidColumnValue read FOnIsValidValue write FOnIsValidValue;
     property    Derived     : boolean read FDerived      write SetDerived;
-    property    OnDeriveColumn : TtiDeriveListColumnValue read FOnDeriveColumn write SetOnDeriveColumn;
+    property    HasDerivedHandler: boolean read GetHasDerivedHandler;
+    property    OnDeriveColumn : TtiDeriveListColumnValue read FOnDeriveColumn write FOnDeriveColumn;
+    property    OnAdvancedDeriveColumn : TtiAdvancedDeriveListColumnValue read FOnAdvancedDeriveColumn write FOnAdvancedDeriveColumn;
   end;
 
   TtiVTColumns = class(TVirtualTreeColumns)
@@ -397,6 +404,7 @@ type
     FOnGetNodeHint: TtiVTOnNodeHint;
     FHeaderClickSorting: boolean;
     FMultiSelect: boolean;
+    FDisplayParentNodeData: boolean;
 
     procedure DrawSortGlyph(const ACanvas: TCanvas;
       const ASortDirection: TSortDirection; const APosition: TPoint);
@@ -445,6 +453,8 @@ type
     procedure SetMultiSelect(const AValue: boolean);
     function GetSelectedCount: integer;
     function GetNearest: TtiObject;
+    function DoSortElement(AOrder: TtiVTSortOrder; AData1, AData2: TtiObject): Integer;
+    function SortProc(AData1, AData2: Pointer): Integer;
 
     //
     //FOnDblClick  : TtiLVItemEditEvent;
@@ -525,7 +535,7 @@ type
     property ShowAlternateRowColor: Boolean read FShowAlternateRowColor write SetShowAlternateRowColor default True;
     property ShowNodeHint: boolean read FShowNodeHint write SetShowNodeHint;
     property SortOrders: TtiVTSortOrders read FSortOrders write SetSortOrders;
-
+    property DisplayParentNodeData: boolean read FDisplayParentNodeData write FDisplayParentNodeData;
 
     property OnGetImageIndex: TtiVTGetImageIndexEvent read FOnGetImageIndex write FOnGetImageIndex;
     property OnCanView: TtiVTCanPerformAction read FOnCanView write FOnCanView;
@@ -559,7 +569,7 @@ type
 
     function    GetObjectFromNode(pNode: PVirtualNode): TtiObject; override;
     function    GetNodeFromObject(const AData: TtiObject): PVirtualNode;
-    function    GetTextFromObject(AObj: TtiObject; AColumnIndex: TColumnIndex): string;
+    function    GetTextFromObject(AObj: TtiObject; AColumnIndex: TColumnIndex; ANode: PVirtualNode = nil): string;
     procedure   SetTextInObject(AObj: TtiObject; AColumnIndex: TColumnIndex; AText: string);
 
     procedure   Refresh(const ASelectedData: TtiObject = nil); reintroduce; overload; virtual;
@@ -594,9 +604,17 @@ type
     function    AddColumn(const pDeriveColumnMethod : TtiDeriveListColumnValue;
                            const pDisplayLabel : string = '';
                            pColWidth : Integer = -1): TtiVTColumn; overload;
+    function    AddColumn(const AAdvancedDeriveColumnMethod: TtiAdvancedDeriveListColumnValue;
+                           const ADisplayLabel: string = '';
+                           AColWidth: Integer = -1): TtiVTColumn; overload;
     function    AddColumn(const AFieldName : string;
                            const ADataType : TvtTypeKind;
                            const ADeriveColumnMethod: TtiDeriveListColumnValue;
+                           const ADisplayLabel : string = '';
+                           const AColWidth : Integer = -1): TtiVTColumn; overload;
+    function    AddColumn(const AFieldName : string;
+                           const ADataType : TvtTypeKind;
+                           const AAdvancedDeriveColumnMethod: TtiAdvancedDeriveListColumnValue;
                            const ADisplayLabel : string = '';
                            const AColWidth : Integer = -1): TtiVTColumn; overload;
 
@@ -742,6 +760,7 @@ type
     property ButtonStyle;
     property Color;
     property Constraints;
+    property DisplayParentNodeData;
     property Exporting;
     property Filtering;
     property Header;
@@ -1019,6 +1038,7 @@ begin
     Result.DataType      := Self.DataType    ;
     Result.Derived       := Self.Derived     ;
     Result.OnDeriveColumn := Self.OnDeriveColumn;
+    Result.OnAdvancedDeriveColumn := Self.OnAdvancedDeriveColumn;
     Result.Width         := Self.Width;
     Result.Alignment     := Self.Alignment;
   except
@@ -1110,15 +1130,14 @@ begin
   FsFieldName := AValue;
 end;
 
-procedure TtiVTColumn.SetOnDeriveColumn(const AValue: TtiDeriveListColumnValue);
-begin
-  FOnDeriveColumn := AValue;
-end;
-
-
 procedure TtiVTColumn.StoreWidth;
 begin
   StoredWidth := Width;
+end;
+
+function TtiVTColumn.GetHasDerivedHandler: boolean;
+begin
+  result := Assigned(FOnDeriveColumn) or Assigned(FOnAdvancedDeriveColumn);
 end;
 
 { TtiVTColumns }
@@ -1376,58 +1395,81 @@ begin
   Result.OnDeriveColumn := pDeriveColumnMethod;
 end;
 
-var {threadvar - declare threadvar for 100% thread safety and a significant performance hit}
-  _SortOrders: TtiVTSortOrders;
+function TtiCustomVirtualTree.AddColumn(
+  const AAdvancedDeriveColumnMethod: TtiAdvancedDeriveListColumnValue;
+  const ADisplayLabel: string = '';
+  AColWidth: Integer = -1): TtiVTColumn;
+begin
+  Result := AddColumn('', vttkString, ADisplayLabel, AColWidth);
+  Result.OnAdvancedDeriveColumn := AAdvancedDeriveColumnMethod;
+end;
 
-function _DoSortElement(pOrder: TtiVTSortOrder; pData1, pData2: TtiObject): Integer;
+function TtiCustomVirtualTree.DoSortElement(AOrder: TtiVTSortOrder;
+  AData1, AData2: TtiObject): Integer;
+
   procedure _DoRaiseException(AFieldName : string; AClassName : string);
   begin
-    raise exception.Create('Unable to read field <' +
-                            AFieldName + '> from <' +
-                            AClassName + '> in _DoSortData()');
+    raise exception.Create('Unable to read field <' + AFieldName + '> from <' +
+        AClassName + '> in DoSortElement()');
   end;
+
 var
-  lval1: Variant;
-  lval2: Variant;
+  LVal1: Variant;
+  LVal2: Variant;
+  LColumn: TtiVTColumn;
+  LDerived: Boolean;
 begin
-  Assert(pData1.TestValid(TtiObject), CTIErrorInvalidObject);
-  Assert(pData2.TestValid(TtiObject), CTIErrorInvalidObject);
+  Assert(Assigned(AOrder), 'AOrder must be assigned');
+  Assert(AData1.TestValid(TtiObject), CTIErrorInvalidObject);
+  Assert(AData2.TestValid(TtiObject), CTIErrorInvalidObject);
 
-  lVal1 := pData1.PropValue[pOrder.FieldName];
-  lVal2 := pData2.PropValue[pOrder.FieldName];
+  LColumn := Header.Columns.FindByFieldName(AOrder.FieldName);
+  LDerived := Assigned(LColumn) and LColumn.Derived;
 
-  if VarIsNull(lval1) then
-    _DoRaiseException(pOrder.FieldName, pData1.ClassName);
+  if LDerived then
+  begin
+    // Derived column - call event hander to get values
+    LVal1 := GetTextFromObject(AData1, LColumn.Index);
+    LVal2 := GetTextFromObject(AData2, LColumn.Index);
+  end
+  else
+  begin
+    // Regular property - read values from objects
+    LVal1 := AData1.PropValue[AOrder.FieldName];
+    LVal2 := AData2.PropValue[AOrder.FieldName];
+  end;
 
-  if VarIsNull(lval2) then
-    _DoRaiseException(pOrder.FieldName, pData2.ClassName);
+  if VarIsNull(LVal1) then
+    _DoRaiseException(AOrder.FieldName, AData1.ClassName);
 
-  if pData1.PropType(pOrder.FieldName) = tiTKString then
-     result:=AnsiCompareText(lval1,lval2)
+  if VarIsNull(LVal2) then
+    _DoRaiseException(AOrder.FieldName, AData2.ClassName);
+
+  if LDerived or (AData1.PropType(AOrder.FieldName) = tiTKString) then
+     Result := AnsiCompareText(LVal1, LVal2)
   else begin
-    if lval1 < lval2 then
+    if LVal1 < LVal2 then
       Result := -1
-    else if lval1 > lval2 then
+    else if LVal1 > LVal2 then
       Result := 1
     else
       Result := 0;
   end;
 
-  if pOrder.SortDirection = vtsdDescending then
+  if AOrder.SortDirection = vtsdDescending then
     Result := -Result;
 end;
 
-function _SortProc(pdata1, pdata2: Pointer): Integer;
+function TtiCustomVirtualTree.SortProc(AData1, AData2: Pointer): Integer;
 var
-  ldata1: TtiObject absolute pdata1;
-  ldata2: TtiObject absolute pdata2;
-
+  LData1: TtiObject absolute AData1;
+  LData2: TtiObject absolute AData2;
   i: Integer;
 begin
   Result := 0;
-  for i := 0 to Pred(_SortOrders.Count) do
+  for i := 0 to Pred(SortOrders.Count) do
   begin
-    Result := _DoSortElement(_SortOrders[i], ldata1, ldata2);
+    Result := DoSortElement(SortOrders[i], LData1, LData2);
     if Result <> 0 then
       Break;
   end;
@@ -1486,9 +1528,7 @@ begin
 {$IFDEF _PROFILE}
   StartTick := GetTickCount;
 {$ENDIF}
-  _SortOrders := SortOrders;
-  FFilteredData.Sort(_SortProc);
-  _SortOrders := nil;
+  FFilteredData.SortList(SortProc);
   FSorted := true;
 
   FGroupingApplied := AApplyGrouping;
@@ -1651,6 +1691,7 @@ begin
   FDisabledColor := clBtnFace;
   FHeaderClickSorting:= True;
   VT.Header.Options := VT.Header.Options + [hoShowSortGlyphs, hoOwnerDraw];
+  FDisplayParentNodeData := false;
 
   VT.OnDblClick := DoDblClick;
   VT.TreeOptions.PaintOptions := [toShowButtons, toShowDropmark, toShowRoot, {toShowTreeLines,} toShowVertGridLines, toThemeAware, toUseBlendedImages];
@@ -1731,27 +1772,14 @@ begin
 end;
 
 function TtiCustomVirtualTree.GetObjectFromNode(pNode: PVirtualNode): TtiObject;
-Var
-  lData : PMyRecord;
-Begin
-  // ToDo: Must understand this better.
-
-  if FGroupingApplied then
-  begin
-    if Assigned(pNode) then
-      Result := PMyRecord(VT.GetNodeData(pNode)).Ref
-    else
-      Result := nil;
-  end else
-  begin
-    // And this was used by PH as part of SelectedData.
-    // This might be the problem with SelectedData?
-    lData := PMyRecord(VT.GetNodeData(pNode));
-    if Assigned(lData) then
-      Result := lData.Ref
-    else
-      Result := nil;
-  end;
+var
+  LData: PMyRecord;
+begin
+  LData := PMyRecord(VT.GetNodeData(pNode));
+  if Assigned(LData) then
+    Result := LData.Ref
+  else
+    Result := nil;
 end;
 
 function TtiCustomVirtualTree.GetOnKeyDown: TKeyEvent;
@@ -1785,7 +1813,7 @@ begin
 end;
 
 function TtiCustomVirtualTree.GetTextFromObject(AObj: TtiObject; 
-  AColumnIndex: TColumnIndex): string;
+  AColumnIndex: TColumnIndex; ANode: PVirtualNode): string;
 var
   LColumn: TtiVTColumn;
   LField: string;
@@ -1806,26 +1834,26 @@ begin
     LMask := LColumn.DisplayMask;
     case LColumn.DataType of
       vttkString:
-        Result := GetPropValue(AObj, LField, True);
+        Result := AObj.PropValue[LField];
 
       vttkInt:
-        Result := FormatFloat(LMask, GetPropValue(AObj, LField, True));
+        Result := FormatFloat(LMask, AObj.PropValue[LField]);
 
       vttkFloat:
-        Result := FormatFloat(LMask, GetPropValue(AObj, LField, True));
+        Result := FormatFloat(LMask, AObj.PropValue[LField]);
 
       vttkDate:
-        Result := FormatDateTime(LMask, GetPropValue(AObj, LField, True));
+        Result := FormatDateTime(LMask, AObj.PropValue[LField]);
 
       vttkDateTime:
-        Result := FormatDateTime(LMask, GetPropValue(AObj, LField, True));
+        Result := FormatDateTime(LMask, AObj.PropValue[LField]);
 
       vttkTime:
-        Result := FormatDateTime(LMask, GetPropValue(AObj, LField, True));
+        Result := FormatDateTime(LMask, AObj.PropValue[LField]);
 
       vttkCurrency:
         begin
-          LCurrency:= GetPropValue(AObj, LField, True);
+          LCurrency:= AObj.PropValue[LField];
           Result := Format('%m', [LCurrency]);
         end
 
@@ -1833,10 +1861,16 @@ begin
         Assert(False);
     end;
   end
-  else if (LColumn.Derived) and (Assigned(LColumn.OnDeriveColumn)) then
-    LColumn.OnDeriveColumn(Self, AObj, LColumn, Result)
   else
-    Result := '<' + LColumn.FieldName + '> not correctly defined';
+  begin
+    Result := '';
+    if LColumn.Derived and Assigned(LColumn.OnAdvancedDeriveColumn) then
+      LColumn.OnAdvancedDeriveColumn(Self, AObj, ANode, LColumn, Result)
+    else if LColumn.Derived and Assigned(LColumn.OnDeriveColumn) then
+      LColumn.OnDeriveColumn(Self, AObj, LColumn, Result)
+    else
+      Result := '<' + LColumn.FieldName + '> not correctly defined';
+  end;
 end;
 
 procedure TtiCustomVirtualTree.SetTextInObject(AObj: TtiObject; 
@@ -1894,11 +1928,12 @@ function TtiCustomVirtualTree.IsNodeDataItem(Node: PVirtualNode): Boolean;
 var
   Obj: TtiObject;
 begin
-  // If the node has grouped children, you have to select one of the children to edit
+  Assert(Assigned(Node));
+
   Obj := GetObjectFromNode(Node);
   if Assigned(Obj) then
     if VT.GetNodeLevel(Node) = 0 then
-      Result := CalcRootNodeChildCount(VT.FocusedNode) = 1
+      Result := CalcRootNodeChildCount(Node) = 1
     else
       Result := True
   else
@@ -2364,10 +2399,12 @@ begin
 
   if VT.GetNodeLevel(Node) = 0 then
   begin
-    if (Column >= SortOrders.GroupColumnCount) and (CalcRootNodeChildCount(Node) > 1) then
+    // Parent nodes normally only show data for the group columns.
+    if (not FDisplayParentNodeData) and (Column >= SortOrders.GroupColumnCount) and
+       (CalcRootNodeChildCount(Node) > 1) then
       Text := ''
     else
-      Text := GetTextFromObject(Obj, Column);
+      Text := GetTextFromObject(Obj, Column, Node);
   end
   else
   begin
@@ -2375,7 +2412,7 @@ begin
     if (Column < SortOrders.GroupColumnCount) then
       Text := ''
     else
-      Text := GetTextFromObject(Obj, Column);
+      Text := GetTextFromObject(Obj, Column, Node);
   end;
 end;
 
@@ -2426,7 +2463,7 @@ begin
 
   LColumn := Header.Columns[AHitInfo.Column];
 
-  if HeaderClickSorting {and (not LColumn.Derived) }and (AHitInfo.Button = mbLeft)then
+  if HeaderClickSorting and (AHitInfo.Button = mbLeft)then
   begin
     ClearSearchState;
     LColumn.Style := vsOwnerDraw;
@@ -2733,6 +2770,17 @@ function TtiCustomVirtualTree.AddColumn(
 begin
   Result := AddColumn(AFieldName, ADataType, ADisplayLabel, AColWidth);
   Result.OnDeriveColumn := ADeriveColumnMethod;
+end;
+
+function TtiCustomVirtualTree.AddColumn(
+    const AFieldName: string;
+    const ADataType: TvtTypeKind;
+    const AAdvancedDeriveColumnMethod: TtiAdvancedDeriveListColumnValue;
+    const ADisplayLabel: string;
+    const AColWidth: Integer): TtiVTColumn;
+begin
+  Result := AddColumn(AFieldName, ADataType, ADisplayLabel, AColWidth);
+  Result.OnAdvancedDeriveColumn := AAdvancedDeriveColumnMethod;
 end;
 
 procedure TtiCustomVirtualTree.AddFilter(pFilter: TLVFilter);
@@ -3576,22 +3624,22 @@ begin
     begin
       LColumn := FSourceTree.VT.Header.Columns[I] as TtiVTColumn;
 
-      if (not LColumn.Derived) or Assigned(LColumn.OnDeriveColumn) then
+      if (not LColumn.Derived) or LColumn.HasDerivedHandler then
       begin
         if LColumn.DataType = vttkString then
           FmtStr(FOutputStr, '%s%s%s%s%s', [FOutputStr, AFieldSeparator,
-            AFieldDelimiter, FSourceTree.GetTextFromObject(LObject, I),
+            AFieldDelimiter, FSourceTree.GetTextFromObject(LObject, I, lNode),
               AFieldDelimiter])
         else if (LColumn.DataType in [vttkInt, vttkFloat]) then
         begin
-          LValueText := FSourceTree.GetTextFromObject(LObject, I);
+          LValueText := FSourceTree.GetTextFromObject(LObject, I, lNode);
           // strip out all instances of field separator within formatted numbers
           LValueText := tiStrTran(LValueText, AFieldSeparator, '');
           FmtStr(FOutputStr, '%s%s%s', [FOutputStr, AFieldSeparator, LValueText]);
         end
         else
           FmtStr(FOutputStr, '%s%s%s', [FOutputStr, AFieldSeparator,
-            FSourceTree.GetTextFromObject(LObject, I)]);
+            FSourceTree.GetTextFromObject(LObject, I, lNode)]);
       end;
 
     end;
@@ -3631,7 +3679,7 @@ begin
     begin
       LColumn := FSourceTree.VT.Header.Columns[I] as TtiVTColumn;
 
-      if (not LColumn.Derived) or Assigned(LColumn.OnDeriveColumn) then
+      if (not LColumn.Derived) or LColumn.HasDerivedHandler then
           FmtStr(FOutputStr, '%s%s%s%s%s', [FOutputStr, AFieldSeparator,
             AFieldDelimiter, LColumn.DisplayNames[LHeaderRow], AFieldDelimiter])
 
@@ -3722,7 +3770,8 @@ begin
         tiVTExportRegistry.ExportFileNameStore.SetFileName(FSourceTree,
           FormatName, FFileName);
         Result := True;
-      end;
+      end else
+        Result := False;
 
     finally
       LSaveDialog.Free;

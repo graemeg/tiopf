@@ -31,8 +31,6 @@ object FormTIPopupData: TFormTIPopupData
     BorderThickness = 1
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 412
-    ExplicitHeight = 270
     object pnlButtons: TPanel
       Left = 6
       Top = 224
@@ -41,8 +39,6 @@ object FormTIPopupData: TFormTIPopupData
       Align = alBottom
       BevelOuter = bvNone
       TabOrder = 0
-      ExplicitTop = 234
-      ExplicitWidth = 400
       DesignSize = (
         408
         30)

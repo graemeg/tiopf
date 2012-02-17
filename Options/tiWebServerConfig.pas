@@ -24,6 +24,7 @@ type
     function  GetWebServiceDisplayName: string; virtual;
     function  GetWebServiceShortName: string; virtual;
     function  GetLogPathToSharedFiles: string; virtual;
+    function  GetPathToBin: string; virtual;
     function  GetPathToCGIBin: string; virtual;
     function  GetPathToStaticPages: string; virtual;
     function  GetPathToPassThrough: string; virtual;
@@ -45,6 +46,7 @@ type
     property    WebServiceDisplayName: string Read GetWebServiceDisplayName;
 
     property    PathToStaticPages: string Read GetPathToStaticPages;
+    property    PathToBin: string Read GetPathToBin;
     property    PathToCGIBin: string Read GetPathToCGIBin;
     property    PathToPassThrough: string Read GetPathToPassThrough;
 
@@ -83,9 +85,11 @@ const
   cINIService_ShortNameDefault = 'tiDBWebServer';
   cINIService_DisplayNameDefault  = 'TechInsite Web Server';
   cINIService_PathToStaticPages = 'PathToStaticPages';
+  cINIService_PathToBin = 'PathToBin';
   cINIService_PathToCGIBin = 'PathToCGIBin';
   cINIService_PathToPassThrough = 'PathToPassThrough';
   cINIService_DefaultPathToStaticPages = 'StaticPages';
+  cINIService_DefaultPathToBin = 'Bin';
   cINIService_DefaultPathToCGIBin = 'CGI-Bin';
   cINIService_DefaultPathToPassThrough = 'PathToPassThrough';
   CINILog_DefaultLogToApplicationSubDirectory = true;
@@ -196,6 +200,16 @@ end;
 procedure TtiWebServerConfig.RegisterLog;
 begin
   gLog.RegisterLog(TtiLogToFile.CreateWithDateInFileName(LogPathToSharedFiles));
+end;
+
+function TtiWebServerConfig.GetPathToBin: string;
+begin
+  Result:= INI.ReadString(cINIService, cINIService_PathToBin, '');
+  if Result = '' then
+  begin
+    Result:= tiGetEXEPath + PathDelim + cINIService_DefaultPathToBin;
+    INI.WriteString(cINIService, cINIService_PathToBin, Result);
+  end;
 end;
 
 function TtiWebServerConfig.GetPathToCGIBin: string;

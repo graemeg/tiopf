@@ -4,20 +4,26 @@ unit tiPerAwareDirectoryCombos;
 
 interface
 uses
-  tiPerAwareCombosAbs
-  ,Classes
-  ,tiPerAwareCtrls
- ;
+  Classes,
+  tiPerAwareCombosAbs,
+  tiPerAwareCtrls,
+  tiSpeedButton;
+
+const
+  CErrorDirectoryNotFound = 'Sorry, the directory "%s" does not appear to exist.';
 
 type
 
   TtiPickDirectory = class(TtiPickerAbs)
   private
+    FSBShowDirectory: TtiSpeedButton;
     FbMustExist : boolean;
     FbCreateDir : boolean;
     procedure   PickDirectoryOnExit(sender : TObject);
   protected
+    procedure   DoResize; override;
     procedure   DoButtonClick(sender : TObject); override;
+    procedure   DoShowDirectoryButtonClick(sender : TObject);
   published
     property    MustExist : boolean read FbMustExist write FbMustExist;
     property    CreateDir : boolean read FbCreateDir write FbCreateDir default false;
@@ -32,16 +38,16 @@ type
 
 implementation
 uses
-   Dialogs
-  ,Controls
-  ,SysUtils
-  ,tiUtils
+  Controls,
+  SysUtils,
+  Dialogs,
+  tiUtils,
 {$IFNDEF FPC}
-  ,tiJVBrowseFolder
+  tiJVBrowseFolder,
 {$ENDIF}
-  ,tiFocusPanel
-//  ,Graphics
- ;
+  tiFocusPanel,
+  tiResources,
+  tiDialogs;
 
 { TtiPerAwarePickDirectory }
 
@@ -66,6 +72,24 @@ begin
   FbCreateDir := false;
   self.onExit := pickDirectoryOnExit;
   OnDblClick := DoButtonClick;
+
+  FSBShowDirectory := TtiSpeedButton.Create(self);
+  FSBShowDirectory.top := 0;
+  FSBShowDirectory.width := 22;
+  FSBShowDirectory.parent := self;
+  FSBShowDirectory.ParentFont := true;
+  {$IFNDEF FPC}
+  FSBShowDirectory.glyph.LoadFromResourceName(HInstance, cResTI_FileOpen16N);
+  FSBShowDirectory.glyphHot.LoadFromResourceName(HInstance, cResTI_FileOpen16H);
+  FSBShowDirectory.GlyphDisabled.LoadFromResourceName(HInstance, cResTI_FileOpen16D);
+  {$ELSE}
+  FSBShowDirectory.Layout := blGlyphRight;
+  FSBShowDirectory.glyph.LoadFromLazarusResource(cResTI_FileOpen16N);
+  FSBShowDirectory.glyphHot.LoadFromLazarusResource(cResTI_FileOpen16H);
+  FSBShowDirectory.GlyphDisabled.LoadFromLazarusResource(cResTI_FileOpen16D);
+  {$ENDIF}
+  FSBShowDirectory.onClick := DoShowDirectoryButtonClick;
+
 end;
 
 procedure TtiPickDirectory.DoButtonClick(sender : TObject);
@@ -86,6 +110,31 @@ begin
     lBFD.Free;
   end;
   inherited DoButtonClick(Sender);
+end;
+
+procedure TtiPickDirectory.DoResize;
+var
+ LHeight: Integer;
+ LWidth : Integer;
+begin
+  if (Edit=nil) or (SpeedButton=nil) then Exit;
+  LWidth := self.clientWidth - SpeedButton.Width - FSBShowDirectory.Width;
+  LHeight := self.ClientHeight;
+  if (LWidth<=1) or (LHeight<=0) then Exit;
+  SpeedButton.left := LWidth - 1;
+  SpeedButton.height := LHeight;
+  FSBShowDirectory.Left:= LWidth + SpeedButton.Width;
+  FSBShowDirectory.Height:= LHeight;
+  Edit.height := LHeight;
+  Edit.width := LWidth - 2;
+end;
+
+procedure TtiPickDirectory.DoShowDirectoryButtonClick(sender: TObject);
+begin
+  if DirectoryExists(Edit.Text) then
+    tiShellExecute(Edit.Text)
+  else
+    tiAppError(Format(CErrorDirectoryNotFound, [Edit.Text]));
 end;
 
 procedure TtiPickDirectory.PickDirectoryOnExit(sender : TObject);

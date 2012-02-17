@@ -54,6 +54,13 @@ type
     procedure BlockStream_SetBlockAsString_BadInput;
   end;
 
+  TtiStreamTestCase = class(TtiTestCase)
+  published
+    procedure   StreamTestCase_Write;
+    procedure   StreamTestCase_WriteLn;
+    procedure   StreamTestCase_AssignTo;
+    procedure   StreamTestCase_Clear;
+  end;
 
 procedure RegisterTests;
 
@@ -75,6 +82,7 @@ uses
 procedure RegisterTests;
 begin
   tiRegisterNonPersistentTest(TTestTIStream);
+  tiRegisterNonPersistentTest(TtiStreamTestCase);
 end;
 
 { TTestTIStream }
@@ -718,5 +726,89 @@ begin
   end;
 end;
 
+
+{ TtiStreamTestCase }
+
+procedure TtiStreamTestCase.StreamTestCase_AssignTo;
+var
+  LO: TtiPreSizedStream;
+  LStream: TMemoryStream;
+begin
+  LO:= nil;
+  LStream:= nil;
+  try
+    LO:= TtiPreSizedStream.Create(0, 1);
+    LStream:= TMemoryStream.Create;
+    tiStringToStream('XXXXXXXX', LStream);
+    LO.Write('test');
+    LO.AssignTo(LStream);
+    CheckEquals('test', tiStreamToString(LStream));
+  finally
+    LO.Free;
+    LStream.Free;
+  end;
+end;
+
+procedure TtiStreamTestCase.StreamTestCase_Clear;
+var
+  LO: TtiPreSizedStream;
+begin
+  LO:= nil;
+  try
+    LO:= TtiPreSizedStream.Create(0, 1);
+    LO.Write('test');
+    CheckEquals('test', LO.AsString);
+    LO.Clear;
+    CheckEquals('', LO.AsString);
+  finally
+    LO.Free;
+  end;
+end;
+
+procedure TtiStreamTestCase.StreamTestCase_Write;
+var
+  LO: TtiPreSizedStream;
+  LFileName: string;
+begin
+  LFileName:= TempFileName('tiStream.txt');
+  LO:= TtiPreSizedStream.Create(0, 1);
+  try
+    try
+      LO.Write('test');
+      CheckEquals(4, LO.Size);
+      CheckEquals(4, LO.Position);
+      CheckEquals('test', LO.AsString);
+      LO.SaveToFile(LFileName);
+      CheckEquals('test', tiFileToString(LFileName));
+    finally
+      tiDeleteFile(LFileName);
+    end;
+  finally
+    LO.Free;
+  end;
+end;
+
+procedure TtiStreamTestCase.StreamTestCase_WriteLn;
+var
+  LO: TtiPreSizedStream;
+  LFileName: string;
+begin
+  LFileName:= TempFileName('tiStream.txt');
+  LO:= TtiPreSizedStream.Create(0, 1);
+  try
+    try
+      LO.WriteLn('test');
+      CheckEquals(6, LO.Size);
+      CheckEquals(6, LO.Position);
+      CheckEquals('test' + CrLf, LO.AsString);
+      LO.SaveToFile(LFileName);
+      CheckEquals('test' + CrLf, tiFileToString(LFileName));
+    finally
+      tiDeleteFile(LFileName);
+    end;
+  finally
+    LO.Free;
+  end;
+end;
 
 end.

@@ -533,11 +533,11 @@ type
     function    GetValueAsString : string; virtual; abstract;
     procedure   SetValueAsString(const AValue : string); virtual; abstract;
     procedure   AssignToTIQuery(const AQuery : TtiQuery); virtual; abstract;
-    property    IsNull     : boolean read FIsNull write FIsNull;
   published
     property    Name       : string read FName write FName;
     property    KindAsStr  : string read GetKindAsStr;
     property    ValueAsString : string read GetValueAsString write SetValueAsString;
+    property    IsNull     : boolean read FIsNull write FIsNull;
   end;
 
 
@@ -1371,6 +1371,7 @@ begin
     vtExtended:      SetValueAsFloat(  AName, AValue.VExtended^);
     vtWideChar:      SetValueAsString( AName, String(AValue.VWideChar));
     vtUnicodeString: SetValueAsString( AName, String(AValue.VUnicodeString));
+    vtVariant:       SetValueAsVariant(AName, AValue.VVariant^);
     // Implement (and unit test) as required
     //    vtString:     result := result + QuotedStr(string(VString^));
     //    vtChar:       result := result + QuotedStr(string(VChar));
@@ -1380,7 +1381,6 @@ begin
     //    vtAnsiString: result := result + QuotedStr(string(VAnsiString));
     //    vtWideString: result := result + QuotedStr(string(VWideString));
     //    vtCurrency:   result := result + CurrToStr(VCurrency^);
-    //    vtVariant:    result := result + QuotedStr(string(VVariant^));
     //    vtInt64:      result := result + IntToStr(VInt64^);
   else
     raise EtiOPFProgrammerException.CreateFmt('Invalid variant type. Index="%d"', [AValue.VType]);

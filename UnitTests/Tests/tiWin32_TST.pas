@@ -14,14 +14,16 @@ uses
 
 type
   TTestTIWin32 = class(TtiTestCase)
+  public
+    constructor Create(AMethodName: string); reintroduce; virtual;
   published
     procedure CoInitialize_CoUnInitialize_MainThread;
     procedure CoInitialize_CoUnInitialize_MultiThread;
     procedure CoInitialize_ForceCoUnInitialize;
 
+    procedure TestTIWin32_tiWin32RunEXEAndWait;
+    procedure TestTIWin32_tiWin32RunEXEAndWaitWithParams;
     procedure TestTIWin32_tiWin32RunProcessWithTimeout;
-  public
-    constructor Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
   end;
 
 procedure RegisterTests;
@@ -47,11 +49,81 @@ end;
 
 constructor TTestTIWin32.Create {$IFNDEF DUNIT2ORFPC}(AMethodName: string) {$ENDIF};
 begin
-  inherited;
+  inherited Create;
   // There is a one off 32 byte leak the first time this pair execute
   // and I cannot pinpoint it's cause.
   tiWin32CoInitialize;
   tiWin32CoUnInitialize;
+end;
+
+procedure TTestTIWin32.TestTIWin32_tiWin32RunEXEAndWait;
+//const
+//  CTimeoutSecs = 5;
+//  CParams = '-s %d -f %s';
+//  CLogFileName = 'tiWin32RunProcessWithTimeout_TST.log';
+//  CEXEName = 'sleepfor.exe';
+//  CBATName = 'sleepfor.bat';
+//  CDirectory = 'DUnitSupportApps\SleepFor\_bin\';
+//var
+//  LCommandLine: string;
+//  LParams: string;
+//  LDirectory: string;
+//  LSleepForSecs: Cardinal;
+//  LTimeoutSecs: Cardinal;
+//  LLogFileName: string;
+//  LResult: DWord;
+//  LStartTime: cardinal;
+//  LEndTime: cardinal;
+//  LSecsTaken: cardinal;
+//const
+//  CBeforeSleepMessage = 'Before sleep message';
+//  CAfterSleepMessage = 'After sleep message';
+begin
+// Commented out to get broken build working. Was failing because signature of tiWin32RunProcessWithTimeout has been changed.
+//  // Timeout > SleepFor (Task will run to completion)
+//  LDirectory := tiAddTrailingSlash(tiGetEXEPath) + CDirectory;
+//  LCommandLine := LDirectory + CEXEName;
+//  LSleepForSecs := 1;
+//  LTimeoutSecs  := 60;
+//  LLogFileName := LDirectory + CLogFileName;
+//  LParams := Format(CParams, [LSleepForSecs, LLogFileName]);
+//
+//  LStartTime := GetTickCount;
+//  LResult:= tiWin32RunProcessWithTimeout(LCommandLine, LParams, LDirectory, LTimeoutSecs);
+//  LEndTime := GetTickCount;
+//
+//  LSecsTaken := (LEndTime - LStartTime) div 1000;
+//  Check(LSecsTaken < LSleepForSecs);
+//
+//  CheckEquals(WAIT_OBJECT_0, LResult, 'tiWin32RunProcessWithTimeout result');
+//  CheckEquals(true, FileExists(LLogFileName));
+//  CheckEquals(IntToStr(LSleepForSecs), tiFileToString(LLogFileName));
+//
+//  tiDeleteFile(LLogFileName);
+//
+//  // SleepFor > Timeout (Task will be killed by timeout)
+//  LDirectory := tiAddTrailingSlash(tiGetEXEPath) + CDirectory;
+//  LCommandLine := LDirectory + CEXEName;
+//  LSleepForSecs := 60;
+//  LTimeoutSecs  := 1;
+//  LLogFileName := LDirectory + CLogFileName;
+//  LParams := Format(CParams, [LSleepForSecs, LLogFileName]);
+//
+//  LStartTime := GetTickCount;
+//  LResult:= tiWin32RunProcessWithTimeout(LCommandLine, LParams, LDirectory, LTimeoutSecs);
+//  LEndTime := GetTickCount;
+//
+//  LSecsTaken := (LEndTime - LStartTime) div 1000;
+//  Check(LSecsTaken < LSleepForSecs);
+//
+//  CheckEquals(WAIT_TIMEOUT, LResult, 'tiWin32RunProcessWithTimeout result');
+//  Check( not FileExists(LLogFileName), 'Time out failed');
+
+end;
+
+procedure TTestTIWin32.TestTIWin32_tiWin32RunEXEAndWaitWithParams;
+begin
+
 end;
 
 procedure TTestTIWin32.TestTIWin32_tiWin32RunProcessWithTimeout;
@@ -63,43 +135,60 @@ const
   CBATName = 'sleepfor.bat';
   CDirectory = 'DUnitSupportApps\SleepFor\_bin\';
 var
-  LCommandLine: string;
-  LParams: string;
-  LDirectory: string;
+  LCreateProcessParams: TtiCreateProcessParams;
+  LCreateProcessResults: TtiCreateProcessResult;
   LSleepForSecs: Cardinal;
-  LTimeoutSecs: Cardinal;
   LLogFileName: string;
-  LResult: DWord;
+  LResult: Boolean;
+  LStartTime: cardinal;
+  LEndTime: cardinal;
+  LSecsTaken: cardinal;
 const
   CBeforeSleepMessage = 'Before sleep message';
   CAfterSleepMessage = 'After sleep message';
 begin
 
   // Timeout > SleepFor (Task will run to completion)
-  LDirectory := tiAddTrailingSlash(tiGetEXEPath) + CDirectory;
-  LCommandLine := LDirectory + CEXEName;
+  LCreateProcessParams.WorkingDirectory := tiAddTrailingSlash(tiGetEXEPath) + CDirectory;
+  LCreateProcessParams.CommandLine := LCreateProcessParams.WorkingDirectory + CEXEName;
   LSleepForSecs := 1;
-  LTimeoutSecs  := 2;
-  LLogFileName := LDirectory + CLogFileName;
-  LParams := Format(CParams, [LSleepForSecs, LLogFileName]);
+  LCreateProcessParams.TimeoutAfterSecs  := 60;
+  LLogFileName := LCreateProcessParams.WorkingDirectory + CLogFileName;
+  LCreateProcessParams.CommandLineParams := Format(CParams, [LSleepForSecs, LLogFileName]);
 
-  LResult:= tiWin32RunProcessWithTimeout(LCommandLine, LParams, LDirectory, LTimeoutSecs);
-  CheckEquals(WAIT_OBJECT_0, LResult, 'tiWin32RunProcessWithTimeout result');
+  LStartTime := GetTickCount;
+  LResult:= tiWin32RunProcessWithTimeout(LCreateProcessParams, LCreateProcessResults);
+  LEndTime := GetTickCount;
+
+  LSecsTaken := (LEndTime - LStartTime) div 1000;
+  Check(LSecsTaken < LCreateProcessParams.TimeoutAfterSecs);
+
+  CheckTrue(LResult, 'tiWin32RunProcessWithTimeout result');
+  CheckEquals(0, LCreateProcessResults.ErrorCode);
+  CheckEquals(0, LCreateProcessResults.WaitResult);
   CheckEquals(true, FileExists(LLogFileName));
   CheckEquals(IntToStr(LSleepForSecs), tiFileToString(LLogFileName));
 
   tiDeleteFile(LLogFileName);
 
   // SleepFor > Timeout (Task will be killed by timeout)
-  LDirectory := tiAddTrailingSlash(tiGetEXEPath) + CDirectory;
-  LCommandLine := LDirectory + CEXEName;
-  LSleepForSecs := 2;
-  LTimeoutSecs  := 1;
-  LLogFileName := LDirectory + CLogFileName;
-  LParams := Format(CParams, [LSleepForSecs, LLogFileName]);
+  LCreateProcessParams.WorkingDirectory := tiAddTrailingSlash(tiGetEXEPath) + CDirectory;
+  LCreateProcessParams.CommandLine := LCreateProcessParams.WorkingDirectory + CEXEName;
+  LSleepForSecs := 60;
+  LCreateProcessParams.TimeoutAfterSecs  := 1;
+  LLogFileName := LCreateProcessParams.WorkingDirectory + CLogFileName;
+  LCreateProcessParams.CommandLineParams := Format(CParams, [LSleepForSecs, LLogFileName]);
 
-  LResult:= tiWin32RunProcessWithTimeout(LCommandLine, LParams, LDirectory, LTimeoutSecs);
-  CheckEquals(WAIT_TIMEOUT, LResult, 'tiWin32RunProcessWithTimeout result');
+  LStartTime := GetTickCount;
+  LResult:= tiWin32RunProcessWithTimeout(LCreateProcessParams, LCreateProcessResults);
+  LEndTime := GetTickCount;
+
+  LSecsTaken := (LEndTime - LStartTime) div 1000;
+  Check(LSecsTaken < LSleepForSecs);
+
+  CheckFalse(LResult, 'tiWin32RunProcessWithTimeout result');
+  CheckEquals(0, LCreateProcessResults.ErrorCode);
+  CheckEquals(WAIT_TIMEOUT, LCreateProcessResults.WaitResult);
   Check( not FileExists(LLogFileName), 'Time out failed');
 
 end;

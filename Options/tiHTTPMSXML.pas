@@ -7,7 +7,7 @@ uses
    Classes
   ,tiHTTP
   ,Windows
-  ,MSXML_TLB
+  ,msxml
  ;
 
 const
@@ -19,9 +19,10 @@ type
   {:Uses the Adapter pattern to wrapper a IXMLHttpRequest giving a starndard interface.}
   TtiHTTPMSXML = class(TtiHTTPAbs)
   private
-    FHTTP : IXMLHttpRequest;
+    FHTTP : IServerXMLHTTPRequest;
     FAutoFlushCache: boolean;
     FLastCallTime: DWord;
+    procedure CreateHTTP;
   protected
     procedure   DoGet(const AURL : string; AInput, AOutput: TStringStream); override;
     procedure   DoPost(const AURL : string; AInput, AOutput: TStringStream); override;
@@ -58,10 +59,20 @@ constructor TtiHTTPMSXML.Create;
 begin
   inherited;
   FAutoFlushCache:= True;
+end;
+
+procedure TtiHTTPMSXML.CreateHTTP;
+begin
+  if FHTTP <> nil then
+  begin
+    FHTTP:= nil;
+    tiWin32CoUnInitialize;
+  end;
   FLastCallTime:= GetTickCount;
   tiWin32CoInitialize;
   try
-    FHTTP := CoXMLHTTPRequest.Create;
+    FHTTP := CoServerXMLHTTP.Create;
+    FHTTP.setTimeouts(ResolveTimeout, ConnectTimeout, SendTimeout, ReceiveTimeout);
   except
     // 03/01/2007. PH. In rare cases, tiWin32CoInitialize will wrongly
     // detect that CoInitialize has been called in this thread. Not
@@ -71,7 +82,7 @@ begin
     begin
       FHTTP:= nil;
       tiWin32ForceCoInitialize;
-      FHTTP := CoXMLHTTPRequest.Create;
+      FHTTP := CoServerXMLHTTP.Create;
     end;
   end;
 end;
@@ -87,6 +98,7 @@ procedure TtiHTTPMSXML.DoGet(const AURL : string; AInput, AOutput: TStringStream
 var
   lURL: string;
 begin
+  CreateHTTP;
   lURL := CorrectURL(AURL);
   // Hack around the MSXML 'feature' of caching pages, which may not be what
   // we want
@@ -116,6 +128,7 @@ var
   lURL: string;
   LTimeSinceLastCall: DWord;
 begin
+  CreateHTTP;
   lURL := CorrectURL(AURL);
   // Hack around the MSXML 'feature' of caching pages, which may not be what
   // we want

@@ -483,9 +483,10 @@ var
 begin
   Assert(AObject <> nil, 'AObject is nil');
 
-  lPropInfo := GetPropInfo(AObject, APropName);
+  lPropInfo := tiGetPropInfo(AObject.ClassType, APropName, @AObject);
   Assert(lPropInfo <> nil, Format('Class %s has no published property %s', [AObject.ClassName, APropName]));
   lPropTypeName := string(lPropInfo^.PropType^.Name);
+  lPropType := lPropInfo^.PropType^.Kind;
 
   // Check for a TDateTime
   if SameText(lPropTypeName, 'TDateTime') then
@@ -499,13 +500,6 @@ begin
   begin
     result := tiTKBoolean;
     Exit; //==>
-  end;
-
-  try
-    lPropType := PropType(AObject, APropName);
-  except
-    on e:exception do
-      raise Exception.CreateFmt(cErrorSimpleTypeKind, [APropName, e.message]);
   end;
 
   // ToDo: Detection of stream properties could be better

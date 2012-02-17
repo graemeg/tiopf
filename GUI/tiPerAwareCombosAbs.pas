@@ -47,6 +47,7 @@ type
     procedure   Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure   SetHint(const AValue : TTranslateString);{$IFDEF FPC} override;{$ENDIF}
     {$IFNDEF FPC}
+    procedure   DoResize; virtual;
     procedure   WMSize(var Message: TWMSize); message WM_SIZE;
     procedure   CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
     {$ELSE}
@@ -217,20 +218,27 @@ begin
   FSpeedButton.Font.Assign(Self.Font);
 end;
 
-procedure TtiPickerAbs.WMSize(var Message: TWMSize);
+procedure TtiPickerAbs.DoResize;
 var
- iHeight,iWidth : Integer;
+ LHeight: Integer;
+ LWidth : Integer;
+begin
+  if (Edit=nil) or (SpeedButton=nil) then Exit;
+  LWidth := self.clientWidth - SpeedButton.Width;
+  LHeight := self.ClientHeight;
+  if (LWidth<=1) or (LHeight<=0) then Exit;
+  SpeedButton.left := LWidth;
+  SpeedButton.height := LHeight;
+  Edit.height := LHeight;
+  Edit.width := LWidth - 1;
+end;
+
+procedure TtiPickerAbs.WMSize(var Message: TWMSize);
 begin
   inherited;
-  if (FEdit=nil) or (FSpeedButton=nil) then Exit;
-  iWidth := self.clientWidth - FSpeedButton.Width;
-  iHeight := self.ClientHeight;
-  if (iWidth<=1) or (iHeight<=0) then Exit;
-  FSpeedButton.left := iWidth;
-  FSpeedButton.height := iHeight;
-  FEdit.height := iHeight;
-  FEdit.width := iWidth - 1;
+  DoResize;
 end;
+
 {$ELSE}
 procedure TtiPickerAbs.FontChanged(Sender: TObject);
 begin

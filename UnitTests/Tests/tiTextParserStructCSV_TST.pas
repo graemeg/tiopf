@@ -62,6 +62,8 @@ type
     procedure ParseError_MoreMetaDataThanData;
     procedure ParseError_ExceptionInPropSetter;
     procedure ParseError_MultipleErrors;
+
+    procedure IgnoreUnknownGroup;
   end;
 
 
@@ -78,6 +80,40 @@ uses
 procedure RegisterTests;
 begin
   tiRegisterNonPersistentTest(TTestTextParserStructCSV);
+end;
+
+
+procedure TTestTextParserStructCSV.IgnoreUnknownGroup;
+var
+  LMetaData : TtiStructCSVMetaData;
+const
+  cString =
+    'I,GROUP_1,FIELD_11,FIELD_12' + #13 + #10 +
+    'D,GROUP_1,DATA_11,DATA_12'   + #13 + #10 +
+    'I,GROUP_4,FIELD_11,FIELD_12' + #13 + #10 +
+    'D,GROUP_4,DATA_11,DATA_12';
+begin
+  // Error on unknown group
+  try
+    FParser.ParseString(cString);
+    Fail(cExceptionNotRaisedWhenExpected);
+  except
+    on e:ETextParserStructCSVException do;
+  end;
+
+  // Ignore unknown group
+  FParser.IgnoreUnknownGroup := true;
+  FResults.Clear;
+  FParser.ParseString(cString);
+  LMetaData := FParser.MetaDatas.FindByDataGroupName('GROUP_1');
+  CheckNotNull(LMetaData, 'MetaData');
+  CheckEquals(2, LMetaData.Count, 'MetaData Count');
+
+  // All groups and columns are still parsed, some are just ignored
+  CheckEquals(3, FResults.Count, 'FResults.Count');
+  CheckEquals('ONGROUP_1,GROUP_1',                 FResults.Strings[0], 'FResults.Strings[0]');
+  CheckEquals('EVENT_11,GROUP_1,FIELD_11,DATA_11', FResults.Strings[1], 'FResults.Strings[1]');
+  CheckEquals('EVENT_12,GROUP_1,FIELD_12,DATA_12', FResults.Strings[2], 'FResults.Strings[2]');
 end;
 
 

@@ -423,6 +423,11 @@ begin
     else if (LBlockSize <> 0) and (LTransID = 0) then
     begin
       ProcessHTTPGet(LDocument, ARequestInfo, LParams, LResponse, LContentType, LResponseCode, AResponseInfo);
+      // To fix http://meldeopd1:8080/browse/BR-242:
+      //   "Error reading response from remote server: Transaction ID#39096 timed out.",
+      // we need to reset the corresponding transaction in the StatelessDBConnection's
+      // LastUsed value to Now. This will involve passing the transaction ID back
+      // and hitting the StatelessDBConnectionPool from  here. Hard to do.
       FBlockStreamCache.AddBlockStream(tiStreamToString(LResponse), LBlockSize, LTemp, LBlockCount, LTransID);
       tiStringToStream(LTemp, LResponse);
       LBlockCRC:= tiCRC32FromStream(LResponse);
@@ -550,8 +555,6 @@ begin
     end;
   end;
 end;
-
-{ TtiWebServerAction_ExecuteRemoteXML }
 
 procedure TtiWebServer.Start;
 var

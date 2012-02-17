@@ -365,15 +365,11 @@ end;
 
 procedure TtiQueryDOA.SetParamAsDateTime(const AName : string; const AValue: TDateTime);
 begin
-  DeclareVariable(AName, otDate);
-  FQuery.SetVariable(AName, DateTimeToStr(AValue));
-
-  // This was causing conversion error in StrToDateTime when called in Oracle.pas
-  //FQuery.SetVariable(AName, FormatDateTime('dd/mm/yyyy hh:nn:ss', AValue));
-
-  // Not sure why this was commented out. Think it might have been because of
-  // problems converting TDateTime (float)
-  //FQuery.SetVariable(AName, AValue);
+  // The timestamp type works for both timestamp and date columns.
+  // Date columns are precise to one second.
+  // Timestamp columns are precise to at least one millisecond.
+  DeclareVariable(AName, otTimestamp);
+  FQuery.SetVariable(AName, AValue);
 end;
 
 procedure TtiQueryDOA.SetParamAsFloat(const AName: string;
@@ -639,6 +635,7 @@ begin
   otInteger : result := qfkInteger   ;
   otFloat  : result := qfkFloat     ;
   otDate   : result := qfkDateTime  ;
+  otTimestamp: result := qfkDateTime  ;
   otLong   : result := qfkLongString;
   otCLOB   : result := qfkLongString;
   otLongRaw : result := qfkBinary    ;

@@ -16,18 +16,18 @@ unit tiWebServerVersion;
 interface
 uses
   tiBaseObject
- ;
+  ,tiXML
+  ;
 
 const
   cWebServerStatus_unknown = 'unknown';
   cWebServerStatus_passed  = 'passed';
   cWebServerStatus_failed  = 'failed';
-  ctiOPFXMLVersion = '2.0';
 
   // NOTE: The following old file sync version is only used if an application
   // specific version is not defined, that is if an app server version class is
   // not registered, and is maintained here for backwards compatibility.
-  // Do not increment this in future. 
+  // Do not increment this in future.
   ctiOPFOldFileSyncVersion = '2.0';
 
 type
@@ -87,10 +87,10 @@ type
 function gAppServerVersionFactory: TtiAppServerVersionFactory;
 
 implementation
+
 uses
-  tiXML
- ,tiExcept
- ;
+  tiExcept
+  ;
 
 // Single instance of TtiAppServerVersionFactory
 var
@@ -182,14 +182,14 @@ function TtiAppServerVersionAbs.IsVersionValid: boolean;
 begin
   result:=
     (FileSyncVersion = GetCurrentFileSyncVersion) and
-    (XMLVersion = ctiOPFXMLVersion);
+    (XMLVersion = cTIOPFXMLVersion);
 end;
 
 procedure TtiAppServerVersionAbs.LoadDefaultValues;
 begin
   FConnectionStatus:= cWebServerStatus_unknown;
   FFileSyncVersion:= GetCurrentFileSyncVersion;
-  FXMLVersion:= ctiOPFXMLVersion;
+  FXMLVersion:= cTIOPFXMLVersion;
 end;
 
 procedure TtiAppServerVersionAbs.SetAsString(const AValue: string);

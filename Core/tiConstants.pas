@@ -114,6 +114,10 @@ const
   cHTTPProxyPort          = 'proxyport';
   CHTTPBlockSize          = 'blocksize';
   CHTTPRetryLimit         = 'retrylimit';
+  CHTTPResolveTimeout     = 'resolvetimeout';
+  CHTTPConnectTimeout     = 'connecttimeout';
+  CHTTPSendTimeout        = 'sendtimeout';
+  CHTTPReceiveTimeout     = 'receivetimeout';
 
   CPathToCachedDataRoot       = 'CachedData';
 
@@ -171,8 +175,9 @@ const
 
   { Summary of ISO 8601  http://www.cl.cam.ac.uk/~mgk25/iso-time.html }
   cIntlDateTimeStor = 'yyyymmdd"T"hhmmss';    // for storage
+  CIntlDateStor     = 'yyyymmdd';             // for storage
   cIntlDateTimeDisp = 'yyyy-mm-dd hh:mm:ss';  // for display
-  CIntlDateDisp     = 'yyyy-mm-dd';  // for display
+  CIntlDateDisp     = 'yyyy-mm-dd';           // for display
 
   cgsComma        = ',';
   {$IFDEF DELPHI5} // These are defined from Delphi 5
@@ -264,3 +269,4 @@ const
 implementation
 
 end.
+

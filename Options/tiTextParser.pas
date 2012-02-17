@@ -205,7 +205,8 @@ begin
     else
       // Add positional info here
       raise Exception.Create('Invalid character "' + lChar +
-                             '" Position in file="' + IntToStr(i) +
+                             '" (ASCII char ' + IntToStr(Ord(LChar)) + ') ' +
+                             ' Position in file="' + IntToStr(i) +
                              '" Row="'+ IntToStr(FRow) +
                              '" Col="'+ IntToStr(FCol) + '"');
     end;

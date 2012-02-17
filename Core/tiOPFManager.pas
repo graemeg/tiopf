@@ -115,6 +115,9 @@ type
                                            const ARetryCount:    Word;
                                            const ARetryInterval: Word);
 
+    procedure   DisconnectDatabase(        const ADatabaseAlias: string;
+                                           const ADatabaseName : string;
+                                           const APackageID   : string); overload;
     procedure   DisconnectDatabase(        const ADatabaseName : string;
                                            const APackageID   : string); overload;
     procedure   DisconnectDatabase(        const ADatabaseName : string); overload;
@@ -300,6 +303,13 @@ end;
 function ShuttingDown: Boolean;
 begin
   Result := uShuttingDown;
+end;
+
+
+function ShutdownProc: Boolean;
+begin
+  uShuttingDown := True;
+  Result := True;
 end;
 
 
@@ -584,22 +594,39 @@ end;
 
 
 procedure TtiOPFManager.DisconnectDatabase(
-  const ADatabaseName : string;
-  const APackageID   : string);
+  const ADatabaseAlias: string;
+  const ADatabaseName: string;
+  const APackageID: string);
 var
-  lRegPerLayer  : TtiPersistenceLayer;
+  lRegPerLayer: TtiPersistenceLayer;
 begin
+  Assert(ADatabaseAlias <> '', 'ADatabaseAlias not assigned');
   Assert(ADatabaseName <> '', 'ADatabaseName not assigned');
-  Assert(APackageID <> '', 'APackageID not assigned');
 
-  lRegPerLayer := FPersistenceLayers.FindByPersistenceLayerName(APackageID);
-  if lRegPerLayer = nil then
-    raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APackageID]);
+  if APackageID = '' then
+  begin
+    lRegPerLayer := DefaultPerLayer;
+    if lRegPerLayer = nil then
+      raise EtiOPFInternalException.Create(cErrorUnableToFindDefaultPerLayer);
+  end
+  else
+  begin
+    lRegPerLayer := FPersistenceLayers.FindByPersistenceLayerName(APackageID);
+    if lRegPerLayer = nil then
+      raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APackageID]);
+  end;
 
   if (SameText(lRegPerLayer.DefaultDBConnectionName, ADatabaseName)) then
     lRegPerLayer.DefaultDBConnectionName := '';
-  lRegPerLayer.DBConnectionPools.DisConnect(ADatabaseName);
+  lRegPerLayer.DBConnectionPools.DisConnect(ADatabaseAlias);
+end;
 
+
+procedure TtiOPFManager.DisconnectDatabase(
+  const ADatabaseName : string;
+  const APackageID   : string);
+begin
+  DisconnectDatabase(ADatabaseName, ADatabaseName, APackageID);
 end;
 
 
@@ -900,7 +927,7 @@ begin
   LPersistenceLayer := DefaultPerLayer;
   if LPersistenceLayer = nil then
     raise EtiOPFInternalException.Create(cErrorUnableToFindDefaultPerLayer);
-  DisconnectDatabase(ADatabaseName, LPersistenceLayer.PersistenceLayerName);
+  DisconnectDatabase(ADatabaseName, ADatabaseName, LPersistenceLayer.PersistenceLayerName);
 end;
 
 function TtiOPFManager.TestThenConnectDatabase(const ADatabaseName,
@@ -952,12 +979,12 @@ begin
   Assert(LPersistenceLayer <> nil, cErrorUnableToFindDefaultPerLayer);
   LDatabaseName := LPersistenceLayer.DefaultDBConnectionName;
   Assert(LDatabaseName <> '', cErrorUnableToFindDefaultDatabase);
-  DisconnectDatabase(LDatabaseName, LPersistenceLayer.PersistenceLayerName);
+  DisconnectDatabase(LDatabaseName, LDatabaseName, LPersistenceLayer.PersistenceLayerName);
 end;
-
 
 initialization
   uShuttingDown := False;
+  AddTerminateProc(ShutdownProc);
 
   // This works if there is only one persistence layer linked in via a compiler
   // directive, but not if there are more.
@@ -986,3 +1013,4 @@ finalization
   FreeAndNilTIPerMgr;
 
 end.
+

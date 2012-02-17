@@ -295,24 +295,29 @@ end;
 
 procedure TtiQueryRemoteExec.DBRequestToQueryParams;
 var
-  lQuery : TtiQueryXMLLight;
+  LQuery: TtiQueryXMLLight;
+  LParamIsNull: Boolean;
 begin
   Assert(FDBRequest.TestValid(TtiDatabaseXMLLight), CTIErrorInvalidObject);
   Assert(FQueryParams.TestValid(TtiQueryTransParams), CTIErrorInvalidObject);
-  lQuery := TtiQueryXMLLight.Create;
+  LQuery := TtiQueryXMLLight.Create;
   try
-    lQuery.AttachDatabase(FDBRequest);
-    lQuery.SelectRow(uXMLTags.TableNameQueryParam);
-    while not lQuery.EOF do
+    LQuery.AttachDatabase(FDBRequest);
+    LQuery.SelectRow(uXMLTags.TableNameQueryParam);
+    while not LQuery.EOF do
     begin
+      LParamIsNull :=
+          (LQuery.FieldIndex(uXMLTags.FieldNameParamIsNull) <> -1) and
+          tiStrToBool(LQuery.FieldAsString[uXMLTags.FieldNameParamIsNull]);
       FQueryParams.AddInstance(
-        lQuery.FieldAsString[uXMLTags.FieldNameParamName],
-        lQuery.FieldAsString[uXMLTags.FieldNameParamKind],
-        lQuery.FieldAsString[uXMLTags.FieldNameParamValue]);
-      lQuery.Next;
+        LQuery.FieldAsString[uXMLTags.FieldNameParamName],
+        LQuery.FieldAsString[uXMLTags.FieldNameParamKind],
+        LQuery.FieldAsString[uXMLTags.FieldNameParamValue],
+        LParamIsNull);
+      LQuery.Next;
     end;
   finally
-    lQuery.Free;
+    LQuery.Free;
   end;
 end;
 

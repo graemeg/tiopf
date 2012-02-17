@@ -15,18 +15,22 @@ type
     FData: TtiObject;
     FOwnsData: boolean;
     FSavesData: boolean;
+    FReferenceData: TtiObject;
+    FOwnsReferenceData: boolean;
     FOnEditsSave: TtiObjectEvent;
     FOnEditsCancel: TtiObjectEvent;
     function GetHasSave: boolean;
   protected
     function GetData: TtiObject; virtual;
     procedure SetData(AData: TtiObject); virtual;
+    function GetReferenceData: TtiObject; virtual;
+    procedure SetReferenceData(const AData: TtiObject); virtual;
     function GetIsDirty: boolean; virtual;
     procedure DoPrepareSave; virtual;
     procedure DoSave; virtual;
     procedure DoCancel; virtual;
   public
-    constructor Create(AOwnsData: boolean; ASavesData: boolean); reintroduce; virtual;
+    constructor Create(AOwnsData: boolean; ASavesData: boolean; AOwnsReferenceData: boolean = false); reintroduce; virtual;
     destructor Destroy; override;
     procedure PrepareSave;
     procedure Save; override;
@@ -37,6 +41,8 @@ type
     property IsDirty: boolean read GetIsDirty;
     property OwnsData: boolean read FOwnsData write FOwnsData;
     property SavesData: boolean read FSavesData write FSavesData;
+    property ReferenceData: TtiObject read GetReferenceData write SetReferenceData;
+    property OwnsReferenceData: boolean read FOwnsReferenceData write FOwnsReferenceData;
     property OnEditsSave: TtiObjectEvent read FOnEditsSave write FOnEditsSave;
     property OnEditsCancel: TtiObjectEvent read FOnEditsCancel write FOnEditsCancel;
     property HasSave: boolean read GetHasSave;
@@ -66,16 +72,21 @@ uses
 
 { TtiDataFormData }
 
-constructor TtiDataFormData.Create(AOwnsData: boolean; ASavesData: boolean);
+constructor TtiDataFormData.Create(AOwnsData: boolean; ASavesData, AOwnsReferenceData: boolean);
 begin
   FOwnsData := AOwnsData;
   FSavesData := ASavesData;
+  FOwnsReferenceData := AOwnsReferenceData;
 end;
 
 destructor TtiDataFormData.Destroy;
 begin
   if OwnsData then
     FData.Free;
+
+  if OwnsReferenceData then
+    FReferenceData.Free;
+
   inherited;
 end;
 
@@ -126,6 +137,13 @@ begin
   FData := AData;
 end;
 
+procedure TtiDataFormData.SetReferenceData(const AData: TtiObject);
+begin
+  if OwnsReferenceData then
+    FReferenceData.Free;
+  FReferenceData := AData;
+end;
+
 function TtiDataFormData.GetHasSave: boolean;
 begin
   Result := SavesData or Assigned(FOnEditsSave);
@@ -134,6 +152,11 @@ end;
 function TtiDataFormData.GetIsDirty: boolean;
 begin
   Result := True;
+end;
+
+function TtiDataFormData.GetReferenceData: TtiObject;
+begin
+  Result := FReferenceData;
 end;
 
 function TtiDataFormData.IsValid(var AErrorMessage: string): boolean;
