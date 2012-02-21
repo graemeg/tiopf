@@ -1,4 +1,4 @@
-﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
 			<ProjectGuid>{D88208E6-18CA-4A4D-A27A-040F1C8C4C2E}</ProjectGuid>
 			<ProjectVersion>13.4</ProjectVersion>
@@ -49,7 +49,7 @@
 			<DCC_EXPLICIT_STRING_CAST>true</DCC_EXPLICIT_STRING_CAST>
 			<DCC_CVT_ACHAR_TO_WCHAR>true</DCC_CVT_ACHAR_TO_WCHAR>
 			<DCC_MapFile>3</DCC_MapFile>
-			<DCC_UnitSearchPath>..\..\UnitTests\Common;..\..\UnitTests\Tests;..\..\Core;..\..\Options;..\..\GUI;..\..\GUI\VCL;..\..\GUI\VCLForms;..\..\ApplicationServer;..\..\ApplicationServer\tiDBProxyServerExtension;$(TIOPF_3RD_PARTY)\DUnit;$(TIOPF_3RD_PARTY)\JCL\common;$(TIOPF_3RD_PARTY)\JCL\windows;$(TIOPF_3RD_PARTY)\JCL\include;$(TIOPF_3RD_PARTY)\JCL\include\jedi;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_UnitSearchPath>..\..\UnitTests\Common;..\..\UnitTests\Tests;..\..\Core;..\..\Options;..\..\GUI;..\..\GUI\VCL;..\..\GUI\VCLForms;..\..\ApplicationServer;..\..\ApplicationServer\tiDBProxyServerExtension;..\..\..\3rdParty\DUnit;..\..\..\3rdParty\JCL\common;..\..\..\3rdParty\JCL\windows;..\..\..\3rdParty\JCL\include;..\..\..\3rdParty\JCL\include\jedi;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_ExeOutput>..\..\_bin</DCC_ExeOutput>
 			<DCC_DependencyCheckOutputName>..\..\_bin\tiOPFUnitTestsText.exe</DCC_DependencyCheckOutputName>
 			<DCC_Define>DUNIT2;USE_JEDI_JCL;LINK_XMLLIGHT;LINK_XML;LINK_CSV;LINK_TAB;LINK_BDEPARADOX;LINK_ADOACCESS;LINK_IBX;LINK_ADOSQLSERVERx;LINK_REMOTEx;LINK_DOAx;$(DCC_Define)</DCC_Define>
