@@ -383,6 +383,8 @@ end;
 
 procedure TtiPropertyLinkDef.CreateMediator;
 begin
+  if Assigned(FMediator) then
+    Exit; //==>
   if (FMediatorDef = nil) then
     MediatorError(Self,SErrNoMediator, [Component.Name, Component.ClassName, FieldName]);
   FMediator := FMediatorDef.MediatorClass.Create;
