@@ -4340,13 +4340,19 @@ begin
 end;
 
 procedure TtiRtfParser.UdfTrunc(AArgument: TRtfArgument);
+var
+  i: extended;
 begin
-  if not AArgument.Check(0,[etLitFloat, etLitInt])
-  then raise TRtfException.Create(rsUnexpectedParameterType);
-  if AArgument[0].Token = etLitFloat then begin
+  if not AArgument.Check(0,[etLitFloat, etLitInt]) then
+    raise TRtfException.Create(rsUnexpectedParameterType);
+  if AArgument[0].Token = etLitFloat then
+  begin
     AArgument.Token := etLitFloat;
-    AArgument.Value := Trunc(AArgument[0].Value);
-  end else begin
+    i := AArgument[0].Value;
+    AArgument.Value := Trunc(i);
+  end
+  else
+  begin
     AArgument.Token := etLitInt;
     AArgument.Value := AArgument[0].Value;
   end;
