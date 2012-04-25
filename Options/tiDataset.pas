@@ -1129,7 +1129,7 @@ begin
         if Buffer = nil
         then Data.DateTime := 0.0
         else Move(pSrc^, Data, SizeOf(Double));
-        TimeStamp := MSecsToTimeStamp(Data.DateTime);
+        TimeStamp := DateTimeToTimeStamp(Data.DateTime);
         if Buffer = nil
         then TempDouble := 0.0
         else TempDouble := TimeStampToDateTime(TimeStamp);
