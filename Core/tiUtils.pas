@@ -626,9 +626,6 @@ uses
     ,FileCtrl
     {$ENDIF}
   ,tiWin32
-    {$IFDEF FPC}
-    ,winsysut
-    {$ENDIF}
   {$ENDIF MSWINDOWS}
   {$IFDEF UNIX}
   ,unix
