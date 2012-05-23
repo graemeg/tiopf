@@ -121,6 +121,7 @@ type
     procedure SetStreet(const AValue: string);
     procedure SetTelephone1(const AValue: string);
     procedure SetTelephone2(const AValue: string);
+    function GetFullAddress: string;
   public
     constructor Create; override;
     procedure AssignClassProps(ASource: TtiObject); override;
@@ -133,6 +134,7 @@ type
     property AddressType: TAddressType read FAddressType write SetAddressType;
     property AddressType4GUI: string read GetAddressType4GUI;
     property City: TCity read FCity write SetCity;
+    property FullAddress: string read GetFullAddress;
   end;
   
   
@@ -163,6 +165,7 @@ type
     procedure SetMobile(const AValue: string);
     procedure SetDateOfBirth(const AValue: TDateTime);
     procedure SetIsConfirmed(const AValue: Boolean);
+    function GetHomeAddress: string;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -175,6 +178,7 @@ type
     property DateOfBirth: TDateTime read FDateOfBirth write SetDateOfBirth;
     property AddressList: TAddressList read FAddressList;
     property IsConfirmed: Boolean read FIsConfirmed write SetIsConfirmed;
+    property HomeAddress: string read GetHomeAddress;
   end;
   
   
@@ -344,6 +348,12 @@ begin
   EndUpdate;
 end;
 
+function TAddress.GetFullAddress: string;
+begin
+  result := Format('%d %s, %s, %s, %s', [Nr, Street, City.Name, City.ZIP,
+    City.Country.Name]);
+end;
+
 constructor TAddress.Create;
 begin
   inherited Create;
@@ -464,6 +474,19 @@ begin
   BeginUpdate;
   FIsConfirmed := AValue;
   EndUpdate;
+end;
+
+function TContact.GetHomeAddress: string;
+var
+  i: Integer;
+begin
+  result := '';
+  for i := 0 to AddressList.Count - 1 do
+    if AddressList.Items[i].AddressType.Name = 'Home' then
+    begin
+      result := AddressList.Items[i].FullAddress;
+      break;
+    end;
 end;
 
 constructor TContact.Create;
