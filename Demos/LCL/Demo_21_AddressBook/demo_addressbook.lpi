@@ -37,7 +37,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="11">
+    <Units Count="13">
       <Unit0>
         <Filename Value="demo_addressbook.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -47,8 +47,9 @@
         <Filename Value="frmmain.pp"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="MainForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="frmmain"/>
+        <UnitName Value="frmMain"/>
       </Unit1>
       <Unit2>
         <Filename Value="model.pas"/>
@@ -64,6 +65,7 @@
         <Filename Value="frmeditcontact.pp"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ContactEditForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmeditcontact"/>
       </Unit4>
@@ -109,10 +111,20 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmAddressTypeList"/>
       </Unit10>
+      <Unit11>
+        <Filename Value="contactdisplay.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ContactDisplay"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="displayhelpers.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="DisplayHelpers"/>
+      </Unit12>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <Parsing>
       <SyntaxOptions>
         <CStyleOperator Value="False"/>

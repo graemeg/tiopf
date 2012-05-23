@@ -2,20 +2,20 @@ object MainForm: TMainForm
   Left = 391
   Height = 460
   Top = 185
-  Width = 600
+  Width = 701
   ActiveControl = GContacts
   Caption = 'Demo 21 : Address book demo using MGM'
-  ClientHeight = 435
-  ClientWidth = 600
+  ClientHeight = 436
+  ClientWidth = 701
   Menu = MainMenu1
   OnCreate = FormCreate
   Position = poDesktopCenter
-  LCLVersion = '0.9.29'
+  LCLVersion = '1.1'
   object ToolBar1: TToolBar
     Left = 0
     Height = 30
     Top = 0
-    Width = 600
+    Width = 701
     ButtonHeight = 26
     ButtonWidth = 26
     Caption = 'ToolBar1'
@@ -46,9 +46,9 @@ object MainForm: TMainForm
   end
   object GContacts: TStringGrid
     Left = 0
-    Height = 405
+    Height = 406
     Top = 30
-    Width = 600
+    Width = 701
     Align = alClient
     FixedCols = 0
     TabOrder = 1

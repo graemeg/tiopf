@@ -1,12 +1,13 @@
-unit frmmain;
+unit frmMain;
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, Menus,
-  ComCtrls, Grids, tiBaseMediator, tiModelMediator, tiMediators, tiListMediators;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus,
+  ComCtrls, Grids, tiBaseMediator, tiModelMediator, tiMediators,
+  tiListMediators, ContactDisplay;
 
 type
 
@@ -41,13 +42,18 @@ type
     procedure GContactsHeaderClick(Sender: TObject; IsColumn: Boolean; Index: Integer);
   private
     FMediator: TtiModelMediator;
+    FDisplayList : TContactDisplayList;
     procedure SetupMediators;
+  published
+    Property DisplayList : TContactDisplayList Read FDisplayList Write FDisplayList;
   end;
 
 var
   MainForm: TMainForm;
 
 implementation
+
+{$R *.lfm}
 
 uses
   model,
@@ -66,15 +72,17 @@ end;
 
 procedure TMainForm.EditContactClick(Sender: TObject);
 var
-  c: TContact;
-  M: TtiMediatorView;
+  D : TContactDisplay;
+  C : TContact;
+  M : TtiMediatorView;
 begin
   M := FMediator.FindByComponent(GContacts).Mediator;
-  c := TContact(TtiStringGridMediatorView(M).SelectedObject);
-  if Assigned(c) then
-    if EditContact(c) then
+  D := TContactDisplay(TtiStringGridMediatorView(M).SelectedObject);
+  C := D.Contact;
+  if Assigned(C) then
+    if EditContact(C) then
     begin
-      // we can save contact here
+      // we can save contact here or modify EditContact to handle it for us.
     end;
 end;
 
@@ -95,6 +103,7 @@ var
   c: TContact;
 begin
   c := TContact.CreateNew;
+  c.DateOfBirth := Date;
   if EditContact(c) then
     gContactManager.ContactList.Add(c)
   else
@@ -113,14 +122,16 @@ end;
 
 procedure TMainForm.DeleteContactClick(Sender: TObject);
 var
-  c: TContact;
+  D : TContactDisplay;
+  C : TContact;
   M : TtiMediatorView;
 begin
-  M:=FMediator.FindByComponent(GContacts).Mediator;
-  c := TContact(TtiStringGridMediatorView(M).SelectedObject);
-  if Assigned(c) then
+  M := FMediator.FindByComponent(GContacts).Mediator;
+  D := TContactDisplay(TtiStringGridMediatorView(M).SelectedObject);
+  C := D.Contact;
+  if Assigned(C) then
   begin
-    gcontactmanager.ContactList.extract(c);
+    gContactManager.ContactList.Extract(c);
     C.Deleted:=True;
     C.Free;
     M.ObjectToGui;
@@ -131,9 +142,10 @@ procedure TMainForm.FormCreate(Sender: TObject);
 begin
   RegisterFallBackMediators;
   RegisterFallBackListmediators;
-  gcontactmanager.PopulateContacts;
+  FDisplayList := TContactDisplayList.CreateCustom(gContactManager.ContactList);
+  gContactManager.PopulateContacts;
   SetupMediators;
-  GContacts.OnHeaderClick := @GContactsHeaderClick;
+//  GContacts.OnHeaderClick := @GContactsHeaderClick;
 end;
 
 procedure TMainForm.CountryListClick(Sender: TObject);
@@ -146,14 +158,14 @@ begin
   if not Assigned(FMediator) then
   begin
     FMediator := TtiModelMediator.Create(self);
-    FMediator.AddComposite('FirstName(100);LastName(130);EMail(180);Mobile(130);Comments(200)', GContacts);
+    FMediator.AddComposite(
+        'FirstName(60,"First Name");LastName(90,"Last Name");EMail(130);' +
+        'DateOfBirth(80,"Date of Birth");Mobile(100);Comments(100);HomeAddress(200,"Home Address")', GContacts);
   end;
-  FMediator.Subject := gContactManager.ContactList;
+  FMediator.Subject := DisplayList;
   FMediator.Active := True;
 end;
 
-initialization
-  {$I frmmain.lrs}
 
 end.
 
