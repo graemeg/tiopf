@@ -723,7 +723,7 @@ end;
 procedure TtiCheckBoxMediatorView.SetObjectUpdateMoment(
   const AValue: TtiObjectUpdateMoment);
 begin
-  inherited;
+  inherited SetObjectUpdateMoment(AValue);
   if View <> nil then
     case ObjectUpdateMoment of
       ouOnChange, ouCustom, ouDefault: View.OnClick := DoOnChange;
