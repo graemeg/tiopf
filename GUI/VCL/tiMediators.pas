@@ -435,9 +435,17 @@ begin
 end;
 
 procedure TtiSpinEditMediatorView.SetupGUIandObject;
+var
+  Mi, Ma: Integer;
 begin
   inherited SetupGUIandObject;
-  View.Value := 0;
+  if Subject.GetFieldBounds(FieldName,Mi,Ma) and (Ma>0) then
+  begin
+    View.MinValue := Mi;
+    View.MaxValue := Ma;
+  end
+  else
+    View.Value := 0;
 end;
 
 constructor TtiSpinEditMediatorView.Create;
@@ -678,28 +686,30 @@ var
   lPropType: TTypeKind;
 begin
   SetOnChangeActive(false);
+  try
+    //  Set the index only (We're assuming the item is present in the list)
+    View.ItemIndex := -1;
+    if (Subject = nil) or (not Assigned(ValueList)) then
+      Exit; //==>
 
-  //  Set the index only (We're assuming the item is present in the list)
-  View.ItemIndex := -1;
-  if (Subject = nil) or (not Assigned(ValueList)) then
-    Exit; //==>
-
-  lValue := nil;
-  lPropType := typinfo.PropType(Subject, FieldName);
-  if lPropType = tkClass then
-    lValue := TtiObject(typinfo.GetObjectProp(Subject, FieldName))
-  else
-    RaiseMediatorError(cErrorPropertyNotClass);
-  if Assigned(lValue) then // only check if property isn't nil.
-  begin
-    for i := 0 to ValueList.Count - 1 do
-      if ValueList.Items[i].Equals(lValue) then
-      begin
-        View.ItemIndex := i;
-        Break; //==>
-      end;
+    lValue := nil;
+    lPropType := typinfo.PropType(Subject, FieldName);
+    if lPropType = tkClass then
+      lValue := TtiObject(typinfo.GetObjectProp(Subject, FieldName))
+    else
+      RaiseMediatorError(cErrorPropertyNotClass);
+    if Assigned(lValue) then // only check if property isn't nil.
+    begin
+      for i := 0 to ValueList.Count - 1 do
+        if ValueList.Items[i].Equals(lValue) then
+        begin
+          View.ItemIndex := i;
+          Break; //==>
+        end;
+    end;
+  finally
+    SetOnChangeActive(true);
   end;
-  SetOnChangeActive(true);
 end;
 
 procedure TtiDynamicComboBoxMediatorView.RefreshList;
@@ -729,7 +739,7 @@ end;
 procedure TtiCheckBoxMediatorView.SetObjectUpdateMoment(
   const AValue: TtiObjectUpdateMoment);
 begin
-  inherited;
+  inherited SetObjectUpdateMoment(AValue);
   if View <> nil then
     case ObjectUpdateMoment of
       ouOnChange, ouCustom, ouDefault: View.OnClick := DoOnChange;
