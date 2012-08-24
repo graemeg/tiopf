@@ -23,7 +23,8 @@ type
   TtiCustomListMediatorView = class;
 
   TtiObjectToGUIEvent = procedure(Sender: TtiMediatorView; Src: TtiObject; Dest: TComponent; var Handled: Boolean) of object;
-  TtiGUIToObjectEvent = procedure(Sender: TtiMediatorView; Src: TComponent; Dest: TtiObject; var Handled: Boolean) of object;
+  TtiBeforeGUIToObjectEvent = procedure(Sender: TtiMediatorView; Src: TComponent; Dest: TtiObject; var Handled: Boolean) of object;
+  TtiAfterGUIToObjectEvent = procedure(Sender: TtiMediatorView; Src: TComponent; Dest: TtiObject) of object;
   TtiMediatorEvent = procedure(AMediatorView: TtiMediatorView) of object;
   TtiComponentNotificationEvent = procedure(AComponent: TComponent; Operation: TOperation) of object;
 
@@ -37,7 +38,7 @@ type
     FActive: Boolean;
     FObjectUpdateMoment: TtiObjectUpdateMoment;
     FListObject: TtiObjectList;
-    FOnGUIToObject: TtiGUIToObjectEvent;
+    FOnBeforeGUIToObject: TtiBeforeGUIToObjectEvent;
     FOnObjectToGUI: TtiObjectToGUIEvent;
     FSettingUp: Boolean;
     FFieldName: string; // Published property of model used to get/set value
@@ -47,6 +48,7 @@ type
     FGUIFieldName: string;
     FViewHelper: TtiMediatorViewComponentHelper;
     FCopyingCount: integer;
+    FOnAfterGUIToObject: TtiAfterGUIToObjectEvent;
     procedure ViewNotification(AComponent: TComponent; Operation: TOperation);
   protected
     UseInternalOnChange: Boolean;
@@ -134,10 +136,9 @@ type
     property GUIFieldName: string read FGUIFieldName write FGUIFieldName;
     // Property ObjectUpdateMoment : Do action e.g. in OnExit instead of OnChange.
     // Up to the descendent class to decide this.
-    property ObjectUpdateMoment: TtiObjectUpdateMoment read FObjectUpdateMoment write SetObjectUpdateMoment default ouOnChange;
-    // OnGUIToObject
-    property OnGUIToObject: TtiGUIToObjectEvent read FOnGUIToObject write FOnGUIToObject;
-    // OnObjectToGUI
+    property ObjectUpdateMoment: TtiObjectUpdateMoment read FObjectUpdateMoment write SetObjectUpdateMoment default ouDefault;
+    property OnBeforeGUIToObject: TtiBeforeGUIToObjectEvent read FOnBeforeGUIToObject write FOnBeforeGUIToObject;
+    property OnAfterGUIToObject: TtiAfterGUIToObjectEvent read FOnAfterGUIToObject write FOnAfterGUIToObject;
     property OnObjectToGUI: TtiObjectToGUIEvent read FOnObjectToGUI write FOnObjectToGUI;
     // Observing or not ?
     property Active: Boolean read FActive write SetActive;
@@ -159,7 +160,6 @@ type
 
 
   TtiSubjectClass = class of TtiObject;
-
 
   TtiMediatorFieldInfo = class(TCollectionItem)
   private
@@ -183,6 +183,7 @@ type
     property Alignment: TAlignment read FAlign write FAlign default taLeftJustify;
   end;
 
+  TtiMediatorFieldInfoClass = class of TtiMediatorFieldInfo;
 
   TtiMediatorFieldInfoList = class(TCollection)
   private
@@ -264,7 +265,8 @@ type
     procedure SetSubject(const AValue: TtiObject); override;
     procedure SetFieldName(const AValue: string); override;
     procedure SetActive(const AValue: Boolean); override;
-    Function FindObjectMediator(AObject : TTiObject; out AtIndex : Integer) : TtiListItemMediator;
+    function FindObjectMediator(AObject: TTiObject; out AtIndex: Integer): TtiListItemMediator;
+    function MediatorFieldInfoClass: TtiMediatorFieldInfoClass; virtual;
     property MediatorList: TObjectList read FMediatorList;
   public
     constructor Create; override;
@@ -437,7 +439,8 @@ constructor TtiMediatorView.CreateCustom(AView: TComponent; ASubject: TtiObject;
 begin
   Create;
   FSettingUp   := True;
-  FieldName    := AFieldName;
+  FieldName    := tiValueFieldName(AFieldName);
+  RootFieldName := tiRootFieldName(AFieldName);
   GUIFieldName := AGUIFieldName;
   Subject      := ASubject;
   SetView(AView); // At this point, SetupGUIAndObject is called
@@ -448,9 +451,11 @@ destructor TtiMediatorView.Destroy;
 begin
   if Assigned(FView) then
     FView.RemoveFreeNotification(FViewHelper);
+  if Assigned(FListObject) then
+    FListObject.DetachObserver(self);
 //  Active := false;
   Subject := nil; // Will call DetachObserver
-  FViewHelper.Free;
+  FreeAndNil(FViewHelper);
   inherited Destroy;
 end;
 
@@ -511,7 +516,8 @@ var
 begin
   Errors := TtiObjectErrors.Create;
   try
-    Subject.IsValid(Errors);
+    if Assigned(Subject) then
+      Subject.IsValid(Errors);
     UpdateGUIValidStatus(Errors); // always execute this as it also resets View
   finally
     Errors.Free;
@@ -563,7 +569,11 @@ procedure TtiMediatorView.SetListObject(const AValue: TtiObjectList);
 begin
   if FListObject = AValue then
     Exit;
+  if Assigned(FListObject) then
+    FListObject.DetachObserver(self);
   FListObject := AValue;
+  if Assigned(FListObject) then
+    FListObject.AttachObserver(self);
 end;
 
 procedure TtiMediatorView.SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment);
@@ -613,13 +623,18 @@ end;
 procedure TtiMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
 begin
   inherited Update(ASubject, AOperation);
-  if (AOperation=noChanged) and Active then
+  { We can be observing FSubject and ValueList, so make sure we handle the
+    correct one. }
+  if FSubject = ASubject then
   begin
-    ObjectToGUI;
-    TestIfValid;
-  end
-  else if (AOperation=noFree) and (ASubject=FSubject) then
-    FSubject:=Nil;
+    if (AOperation=noChanged) and Active then
+    begin
+      ObjectToGUI;
+      TestIfValid;
+    end
+    else if (AOperation=noFree) and (ASubject=FSubject) then
+      FSubject:=Nil;
+  end;
 end;
 
 function TtiMediatorView.GetSelectedObject: TtiObject;
@@ -646,7 +661,20 @@ begin
   if FActive = AValue then
     Exit;
   FActive := AValue;
+
+  if Assigned(FListObject) then
+  begin
+    if Active then
+    begin
+      FListObject.AttachObserver(self);
+      FListObject.NotifyObservers;
+    end
+    else
+      FListObject.DetachObserver(self);
+  end;
+
   if Assigned(FSubject) then
+  begin
     if Active then
     begin
       FSubject.AttachObserver(Self);
@@ -654,11 +682,15 @@ begin
     end
     else
       FSubject.DetachObserver(Self);
+  end;
+
   if Assigned(FView) then
+  begin
     if Active then
       SetObjectUpdateMoment(FObjectUpdateMoment)
     else
       SetObjectUpdateMoment(ouNone);
+  end;
 end;
 
 procedure TtiMediatorView.DoGUIToObject;
@@ -676,10 +708,14 @@ begin
   Inc(FCopyingCount);
   try
     B := False;
-    if Assigned(FOnGUIToObject) then
-      FOnGUIToObject(Self, View, Subject, B);
+    if Assigned(FOnBeforeGUIToObject) then
+      FOnBeforeGUIToObject(Self, View, Subject, B);
     if not B then
+    begin
       DoGUIToObject;
+      if Assigned(FOnAfterGUIToObject) then
+        FOnAfterGUIToObject(Self, View, Subject);
+    end;
   finally
     Dec(FCopyingCount);
   end;
@@ -1241,12 +1277,12 @@ procedure TtiListItemMediator.SetModel(const AValue: TtiObject);
 var
   B : Boolean;
 begin
-  if Avalue=FModel then
+  if AValue=FModel then
     Exit;
   B := Assigned(FModel);
   if B then
     FModel.DetachObserver(Self);
-  FModel := Avalue;
+  FModel := AValue;
   if Assigned(FModel) then
   begin
     FModel.AttachObserver(Self);
@@ -1297,9 +1333,14 @@ end;
 
 procedure TtiCustomListMediatorView.SetSubject(const AValue: TtiObject);
 begin
+  if (AValue=GetSubject) then Exit;
   if (AValue <> nil) then
+  begin
     if not (AValue is TtiObjectList) then
       RaiseMediatorError(SErrNotListObject, [AValue.ClassName]);
+  end
+  else
+    ClearList;
   FListChanged:=True;
   inherited SetSubject(AValue);
 end;
@@ -1328,6 +1369,11 @@ begin
     Result:=Nil
   else
     Result:=TtiListItemMediator(FMediatorList[AtIndex]);
+end;
+
+function TtiCustomListMediatorView.MediatorFieldInfoClass: TtiMediatorFieldInfoClass;
+begin
+  Result := TtiMediatorFieldInfo;
 end;
 
 function TtiCustomListMediatorView.GetModel: TtiObjectList;
@@ -1433,7 +1479,7 @@ end;
 constructor TtiCustomListMediatorView.Create;
 begin
   inherited Create;
-  FFieldsInfo   := TtiMediatorFieldInfoList.Create(TtiMediatorFieldInfo);
+  FFieldsInfo   := TtiMediatorFieldInfoList.Create(MediatorFieldInfoClass);
   FFieldsInfo.FMediator:=Self;
   FMediatorList := TObjectList.Create;
   FShowDeleted  := False;
@@ -1443,8 +1489,8 @@ end;
 destructor TtiCustomListMediatorView.Destroy;
 begin
   Active:=False;
-  FMediatorList.Free;
-  FFieldsInfo.Free;
+  FreeAndNil(FMediatorList);
+  FreeAndNil(FFieldsInfo);
   inherited Destroy;
 end;
 
@@ -1466,8 +1512,19 @@ begin
     noDeleteItem : ItemDeleted(ASubject);
     noFree       : if (ASubject = FSubject) then
                      Subject := nil;
-    noChanged    : if FListChanged or (Model.Count<>MediatorList.Count) or (Model.Count=0) then // Safety measure
-                     RebuildList;
+    noChanged    :
+                  begin
+                    if ShowDeleted then
+                    begin
+                      if FListChanged or (Model.Count<>MediatorList.Count) or (Model.Count=0) then // Safety measure
+                       RebuildList;
+                    end
+                    else
+                    begin
+                      if FListChanged or (Model.CountNotDeleted<>MediatorList.Count) or (Model.CountNotDeleted=0) then // Safety measure
+                       RebuildList;
+                    end;
+                  end;
     noReSort     : RebuildList;
   end;
 end;
