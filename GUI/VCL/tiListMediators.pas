@@ -235,7 +235,8 @@ end;
 
 procedure TtiListViewMediatorView.ClearList;
 begin
-  MediatorList.Clear;
+  if Assigned(MediatorList) then
+    MediatorList.Clear;
   If View <> nil then
     View.Items.Clear;
 end;
@@ -434,7 +435,8 @@ end;
 
 procedure TtiVTListViewMediatorView.ClearList;
 begin
-  MediatorList.Clear;
+  if Assigned(MediatorList) then
+    MediatorList.Clear;
 end;
 
 class function TtiVTListViewMediatorView.ComponentClass: TClass;
@@ -731,14 +733,15 @@ procedure TtiStringGridMediatorView.SetupGUIandObject;
 
 begin
   //Setup default properties for the StringGrid
-  View.Options:=View.Options+[goRowSelect];
+  View.Options:=View.Options+[goRowSelect,goThumbTracking,goColSizing]-[goRangeSelect];
   // Rowcount is set after columns are created, because clearing columns
   //  resets rowcount.
 end;
 
 procedure TtiStringGridMediatorView.ClearList;
 begin
-  MediatorList.Clear;
+  if Assigned(MediatorList) then
+    MediatorList.Clear;
   if View <> nil then
     View.RowCount:=1;
 end;
