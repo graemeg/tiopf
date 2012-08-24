@@ -487,11 +487,13 @@ var
   Mi, Ma: Integer;
 begin
   inherited SetupGUIandObject;
-  if Subject.GetFieldBounds(FieldName, Mi, Ma) then
+  if Subject.GetFieldBounds(FieldName,Mi,Ma) and (Ma>0) then
   begin
     View.MinValue := Mi;
     View.MaxValue := Ma;
-  end;
+  end
+  else
+    View.Value := 0;
 end;
 
 procedure TtiSpinEditMediatorView.SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment);

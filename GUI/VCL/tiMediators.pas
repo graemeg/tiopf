@@ -429,9 +429,17 @@ begin
 end;
 
 procedure TtiSpinEditMediatorView.SetupGUIandObject;
+var
+  Mi, Ma: Integer;
 begin
   inherited SetupGUIandObject;
-  View.Value := 0;
+  if Subject.GetFieldBounds(FieldName,Mi,Ma) and (Ma>0) then
+  begin
+    View.MinValue := Mi;
+    View.MaxValue := Ma;
+  end
+  else
+    View.Value := 0;
 end;
 
 constructor TtiSpinEditMediatorView.Create;
