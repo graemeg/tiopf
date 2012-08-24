@@ -25,15 +25,15 @@ type
   TVarType = Word;
 {$ENDIF}
 
+type
 {$IFNDEF FPC}
 // So Delphi can be FPC compatible
-type
   TThreadID = THandle;
   PtrInt = integer;  // we must watch this when Delphi gets 64bit support
   PtrUInt = cardinal;
 {$ENDIF}
 
-  ItiTokens = interface
+  ItiTokens = interface(IInterface)
     ['{9E3F0CF7-1430-4A8B-B204-80AD03A4F567}']
     function Count: integer;
     function GetToken(const AIndex: integer): string;
