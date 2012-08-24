@@ -221,6 +221,7 @@ type
   THackCustomEdit = class(TCustomEdit);
 
 const
+  cErrorListHasNotBeenAssigned   = 'List has not been assigned';
   cErrorPropertyNotClass         = 'Property is not a class type!';
   cErrorAddingItemToCombobox     = 'Error adding list items to combobox ' +
                                    'Message: %s, Item Property Name: %s';
@@ -680,8 +681,11 @@ begin
   try
     //  Set the index only (We're assuming the item is present in the list)
     View.ItemIndex := -1;
-    if (Subject = nil) or (not Assigned(ValueList)) then
+    if Subject = nil then
       Exit; //==>
+
+    if not Assigned(ValueList) then
+      RaiseMediatorError(cErrorListHasNotBeenAssigned);
 
     lValue := nil;
     lPropType := typinfo.PropType(Subject, FieldName);
