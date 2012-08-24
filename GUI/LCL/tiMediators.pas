@@ -692,11 +692,14 @@ begin
 
     // Can't use ValueList.Items[] when View has sorted = true, then the indices
     // for ValueList and View.List are different for the same object
-    i := View.Items.count;
-    repeat
-       dec (i)
-    until (i < 0) or (View.Items.Objects[i] = lValue);
-    View.ItemIndex := i;
+    if Assigned(lValue) then
+    begin
+      i := View.Items.count;
+      repeat
+         dec (i)
+      until (i < 0) or (View.Items.Objects[i] = lValue);
+      View.ItemIndex := i;
+    end;
   finally
     SetOnChangeActive(true);
   end;

@@ -789,12 +789,15 @@ begin
     else
       RaiseMediatorError(cErrorPropertyNotClass);
 
-    for i := 0 to ValueList.Count - 1 do
-      if ValueList.Items[i] = lValue then
-      begin
-        View.FocusItem := i;
-        Break; //==>
-      end;
+    if Assigned(lValue) then // only check if property isn't nil.
+    begin
+      for i := 0 to ValueList.Count - 1 do
+        if ValueList.Items[i].Equals(lValue) then
+        begin
+          View.FocusItem := i;
+          Break; //==>
+        end;
+    end;
   finally
     SetOnChangeActive(true);
   end;
