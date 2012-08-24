@@ -161,7 +161,6 @@ type
 
   TtiSubjectClass = class of TtiObject;
 
-
   TtiMediatorFieldInfo = class(TCollectionItem)
   private
     FWidth: integer;
@@ -184,6 +183,7 @@ type
     property Alignment: TAlignment read FAlign write FAlign default taLeftJustify;
   end;
 
+  TtiMediatorFieldInfoClass = class of TtiMediatorFieldInfo;
 
   TtiMediatorFieldInfoList = class(TCollection)
   private
@@ -265,7 +265,8 @@ type
     procedure SetSubject(const AValue: TtiObject); override;
     procedure SetFieldName(const AValue: string); override;
     procedure SetActive(const AValue: Boolean); override;
-    Function FindObjectMediator(AObject : TTiObject; out AtIndex : Integer) : TtiListItemMediator;
+    function FindObjectMediator(AObject: TTiObject; out AtIndex: Integer): TtiListItemMediator;
+    function MediatorFieldInfoClass: TtiMediatorFieldInfoClass; virtual;
     property MediatorList: TObjectList read FMediatorList;
   public
     constructor Create; override;
@@ -1370,6 +1371,11 @@ begin
     Result:=TtiListItemMediator(FMediatorList[AtIndex]);
 end;
 
+function TtiCustomListMediatorView.MediatorFieldInfoClass: TtiMediatorFieldInfoClass;
+begin
+  Result := TtiMediatorFieldInfo;
+end;
+
 function TtiCustomListMediatorView.GetModel: TtiObjectList;
 begin
   Result := Subject as TtiObjectList;
@@ -1473,7 +1479,7 @@ end;
 constructor TtiCustomListMediatorView.Create;
 begin
   inherited Create;
-  FFieldsInfo   := TtiMediatorFieldInfoList.Create(TtiMediatorFieldInfo);
+  FFieldsInfo   := TtiMediatorFieldInfoList.Create(MediatorFieldInfoClass);
   FFieldsInfo.FMediator:=Self;
   FMediatorList := TObjectList.Create;
   FShowDeleted  := False;
