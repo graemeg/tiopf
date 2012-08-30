@@ -104,7 +104,6 @@ type
   protected
     function    GetItems(i: integer): TtiDBMetaDataTable; reintroduce;
     procedure   SetItems(i: integer; const AValue: TtiDBMetaDataTable); reintroduce;
-    function    GetCaption : string; override;
 //    function    GetOwner: TtiObject; reintroduce;
 //    procedure   SetOwner(const AValue: TtiObject); reintroduce;
   public
@@ -715,12 +714,6 @@ begin
       result := Items[i];
       Exit; //==>
     end;
-end;
-
-function TtiDBMetaData.GetCaption: string;
-begin
-  Assert(Owner <> nil, 'Owner is nill');
-  result := TtiDBConnectionPool(Owner).DatabaseAlias;
 end;
 
 function TtiDBMetaData.GetItems(i: integer): TtiDBMetaDataTable;

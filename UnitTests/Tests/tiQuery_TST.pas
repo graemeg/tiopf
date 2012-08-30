@@ -66,6 +66,7 @@ type
     procedure CreateTableDropTable; virtual;
     procedure CreateTableDropTable_Timing; virtual;
     procedure ReadMetaData; virtual;
+    procedure ReadMetaData_Owner;
   end;
 
 
@@ -721,6 +722,34 @@ begin
   finally
     LDBMetaData.Free;
   end;
+end;
+
+procedure TTestTIDatabase.ReadMetaData_Owner;
+var
+  LDBMetaData : TtiDBMetaData;
+  LDBMetaDataTable : TtiDBMetaDataTable;
+  LDatabase : TtiDatabase;
+begin
+  CreateTestTables;
+  LDBMetaData := TtiDBMetaData.Create;
+  try
+    LDatabase:= DBConnectionPool.Lock;
+    try
+      LDatabase.ReadMetaDataTables(LDBMetaData);
+
+      CheckTrue(LDBMetaData.Owner = nil, 'Failed on 1');
+      if LDBMetaData.Owner <> nil then { for whatever reason }
+      begin
+        { This use to be the case back in 2007, but things have changes since r797 }
+//        CheckFalse(LDBMetaData.Owner is TtiDBConnectionPool, 'Failed on 2');
+      end;
+    finally
+      DBConnectionPool.UnLock(LDatabase);
+    end;
+  finally
+    LDBMetaData.Free;
+  end;
+
 end;
 
 
