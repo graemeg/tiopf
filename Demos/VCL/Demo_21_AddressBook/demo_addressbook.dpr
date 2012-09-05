@@ -24,7 +24,7 @@ uses
 
 begin
   { Let default to the ISO international date format }
-  ShortDateFormat := 'yyyy-mm-dd';
+  FormatSettings.ShortDateFormat := 'yyyy-mm-dd';
 
   Application.Initialize;
   Application.Title := 'MGM Demo Addressbook';
