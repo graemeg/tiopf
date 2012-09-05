@@ -24,7 +24,8 @@ type
     FFieldName: string;
     FMediator: TtiMediatorView;
     FMediatorDef: TtiMediatorDef;
-    FOnGUIToObject: TtiGUIToObjectEvent;
+    FOnBeforeGUIToObject: TtiBeforeGUIToObjectEvent;
+    FOnAfterGUIToObject: TtiAfterGUIToObjectEvent;
     FOnObjectToGUI: TtiObjectToGUIEvent;
     FOnSetupMediator: TtiMediatorEvent;
     FValueList: TtiObjectList;
@@ -32,7 +33,8 @@ type
     procedure SetComposite(const AValue: Boolean);
     procedure SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment);
     procedure SetFieldName(const AValue: string);
-    procedure SetOnGUIToObject(const AValue: TtiGUIToObjectEvent);
+    procedure SetOnBeforeGUIToObject(const AValue: TtiBeforeGUIToObjectEvent);
+    procedure SetOnAfterGUIToObject(const AValue: TtiAfterGUIToObjectEvent);
     procedure SetOnObjectToGUI(const AValue: TtiObjectToGUIEvent);
     procedure SetValueList(const AValue: TtiObjectList);
   protected
@@ -52,7 +54,8 @@ type
     property FieldName: string read FFieldName write SetFieldName;
     property Component: TComponent read FComponent write SetComponent;
     property ObjectUpdateMoment: TtiObjectUpdateMoment read FObjectUpdateMoment write SetObjectUpdateMoment;
-    property OnGUIToObject: TtiGUIToObjectEvent read FOnGUIToObject write SetOnGUIToObject;
+    property OnBeforeGUIToObject: TtiBeforeGUIToObjectEvent read FOnBeforeGUIToObject write SetOnBeforeGUIToObject;
+    property OnAfterGUIToObject: TtiAfterGUIToObjectEvent read FOnAfterGUIToObject write SetOnAfterGUIToObject;
     property OnObjectToGUI: TtiObjectToGUIEvent read FOnObjectToGUI write SetOnObjectToGUI;
     Property OnSetupMediator: TtiMediatorEvent Read FOnSetupMediator Write FOnSetupMediator;
   end;
@@ -358,11 +361,18 @@ begin
   FMediatorDef := nil;
 end;
 
-procedure TtiPropertyLinkDef.SetOnGUIToObject(const AValue: TtiGUIToObjectEvent);
+procedure TtiPropertyLinkDef.SetOnBeforeGUIToObject(const AValue: TtiBeforeGUIToObjectEvent);
 begin
-  FOnGUIToObject := AValue;
+  FOnBeforeGUIToObject := AValue;
   if Assigned(Mediator) then
-    Mediator.OnGUIToObject := AValue;
+    Mediator.OnBeforeGUIToObject := AValue;
+end;
+
+procedure TtiPropertyLinkDef.SetOnAfterGUIToObject(const AValue: TtiAfterGUIToObjectEvent);
+begin
+  FOnAfterGUIToObject := AValue;
+  if Assigned(Mediator) then
+    Mediator.OnAfterGUIToObject := AValue;
 end;
 
 procedure TtiPropertyLinkDef.SetOnObjectToGUI(const AValue: TtiObjectToGUIEvent);
@@ -396,7 +406,8 @@ begin
     FMediator.FieldName := tiValueFieldName(FieldName);
     FMediator.RootFieldName := tiRootFieldName(FieldName);
   end;
-  FMediator.OnGUIToObject := Self.OnGUIToObject;
+  FMediator.OnBeforeGUIToObject := Self.OnBeforeGUIToObject;
+  FMediator.OnAfterGUIToObject := Self.OnAfterGUIToObject;
   FMediator.OnObjectToGUI := Self.OnObjectToGUI;
   FMediator.SetView(Self.Component);
   FMediator.ValueList := Self.ValueList;
@@ -430,7 +441,8 @@ begin
     FComponent := D.Component;
     FObjectUpdateMoment := D.ObjectUpdateMoment;
     FFieldName := D.FieldName;
-    FOnGUIToObject := D.OnGUIToObject;
+    FOnBeforeGUIToObject := D.OnBeforeGUIToObject;
+    FOnAfterGUIToObject := D.OnAfterGUIToObject;
     FOnObjectToGUI := D.OnObjectToGUI;
     FValueList := D.ValueList;
     FCOmposite := D.Composite;
