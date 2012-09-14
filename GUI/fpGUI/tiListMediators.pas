@@ -615,7 +615,6 @@ end;
 
 function TtiListBoxListMediatorView.DoCreateItemMediator(AData: TtiObject; ARowIdx: integer): TtiListItemMediator;
 var
-  i: integer;
   lFieldName: string;
 begin
   View.BeginUpdate;
