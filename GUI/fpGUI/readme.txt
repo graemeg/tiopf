@@ -19,13 +19,10 @@ all supported platforms. This also reduces the library dependency, making
 application deployment very easy.
 
 For more information, see the fpGUI Toolkit website at:
-  http://opensoft.homeip.net:8080/fpgui/
+  http://fpgui.sourceforge.net
 
 For more information on Free Pascal see;
   http://www.freepascal.org
-
-The fpGUI website will soon move to a new location, accessible at:
-  http://fpgui.sourceforge.net
 
 
     ------------  end  --------------
