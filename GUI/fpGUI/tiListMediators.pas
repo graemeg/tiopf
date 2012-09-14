@@ -47,10 +47,9 @@ type
 
   { Composite mediator for TfpgStringGrid }
   TtiStringGridMediatorView = class(TtiCustomListMediatorView)
-  private
+  protected
     function    DoCreateItemMediator(AData: TtiObject; ARowIdx: integer): TtiListItemMediator; override;
     procedure   DoDeleteItemMediator(AIndex: Integer; AMediator: TtiListItemMediator); override;
-  protected
     function    GetSelectedObject: TtiObject; override;
     procedure   SetSelectedObject(const AValue: TtiObject); override;
     procedure   CreateColumns; override;
@@ -100,10 +99,9 @@ type
 
   { Composite mediator for TfpgListBox }
   TtiListBoxListMediatorView = class(TtiCustomListMediatorView)
-  private
+  protected
     function    DoCreateItemMediator(AData: TtiObject; ARowIdx: integer): TtiListItemMediator; override;
     procedure   DoDeleteItemMediator(AIndex: Integer; AMediator: TtiListItemMediator); override;
-  protected
     function    GetSelectedObject: TtiObject; override;
     procedure   SetSelectedObject(const AValue: TtiObject); override;
     procedure   CreateColumns; override;
