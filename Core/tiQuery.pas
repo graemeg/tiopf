@@ -642,6 +642,7 @@ uses
   ,tiConstants
   ,tiStreams
   ,tiVisitorCriteria
+  ,tiOPFManager
   ,Math
   ,TypInfo
  ;
@@ -724,12 +725,12 @@ var
 begin
   if ObjectState <> posEmpty then
     Exit; //==>
-  LDatabase := TtiDBConnectionPool(Owner).Lock;
+  LDatabase := GTIOPFManager.PersistenceLayers.LockDatabase(ADBConnectionName, APersistenceLayerName);
   try
     Clear;
     LDatabase.ReadMetaDataTables(Self);
   finally
-    TtiDBConnectionPool(Owner).UnLock(LDatabase);
+    GTIOPFManager.PersistenceLayers.UnLockDatabase(LDatabase, ADBConnectionName, APersistenceLayerName);
   end;
 end;
 
@@ -841,11 +842,11 @@ var
 begin
   if ObjectState <> posPK then
     Exit; //==>
-  LDatabase := TtiDBConnectionPool(Owner.Owner).Lock;
+  LDatabase := GTIOPFManager.PersistenceLayers.LockDatabase(ADBConnectionName, APersistenceLayerName);
   try
-  LDatabase.ReadMetaDataFields(Self);
+    LDatabase.ReadMetaDataFields(Self);
   finally
-    TtiDBConnectionPool(Owner.Owner).UnLock(LDatabase);
+    GTIOPFManager.PersistenceLayers.UnLockDatabase(LDatabase, ADBConnectionName, APersistenceLayerName);
   end;
 end;
 
