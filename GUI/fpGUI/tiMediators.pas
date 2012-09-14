@@ -282,7 +282,6 @@ uses
 
 type
   // Friend class to get access to protected methods
-  THackWidget = class(TfpgWidget);
   THackBaseEdit = class(TfpgBaseEdit);
 
 
