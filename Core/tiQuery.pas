@@ -104,12 +104,9 @@ type
   protected
     function    GetItems(i: integer): TtiDBMetaDataTable; reintroduce;
     procedure   SetItems(i: integer; const AValue: TtiDBMetaDataTable); reintroduce;
-//    function    GetOwner: TtiObject; reintroduce;
-//    procedure   SetOwner(const AValue: TtiObject); reintroduce;
   public
     property    Items[i:integer]: TtiDBMetaDataTable read GetItems write SetItems;
     procedure   Add(AObject: TtiDBMetaDataTable); reintroduce;
-//    property    Owner       : TtiObject   read GetOwner      write SetOwner;
     procedure   Read(const ADBConnectionName: string = ''; APersistenceLayerName : string = ''); override;
     function    FindByTableName(const ATableName : TTableName): TtiDBMetaDataTable;
   end;
@@ -721,11 +718,6 @@ begin
   result := TtiDBMetaDataTable(inherited GetItems(i));
 end;
 
-//function TtiDBMetaData.GetOwner: TtiObject;
-//begin
-//  result := TDBConnectionPool(inherited GetOwner);
-//end;
-
 procedure TtiDBMetaData.Read(const ADBConnectionName: string  = ''; APersistenceLayerName : string = '');
 var
   LDatabase : TtiDatabase;
@@ -745,11 +737,6 @@ procedure TtiDBMetaData.SetItems(i: integer; const AValue: TtiDBMetaDataTable);
 begin
   inherited SetItems(i, AValue);
 end;
-
-//procedure TtiDBMetaData.SetOwner(const AValue: TtiObject);
-//begin
-//  inherited SetOwner(AValue as TtiObject);
-//end;
 
 { TtiDBMetaDataTable }
 
