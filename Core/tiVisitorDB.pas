@@ -179,13 +179,10 @@ uses
   tiLog,
   tiOPFManager,
   tiConstants,
-  tiExcept,
   {$IFDEF MSWINDOWS}
-  Windows
+  Windows,
   {$ENDIF MSWINDOWS}
-  {$IFDEF UNIX}
-  Types
-  {$ENDIF UNIX};
+  tiExcept;
 
 
 constructor TtiObjectVisitor.Create;
