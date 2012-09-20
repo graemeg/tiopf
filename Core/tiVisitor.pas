@@ -102,9 +102,10 @@ type
     property Count: integer read GetCount;
   end;
 
-  {** @abstract TtiVisited implements the Iterate method, which will pass a tiVisitor over every node in the graph of objects.
-      Object instances exposed as published properties will be touched by the 
-      TtiVisitor. Objects contained in a published TList will also be touched.}
+  { TtiVisited implements the Iterate method, which will pass a
+    tiVisitor over every node in the graph of objects. Object instances
+    exposed as published properties will be touched by the TtiVisitor.
+    Objects contained in a published TList will also be touched. }
   TtiVisited = class(TtiBaseObject)
   protected
     {** @exclude}
