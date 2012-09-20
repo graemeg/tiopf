@@ -965,8 +965,11 @@ begin
       lObj2.BoolProp := true;
       Check(not lObj1.Equals(lObj2, True), 'Failed on 3');
       Check(not lObj2.Equals(lObj1, True), 'Failed on 4');
+      { check that the default ADeepCheck value is True }
+      Check(not lObj1.Equals(lObj2), 'Failed on 5.1');
+
       lObj2.BoolProp := false;
-      Check(lObj1.Equals(lObj2, True), 'Failed on 5');
+      Check(lObj1.Equals(lObj2, True), 'Failed on 5.2');
 
       lObj2.IntProp  := 10;
       Check(not lObj1.Equals(lObj2, True), 'Failed on 6');
