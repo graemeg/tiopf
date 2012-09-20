@@ -211,7 +211,7 @@ type
     procedure   Populate;
     function    Clone: TtiObjectForTesting; reintroduce;
     function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
-    function    Equals(const AData: TtiObject; const ADeepCheck: Boolean = False): boolean; override;
+    function    Equals(const AData: TtiObject; const ADeepCheck: Boolean = True): boolean; override;
   published
     property    StrProp: string read FStrProp write FStrProp;
     property    IntProp: integer read FIntProp write FIntProp;
@@ -229,7 +229,7 @@ type
   public
     constructor Create; override;
     destructor  Destroy; override;
-    function    Equals(const AData : TtiObject; const ADeepCheck: Boolean = False): boolean; override;
+    function    Equals(const AData : TtiObject; const ADeepCheck: Boolean = True): boolean; override;
   published
     property ObjProp : TtiObjectForTesting read FObjProp;
   end;

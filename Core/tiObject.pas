@@ -415,7 +415,7 @@ type
     constructor CreateNew(const ADatabaseName: string = ''; const APersistenceLayerName: string = ''); overload; virtual;
     destructor  Destroy; override;
     {: Does this object equal another? }
-    function    Equals(const AData : TtiObject; const ADeepCheck: Boolean = False): boolean; reintroduce; virtual;
+    function    Equals(const AData : TtiObject; const ADeepCheck: Boolean = True): boolean; reintroduce; virtual;
     {: The OID of this object }
    {$IFDEF OID_AS_INT64}
       property    OID        : TtiOID                   read GetOID write SetOID;
