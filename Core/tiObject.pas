@@ -415,7 +415,7 @@ type
     constructor CreateNew(const ADatabaseName: string = ''; const APersistenceLayerName: string = ''); overload; virtual;
     destructor  Destroy; override;
     {: Does this object equal another? }
-    function    Equals(const AData : TtiObject): boolean; reintroduce; virtual;
+    function    Equals(const AData : TtiObject; const ADeepCheck: Boolean = False): boolean; reintroduce; virtual;
     {: The OID of this object }
    {$IFDEF OID_AS_INT64}
       property    OID        : TtiOID                   read GetOID write SetOID;
@@ -3931,26 +3931,34 @@ begin
   end;
 end;
 
-{ Note: This functionality has not been tested fully. Bit of a hack really :(
-        Talk about thrashing the CPU with out need.:(:(:(!  }
-function TtiObject.Equals(const AData: TtiObject): boolean;
+{ Note: The ADeepCheck options functionality has not been tested fully. Bit of
+        a hack really :( Talk about thrashing the CPU with out need!  }
+function TtiObject.Equals(const AData: TtiObject; const ADeepCheck: Boolean): boolean;
 var
-  lVisComp : TVisTIObjectAsDebugString;
-  lVisSelf : TVisTIObjectAsDebugString;
+  lVisComp: TVisTIObjectAsDebugString;
+  lVisSelf: TVisTIObjectAsDebugString;
 begin
-  // ToDo: Better to do this as a field by field compare...
-  lVisComp := TVisTIObjectAsDebugString.Create(False, True);
-  try
-    lVisSelf := TVisTIObjectAsDebugString.Create(False, True);
+  if not ADeepCheck then
+  begin
+    { Here we do a "lite" comparison of OID values only }
+    Result := OID.Equals(AData.OID);
+  end
+  else
+  begin
+    // ToDo: Better to do this as a field by field compare...
+    lVisComp := TVisTIObjectAsDebugString.Create(False, True);
     try
-      Self.Iterate(lVisSelf);
-      AData.Iterate(lVisComp);
-      result := lVisSelf.Text = lVisComp.Text;
+      lVisSelf := TVisTIObjectAsDebugString.Create(False, True);
+      try
+        Self.Iterate(lVisSelf);
+        AData.Iterate(lVisComp);
+        result := lVisSelf.Text = lVisComp.Text;
+      finally
+        lVisSelf.Free;
+      end;
     finally
-      lVisSelf.Free;
+      lVisComp.Free;
     end;
-  finally
-    lVisComp.Free;
   end;
 end;
 

@@ -50,7 +50,7 @@ type
     procedure Dirty;
     procedure Dirty_And_OID;
     procedure Index;
-    procedure tiObject_Equals;
+    procedure tiObject_Equals_Deep;
     procedure ObjectStateAsString;
     procedure FindByOID;
     procedure FindWithMethod;
@@ -211,7 +211,7 @@ type
     procedure   Populate;
     function    Clone: TtiObjectForTesting; reintroduce;
     function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
-    function    Equals(const AData: TtiObject): boolean; override;
+    function    Equals(const AData: TtiObject; const ADeepCheck: Boolean = False): boolean; override;
   published
     property    StrProp: string read FStrProp write FStrProp;
     property    IntProp: integer read FIntProp write FIntProp;
@@ -229,7 +229,7 @@ type
   public
     constructor Create; override;
     destructor  Destroy; override;
-    function    Equals(const AData : TtiObject): boolean; override;
+    function    Equals(const AData : TtiObject; const ADeepCheck: Boolean = False): boolean; override;
   published
     property ObjProp : TtiObjectForTesting read FObjProp;
   end;
@@ -943,7 +943,7 @@ begin
 end;
 
 
-procedure TtiObjectTestCase.tiObject_Equals;
+procedure TtiObjectTestCase.tiObject_Equals_Deep;
 var
   lObj1     : TtiObjectForTesting;
   lObj2     : TtiObjectForTesting;
@@ -958,44 +958,44 @@ begin
   try
     lObj2 := TtiObjectForTesting.Create;
     try
-      Check(lObj1.Equals(lObj2), 'Failed on 1');
-      Check(lObj2.Equals(lObj1), 'Failed on 2');
+      Check(lObj1.Equals(lObj2, True), 'Failed on 1');
+      Check(lObj2.Equals(lObj1, True), 'Failed on 2');
 
       lObj2.BoolProp := true;
-      Check(not lObj1.Equals(lObj2), 'Failed on 3');
-      Check(not lObj2.Equals(lObj1), 'Failed on 4');
+      Check(not lObj1.Equals(lObj2, True), 'Failed on 3');
+      Check(not lObj2.Equals(lObj1, True), 'Failed on 4');
       lObj2.BoolProp := false;
-      Check(lObj1.Equals(lObj2), 'Failed on 5');
+      Check(lObj1.Equals(lObj2, True), 'Failed on 5');
 
       lObj2.IntProp  := 10;
-      Check(not lObj1.Equals(lObj2), 'Failed on 6');
-      Check(not lObj2.Equals(lObj1), 'Failed on 7');
+      Check(not lObj1.Equals(lObj2, True), 'Failed on 6');
+      Check(not lObj2.Equals(lObj1, True), 'Failed on 7');
       lObj2.IntProp  := 1;
-      Check(lObj1.Equals(lObj2), 'Failed on 8');
+      Check(lObj1.Equals(lObj2, True), 'Failed on 8');
 
       lObj2.FloatProp := 1.1111112;
-      Check(not lObj1.Equals(lObj2), 'Failed on 9');
-      Check(not lObj2.Equals(lObj1), 'Failed on 10');
+      Check(not lObj1.Equals(lObj2, True), 'Failed on 9');
+      Check(not lObj2.Equals(lObj1, True), 'Failed on 10');
       lObj2.FloatProp := 1.1111111;
-      Check(lObj1.Equals(lObj2), 'Failed on 11');
+      Check(lObj1.Equals(lObj2, True), 'Failed on 11');
 
       lObj2.StrProp  := 'testing, testing';
-      Check(not lObj1.Equals(lObj2), 'Failed on 12');
-      Check(not lObj2.Equals(lObj1), 'Failed on 13');
+      Check(not lObj1.Equals(lObj2, True), 'Failed on 12');
+      Check(not lObj2.Equals(lObj1, True), 'Failed on 13');
       lObj2.StrProp  := 'testing';
-      Check(lObj1.Equals(lObj2), 'Failed on 14');
+      Check(lObj1.Equals(lObj2, True), 'Failed on 14');
 
       lObj2.DateProp := EncodeDate(2002, 01, 01) + 1;     // StrToDate('01/01/2002') + 1;
-      Check(not lObj1.Equals(lObj2), 'Failed on 15');
-      Check(not lObj2.Equals(lObj1), 'Failed on 16');
+      Check(not lObj1.Equals(lObj2, True), 'Failed on 15');
+      Check(not lObj2.Equals(lObj1, True), 'Failed on 16');
       lObj2.DateProp := EncodeDate(2002, 01, 01);   // StrToDate('01/01/2002');
-      Check(lObj1.Equals(lObj2), 'Failed on 17');
+      Check(lObj1.Equals(lObj2, True), 'Failed on 17');
 
       lObj2.OrdProp  := tstOrdProp_2;
-      Check(not lObj1.Equals(lObj2), 'Failed on 18');
-      Check(not lObj2.Equals(lObj1), 'Failed on 18');
+      Check(not lObj1.Equals(lObj2, True), 'Failed on 18');
+      Check(not lObj2.Equals(lObj1, True), 'Failed on 18');
       lObj2.OrdProp  := tstOrdProp_1;
-      Check(lObj1.Equals(lObj2), 'Failed on 19');
+      Check(lObj1.Equals(lObj2, True), 'Failed on 19');
 
     finally
       lObj2.Free;
@@ -1008,48 +1008,48 @@ begin
   try
     lList2 := TtiObjectListForTesting.Create;
     try
-      Check(lList1.Equals(lList2), 'Failed on 20');
-      Check(lList2.Equals(lList1), 'Failed on 21');
+      Check(lList1.Equals(lList2, True), 'Failed on 20');
+      Check(lList2.Equals(lList1, True), 'Failed on 21');
 
       lObj1 := TtiObjectForTesting.Create;
       lList1.Add(lObj1);
-      Check(not lList1.Equals(lList2), 'Failed on 22');
-      Check(not lList2.Equals(lList1), 'Failed on 23');
+      Check(not lList1.Equals(lList2, True), 'Failed on 22');
+      Check(not lList2.Equals(lList1, True), 'Failed on 23');
 
       lObj2 := TtiObjectForTesting.Create;
       lList2.Add(lObj2);
-      Check(lList1.Equals(lList2), 'Failed on 24');
-      Check(lList2.Equals(lList1), 'Failed on 25');
+      Check(lList1.Equals(lList2, True), 'Failed on 24');
+      Check(lList2.Equals(lList1, True), 'Failed on 25');
 
       lObj3 := TtiObjectForTesting.Create;
       lList1.Add(lObj3);
-      Check(not lList1.Equals(lList2), 'Failed on 26');
-      Check(not lList2.Equals(lList1), 'Failed on 27');
+      Check(not lList1.Equals(lList2, True), 'Failed on 26');
+      Check(not lList2.Equals(lList1, True), 'Failed on 27');
 
       lObj4 := TtiObjectForTesting.Create;
       lList2.Add(lObj4);
-      Check(lList1.Equals(lList2), 'Failed on 28');
-      Check(lList2.Equals(lList1), 'Failed on 29');
+      Check(lList1.Equals(lList2, True), 'Failed on 28');
+      Check(lList2.Equals(lList1, True), 'Failed on 29');
 
       lObj1.StrProp := 'hos';
-      Check(not lList1.Equals(lList2), 'Failed on 30');
-      Check(not lList2.Equals(lList1), 'Failed on 31');
+      Check(not lList1.Equals(lList2, True), 'Failed on 30');
+      Check(not lList2.Equals(lList1, True), 'Failed on 31');
 
       lObj1.Populate;
-      Check(lList1.Equals(lList2), 'Failed on 32');
-      Check(lList2.Equals(lList1), 'Failed on 33');
+      Check(lList1.Equals(lList2, True), 'Failed on 32');
+      Check(lList2.Equals(lList1, True), 'Failed on 33');
 
       lObj1.OID.AsString := '1';
       lObj2.OID.AsString := '2';
-      Check(lList1.Equals(lList2), 'Failed on 34');
-      Check(lList2.Equals(lList1), 'Failed on 35');
+      Check(lList1.Equals(lList2, True), 'Failed on 34');
+      Check(lList2.Equals(lList1, True), 'Failed on 35');
       lObj1.Populate;
       lObj2.Populate;
 
       lObj1.ObjectState := posEmpty;
       lObj2.ObjectState := posClean;
-      Check(lList1.Equals(lList2), 'Failed on 36');
-      Check(lList2.Equals(lList1), 'Failed on 37');
+      Check(lList1.Equals(lList2, True), 'Failed on 36');
+      Check(lList2.Equals(lList1, True), 'Failed on 37');
 
     finally
       lList2.Free;
@@ -4496,7 +4496,7 @@ begin
   ObjectState := posCreate;
 end;
 
-function TtiObjectForTesting.Equals(const AData: TtiObject): boolean;
+function TtiObjectForTesting.Equals(const AData: TtiObject; const ADeepCheck: Boolean): boolean;
 var
   LData: TtiObjectForTesting;
 begin
@@ -4557,7 +4557,7 @@ begin
   inherited;
 end;
 
-function TtiObjectWithOwnedForTesting.Equals(const AData: TtiObject): boolean;
+function TtiObjectWithOwnedForTesting.Equals(const AData: TtiObject; const ADeepCheck: Boolean): boolean;
 var
   LData: TtiObjectWithOwnedForTesting;
 begin
