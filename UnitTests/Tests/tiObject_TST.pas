@@ -734,14 +734,14 @@ begin
     LList.AutoSetItemOwner:= False;
     LList.Add(TtiObject.Create);
     LList.Add(TtiObject.Create);
-    CheckEquals(2, LList.Count);
-    CheckObjectState(posEmpty, LList);
-    CheckObjectState(posEmpty, LList.Items[0]);
-    CheckObjectState(posEmpty, LList.Items[1]);
+    CheckEquals(2, LList.Count, 'Failed on 1');
+    CheckObjectState(posEmpty, LList, 'Failed on 2');
+    CheckObjectState(posEmpty, LList.Items[0], 'Failed on 3');
+    CheckObjectState(posEmpty, LList.Items[1], 'Failed on 4');
     LList.Deleted:= true;
-    CheckObjectState(posDelete, LList);
-    CheckObjectState(posEmpty, LList.Items[0]);
-    CheckObjectState(posEmpty, LList.Items[1]);
+    CheckObjectState(posDelete, LList, 'Failed on 5');
+    CheckObjectState(posEmpty, LList.Items[0], 'Failed on 6');
+    CheckObjectState(posEmpty, LList.Items[1], 'Failed on 7');
   finally
     LList.Free;
   end;
@@ -756,14 +756,14 @@ begin
     LList.AutoSetItemOwner:= True;
     LList.Add(TtiObject.Create);
     LList.Add(TtiObject.Create);
-    CheckEquals(2, LList.Count);
-    CheckObjectState(posEmpty, LList);
-    CheckObjectState(posEmpty, LList.Items[0]);
-    CheckObjectState(posEmpty, LList.Items[1]);
+    CheckEquals(2, LList.Count, 'Failed on 1');
+    CheckObjectState(posEmpty, LList, 'Failed on 2');
+    CheckObjectState(posEmpty, LList.Items[0], 'Failed on 3');
+    CheckObjectState(posEmpty, LList.Items[1], 'Failed on 4');
     LList.Deleted:= true;
-    CheckObjectState(posDelete, LList);
-    CheckObjectState(posDelete, LList.Items[0]);
-    CheckObjectState(posDelete, LList.Items[1]);
+    CheckObjectState(posDelete, LList, 'Failed on 5');
+    CheckObjectState(posDelete, LList.Items[0], 'Failed on 6');
+    CheckObjectState(posDelete, LList.Items[1], 'Failed on 7');
   finally
     LList.Free;
   end;
