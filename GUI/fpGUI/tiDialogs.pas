@@ -47,9 +47,9 @@ type
   // Show the contents of a TStringList - for debugging
   procedure tiShowStringList(const AStringList: TStringList; const AHeading: TfpgString = 'Show string list'; const AShowModal: boolean = False);
   // Show the contents of a TStrings - for debugging
-  procedure tiShowStrings(const AStrings: TStrings; const AHeading: TfpgString = 'Show strings'; const AShowModal: boolean = False);
+  procedure tiShowStrings(const AStrings: TStrings; const AHeading: TfpgString = 'Show strings'; const AShowModal: boolean = True);
   // Show a long string - for debugging
-  procedure tiShowString(const AStr: TfpgString; const AHeading: TfpgString = 'Show string'; const AShowModal: boolean = False);
+  procedure tiShowString(const AStr: TfpgString; const AHeading: TfpgString = 'Show string'; const AShowModal: boolean = True);
   // Show a variant array of variants - for debugging
   procedure tiShowVariant(AValue: Variant; AHeading: TfpgString = 'Show variant');
   // Show the contents of a stream
