@@ -70,6 +70,7 @@ type
     procedure tiAddTrailingSlash;
     procedure tiAddTrailingSpace;
     procedure tiAddTrailingValue;
+    procedure tiAppendStringToFile;
     procedure tiAppendStringToStream;
     procedure tiApplicationName;
     procedure tiAusFinancialYearDayCount;
@@ -179,7 +180,6 @@ type
     procedure tiStreamToString1;
     procedure tiStreamToString2;
     procedure tiStringToFile;
-    procedure tiAppendStringToFile;
     procedure tiStringToStream;
     procedure tiStripIntPrefix;
     procedure tiStrPos;
@@ -2674,8 +2674,36 @@ begin
 end;
 
 procedure TTestTIUtils.tiAppendStringToFile;
+var
+  LFileName: string;
+  sl: TStringList;
 begin
+  ForceDirectories(TempDirectory);
+  LFileName := TempFileName('tiAppendStringToFile.txt');
 
+  try
+    sl := TStringList.Create;
+    sl.Text := 'aaa';
+    sl.SaveToFile(LFileName);
+  finally
+    sl.Free;
+  end;
+
+  tiUtils.tiAppendStringToFile('bbb', LFileName);
+
+  try
+    sl := TStringList.Create;
+    sl.LoadFromFile(LFileName);
+
+    CheckEquals(2, sl.Count, 'Failed on 1');
+    CheckEquals('aaa', sl[0], 'Failed on 2');
+    CheckEquals('bbb', sl[1], 'Failed on 3');
+    CheckNotEquals('aaabbb', sl[0], 'Failed on 4');
+  finally
+    sl.Free;
+  end;
+
+  tiUtils.tiDeleteFile(LFileName);
 end;
 
 procedure TTestTIUtils.tiAppendStringToStream;
