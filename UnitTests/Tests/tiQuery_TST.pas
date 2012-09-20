@@ -1685,7 +1685,11 @@ begin
     CheckNotNull(lParams, 'NotNull failed');
     CheckIs(lParam, TtiQueryParamBoolean, 'Wrong class');
     CheckEquals(True, lParams.GetValueAsBoolean('param1'), 'GetValueAsBoolean failed');
+{$IFDEF BOOLEAN_NUM_1}
+    CheckEquals('1', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
+{$ELSE}
     CheckEquals('T', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
+{$ENDIF}
 
     lParams.SetValueAsString('param1', 'False');
     CheckEquals(1, lParams.Count, 'Count');
@@ -1693,8 +1697,11 @@ begin
     CheckNotNull(lParams, 'NotNull failed');
     CheckIs(lParam, TtiQueryParamBoolean, 'Wrong class');
     CheckEquals(False, lParams.GetValueAsBoolean('param1'), 'GetValueAsBoolean failed');
+{$IFDEF BOOLEAN_NUM_1}
+    CheckEquals('0', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
+{$ELSE}
     CheckEquals('F', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
-
+{$ENDIF}
   finally
     lParams.Free;
   end;
@@ -1867,7 +1874,11 @@ begin
     CheckNotNull(lParams, 'NotNull failed');
     CheckIs(lParam, TtiQueryParamBoolean, 'Wrong class');
     CheckEquals(True, lParams.GetValueAsBoolean('param1'), 'GetValueAsBoolean failed');
+{$IFDEF BOOLEAN_NUM_1}
+    CheckEquals('1', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
+{$ELSE}
     CheckEquals('T', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
+{$ENDIF}
 
     lParams.SetValueAsVariant('param1', 'False');
     CheckEquals(1, lParams.Count, 'Count');
@@ -1875,8 +1886,11 @@ begin
     CheckNotNull(lParams, 'NotNull failed');
     CheckIs(lParam, TtiQueryParamBoolean, 'Wrong class');
     CheckEquals(False, lParams.GetValueAsBoolean('param1'), 'GetValueAsBoolean failed');
+{$IFDEF BOOLEAN_NUM_1}
+    CheckEquals('0', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
+{$ELSE}
     CheckEquals('F', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
-
+{$ENDIF}
   finally
     lParams.Free;
   end;
