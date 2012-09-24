@@ -100,6 +100,7 @@ type
     function    GetDatabaseName: string;
     function    GetUserName: string;
     function    GetPassword: string;
+    function    GetParams: string;
   protected
     procedure   SetUpOnce; override;
     procedure   SetUp; override;
@@ -108,6 +109,7 @@ type
     property    DatabaseName     : string read GetDatabaseName;
     property    UserName         : string read GetUserName;
     property    Password         : string read GetPassword;
+    property    Params           : string read GetParams;
     property    DBConnectionPool: TtiDBConnectionPool read FDBConnectionPool;
     procedure   CreateTable(const ATable : TtiDBMetaDataTable; const ADatabase: TtiDatabase = nil);
     procedure   InsertRow(const ATableName: string; AParams: TtiQueryParams; const ADatabase: TtiDatabase = nil);
@@ -416,16 +418,19 @@ begin
     if not LDatabaseClass.DatabaseExists(
       TestSetupData.DBName,
       TestSetupData.Username,
-      TestSetupData.Password) then
+      TestSetupData.Password,
+      TestSetupData.Params) then
     begin
       LDatabaseClass.CreateDatabase(
         TestSetupData.DBName,
         TestSetupData.Username,
-        TestSetupData.Password);
+        TestSetupData.Password,
+        TestSetupData.Params);
       if not LDatabaseClass.DatabaseExists(
         TestSetupData.DBName,
         TestSetupData.Username,
-        TestSetupData.Password) then
+        TestSetupData.Password,
+        TestSetupData.Params) then
         EtiOPFDUnitException.Create('Unable to create database <' + TestSetupData.DBName + '>');
     end;
   end;
@@ -696,6 +701,12 @@ begin
   result := TestSetupData.Password;
 end;
 
+function TtiTestCaseWithDatabaseConnection.GetParams: string;
+begin
+  Assert(TestSetupData.TestValid, CTIErrorInvalidObject);
+  Result := TestSetupData.Params;
+end;
+
 
 function TtiTestCaseWithDatabaseConnection.GetUserName: string;
 begin
@@ -751,7 +762,7 @@ begin
     DatabaseName,
     Username,
     Password,
-    '');
+    Params);
   FDBConnectionPool:= PersistenceLayer.DBConnectionPools.Find(TestSetupData.DBName);
 end;
 
