@@ -6,6 +6,7 @@ FBL=0
 XMLLight=1
 Sqldb_IB=1
 Sqldb_PQ=0
+Zeos_FB=0
 
 [MachineSettings]
 ComputerName=saturn
@@ -38,3 +39,9 @@ Password=masterkey
 DBName=tiopf
 Username=graemeg
 Password=mypassword
+
+[DB_Zeos_FB]
+DBName=127.0.0.1:/opt/dailybuilds/data/zeos_fb_dunit2.fdb
+Username=sysdba
+Password=masterkey
+Params=protocol=firebird-2.1
