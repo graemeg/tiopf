@@ -412,7 +412,7 @@ end;
 
 procedure TtiTestCase.SetUpOnce;
 begin
-  inherited;
+  inherited SetupOnce;
   FTempDirectory := TempDirectory;
 end;
 

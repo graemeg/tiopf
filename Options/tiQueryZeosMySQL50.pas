@@ -38,7 +38,7 @@ uses
   ,tiQueryZeosAbs
   ;
 
-{ TtiDatabaseZeosFB10 }
+{ TtiDatabaseZeosMySQL50 }
 
 constructor TtiDatabaseZeosMySQL50.Create;
 begin

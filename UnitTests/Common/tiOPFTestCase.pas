@@ -739,7 +739,7 @@ end;
 
 procedure TtiTestCaseWithPersistenceLayer.SetUpOnce;
 begin
-  inherited;
+  inherited SetupOnce;
   CreateDBIfNotExists;
 end;
 
@@ -757,7 +757,7 @@ end;
 
 procedure TtiTestCaseWithDatabaseConnection.SetupOnce;
 begin
-  inherited;
+  inherited SetupOnce;
   FCreatedTables:= TStringList.Create;
 end;
 
@@ -766,13 +766,13 @@ begin
   DropCreatedTables;
   PersistenceLayer.DBConnectionPools.Disconnect(
     TestSetupData.DBName);
-  inherited;
+  inherited TearDown;
 end;
 
 procedure TtiTestCaseWithDatabaseConnection.TearDownOnce;
 begin
   FCreatedTables.Free;
-  inherited;
+  inherited TearDownOnce;
 end;
 
 { TtiTestCaseWithTestSetupData }
@@ -784,7 +784,7 @@ end;
 
 procedure TtiTestCaseWithTestSetupData.SetUpOnce;
 begin
-  inherited;
+  inherited SetupOnce;
   FTestSetupData:= GTIOPFTestManager.FindByPersistenceLayerName(PersistenceLayerName);
   Assert(FTestSetupData <> nil, 'FTestSetupData not assigned');
 end;
