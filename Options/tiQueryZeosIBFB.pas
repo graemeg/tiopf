@@ -1,3 +1,32 @@
+{
+  This persistence layer uses ZEOS components to communicate with a Firebird
+  database server. This unit is now a merged unit encapsulating all Firebird
+  Server versions.
+
+  The connection string format is the same as the standard Interbase/Firebird
+  persistence layers.
+
+  IMPORTANT:
+  The only extra requirement here is that the PROTOCOL parameter must be
+  specified in the connection call, so that ZEOS library knows which
+  Firebird database driver to load. Here are some examples:
+
+  Firebird 1.5
+  ------------
+    GTIOPFManager.ConnectDatabase('192.168.0.20:E:\Databases\Test.fdb',
+        'sysdba', 'masterkey', 'protocol=firebird-1.5');
+
+  Firebird 2.1
+  ------------
+    GTIOPFManager.ConnectDatabase('192.168.0.20:E:\Databases\Test.fdb',
+        'sysdba', 'masterkey', 'protocol=firebird-2.1');
+
+  Firebird 2.5
+  ------------
+    GTIOPFManager.ConnectDatabase('192.168.0.20:E:\Databases\Test.fdb',
+        'sysdba', 'masterkey', 'protocol=firebird-2.5');
+
+}
 unit tiQueryZeosIBFB;
 
 {$I tiDefines.inc}
@@ -7,9 +36,20 @@ uses
   Classes
   ,tiQuery
   ,tiQueryZeosAbs
+  ,tiPersistenceLayers
   ;
 
 type
+
+  TtiPersistenceLayerZeosFB = class(TtiPersistenceLayer)
+  protected
+    function GetPersistenceLayerName: string; override;
+    function GetDatabaseClass: TtiDatabaseClass; override;
+    function GetQueryClass: TtiQueryClass; override;
+  public
+    procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); override;
+  end;
+
 
   TtiDatabaseZeosIBFB = Class(TtiDatabaseZeosAbs)
   protected
@@ -28,9 +68,7 @@ type
 implementation
 
 uses
-   tiDBConnectionPool
-  ,tiObject
-  ,tiUtils
+  tiObject
   ,tiOPFManager
   ,tiConstants
   ,tiExcept
@@ -38,6 +76,40 @@ uses
   ,ZDbcIntfs
   ;
 
+const
+  cErrorProtocolParameterNeeded = ' needs a ''protocol'' param';
+
+{ TtiPersistenceLayerZeosFB }
+
+function TtiPersistenceLayerZeosFB.GetPersistenceLayerName: string;
+begin
+  Result := cTIPersistZeosFB;
+end;
+
+function TtiPersistenceLayerZeosFB.GetDatabaseClass: TtiDatabaseClass;
+begin
+  Result := TtiDatabaseZeosIBFB;
+end;
+
+function TtiPersistenceLayerZeosFB.GetQueryClass: TtiQueryClass;
+begin
+  Result := TtiQueryZeos;
+end;
+
+procedure TtiPersistenceLayerZeosFB.AssignPersistenceLayerDefaults(
+  const APersistenceLayerDefaults: TtiPersistenceLayerDefaults);
+begin
+  Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  APersistenceLayerDefaults.PersistenceLayerName := cTIPersistZeosFB;
+  APersistenceLayerDefaults.DatabaseName :=
+    CDefaultDatabaseDirectory + CDefaultDatabaseName + '.fdb';
+  APersistenceLayerDefaults.Username := 'SYSDBA';
+  APersistenceLayerDefaults.Password := 'masterkey';
+  APersistenceLayerDefaults.CanDropDatabase := False;
+  APersistenceLayerDefaults.CanCreateDatabase := True;
+  APersistenceLayerDefaults.CanSupportMultiUser := True;
+  APersistenceLayerDefaults.CanSupportSQL := True;
+end;
 
 { TtiDatabaseZeosIBFB }
 
@@ -65,6 +137,14 @@ begin
       Connection.Port := StrToInt(lParams.Values['PORT']);
       lParams.Delete(lParams.IndexOfName('PORT'));
     end;
+
+    if lParams.Values['PROTOCOL'] <> '' then
+    begin
+      Connection.Protocol := lParams.Values['PROTOCOL'];
+      lParams.Delete(lParams.IndexOfName('PROTOCOL'));
+    end
+    else
+      raise EtiOPFProgrammerException.Create( ClassName + cErrorProtocolParameterNeeded);
 
 //    if Params.Values['CODEPAGE'] <> '' then
 //      Connection.Properties.Add('CODEPAGE=' + Params.Values['CODEPAGE']);
@@ -222,12 +302,21 @@ class function TtiDatabaseZeosIBFB.DatabaseExists(const ADatabaseName,
   AUserName, APassword: String; const AParams: string): boolean;
 var
   lDatabase: TtiDatabaseZeosIBFB;
+  lParams  : TStringList;
 begin
   lDatabase := TtiDatabaseZeosIBFB.Create;
   try
-    lDatabase.Connection.Database := ADatabaseName;
-    lDatabase.Connection.User     := AUserName;
-    lDatabase.Connection.Password := APassword;
+
+    lDatabase.DatabaseName := ADatabaseName;
+    lDatabase.UserName     := AUserName;
+    lDatabase.Password     := APassword;
+    lParams := TStringList.Create;
+    try
+      lParams.Text:= AParams;
+      lDatabase.Params.AddStrings(lParams);
+    finally
+      lParams.Free;
+    end;
 
     try
       lDatabase.Connected := true;
@@ -239,28 +328,36 @@ begin
     lDatabase.Connected := false;
   finally
     lDatabase.Free;
-  end ;
+  end;
 end;
 
 class procedure TtiDatabaseZeosIBFB.CreateDatabase(const ADatabaseName,
   AUserName, APassword: string; const AParams: string);
 var
   lDatabase : TtiDatabaseZeosIBFB;
+  lParams   : TStringList;
 begin
   lDatabase := TtiDatabaseZeosIBFB.Create;
   try
-    lDatabase.Connection.Database := ADatabaseName;
-    lDatabase.Connection.User     := AUserName;
-    lDatabase.Connection.Password := APassword;
+    lDatabase.DatabaseName := ADatabaseName;
+    lDatabase.UserName     := AUserName;
+    lDatabase.Password := APassword;
+    lParams := TStringList.Create;
+    try
+      lParams.Text:= AParams;
+      lDatabase.Params.AddStrings(lParams);
+    finally
+      lParams.Free;
+    end;
 
     { Default character set can be passed as a parameter. Probably
       the page_size too. }
-    lDatabase.Connection.Properties.Add(
-      Format('createnewdatabase=create database ''%s'' user ''%s'' password ''%s'' page_size 4096;',
-        [lDatabase.Connection.Database, lDatabase.Connection.User, lDatabase.Connection.Password]));
+//    lDatabase.Connection.Properties.Add(
+//      Format('createnewdatabase=create database ''%s'' user ''%s'' password ''%s'' page_size 4096;',
+//        [lDatabase.Connection.Database, lDatabase.Connection.User, lDatabase.Connection.Password]));
 
-    lDatabase.Connection.Connect;
-    lDatabase.Connection.Disconnect;
+    lDatabase.Connected := True;
+    lDatabase.Connected := False;
   finally
     lDatabase.Free;
   end;
@@ -301,5 +398,13 @@ begin
     raise EtiOPFInternalException.Create('Invalid FieldKind');
   end;
 end;
+
+initialization
+  GTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
+    TtiPersistenceLayerZeosFB);
+
+finalization
+  if not tiOPFManager.ShuttingDown then
+    GTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistZeosFB);
 
 end.
