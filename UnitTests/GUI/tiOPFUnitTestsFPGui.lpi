@@ -79,7 +79,16 @@
       </CompilerMessages>
       <CustomOptions Value="-dLINK_CSV
 -dLINK_TAB
--dLink_XMLLight"/>
+-dLink_XMLLight
+-dLINK_SQLDB_IB
+-dLINK_SQLDB_PQx
+-dLINK_SQLDB_Oraclex
+-dLINK_SQLDB_SQLite3x
+-dLINK_SQLDB_ODBCx
+-dLINK_SQLDB_MySQL40x
+-dLINK_SQLDB_MySQL41x
+-dLINK_SQLDB_MySQL50x
+-dLINK_ZEOS_FBx"/>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
