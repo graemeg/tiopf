@@ -67,9 +67,7 @@ type
     function GetSQL: TStrings; override;
     procedure SetSQL(const AValue: TStrings); override;
     function GetFieldAsBoolean(const AName: string): Boolean; override;
-    function GetParamAsBoolean(const AName: string): Boolean; override;
-    procedure SetParamAsBoolean(const AName: string; const AValue: Boolean);
-       override;
+    procedure SetParamAsBoolean(const AName: string; const AValue: Boolean); override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -130,11 +128,6 @@ begin
     (lBoolStr = 'Y') or
     (lBoolStr = 'YES') or
     (lBoolStr = '1');
-end;
-
-function TtiQuerySQLDB.GetParamAsBoolean(const AName: string): Boolean;
-begin
-  Result:=inherited GetParamAsBoolean(AName);
 end;
 
 function TtiQuerySQLDB.GetSQL: TStrings;
@@ -209,8 +202,7 @@ begin
   Log('>>> TtiQuerySQLDB.CheckPrepared');
 {$endif}
   inherited CheckPrepared;
-  if not FSQLQuery.Prepared then
-    Prepare;
+  Prepare;
 {$ifdef LOGSQLDB}
   Log('<<< TtiQuerySQLDB.CheckPrepared');
 {$endif}
