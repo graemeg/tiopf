@@ -263,8 +263,11 @@ begin
         lField.Width := 0;
 
         case lFieldType of
-          cIBField_LONG       : lField.Kind := qfkInteger;
-          cIBField_DOUBLE     : lField.Kind := qfkFloat;
+          cIBField_SHORT,
+          cIBField_LONG,
+          cIBField_BIGINT:  lField.Kind := qfkInteger;
+          cIBField_DOUBLE,
+          cIBField_FLOAT:   lField.Kind := qfkFloat;
           cIBField_TIMESTAMP,
           cIBField_DATE,
           cIBField_TIME:    lField.Kind := qfkDateTime;
