@@ -357,11 +357,13 @@ begin
       lParams.Free;
     end;
 
+    lDatabase.SetupDBParams;
+
     { Default character set can be passed as a parameter. Probably
       the page_size too. }
-//    lDatabase.Connection.Properties.Add(
-//      Format('createnewdatabase=create database ''%s'' user ''%s'' password ''%s'' page_size 4096;',
-//        [lDatabase.Connection.Database, lDatabase.Connection.User, lDatabase.Connection.Password]));
+    lDatabase.Connection.Properties.Add(
+      Format('createnewdatabase=create database ''%s'' user ''%s'' password ''%s'' page_size 4096;', [lDatabase.Connection.Database, lDatabase.Connection.User,
+      lDatabase.Connection.Password]));
 
     lDatabase.Connected := True;
     lDatabase.Connected := False;
