@@ -32,6 +32,7 @@ unit tiQueryZeosIBFB;
 {$I tiDefines.inc}
 
 interface
+
 uses
   Classes
   ,tiQuery
@@ -51,7 +52,7 @@ type
   end;
 
 
-  TtiDatabaseZeosIBFB = Class(TtiDatabaseZeosAbs)
+  TtiDatabaseZeosIBFB = class(TtiDatabaseZeosAbs)
   protected
     function FieldMetaDataToSQLCreate(const pFieldMetaData: TtiDBMetaDataField): string; override;
     procedure SetupDBParams; override;
@@ -115,7 +116,7 @@ end;
 
 procedure TtiDatabaseZeosIBFB.SetupDBParams;
 var
-  lParams : TStringList;
+  lParams: TStringList;
 begin
   lParams := TStringList.Create;
 
@@ -144,7 +145,7 @@ begin
       lParams.Delete(lParams.IndexOfName('PROTOCOL'));
     end
     else
-      raise EtiOPFProgrammerException.Create( ClassName + cErrorProtocolParameterNeeded);
+      raise EtiOPFProgrammerException.Create(ClassName + cErrorProtocolParameterNeeded);
 
 //    if Params.Values['CODEPAGE'] <> '' then
 //      Connection.Properties.Add('CODEPAGE=' + Params.Values['CODEPAGE']);
@@ -152,7 +153,7 @@ begin
     Connection.Properties.AddStrings(lParams);
   finally
     lParams.Free;
-  End;
+  end;
 end;
 
 constructor TtiDatabaseZeosIBFB.Create;
@@ -203,35 +204,36 @@ end;
 
 procedure TtiDatabaseZeosIBFB.ReadMetaDataFields(pData: TtiDBMetaDataTable);
 var
-  lTableName : string ;
+  lTableName: string;
   lQuery: TtiQuery;
   lTable: TtiDBMetaDataTable;
   lField: TtiDBMetaDataField;
-  lFieldType : integer ;
-  lFieldLength  : integer ;
+  lFieldType: integer;
+  lFieldLength: integer;
 const
-// Interbase field types
-//   select * from rdb$types
-//   where rdb$field_NAME = 'RDB$FIELD_TYPE'
-//   ORDER BY RDB$TYPE
+  // Interbase field types
+  //   select * from rdb$types
+  //   where rdb$field_NAME = 'RDB$FIELD_TYPE'
+  //   ORDER BY RDB$TYPE
 
-  cIBField_LONG       = 8;
-  cIBField_DOUBLE     = 27;
-  cIBField_TIMESTAMP  = 35;
-  cIBField_DATE       = 12;
-  cIBField_TIME       = 13;
-  cIBField_VARYING    = 37;
-  cIBField_BLOB       = 261;
+  cIBField_SHORT     = 7;
+  cIBField_LONG      = 8;
+  cIBField_QUAD      = 9;
+  cIBField_FLOAT     = 10;
+  cIBField_DATE      = 12;
+  cIBField_TIME      = 13;
+  cIBField_TEXT      = 14;
+  cIBField_BIGINT    = 16;
+  cIBField_DOUBLE    = 27;
+  cIBField_TIMESTAMP = 35;
+  cIBField_VARYING   = 37;
+  cIBField_CSTRING   = 40;
+  cIBField_BLOB_ID   = 45;
+  cIBField_BLOB      = 261;
 
-  cIBField_SHORT      = 7;
-  cIBField_QUAD       = 9;
-  cIBField_FLOAT      = 10;
-  cIBField_TEXT       = 14;
-  cIBField_CSTRING    = 40;
-  cIBField_BLOB_ID    = 45;
 begin
   lTable := (pData as TtiDBMetaDataTable);
-  lTableName := UpperCase(lTable.Name) ;
+  lTableName := UpperCase(lTable.Name);
   lQuery := GTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
   try
     StartTransaction;
@@ -253,36 +255,37 @@ begin
       lQuery.Open;
       while not lQuery.EOF do
       begin
-        lField := TtiDBMetaDataField.Create;
-        lField.Name := Trim(lQuery.FieldAsString['field_name']);
-        lFieldType := lQuery.FieldAsInteger['field_type'] ;
-        lFieldLength  := lQuery.FieldAsInteger['field_length'] ;
+        lField       := TtiDBMetaDataField.Create;
+        lField.Name  := Trim(lQuery.FieldAsString['field_name']);
+        lFieldType   := lQuery.FieldAsInteger['field_type'];
+        lFieldLength := lQuery.FieldAsInteger['field_length'];
 
-        lField.Width := 0 ;
+        lField.Width := 0;
 
         case lFieldType of
           cIBField_LONG       : lField.Kind := qfkInteger;
           cIBField_DOUBLE     : lField.Kind := qfkFloat;
           cIBField_TIMESTAMP,
           cIBField_DATE,
-          cIBField_TIME       : lField.Kind := qfkDateTime;
+          cIBField_TIME:    lField.Kind := qfkDateTime;
           cIBField_VARYING,
-          cIBField_TEXT       : begin
-                                  lField.Kind := qfkString ;
-                                  lField.Width := lFieldLength ;
-                                end ;
-          cIBField_BLOB       : begin
-                                  Assert( not lQuery.FieldIsNull['field_sub_type'], 'field_sub_type is null' ) ;
-                                  if lQuery.FieldAsInteger['field_sub_type'] = 0 then
-                                    lField.Kind := qfkBinary
-                                  else
-                                  if lQuery.FieldAsInteger['field_sub_type'] = 1 then
-                                    lField.Kind := qfkLongString
-                                  else
-                                    raise EtiOPFInternalException.Create( 'Invalid field_sub_type <' + IntToStr(lQuery.FieldAsInteger['field_sub_type']) + '>') ;
-                                end ;
-        else
-          raise EtiOPFInternalException.Create( 'Invalid Interbase FieldType <' + IntToStr( lFieldType ) + '>') ;
+          cIBField_TEXT:
+            begin
+              lField.Kind  := qfkString;
+              lField.Width := lFieldLength;
+            end;
+          cIBField_BLOB:
+            begin
+              Assert(not lQuery.FieldIsNull['field_sub_type'], 'field_sub_type is null');
+              if lQuery.FieldAsInteger['field_sub_type'] = 0 then
+                lField.Kind := qfkBinary
+              else if lQuery.FieldAsInteger['field_sub_type'] = 1 then
+                lField.Kind := qfkLongString
+              else
+                raise EtiOPFInternalException.Create('Invalid field_sub_type <' + IntToStr(lQuery.FieldAsInteger['field_sub_type']) + '>');
+            end;
+          else
+            raise EtiOPFInternalException.Create('Invalid Interbase FieldType <' + IntToStr(lFieldType) + '>');
         end;
         lField.ObjectState := posClean;
         lTable.Add(lField);
@@ -302,30 +305,30 @@ class function TtiDatabaseZeosIBFB.DatabaseExists(const ADatabaseName,
   AUserName, APassword: String; const AParams: string): boolean;
 var
   lDatabase: TtiDatabaseZeosIBFB;
-  lParams  : TStringList;
+  lParams: TStringList;
 begin
   lDatabase := TtiDatabaseZeosIBFB.Create;
   try
 
     lDatabase.DatabaseName := ADatabaseName;
-    lDatabase.UserName     := AUserName;
-    lDatabase.Password     := APassword;
+    lDatabase.UserName := AUserName;
+    lDatabase.Password := APassword;
     lParams := TStringList.Create;
     try
-      lParams.Text:= AParams;
+      lParams.Text := AParams;
       lDatabase.Params.AddStrings(lParams);
     finally
       lParams.Free;
     end;
 
     try
-      lDatabase.Connected := true;
-      result := true;
+      lDatabase.Connected := True;
+      Result := True;
     except
-      on e:exception do
-        result := false;
+      on e: Exception do
+        Result := False;
     end;
-    lDatabase.Connected := false;
+    lDatabase.Connected := False;
   finally
     lDatabase.Free;
   end;
@@ -334,17 +337,18 @@ end;
 class procedure TtiDatabaseZeosIBFB.CreateDatabase(const ADatabaseName,
   AUserName, APassword: string; const AParams: string);
 var
-  lDatabase : TtiDatabaseZeosIBFB;
-  lParams   : TStringList;
+  lDatabase: TtiDatabaseZeosIBFB;
+  lParams: TStringList;
 begin
   lDatabase := TtiDatabaseZeosIBFB.Create;
   try
     lDatabase.DatabaseName := ADatabaseName;
-    lDatabase.UserName     := AUserName;
+    lDatabase.UserName := AUserName;
     lDatabase.Password := APassword;
+
     lParams := TStringList.Create;
     try
-      lParams.Text:= AParams;
+      lParams.Text := AParams;
       lDatabase.Params.AddStrings(lParams);
     finally
       lParams.Free;
@@ -375,20 +379,21 @@ var
   lFieldName: string;
 begin
   lFieldName := pFieldMetaData.Name;
-
   case pFieldMetaData.Kind of
-    qfkString: result := 'VarChar( ' + IntToStr(pFieldMetaData.Width) + ' )';
-    qfkInteger: result := 'Integer';
-//    qfkFloat: result := 'Decimal( 10, 5 )';
-    qfkFloat: result := 'DOUBLE PRECISION';
-    // Just for new version of IB (6.x)
-    // DATE holds only DATE without TIME...
-    qfkDateTime: if Connection.Properties.Values['DIALECT'] <> '1' then
-        result := 'TIMESTAMP'
+    qfkString: Result := 'VarChar( ' + IntToStr(pFieldMetaData.Width) + ' )';
+    qfkInteger: Result := 'Integer';
+    //    qfkLargeInt: Result := 'BigInt';  // aka Numeric(18,0) a 8 byte type - only available in dialect 3 databases
+    qfkFloat: Result := 'DOUBLE PRECISION';
+    qfkDateTime:
+      // Take into account dialect
+      if Connection.Properties.Values['DIALECT'] <> '1' then
+        Result := 'TIMESTAMP'
       else
-        result := 'Date';
+        Result := 'Date';
     {$IFDEF BOOLEAN_CHAR_1}
-    qfkLogical    : result := 'Char(1) default ''F'' check( ' + lFieldName + ' in ( ''T'', ''F'' ))';
+    qfkLogical:
+      Result := 'Char(1) default ''F'' check( ' + lFieldName +
+        ' in ( ''T'', ''F'' ))';
     {$ELSE}
     qfkLogical    : result := 'VarChar(5) default ''FALSE'' check( ' + lFieldName + ' in ( ''TRUE'', ''FALSE'' )) ';
     {$ENDIF}
