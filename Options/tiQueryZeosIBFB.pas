@@ -397,15 +397,20 @@ begin
         Result := 'Date';
     {$IFDEF BOOLEAN_CHAR_1}
     qfkLogical:
-      Result := 'Char(1) default ''F'' check( ' + lFieldName +
-        ' in ( ''T'', ''F'' ))';
+      Result := 'Char(1) default ''F'' check( ' + lFieldName + ' in ( ''T'', ''F'' ))';
     {$ELSE}
-    qfkLogical    : result := 'VarChar(5) default ''FALSE'' check( ' + lFieldName + ' in ( ''TRUE'', ''FALSE'' )) ';
+      {$IFDEF BOOLEAN_NUM_1}
+    qfkLogical:
+      Result := 'SmallInt default 0 check(' + lFieldName + ' in (1, 0)) ';
+      {$ELSE}
+    qfkLogical:
+      Result := 'VarChar(5) default ''FALSE'' check( ' + lFieldName + ' in ( ''TRUE'', ''FALSE'' )) ';
+      {$ENDIF}
     {$ENDIF}
-    qfkBinary: result := 'Blob sub_type 0';
-    qfkLongString: result := 'Blob sub_type 1';
-  else
-    raise EtiOPFInternalException.Create('Invalid FieldKind');
+    qfkBinary: Result := 'Blob sub_type 0';
+    qfkLongString: Result := 'Blob sub_type 1';
+    else
+      raise EtiOPFInternalException.Create('Invalid FieldKind');
   end;
 end;
 
