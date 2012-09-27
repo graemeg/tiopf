@@ -393,7 +393,8 @@ begin
     finally
       DBConnectionPool.UnLock(LDatabase);
     end;
-  end else
+  end
+  else
     ADatabase.DropTable(ATableName);
   LIndex:= FCreatedTables.IndexOf(LowerCase(ATableName));
   if LIndex <> -1 then
@@ -774,10 +775,12 @@ end;
 
 procedure TtiTestCaseWithDatabaseConnection.TearDown;
 begin
-  DropCreatedTables;
-  PersistenceLayer.DBConnectionPools.Disconnect(
-    TestSetupData.DBName);
-  inherited TearDown;
+  try
+    DropCreatedTables;
+  finally
+    PersistenceLayer.DBConnectionPools.Disconnect(TestSetupData.DBName);
+    inherited TearDown;
+  end;
 end;
 
 procedure TtiTestCaseWithDatabaseConnection.TearDownOnce;
