@@ -622,7 +622,7 @@ begin
     CheckEquals(0,  FQuery.FieldSize(FQuery.FieldIndex('Group_Date_Field'  )), 'Group_Date_Field' );
     CheckEquals(0,  FQuery.FieldSize(FQuery.FieldIndex('Group_Notes_Field' )), 'Group_Notes_Field');
     // Nasty, but I can't think of a better solution right now...
-    if (PersistenceLayerName = 'DOA') or (PersistenceLayerName = 'Sqldb_IB') then
+    if (PersistenceLayerName = 'DOA') or (PersistenceLayerName = 'Sqldb_IB')  or (PersistenceLayerName = 'Zeos_FB') then
       CheckEquals(1,  FQuery.FieldSize(FQuery.FieldIndex('Group_Bool_Field'  )), 'Group_Bool_Field' )
     else
       CheckEquals(0,  FQuery.FieldSize(FQuery.FieldIndex('Group_Bool_Field'  )), 'Group_Bool_Field' );
