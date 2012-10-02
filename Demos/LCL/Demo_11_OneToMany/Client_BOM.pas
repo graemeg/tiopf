@@ -6,8 +6,7 @@ interface
 uses
    tiObject
   ,tiOID
-  ,tiOIDGUID // To force linking GUID OIDs. Must be included in application at least once.
- ;
+  ;
 
 const
   cErrorClientNameMissing = 'Please enter a client name';
