@@ -1,5 +1,5 @@
 {
-  This persistence layer uses standard Free Pascal sqlDB (interbase) components.
+  This persistence layer uses standard Free Pascal SqlDB (Firebird) components.
 
   The connection string format is the same as the standard Interbase/Firebird
   persistence layers.
@@ -15,12 +15,9 @@
         'sysdba', 'masterkey', 'charset=UTF8,role=admin');
 
   If you specify extra connection parameters (which are optional), they
-  are in name=value pairs and seperated by a comma - as shown above.
+  are in name=value pairs and separated by a comma - as shown above.
 
-  Authors:  Graeme Geldenhuys (graemeg@gmail.com) - Feb 2006
-            Michael Van Canneyt (michael@freepascal.org) - Aug 2008
 }
-
 unit tiQuerySqldbIB;
 
 {$I tiDefines.inc}

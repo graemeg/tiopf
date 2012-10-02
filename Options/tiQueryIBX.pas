@@ -1,3 +1,20 @@
+{
+  This persistence layer uses Delphi's IBX components.
+
+  eg:
+
+    GTIOPFManager.ConnectDatabase('192.168.0.20:E:\Databases\Test.fdb',
+        'sysdba', 'masterkey', '');
+
+    ...or with extra connection parameters...
+
+    GTIOPFManager.ConnectDatabase('192.168.0.20:E:\Databases\Test.fdb',
+        'sysdba', 'masterkey', 'charset=UTF8,role=admin');
+
+  If you specify extra connection parameters (which are optional), they
+  are in name=value pairs and separated by a comma - as shown above.
+
+}
 unit tiQueryIBX;
 
 {$I tiDefines.inc}

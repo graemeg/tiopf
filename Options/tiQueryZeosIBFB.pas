@@ -6,6 +6,9 @@
   The connection string format is the same as the standard Interbase/Firebird
   persistence layers.
 
+  If you specify extra connection parameters, they are in name=value pairs and
+  separated by a comma - as shown below.
+
   IMPORTANT:
   The only extra requirement here is that the PROTOCOL parameter must be
   specified in the connection call, so that ZEOS library knows which
@@ -19,12 +22,12 @@
   Firebird 2.1
   ------------
     GTIOPFManager.ConnectDatabase('192.168.0.20:E:\Databases\Test.fdb',
-        'sysdba', 'masterkey', 'protocol=firebird-2.1');
+        'sysdba', 'masterkey', 'protocol=firebird-2.1,charset=UTF8,role=admin');
 
   Firebird 2.5
   ------------
     GTIOPFManager.ConnectDatabase('192.168.0.20:E:\Databases\Test.fdb',
-        'sysdba', 'masterkey', 'protocol=firebird-2.5');
+        'sysdba', 'masterkey', 'protocol=firebird-2.5,role=admin');
 
 }
 unit tiQueryZeosIBFB;
