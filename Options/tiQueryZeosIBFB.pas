@@ -161,8 +161,7 @@ end;
 
 constructor TtiDatabaseZeosIBFB.Create;
 begin
-  inherited;
-
+  inherited Create;
   Connection.Properties.Add('DIALECT=3');
   Connection.TransactIsolationLevel := tiReadCommitted;
 end;
@@ -311,21 +310,15 @@ class function TtiDatabaseZeosIBFB.DatabaseExists(const ADatabaseName,
   AUserName, APassword: String; const AParams: string): boolean;
 var
   lDatabase: TtiDatabaseZeosIBFB;
-  lParams: TStringList;
 begin
   lDatabase := TtiDatabaseZeosIBFB.Create;
   try
-
     lDatabase.DatabaseName := ADatabaseName;
     lDatabase.UserName := AUserName;
     lDatabase.Password := APassword;
-    lParams := TStringList.Create;
-    try
-      lParams.Text := AParams;
-      lDatabase.Params.AddStrings(lParams);
-    finally
-      lParams.Free;
-    end;
+
+    lDatabase.Params.CommaText := AParams;
+    lDatabase.SetupDBParams;
 
     try
       lDatabase.Connected := True;
@@ -344,7 +337,6 @@ class procedure TtiDatabaseZeosIBFB.CreateDatabase(const ADatabaseName,
   AUserName, APassword: string; const AParams: string);
 var
   lDatabase: TtiDatabaseZeosIBFB;
-  lParams: TStringList;
 begin
   lDatabase := TtiDatabaseZeosIBFB.Create;
   try
@@ -352,14 +344,7 @@ begin
     lDatabase.UserName := AUserName;
     lDatabase.Password := APassword;
 
-    lParams := TStringList.Create;
-    try
-      lParams.Text := AParams;
-      lDatabase.Params.AddStrings(lParams);
-    finally
-      lParams.Free;
-    end;
-
+    lDatabase.Params.CommaText := AParams;
     lDatabase.SetupDBParams;
 
     { Default character set can be passed as a parameter. Probably
