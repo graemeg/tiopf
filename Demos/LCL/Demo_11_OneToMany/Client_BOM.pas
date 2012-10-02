@@ -93,7 +93,6 @@ type
 implementation
 uses
    tiOPFManager
-  ,tiAutoMap
   ,tiConstants
   ,tiLog
   ,SysUtils
