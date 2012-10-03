@@ -485,7 +485,9 @@ begin
   else
     UnBind;
   FActive := AValue;
-  if Assigned(FSubject) then
+  { No need to call NotifyObservers when we are shutting down, because UnBind
+    would have freed those observers already. }
+  if AValue and Assigned(FSubject) then
     FSubject.NotifyObservers;
 end;
 
