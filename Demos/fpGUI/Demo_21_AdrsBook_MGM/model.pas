@@ -162,6 +162,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+    function IsValid(const AErrors: TtiObjectErrors): boolean; override;
   published
     property FirstName: string read FFirstName write SetFirstName;
     property LastName: string read FLastName write SetLastName;
@@ -461,6 +462,19 @@ destructor TContact.Destroy;
 begin
   FAddressList.Free;
   inherited Destroy;
+end;
+
+function TContact.IsValid(const AErrors: TtiObjectErrors): boolean;
+begin
+  inherited IsValid(AErrors);
+
+  if Trim(FirstName) = '' then
+    AErrors.AddError('FirstName', 'Firstname property is missing information', 1);
+
+  if Trim(LastName) = '' then
+    AErrors.AddError('LastName', 'Lastname property is missing information', 1);
+
+  Result := (AErrors.Count = 0);
 end;
 
 { TCountryList }
