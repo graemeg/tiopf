@@ -1345,6 +1345,7 @@ begin
     vtBoolean:       SetValueAsBoolean(AName, AValue.VBoolean);
     vtExtended:      SetValueAsFloat(  AName, AValue.VExtended^);
     vtWideChar:      SetValueAsString( AName, String(AValue.VWideChar));
+    vtVariant:       SetValueAsVariant(AName, AValue.VVariant^);
     // Implement (and unit test) as required
     //    vtString:     result := result + QuotedStr(string(VString^));
     //    vtChar:       result := result + QuotedStr(string(VChar));
@@ -1354,7 +1355,6 @@ begin
     vtAnsiString:    SetValueAsString( AName, String(AValue.VAnsiString));
     //    vtWideString: result := result + QuotedStr(string(VWideString));
     //    vtCurrency:   result := result + CurrToStr(VCurrency^);
-    //    vtVariant:    result := result + QuotedStr(string(VVariant^));
     //    vtInt64:      result := result + IntToStr(VInt64^);
   else
     raise EtiOPFProgrammerException.CreateFmt('Invalid variant type. Index="%d"', [AValue.VType]);
