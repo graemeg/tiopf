@@ -204,8 +204,8 @@ const
   MaxDateTime: TDateTime =  2958465.99999; { 12/31/9999 11:59:59.999 PM }
   {$ENDIF}
   crZeroLimit      = 0.005;
-  cCurrencyFormat0 = '$#,##0';
-  cCurrencyFormat2 = '$#,##0.00';
+  cCurrencyFormat0 = '$ #,##0';
+  cCurrencyFormat2 = '$ #,##0.00';
   cgsNA            = 'N/A';
 
   cPI              = 3.14159265358979;
