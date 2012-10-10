@@ -928,8 +928,22 @@ end;
 
 
 function tiPad0(const AValue: string; const ALen: integer): string;
+var
+  ls: string;
 begin
-  Result := tiPadL(AValue, ALen, '0');
+  ls := AValue;
+  if Length(ls) < ALen then
+  begin
+    while Length(ls) < ALen do
+    begin
+      ls := '0' + ls;
+    end;
+  end
+  else if Length(ls) > ALen then
+  begin
+    ls := Copy(ls, Length(ls)-ALen, ALen);
+  end;
+  Result := ls;
 end;
 
 
