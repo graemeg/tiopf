@@ -530,11 +530,11 @@ type
     function    GetValueAsString : string; virtual; abstract;
     procedure   SetValueAsString(const AValue : string); virtual; abstract;
     procedure   AssignToTIQuery(const AQuery : TtiQuery); virtual; abstract;
-    property    IsNull     : boolean read FIsNull write FIsNull;
   published
     property    Name       : string read FName write FName;
     property    KindAsStr  : string read GetKindAsStr;
     property    ValueAsString : string read GetValueAsString write SetValueAsString;
+    property    IsNull     : boolean read FIsNull write FIsNull;
   end;
 
 
