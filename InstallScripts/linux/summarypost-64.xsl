@@ -11,8 +11,8 @@
 <xsl:text>Content-Type: text/plain; charset=ISO-8859-1&#10;</xsl:text>
 <xsl:text>Content-Transfer-Encoding: 8bit&#10;</xsl:text>
 <xsl:text>&#10;</xsl:text>
-<xsl:text>               tiOPF2 - DUnit2 Results&#10;</xsl:text>
-<xsl:text>               ------------------------&#10;</xsl:text>
+<xsl:text>               tiOPF2 - FPTest Results&#10;</xsl:text>
+<xsl:text>               -----------------------&#10;</xsl:text>
 <xsl:text>&#10;</xsl:text>
 
 SVN revision:
@@ -25,7 +25,8 @@ Persistence Layers Tested:
    TAB
    XMLLight
    FBLIB
-   SqlDB - Firebird
+   SqlDB - Firebird 2.5
+   Zeos - Firebird 2.5
 
 <xsl:call-template name="summary"/>
 

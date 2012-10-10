@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd /opt/dailybuilds/tiopf/
-/usr/bin/svn up --non-interactive --ignore-externals
+cd /home/graemeg/devel/tiOPF2/dailybuilds/tiopf/
+/usr/bin/svn up --non-interactive
 
 

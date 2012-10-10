@@ -1,11 +1,17 @@
 #!/bin/sh
 # Build script for tiOPF's TextRunner using 64bit Free Pascal Compiler
 
+BASEDIR="/home/graemeg/devel"
 TARGET="x86_64-linux"
-TIOPF="/opt/dailybuilds/tiopf"
+TIOPF="$BASEDIR/tiOPF2/dailybuilds/tiopf"
 FBLIB="$TIOPF/3rdParty/FBLib/lib/$TARGET"
-FPC="/opt/fpc-2.4.5/$TARGET/bin/ppcx64"
-DUNIT2="/opt/git/fptest/lib/$TARGET/"
+ZEOS="$BASEDIR/3rdparty/zeos_svn/packages/lazarus/lib/$TARGET"
+FPC="$BASEDIR/fpc-2.6.0/$TARGET/bin/ppcx64"
+DUNIT2="$BASEDIR/fptest/lib/$TARGET/"
+
+#  -Fu$BASEDIR/fpc-2.6.0/src/packages/fcl-registry/src/ \
+#  -Fu$BASEDIR/fpc-2.6.0/src/packages/fcl-xml/src/ \
+
 
 $FPC -S2cgi -O1 -gl -ve -l \
   -Fu$TIOPF/Compilers/FPC/lib/$TARGET/ \
@@ -13,15 +19,14 @@ $FPC -S2cgi -O1 -gl -ve -l \
   -Fu$TIOPF/UnitTests/Common/ \
   -Fu$TIOPF/UnitTests/Tests/ \
   -Fu$FBLIB/ \
-  -Fu/opt/fpc-2.4.5/src/packages/fcl-registry/src/ \
-  -Fu/opt/fpc-2.4.5/src/packages/fcl-xml/src/ \
-  -Fu/opt/git/fptest/src/ \
-  -Fu/opt/git/fptest/3rdparty/epiktimer/ \
+  -Fu$BASEDIR/fptest/src/ \
+  -Fu$BASEDIR/fptest/3rdparty/epiktimer/ \
   -Fu. \
+  -Fu$ZEOS \
   -o$TIOPF/UnitTests/Text/textrunner64 \
   -FU$TIOPF/UnitTests/Text/_Dcu \
   -dDUNIT2 -dXMLLISTENER \
-  -dLINK_CSV -dLINK_TAB -dLINK_XMLLIGHT -dLINK_SQLDB_IB -dLINK_FBL \
+  -dLINK_CSV -dLINK_TAB -dLINK_XMLLIGHT -dLINK_SQLDB_IB -dLINK_FBL -dLINK_ZEOS_FB \
   -dUseCThreads \
   $TIOPF/UnitTests/Text/dunit2_fpc_textrunner.lpr
 
