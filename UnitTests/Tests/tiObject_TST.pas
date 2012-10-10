@@ -2312,6 +2312,9 @@ procedure TtiObjectTestCase.FieldCurrency;
 var
   LObj: TtiObject;
   LField:  TtiFieldCurrency;
+  OldCurrency: string;
+  OldThousand: char;
+  OldDecimal: char;
 const
   CValue    = 1234.56;
   CValueStr = '1234.56';
@@ -2319,7 +2322,15 @@ const
   CValueCurrencyStr = '$ 1,234.56';
 begin
   LObj := TtiObject.Create;
+  OldCurrency := CurrencyString;
+  OldThousand := ThousandSeparator;
+  OldDecimal  := DecimalSeparator;
   try
+    { hard-code tests to USA locale }
+    CurrencyString    := '$';
+    ThousandSeparator := ',';
+    DecimalSeparator  := '.';
+
     LField:= TtiFieldCurrency.Create(LObj);
     try
       Check(LField.IsNull, 'IsNull #1');
@@ -2385,6 +2396,10 @@ begin
     end;
   finally
     LObj.Free;
+    { restore original locale info }
+    CurrencyString    := OldCurrency;
+    ThousandSeparator := OldThousand;
+    DecimalSeparator  := OldDecimal;
   end;
 end;
 

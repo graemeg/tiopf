@@ -4,7 +4,7 @@ program tiOPFUnitTestsFPGui;
 
 uses
   {$IFDEF UNIX}
-  cthreads,
+  cthreads, clocale,
   {$ENDIF}
   Classes, SysUtils
   ,fpg_base, fpg_main
@@ -18,7 +18,9 @@ uses
 
 begin
   { Unit tests are hard-coded to Australian locale }
-  FormatSettings.DateSeparator := '/';
+  DateSeparator := '/';
+//  DecimalSeparator := '.';
+//  CurrencyString := '$';
 
 //  if not TtiPromptWhichPersistenceLayersToTest.Execute then
 //    Halt;
