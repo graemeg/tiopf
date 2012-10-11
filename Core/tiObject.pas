@@ -3492,7 +3492,7 @@ begin
     LSign:= Sign(FValue);
     LValue:= Abs(FValue);
     LWhole:= LValue div 100;
-    LFrac:= LValue - LWhole * 100;
+    LFrac:= LValue - (LWhole * 100);
     Result:= IntToStr(LWhole) + '.' + tiPad0(IntToStr(LFrac), 2);
     if LSign = -1 then
       Result:= '-' + Result;
