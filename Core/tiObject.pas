@@ -329,6 +329,12 @@ type
   end;
 
 
+  ItiObserverHandlesErrorState = interface(IInterface)
+  ['{766D38E6-0366-4317-9F27-D3CB73BA19CA}']
+    procedure ProcessErrorState(const ASubject: TtiObject; const AOperation: TNotifyOperation; const AErrors: TtiObjectErrors);
+  end;
+
+
   TtiObject = class(TtiVisited)
   private
     FOID: TtiOID;
@@ -4145,6 +4151,8 @@ var
   ObjectIndex: Integer;
   Observer: TtiObject;
   LObserverList: TList;
+  LErrors: TtiObjectErrors;
+  ObsIntf: ItiObserverHandlesErrorState;
 begin
   if not Assigned(FObserverList) then
     Exit; //==>
@@ -4156,6 +4164,11 @@ begin
   LObserverList := TList.Create;
   try
     LObserverList.Assign(FObserverList);
+
+    { collect possible errors }
+    LErrors := TtiObjectErrors.Create;
+    ASubject.IsValid(LErrors);
+
     for ObjectIndex := 0 to LObserverList.Count - 1 do
     begin
       // FObserverList is freed when empty.
@@ -4164,9 +4177,14 @@ begin
       Observer := TtiObject(LObserverList.Items[ObjectIndex]);
       if Assigned(Observer) and
          ((ObjectIndex = 0) or (FObserverList.IndexOf(Observer) <> -1)) then
-        Observer.Update(ASubject,AOperation);
+      begin
+        Observer.Update(ASubject, AOperation);
+        if Supports(Observer, ItiObserverHandlesErrorState, ObsIntf) then
+          ObsIntf.ProcessErrorState(ASubject, AOperation, LErrors);
+      end;
     end;
   finally
+    LErrors.Free;
     LObserverList.Free;
   end;
 
