@@ -356,7 +356,7 @@ begin
   CheckEquals('001', tiUtils.tiPad0('1', 3), 'Failed on 3');
   CheckEquals('000', tiUtils.tiPad0('', 3), 'Failed on 4');
   // Perhaps not what you would expect, but anyway...
-  CheckEquals('123',   tiUtils.tiPad0('1234', 3), 'Failed on 1');
+  CheckEquals('123',   tiUtils.tiPad0('1234', 3), 'Failed on 5');
 end;
 
 
