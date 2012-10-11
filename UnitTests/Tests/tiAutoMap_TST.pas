@@ -6,9 +6,6 @@ interface
 uses
   Classes  // needed for TStringList
   ,tiBOMsForTesting
-  {$IFDEF FPC}
-  ,testregistry
-  {$ENDIF}
   ,tiTestFramework
   ,tiOPFTestCase
   ,tiObject
@@ -155,9 +152,7 @@ type
     procedure CollectionCreate;
     procedure CollectionUpdate;
     procedure CollectionDelete;
-
   //    procedure CollectionReadPKByCondition;
-
   end;
 
 procedure RegisterTests;

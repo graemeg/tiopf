@@ -4,9 +4,6 @@ unit tiSyncObjs_TST;
 
 interface
 uses
-  {$IFDEF FPC}
-  testregistry,
-  {$ENDIF}
   tiTestFramework
   ,tiObject
   ,tiSyncObjs

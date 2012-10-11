@@ -5,8 +5,6 @@ unit tiBaseObject_TST;
 interface
 
 uses
-  {$IFNDEF FPC}
-  {$ENDIF}
   tiTestFramework
   ,Classes
  ;

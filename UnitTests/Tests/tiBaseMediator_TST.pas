@@ -9,9 +9,6 @@ uses
   ,Classes
   ,SysUtils
   ,tiObject
-  {$IFDEF FPC}
-  ,testregistry
-  {$ENDIF}
   ,tiTestFramework
   ,tiBaseMediator
   ;
