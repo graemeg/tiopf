@@ -4,9 +4,6 @@ unit tiQuery_TST;
 
 interface
 uses
-  {$IFDEF FPC}
-  testregistry,
-  {$ENDIF}
   tiTestFramework,
   tiOPFTestCase,
   tiDBConnectionPool,
@@ -250,7 +247,7 @@ begin
        TestSetupData.DBName,
        TestSetupData.Username,
        TestSetupData.Password,
-       '',
+       TestSetupData.Params,
        TestSetupData.PersistenceLayerName);
      try
        CheckEquals(TestSetupData.PersistenceLayerName, LM.DefaultPersistenceLayerName, 'PersistenceLayerName');
@@ -275,7 +272,7 @@ begin
       TestSetupData.DBName,
       TestSetupData.UserName,
       TestSetupData.Password,
-      '');
+      TestSetupData.Params);
     Check(LDatabase.Connected, 'Connect failed');
     LDatabase.Connected := false;
     Check(not LDatabase.Connected, 'Connected := false failed');
@@ -294,7 +291,7 @@ begin
     TestSetupData.DBName,
     TestSetupData.Username,
     TestSetupData.Password,
-    '');
+    TestSetupData.Params);
   CheckEquals(1, PersistenceLayer.DBConnectionPools.Count);
   PersistenceLayer.DBConnectionPools.Disconnect(CAlias);
   CheckEquals(0, PersistenceLayer.DBConnectionPools.Count);
@@ -448,8 +445,8 @@ begin
   Database.StartTransaction;
   try
     FQuery.SelectRow(cTIQueryTableName, nil);
-    CheckEquals(1234.5678, FQuery.FieldAsFloat[ cTIQueryColName ], 0.00001, 'FieldAsFloat');
-    CheckEquals(1234.5678, FQuery.FieldAsFloatByIndex[ cFieldAs_Index ], 0.00001, 'FieldAsFloat');
+    CheckEquals(1234.5678, FQuery.FieldAsFloat[ cTIQueryColName ], 0.00001, 'Failed on 1');
+    CheckEquals(1234.5678, FQuery.FieldAsFloatByIndex[ cFieldAs_Index ], 0.00001, 'Failed on 2');
     FQuery.Close;
   finally
     Database.Rollback;
@@ -629,10 +626,10 @@ begin
     CheckEquals(0,  FQuery.FieldSize(FQuery.FieldIndex('Group_Date_Field'  )), 'Group_Date_Field' );
     CheckEquals(0,  FQuery.FieldSize(FQuery.FieldIndex('Group_Notes_Field' )), 'Group_Notes_Field');
     // Nasty, but I can't think of a better solution right now...
-    if PersistenceLayerName <> 'DOA' then
-      CheckEquals(0,  FQuery.FieldSize(FQuery.FieldIndex('Group_Bool_Field'  )), 'Group_Bool_Field' )
+    if (PersistenceLayerName = 'DOA') or (PersistenceLayerName = 'Sqldb_IB')  or (PersistenceLayerName = 'Zeos_FB') then
+      CheckEquals(1,  FQuery.FieldSize(FQuery.FieldIndex('Group_Bool_Field'  )), 'Group_Bool_Field' )
     else
-      CheckEquals(1,  FQuery.FieldSize(FQuery.FieldIndex('Group_Bool_Field'  )), 'Group_Bool_Field' );
+      CheckEquals(0,  FQuery.FieldSize(FQuery.FieldIndex('Group_Bool_Field'  )), 'Group_Bool_Field' );
 
     FQuery.Close;
 // qfkBinary,
@@ -1059,7 +1056,7 @@ begin
     TestSetupData.DBName,
     TestSetupData.Username,
     TestSetupData.Password,
-    '');
+    TestSetupData.Params);
   try
     lDBConnectionName := TestSetupData.DBName;
     for i := 1 to 1 do
@@ -1084,7 +1081,7 @@ begin
       TestSetupData.DBName,
       TestSetupData.Username,
       TestSetupData.Password,
-      '');
+      TestSetupData.Params);
     try
       DoThreadedDBConnectionPool(PersistenceLayer.DefaultDBConnectionPool, CThreadCount)
     finally
@@ -1662,7 +1659,11 @@ begin
     CheckNotNull(lParams, 'NotNull failed');
     CheckIs(lParam, TtiQueryParamBoolean, 'Wrong class');
     CheckEquals(True, lParams.GetValueAsBoolean('param1'), 'GetValueAsBoolean failed');
+{$IFDEF BOOLEAN_NUM_1}
+    CheckEquals('1', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
+{$ELSE}
     CheckEquals('T', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
+{$ENDIF}
 
     lParams.SetValueAsString('param1', 'False');
     CheckEquals(1, lParams.Count, 'Count');
@@ -1670,8 +1671,11 @@ begin
     CheckNotNull(lParams, 'NotNull failed');
     CheckIs(lParam, TtiQueryParamBoolean, 'Wrong class');
     CheckEquals(False, lParams.GetValueAsBoolean('param1'), 'GetValueAsBoolean failed');
+{$IFDEF BOOLEAN_NUM_1}
+    CheckEquals('0', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
+{$ELSE}
     CheckEquals('F', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
-
+{$ENDIF}
   finally
     lParams.Free;
   end;
@@ -1779,7 +1783,7 @@ begin
         lParams.SetValueAsStream('param1', lStream1);
         CheckEquals(1, lParams.Count, 'Count');
         lParam := lParams.Items[0];
-        CheckNotNull(lParams, 'NotNull failed');
+        CheckNotNull(lParam, 'NotNull failed');
         CheckIs(lParam, TtiQueryParamStream, 'Wrong class');
         lStream2 := lParams.GetValueAsStream('param1');
         CheckStreamContentsSame(lStream1, lStream2);
@@ -1787,6 +1791,7 @@ begin
         // Because, it's MIME encoded when it's read out as a string
         // (for persisting to a DB that does not have a native BIN field type)
         ls := MimeDecodeString(ls);
+        CheckEquals(Length(LongString), Length(ls), ' length of strings #1');
         CheckEquals(LongString, ls, 'GetValueAsString failed');
 
         lStream1.WriteString('a');
@@ -1801,8 +1806,8 @@ begin
         // Because, it's MIME encoded when it's read out as a string
         // (for persisting to a DB that does not have a native BIN field type)
         ls := MimeDecodeString(ls);
+        CheckEquals(lStream1.Size, Length(ls), ' length of strings #2');
         CheckEquals(LongString+'a', ls, 'GetValueAsString failed');
-
       finally
         lParams.Free;
       end;
@@ -1842,7 +1847,11 @@ begin
     CheckNotNull(lParams, 'NotNull failed');
     CheckIs(lParam, TtiQueryParamBoolean, 'Wrong class');
     CheckEquals(True, lParams.GetValueAsBoolean('param1'), 'GetValueAsBoolean failed');
+{$IFDEF BOOLEAN_NUM_1}
+    CheckEquals('1', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
+{$ELSE}
     CheckEquals('T', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
+{$ENDIF}
 
     lParams.SetValueAsVariant('param1', 'False');
     CheckEquals(1, lParams.Count, 'Count');
@@ -1850,8 +1859,11 @@ begin
     CheckNotNull(lParams, 'NotNull failed');
     CheckIs(lParam, TtiQueryParamBoolean, 'Wrong class');
     CheckEquals(False, lParams.GetValueAsBoolean('param1'), 'GetValueAsBoolean failed');
+{$IFDEF BOOLEAN_NUM_1}
+    CheckEquals('0', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
+{$ELSE}
     CheckEquals('F', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
-
+{$ENDIF}
   finally
     lParams.Free;
   end;
@@ -2050,7 +2062,7 @@ begin
     lStreamTo := TStringStream.Create(LongString);
     try
       lResult := AreStreamContentsSame(lStreamFrom, lStreamTo, lMessage);
-      Check(lResult, 'Returned FALSE but should have returned TRUE');
+      Check(lResult, '#1 Returned FALSE but should have returned TRUE');
     finally
       lStreamTo.Free;
     end;
@@ -2063,7 +2075,7 @@ begin
     lStreamTo := TStringStream.Create(LongString + 'a');
     try
       lResult := AreStreamContentsSame(lStreamFrom, lStreamTo, lMessage);
-      Check(not lResult, 'Returned TRUE but should have returned FALSE <' + lMessage + '>');
+      Check(not lResult, '#2 Returned TRUE but should have returned FALSE <' + lMessage + '>');
     finally
       lStreamTo.Free;
     end;
@@ -2073,17 +2085,16 @@ begin
 
   lStreamFrom := TStringStream.Create(LongString);
   try
-    lStreamTo := TStringStream.Create(Copy(LongString, 1, Length(LongString) - 1) + 'a');
+    lStreamTo := TStringStream.Create(Copy(LongString, 1, Length(LongString) - 1) + ';');
     try
       lResult := AreStreamContentsSame(lStreamFrom, lStreamTo, lMessage);
-      Check(not lResult, 'Returned TRUE but should have returned FALSE <' + lMessage + '>');
+      Check(not lResult, '#3 Returned TRUE but should have returned FALSE <' + lMessage + '>');
     finally
       lStreamTo.Free;
     end;
   finally
     lStreamFrom.Free;
   end;
-
 end;
 
 procedure TTestTIQueryAbs.FieldAsStream;
@@ -2288,7 +2299,7 @@ begin
       TestSetupData.DBName,
       TestSetupData.Username,
       TestSetupData.Password,
-      '');
+      TestSetupData.Params);
     try
       CheckNotNull(LPersistenceLayer.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
       CheckEquals(CDatabaseAlias, LPersistenceLayer.DefaultDBConnectionName, 'DefaultDBConnectionName');

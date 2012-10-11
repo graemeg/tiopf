@@ -28,11 +28,7 @@ procedure RegisterTests;
 
 implementation
 uses
-  {$IFDEF FPC}
-  TestRegistry
-  {$ELSE}
   TestFramework
-  {$ENDIF}
   ,tiPersistenceLayers
   ,tiOPFTestManager
   ,tiOPFManager
@@ -121,7 +117,7 @@ begin
      (not GTIOPFTestManager.ToRun(cTIPersistXML)) then
     Dec(lLayerCount);
   CheckEquals(lSetupCount, lLayerCount,
-            'gTestSetupDataFactory.Count <> GTIOPFManager.PersistenceLayers.Count');
+            'GTIOPFTestManager.Count <> GTIOPFManager.PersistenceLayers.Count');
 end;
 
 procedure TTestPersistenceLayers.DefaultPersistenceLayerName;

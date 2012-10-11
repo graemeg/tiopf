@@ -15,14 +15,8 @@ uses
   ,tiExcept
   ,tiPersistenceLayers
   ,tiDBConnectionPool
-  {$IFDEF FPC}
-  ,fpcunit
-  ,testregistry
-  ,testdecorator
-  {$ELSE}
   ,TestFramework
   ,TestExtensions
-  {$ENDIF}
   ,inifiles
   ,Classes
   ,SysUtils
@@ -106,7 +100,7 @@ type
     function    GetDatabaseName: string;
     function    GetUserName: string;
     function    GetPassword: string;
-
+    function    GetParams: string;
   protected
     procedure SetUpOnce; override;
     procedure SetUp; override;
@@ -116,7 +110,7 @@ type
     property    DatabaseName     : string read GetDatabaseName;
     property    UserName         : string read GetUserName;
     property    Password         : string read GetPassword;
-
+    property    Params           : string read GetParams;
     property DBConnectionPool: TtiDBConnectionPool read FDBConnectionPool;
 
     procedure   CreateTable(const ATable : TtiDBMetaDataTable; const ADatabase: TtiDatabase = nil);
@@ -405,7 +399,8 @@ begin
     finally
       DBConnectionPool.UnLock(LDatabase);
     end;
-  end else
+  end
+  else
     ADatabase.DropTable(ATableName);
   LIndex:= FCreatedTables.IndexOf(LowerCase(ATableName));
   if LIndex <> -1 then
@@ -430,16 +425,19 @@ begin
     if not LDatabaseClass.DatabaseExists(
       TestSetupData.DBName,
       TestSetupData.Username,
-      TestSetupData.Password) then
+      TestSetupData.Password,
+      TestSetupData.Params) then
     begin
       LDatabaseClass.CreateDatabase(
         TestSetupData.DBName,
         TestSetupData.Username,
-        TestSetupData.Password);
+        TestSetupData.Password,
+        TestSetupData.Params);
       if not LDatabaseClass.DatabaseExists(
         TestSetupData.DBName,
         TestSetupData.Username,
-        TestSetupData.Password) then
+        TestSetupData.Password,
+        TestSetupData.Params) then
         EtiOPFDUnitException.Create('Unable to create database <' + TestSetupData.DBName + '>');
     end;
   end;
@@ -710,6 +708,12 @@ begin
   result := TestSetupData.Password;
 end;
 
+function TtiTestCaseWithDatabaseConnection.GetParams: string;
+begin
+  Assert(TestSetupData.TestValid, CTIErrorInvalidObject);
+  Result := TestSetupData.Params;
+end;
+
 
 function TtiTestCaseWithDatabaseConnection.GetUserName: string;
 begin
@@ -753,40 +757,42 @@ end;
 
 procedure TtiTestCaseWithPersistenceLayer.SetUpOnce;
 begin
-  inherited;
+  inherited SetupOnce;
   CreateDBIfNotExists;
 end;
 
 procedure TtiTestCaseWithDatabaseConnection.SetUp;
 begin
-  inherited;
+  inherited Setup;
   PersistenceLayer.DBConnectionPools.Connect(
     DatabaseName,
     DatabaseName,
     Username,
     Password,
-    '');
+    Params);
   FDBConnectionPool:= PersistenceLayer.DBConnectionPools.Find(TestSetupData.DBName);
 end;
 
 procedure TtiTestCaseWithDatabaseConnection.SetupOnce;
 begin
-  inherited;
+  inherited SetupOnce;
   FCreatedTables:= TStringList.Create;
 end;
 
 procedure TtiTestCaseWithDatabaseConnection.TearDown;
 begin
-  DropCreatedTables;
-  PersistenceLayer.DBConnectionPools.Disconnect(
-    TestSetupData.DBName);
-  inherited;
+  try
+    DropCreatedTables;
+  finally
+    PersistenceLayer.DBConnectionPools.Disconnect(TestSetupData.DBName);
+    inherited TearDown;
+  end;
 end;
 
 procedure TtiTestCaseWithDatabaseConnection.TearDownOnce;
 begin
   FCreatedTables.Free;
-  inherited;
+  inherited TearDownOnce;
 end;
 
 { TtiTestCaseWithTestSetupData }
@@ -798,7 +804,7 @@ end;
 
 procedure TtiTestCaseWithTestSetupData.SetUpOnce;
 begin
-  inherited;
+  inherited SetupOnce;
   FTestSetupData:= GTIOPFTestManager.FindByPersistenceLayerName(PersistenceLayerName);
   Assert(FTestSetupData <> nil, 'FTestSetupData not assigned');
 end;

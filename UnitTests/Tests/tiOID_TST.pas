@@ -6,9 +6,6 @@ interface
 
 uses
   Classes,
-  {$IFDEF FPC}
-  testregistry,
-  {$ENDIF}
   tiTestFramework,
   tiOPFTestCase,
   tiOID;
@@ -524,7 +521,7 @@ end;
 
 procedure TTestTIOIDPersistent.Setup;
 begin
-  inherited;
+  inherited Setup;
   // Number of times to repeat NextOID test
   // Set a high number for thorough testing (eg, 100000)
   // Set a low number for quick testing (eg, 100)
@@ -537,7 +534,7 @@ end;
 procedure TTestTIOIDPersistent.TearDown;
 begin
   FOIDList.Free;
-  inherited;
+  inherited TearDown;
 end;
 
 procedure TTestTIOIDPersistent.TestThenAddOIDAsString(const AOID: string);
@@ -970,7 +967,7 @@ end;
 
 procedure TTestTIOIDPersistentGUID.Setup;
 begin
-  inherited;
+  inherited Setup;
   CreateNextOIDStrTable; // Required here for testing persistence of GUID OID
   FOIDGeneratorClass    := TtiOIDGeneratorGUID;
 end;
@@ -980,6 +977,8 @@ var
   LTable : TtiDBMetaDataTable;
   lParams : TtiQueryParams;
 begin
+  { TODO : For some reason the Next_OID table hangs around then this method fails. Why?  - graeme }
+  DropTable('Next_OID');
 
   LTable := TtiDBMetaDataTable.Create;
   try
@@ -1005,6 +1004,9 @@ var
   LTable : TtiDBMetaDataTable;
   lParams : TtiQueryParams;
 begin
+  { TODO : For some reason the Next_OID table hangs around then this method fails. Why?  - graeme }
+  DropTable('Next_OID');
+
   LTable := TtiDBMetaDataTable.Create;
   try
     LTable.Name := 'Next_OID';
@@ -1027,7 +1029,7 @@ procedure TTestTIOIDPersistentGUID.TtiNextOIDGeneratorAssignNextOIDMultiUser;
 begin
   AllowedMemoryLeakSize := 32;  //Sneaky way to get 4 values
   SetAllowedLeakArray([208, 265, 376]);
-  inherited;
+  inherited TtiNextOIDGeneratorAssignNextOIDMultiUser;
 end;
 
 procedure TTestTIOIDPersistentGUID.TtiNextOIDGeneratorAssignNextOIDSingleUser;
@@ -1039,7 +1041,7 @@ end;
 procedure TTestTIOIDPersistentGUID.TtiNextOIDGeneratorAssignNextOIDThreaded;
 begin
   SetAllowedLeakArray([32, 208, 265]);
-  inherited;
+  inherited TtiNextOIDGeneratorAssignNextOIDThreaded;
 end;
 
 { TTestTIOIDInt64 }

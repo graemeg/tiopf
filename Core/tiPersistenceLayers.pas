@@ -134,12 +134,14 @@ type
     FPersistenceLayerName: string;
     FCanSupportSQL: Boolean;
     FIsDatabaseNameFilePath: boolean;
+    FParams: string;
   public
     property PersistenceLayerName: string read FPersistenceLayerName write FPersistenceLayerName;
     property DatabaseName: string read FDatabaseName write FDatabaseName;
     property IsDatabaseNameFilePath: boolean read FIsDatabaseNameFilePath write FIsDatabaseNameFilePath;
     property UserName: string read FUserName write FUserName;
     property Password: string read FPassword write FPassword;
+    property Params: string read FParams write FParams;
     property CanCreateDatabase: Boolean read FCanCreateDatabae write FCanCreateDatabae;
     property CanDropDatabase: Boolean read FCanDropDatabae write FCanDropDatabae;
     property CanSupportMultiUser: Boolean read FCanSupportMultiUser write FCanSupportMultiUser;

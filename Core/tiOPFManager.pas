@@ -158,6 +158,7 @@ type
     procedure   CreateDatabase(const ADatabaseName: string;
                                const AUserName: string;
                                const pUserPassword: string;
+                               const AParams: string = '';
                                const APackageID: string = '');
     procedure   DropDatabase(const ADatabaseName: string;
                              const AUserName: string;
@@ -265,8 +266,7 @@ uses
   {$IFDEF LINK_TAB}             ,tiQueryTAB           {$ENDIF}
   {$IFDEF LINK_XML}             ,tiQueryXML           {$ENDIF}
   {$IFDEF LINK_XMLLIGHT}        ,tiQueryXMLLight      {$ENDIF}
-  {$IFDEF LINK_ZEOS_FB10}       ,tiQueryZeosFB10      {$ENDIF}
-  {$IFDEF LINK_ZEOS_FB15}       ,tiQueryZeosFB15      {$ENDIF}
+  {$IFDEF LINK_ZEOS_FB}         ,tiQueryZeosIBFB      {$ENDIF}
   {$IFDEF LINK_ZEOS_MYSQL41}    ,tiQueryZeosMySQL41   {$ENDIF}
   {$IFDEF LINK_ZEOS_MYSQL50}    ,tiQueryZeosMySQL50   {$ENDIF}
   {$IFDEF LINK_DBISAM4}         ,tiQueryDBISAM4       {$ENDIF}
@@ -835,14 +835,14 @@ begin
 end;
 
 procedure TtiOPFManager.CreateDatabase(const ADatabaseName, AUserName,
-  pUserPassword, APackageID: string);
+  pUserPassword, AParams, APackageID: string);
 var
   LPersistenceLayer: TtiPersistenceLayer;
 begin
   LPersistenceLayer := PersistenceLayers.FindByPersistenceLayerName(APackageID);
   if LPersistenceLayer = nil then
     raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APackageID]);
-  LPersistenceLayer.DatabaseClass.CreateDatabase(ADatabaseName, AUserName, pUserPassword);
+  LPersistenceLayer.DatabaseClass.CreateDatabase(ADatabaseName, AUserName, pUserPassword, AParams);
 end;
 
 procedure TtiOPFManager.DropDatabase(const ADatabaseName, AUserName,
@@ -1003,8 +1003,7 @@ initialization
   {$IFDEF LINK_TAB}           GTIOPFManager.DefaultPersistenceLayerName := cTIPersistTAB;         {$ENDIF}
   {$IFDEF LINK_XML}           GTIOPFManager.DefaultPersistenceLayerName := cTIPersistXML;         {$ENDIF}
   {$IFDEF LINK_XMLLIGHT}      GTIOPFManager.DefaultPersistenceLayerName := cTIPersistXMLLight;    {$ENDIF}
-  {$IFDEF LINK_ZEOS_FB10}     GTIOPFManager.DefaultPersistenceLayerName := cTIPersistZeosFB10;    {$ENDIF}
-  {$IFDEF LINK_ZEOS_FB15}     GTIOPFManager.DefaultPersistenceLayerName := cTIPersistZeosFB15;    {$ENDIF}
+  {$IFDEF LINK_ZEOS_FB}       GTIOPFManager.DefaultPersistenceLayerName := cTIPersistZeosFB;      {$ENDIF}
   {$IFDEF LINK_ZEOS_MySQLl50} GTIOPFManager.DefaultPersistenceLayerName := cTIPersistZeosMySQL50; {$ENDIF}
   {$IFDEF LINK_DBISAM4}       GTIOPFManager.DefaultPersistenceLayerName := cTIPersistDBISAM4;     {$ENDIF}
 
@@ -1013,4 +1012,3 @@ finalization
   FreeAndNilTIPerMgr;
 
 end.
-

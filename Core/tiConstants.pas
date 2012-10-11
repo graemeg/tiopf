@@ -31,8 +31,7 @@ const
   cTIPersistTAB           = 'TAB';
   cTIPersistXML           = 'XML';          // ToDo: Rename this MSXML
   cTIPersistXMLLight      = 'XMLLight';
-  cTIPersistZeosFB10      = 'Zeos_FB10';
-  cTIPersistZeosFB15      = 'Zeos_FB15';
+  cTIPersistZeosFB        = 'Zeos_FB';
   cTIPersistZeosMySQL41   = 'Zeos_MySQL41';
   cTIPersistZeosMySQL50   = 'Zeos_MySQL50';
   cTIPersistDBISAM4       = 'DBISAM4';
@@ -86,7 +85,7 @@ const
 {$ENDIF}
 
 {$IFDEF FPC}
-  cPackageSuffix = '';
+  cPackageSuffix = {$I %fpcversion%};
   cCompilerName = 'Free Pascal';
 {$ENDIF}
 
@@ -214,16 +213,16 @@ const
   {$ELSE}
   AllFilesWildCard    = '*.*';
   {$ENDIF}
-  {$IFDEF UNIX}
+  {$IFDEF UNIX}{$IFNDEF DARWIN}
   cLineEnding         = #10;    // Unix type OSes (Linux, *BSD, ...)
   CMinFileDate        = 29221; {$MESSAGE 'ToDo: Supply correct value for min file date on Unix'}
-  {$ENDIF}
+  {$ENDIF}{$ENDIF}
   {$IFDEF DARWIN}
   cLineEnding         = #13;    // Mac OS
   CMinFileDate        = 29221;  {$MESSAGE 'ToDo: Supply correct value for min file date on Mac OS'}
   {$ENDIF}
   {$IFDEF MSWINDOWS}
-  cLineEnding         = #13#10; // Windows and default
+  cLineEnding         = #13#10; // Windows
   CMinFileDate        = 29221;
   {$ENDIF}
 
@@ -274,4 +273,3 @@ const
 implementation
 
 end.
-

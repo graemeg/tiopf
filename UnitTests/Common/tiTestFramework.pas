@@ -11,14 +11,8 @@ uses
   ,tiExcept
   ,tiOID
   ,tiConstants
-  {$IFDEF FPC}
-  ,fpcunit
-  ,testregistry
-  ,testdecorator
-  {$ELSE}
   ,TestFramework
   ,TestExtensions
-  {$ENDIF}
   ,inifiles
   ,Classes
   ,SysUtils
@@ -69,10 +63,10 @@ type
     function GetLongString: string;
     function  MakeDifferenceMessage(const AField1, AField2: TtiFieldAbs): string;
   protected
-    procedure   SetUpOnce; {$IFDEF FPC}virtual;{$ELSE}override;{$ENDIF}
+    procedure   SetUpOnce; override;
     procedure   SetUp; override;
     procedure   TearDown; override;
-    procedure   TearDownOnce; {$IFDEF FPC}virtual;{$ELSE}override;{$ENDIF}
+    procedure   TearDownOnce;override;
     function    TempFileName(const AFilename: string = ''): string;
     property    LongString : string read GetLongString;
     function    tstIntToStr(pInt:Integer):string;

@@ -9,9 +9,6 @@ uses
   ,tiObject
   ,tiPersistenceLayers
   ,tiOID
-  {$IFDEF FPC}
-  ,TestRegistry
-  {$ENDIF}
  ;
 
 const
@@ -32,6 +29,7 @@ type
     function GetPassword: string;
     function GetPersistenceLayerName: string;
     function GetUserName: string;
+    function GetParams: string;
   protected
     FSelected: Boolean;
     // Gives you the chance to override default database, username
@@ -48,6 +46,7 @@ type
     property    DBName       : string read GetDatabaseName;
     property    Username     : string read GetUserName;
     property    Password     : string read GetPassword;
+    property    Params       : string read GetParams;
     property    CanCreateDatabase : boolean read GetCanCreateDatabase;
     property    CanDropDatabase : boolean read GetCanDropDatabase;
     procedure   ForceTestDataDirectory;
@@ -332,6 +331,15 @@ begin
     FPersistenceLayerDefaults.PersistenceLayerName,
     'UserName',
     FPersistenceLayerDefaults.UserName);
+end;
+
+function TtiOPFTestSetupData.GetParams: string;
+begin
+  Assert(FPersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  Result:= ReadFromReg(
+    FPersistenceLayerDefaults.PersistenceLayerName,
+    'Params',
+    FPersistenceLayerDefaults.Params);
 end;
 
 function TtiOPFTestSetupData.ReadFromReg(const pPerLayer, pProp, pDefault: string): string;

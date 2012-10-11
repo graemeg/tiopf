@@ -350,6 +350,7 @@ begin
   lDataType := FDataset.Fields[AIndex].DataType;
   case lDataType of
     ftString,
+    ftFixedChar,
     ftWideString:
         Result := qfkString;
 
@@ -466,7 +467,7 @@ function TtiQueryDataset.GetParamAsBoolean(const AName: string): Boolean;
 var
   lValue: string;
 begin
-  If HasNativeLogicalType then
+  if HasNativeLogicalType then
     result := FParams.ParamByName(AName).AsBoolean
   else
     begin
@@ -474,9 +475,13 @@ begin
   {$IFDEF BOOLEAN_CHAR_1}
     Result := SameText(lValue, 'T');
   {$ELSE}
+    {$IFDEF BOOLEAN_NUM_1}
+    Result := SameText(lValue, '1');
+    {$ELSE}
     Result := SameText(lValue, 'TRUE');
-   {$ENDIF}
-   end;
+    {$ENDIF BOOLEAN_NUM_1}
+  {$ENDIF}
+  end;
 end;
 
 function TtiQueryDataset.GetParamAsDateTime(const AName: string): TDateTime;
@@ -555,10 +560,17 @@ begin
     else
       FParams.ParamByName(AName).AsString := 'F';
   {$ELSE}
+    {$IFDEF BOOLEAN_NUM_1}
+    if AValue then
+      FParams.ParamByName(AName).AsInteger := 1
+    else
+      FParams.ParamByName(AName).AsInteger := 0;
+    {$ELSE}
     if AValue then
       FParams.ParamByName(AName).AsString := 'TRUE'
     else
       FParams.ParamByName(AName).AsString := 'FALSE';
+    {$ENDIF BOOLEAN_NUM_1}
   {$ENDIF}
   end;
 end;
