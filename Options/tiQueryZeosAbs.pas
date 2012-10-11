@@ -3,14 +3,13 @@ unit tiQueryZeosAbs;
 {$I tiDefines.inc}
 
 interface
+
 uses
    tiQuery
   ,tiQueryDataset
   ,Classes
   ,ZConnection
   ,ZDataset
-  ,tiAutoMap
-  ,tiObject
   ;
 
 type
@@ -56,12 +55,11 @@ type
 
 
 implementation
+
 uses
-   tiDBConnectionPool
-  ,tiConstants
+  tiConstants
   ,tiLog
   ,tiUtils
-  ,tiOPFManager
   ,tiExcept
   ,SysUtils
   ,DB
@@ -76,7 +74,7 @@ uses
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 constructor TtiQueryZeos.Create;
 begin
-  inherited;
+  inherited Create;
   FQuery := TZQuery.Create( nil ) ;
   Dataset := FQuery;
   Params  := FQuery.Params;
