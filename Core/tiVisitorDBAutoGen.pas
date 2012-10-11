@@ -1,6 +1,7 @@
 unit tiVisitorDBAutoGen;
 
 interface
+
 uses
   tiQuery
   ,tiVisitorDB
@@ -45,14 +46,20 @@ type
 
 
   TVisDBAutoGenDelete = class(TVisDBAutoGenUpdate)
+  private
+    FOIDFieldName: string;
   protected
     function  AcceptVisitor: Boolean; override;
     procedure Init; override;
     procedure SetupParams; override;
+    property  OIDFieldName: string read FOIDFieldName write FOIDFieldName;
+  public
+    constructor Create; override;
   end;
 
 
 implementation
+
 uses
   // tiOPF
    tiOPFManager
@@ -63,7 +70,7 @@ uses
   // Delphi
   ,SysUtils
  ;
-  
+
 { TVisDBAutoGenRead }
 
 constructor TVisDBAutoGenRead.Create;
@@ -92,11 +99,10 @@ begin
 
     Assert(Database <> nil, 'DBConnection not set in ' + ClassName);
 
-    if AData <> nil then begin
-      Visited := TtiObject(AData);
-    end else begin
+    if AData <> nil then
+      Visited := TtiObject(AData)
+    else
       Visited := nil;
-    end;
 
     Init;
     try
@@ -115,8 +121,8 @@ begin
                      Assert(FQueryParams.Count = 0, 'FQueryParams.Count <> 0');
                      Query.DeleteRow(FTableName, FQueryWhere);
                    end;
-      else
-        raise Exception.Create(cTIOPFExcMsgTIQueryType);
+        else
+          raise Exception.Create(cTIOPFExcMsgTIQueryType);
       end;
     finally
       UnInit;
@@ -185,10 +191,16 @@ procedure TVisDBAutoGenDelete.SetupParams;
 begin
   Assert(Visited.TestValid(TtiObject), CTIErrorInvalidObject);
   {$IFDEF OID_AS_INT64}
-    QueryWhere.SetValueAsInteger('OID', Visited.OID);
+    QueryWhere.SetValueAsInteger(FOIDFieldName, Visited.OID);
   {$ELSE}
-    QueryWhere.SetValueAsString('OID', Visited.OID.AsString);
+    QueryWhere.SetValueAsString(FOIDFieldName, Visited.OID.AsString);
   {$ENDIF}
+end;
+
+constructor TVisDBAutoGenDelete.Create;
+begin
+  inherited Create;
+  FOIDFieldName := 'OID';
 end;
 
 end.
