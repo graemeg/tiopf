@@ -79,7 +79,7 @@ begin
 end;
 
 {$IFDEF FPC_HAS_CONSTREF}
-function TtiBaseObject._Release: longint; stdcall; {$IFDEF WINDOWS}stdcall{$ELSE}cdecl{$ENDIF};
+function TtiBaseObject._Release: longint; {$IFDEF WINDOWS}stdcall{$ELSE}cdecl{$ENDIF};
 {$ELSE}
 function TtiBaseObject._Release: longint; stdcall;
 {$ENDIF}
