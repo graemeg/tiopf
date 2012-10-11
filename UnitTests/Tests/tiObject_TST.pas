@@ -2391,6 +2391,21 @@ begin
       CheckEquals('', LField.AsCurrencyString, 'AsCurrencyStr #8');
       Check(LField.IsNull, 'IsNull #2');
 
+      // test fraction padding behaviour
+      LField.AsFloat := 1234.06;
+      CheckEquals('1234.06', LField.AsString, 'AsString #9');
+      CheckEquals(1234.06, LField.AsFloat, 0.0001, 'AsFloat #9');
+      CheckEquals(123406, LField.AsInteger, 'AsInteger #9');
+      CheckEquals('$ 1,234.06', LField.AsCurrencyString, 'AsCurrencyStr #9');
+      Check(not LField.IsNull, 'IsNull #9');
+
+      // test fraction padding and rounding
+      LField.AsFloat := 1234.0678;
+      CheckEquals('1234.07', LField.AsString, 'AsString #10');
+      CheckEquals(1234.07, LField.AsFloat, 0.0001, 'AsFloat #10');
+      CheckEquals(123407, LField.AsInteger, 'AsInteger #10');
+      CheckEquals('$ 1,234.07', LField.AsCurrencyString, 'AsCurrencyStr #10');
+      Check(not LField.IsNull, 'IsNull #10');
     finally
       LField.Free;
     end;
