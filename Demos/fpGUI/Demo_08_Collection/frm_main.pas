@@ -7,10 +7,7 @@ interface
 uses
   SysUtils, Classes, fpg_base, fpg_main, fpg_edit,
   fpg_widget, fpg_form, fpg_label, fpg_button,
-  fpg_listbox, fpg_memo, fpg_combobox, fpg_grid,
-  fpg_dialogs, fpg_checkbox, fpg_tree, fpg_trackbar,
-  fpg_progressbar, fpg_radiobutton, fpg_tab, fpg_menu,
-  fpg_panel, Client_BOM, tiModelMediator;
+  fpg_dialogs, fpg_grid, Client_BOM, tiModelMediator;
 
 type
 
@@ -36,12 +33,14 @@ type
     procedure   CreateTable;
     procedure   DropTable;
     procedure   CreateMediators;
+    procedure   ClearInputFields;
     function    TableExists: boolean;
     procedure   btnInsertRowClick(Sender: TObject);
     procedure   btnDeleteRowClick(Sender: TObject);
     procedure   btnSaveClick(Sender: TObject);
     procedure   btnReadClick(Sender: TObject);
     procedure   btnShowClick(Sender: TObject);
+    procedure GridRowChanged(Sender: TObject; ARow: Integer);
   public
     constructor Create(AOwner: TComponent); override;
     destructor  Destroy; override;
@@ -94,9 +93,9 @@ begin
   LTableMetaData := TtiDBMetaDataTable.Create;
   try
     LTableMetaData.Name:= 'Client';
-    LTableMetaData.AddField('OID',               qfkString,  36); // Using GUID OIDs
-    LTableMetaData.AddField('Client_Name',       qfkString, 200);
-    LTableMetaData.AddField('Client_ID',         qfkString,   9);
+    LTableMetaData.AddInstance('OID',               qfkString,  36); // Using GUID OIDs
+    LTableMetaData.AddInstance('Client_Name',       qfkString, 200);
+    LTableMetaData.AddInstance('Client_ID',         qfkString,   9);
     gTIOPFManager.CreateTable(LTableMetaData);
   finally
     LTableMetaData.Free;
@@ -117,14 +116,13 @@ begin
   end;
   FMediator.Subject := FClients;
   FMediator.Active := True;
+end;
 
-  //FmedClients := TClient_StringGrid_Mediator.CreateCustom(FClients, grdCollection, 'ClientName(200,"Client name");ClientID(80,"Client ID")');
-  //FClients.NotifyObservers;
-
-  //LV.AddColumn(LVDeriveOID, 'OID', 270);
-  //LV.AddColumn('ClientName', vttkString, 'Client name', 200);
-  //LV.AddColumn('ClientID',   vttkString, 'Client ID', 80);
-  //LV.Data:= FClients;
+procedure TMainForm.ClearInputFields;
+begin
+  edtOID.Text := '';
+  edtClientName.Text := '';
+  edtClientID.Text := '';
 end;
 
 function TMainForm.TableExists: boolean;
@@ -181,6 +179,25 @@ begin
   tiShowString(FClients.AsDebugString);
 end;
 
+procedure TMainForm.GridRowChanged(Sender: TObject; ARow: Integer);
+var
+  lView: TtiMediatorView;
+  lClient: TClient;
+begin
+  if ARow = -1 then
+    Exit;
+  lView := FMediator.FindMediatorView(grdCollection);
+  if Assigned(lView) then
+  begin
+    lClient := lView.SelectedObject as TClient;
+    if not Assigned(lClient) then
+      Exit;
+    edtOID.Text := lClient.OID.AsString;
+    edtClientName.Text := lClient.ClientName;
+    edtClientID.Text := lClient.ClientID;
+  end;
+end;
+
 constructor TMainForm.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -210,8 +227,9 @@ begin
   begin
     Name := 'lblName1';
     SetPosition(8, 12, 80, 16);
-    Text := 'OID:';
     FontDesc := '#Label1';
+    Hint := '';
+    Text := 'OID:';
   end;
 
   lblName2 := TfpgLabel.Create(self);
@@ -219,8 +237,9 @@ begin
   begin
     Name := 'lblName2';
     SetPosition(8, 36, 80, 16);
-    Text := 'Client Name:';
     FontDesc := '#Label1';
+    Hint := '';
+    Text := 'Client Name:';
   end;
 
   lblName3 := TfpgLabel.Create(self);
@@ -228,8 +247,9 @@ begin
   begin
     Name := 'lblName3';
     SetPosition(8, 60, 80, 16);
-    Text := 'Client ID:';
     FontDesc := '#Label1';
+    Hint := '';
+    Text := 'Client ID:';
   end;
 
   edtOID := TfpgEdit.Create(self);
@@ -237,8 +257,12 @@ begin
   begin
     Name := 'edtOID';
     SetPosition(88, 8, 172, 22);
-    Text := '';
+    ExtraHint := '';
     FontDesc := '#Edit1';
+    Hint := '';
+    TabOrder := 4;
+    Text := '';
+    ReadOnly := True;
   end;
 
   edtClientName := TfpgEdit.Create(self);
@@ -246,8 +270,12 @@ begin
   begin
     Name := 'edtClientName';
     SetPosition(88, 32, 172, 22);
-    Text := '';
+    ExtraHint := '';
     FontDesc := '#Edit1';
+    Hint := '';
+    TabOrder := 5;
+    Text := '';
+    ReadOnly := True;
   end;
 
   edtClientID := TfpgEdit.Create(self);
@@ -255,8 +283,12 @@ begin
   begin
     Name := 'edtClientID';
     SetPosition(88, 56, 172, 22);
-    Text := '';
+    ExtraHint := '';
     FontDesc := '#Edit1';
+    Hint := '';
+    TabOrder := 6;
+    Text := '';
+    ReadOnly := True;
   end;
 
   btnInsertRow := TfpgButton.Create(self);
@@ -266,7 +298,9 @@ begin
     SetPosition(268, 8, 143, 24);
     Text := 'Insert object into list';
     FontDesc := '#Label1';
+    Hint := '';
     ImageName := '';
+    TabOrder := 7;
     OnClick := @btnInsertRowClick;
   end;
 
@@ -277,7 +311,9 @@ begin
     SetPosition(268, 36, 143, 24);
     Text := 'Delete object in list';
     FontDesc := '#Label1';
+    Hint := '';
     ImageName := '';
+    TabOrder := 8;
     OnClick := @btnDeleteRowClick;
   end;
 
@@ -288,7 +324,9 @@ begin
     SetPosition(416, 8, 143, 24);
     Text := 'Show Objects in list';
     FontDesc := '#Label1';
+    Hint := '';
     ImageName := '';
+    TabOrder := 9;
     OnClick := @btnShowClick;
   end;
 
@@ -299,7 +337,9 @@ begin
     SetPosition(416, 36, 143, 24);
     Text := 'Save';
     FontDesc := '#Label1';
+    Hint := '';
     ImageName := '';
+    TabOrder := 10;
     OnClick := @btnSaveClick;
   end;
 
@@ -310,7 +350,9 @@ begin
     SetPosition(416, 64, 143, 24);
     Text := 'Read list from DB';
     FontDesc := '#Label1';
+    Hint := '';
     ImageName := '';
+    TabOrder := 11;
     OnClick := @btnReadClick;
   end;
 
@@ -321,6 +363,10 @@ begin
     SetPosition(8, 96, 552, 148);
     FontDesc := '#Grid';
     HeaderFontDesc := '#GridHeader';
+    Hint := '';
+    RowCount := 0;
+    TabOrder := 12;
+    OnRowChange := @GridRowChanged;
   end;
 
   {@VFD_BODY_END: MainForm}
