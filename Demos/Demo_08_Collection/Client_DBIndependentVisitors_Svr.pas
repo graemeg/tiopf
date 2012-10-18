@@ -46,10 +46,20 @@ uses
 
 procedure RegisterVisitors;
 begin
-  GTIOPFManager.RegReadVisitor(TVisClient_Read);
-  GTIOPFManager.RegSaveVisitor(TVisClient_Create);
-  GTIOPFManager.RegSaveVisitor(TVisClient_Update);
-  GTIOPFManager.RegSaveVisitor(TVisClient_Delete);
+  { Here we register the visitors like is done for AutoMapping. With DB Independent
+    visitors this is not a requirement, we could also register them with custom
+    group names like is done with hard-coded visitors. }
+  gTIOPFManager.RegReadVisitor(TVisClient_Read);
+  gTIOPFManager.RegSaveVisitor(TVisClient_Create);
+  gTIOPFManager.RegSaveVisitor(TVisClient_Update);
+  gTIOPFManager.RegSaveVisitor(TVisClient_Delete);
+
+  { Here is the alternative - which will yield a performance boost in
+    real-world application where you have hundreds of visitors. }
+//  gTIOPFManager.RegisterVisitor('readlist_client', TVisClient_Read);
+//  gTIOPFManager.RegisterVisitor('save_client', TVisClient_Create);
+//  gTIOPFManager.RegisterVisitor('save_client', TVisClient_Update);
+//  gTIOPFManager.RegisterVisitor('save_client', TVisClient_Delete);
 end;
 
 { TVisClient_Read }
