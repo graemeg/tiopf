@@ -3742,7 +3742,7 @@ begin
   
     //          1         2
     // 12345678901234567890123
-    // yyyymmddThhmmss
+    // yyyymmddThhnnss
   lY := StrToInt(Copy(AValue, 1, 4));
   lM := StrToInt(Copy(AValue, 5, 2));
   lD := StrToInt(Copy(AValue, 7, 2));
@@ -3770,7 +3770,7 @@ begin
 
     //          1         2
     // 12345678901234567890123
-    // yyyy-mm-dd hh:mm:ss
+    // yyyy-mm-dd hh:nn:ss
   lY := StrToInt(Copy(AValue, 1, 4));
   lM := StrToInt(Copy(AValue, 6, 2));
   lD := StrToInt(Copy(AValue, 9, 2));

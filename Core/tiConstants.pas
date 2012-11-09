@@ -194,8 +194,8 @@ const
   cgMaxDate       = CMaxDate;
 
   { Summary of ISO 8601  http://www.cl.cam.ac.uk/~mgk25/iso-time.html }
-  cIntlDateTimeStor = 'yyyymmdd"T"hhmmss';    // for storage
-  cIntlDateTimeDisp = 'yyyy-mm-dd hh:mm:ss';  // for display
+  cIntlDateTimeStor = 'yyyymmdd"T"hhnnss';    // for storage
+  cIntlDateTimeDisp = 'yyyy-mm-dd hh:nn:ss';  // for display
   CIntlDateDisp     = 'yyyy-mm-dd';  // for display
 
   cgsComma        = ',';
