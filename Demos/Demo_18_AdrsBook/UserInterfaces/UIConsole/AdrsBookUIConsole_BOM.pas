@@ -10,58 +10,57 @@ type
 
   TAdrsBookConsoleCommand = class(TtiBaseObject)
   public
-    function CanExecute(const ACommand: string): boolean; virtual; abstract;
-    procedure Execute(
-      const AAdrsBook: TAdrsBook; const AParams: string); virtual; abstract;
+    function  CanExecute(const ACommand: string): boolean; virtual; abstract;
+    procedure Execute(const AAdrsBook: TAdrsBook; const AParams: string); virtual; abstract;
   end;
+
 
   TAdrsBookConsoleCommandList = class(TAdrsBookConsoleCommand)
   public
-    function CanExecute(const ACommand: string): boolean; override;
-    procedure Execute(
-      const AAdrsBook: TAdrsBook; const AParams: string); override;
+    function  CanExecute(const ACommand: string): boolean; override;
+    procedure Execute(const AAdrsBook: TAdrsBook; const AParams: string); override;
   end;
+
 
   TAdrsBookConsoleCommandAdd = class(TAdrsBookConsoleCommand)
   public
-    function CanExecute(const ACommand: string): boolean; override;
-    procedure Execute(
-      const AAdrsBook: TAdrsBook; const AParams: string); override;
+    function  CanExecute(const ACommand: string): boolean; override;
+    procedure Execute(const AAdrsBook: TAdrsBook; const AParams: string); override;
   end;
+
 
   TAdrsBookConsoleCommandDelete = class(TAdrsBookConsoleCommand)
   public
-    function CanExecute(const ACommand: string): boolean; override;
-    procedure Execute(
-      const AAdrsBook: TAdrsBook; const AParams: string); override;
+    function  CanExecute(const ACommand: string): boolean; override;
+    procedure Execute(const AAdrsBook: TAdrsBook; const AParams: string); override;
   end;
+
 
   TAdrsBookConsoleCommandCLS = class(TAdrsBookConsoleCommand)
   public
-    function CanExecute(const ACommand: string): boolean; override;
-    procedure Execute(
-      const AAdrsBook: TAdrsBook; const AParams: string); override;
+    function  CanExecute(const ACommand: string): boolean; override;
+    procedure Execute(const AAdrsBook: TAdrsBook; const AParams: string); override;
   end;
+
 
   TAdrsBookConsoleCommandHelp = class(TAdrsBookConsoleCommand)
   public
-    function CanExecute(const ACommand: string): boolean; override;
-    procedure Execute(
-      const AAdrsBook: TAdrsBook; const AParams: string); override;
+    function  CanExecute(const ACommand: string): boolean; override;
+    procedure Execute(const AAdrsBook: TAdrsBook; const AParams: string); override;
   end;
 
 
   TAdrsBookUIConsole = class(TtiBaseObject)
   private
     FCommandList: TObjectList;
-    procedure ProcessCommand(const ACommand: string; out AExit: boolean);
-    procedure ParseCommand(const AInput: string; out ACommand, AParams: string);
-
+    procedure   ProcessCommand(const ACommand: string; out AExit: boolean);
+    procedure   ParseCommand(const AInput: string; out ACommand, AParams: string);
   public
     constructor Create;
     destructor  Destroy; override;
-    procedure Execute;
+    procedure   Execute;
   end;
+
 
 implementation
 uses
