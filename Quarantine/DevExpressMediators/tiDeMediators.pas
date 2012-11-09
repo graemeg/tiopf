@@ -438,33 +438,33 @@ type
 
 const
   cFieldDelimiter = ';';
-  cErrorListHasNotBeenAssigned   = 'List has not been assigned';
-  cErrorPropertyNotClass         = 'Property is not a class type!';
-  cErrorAddingItemToCombobox     = 'Error adding list items to combobox ' +
-                                   'Message: %s, Item Property Name: %s';
+  cErrorListHasNotBeenAssigned = 'List has not been assigned';
+  cErrorPropertyNotClass       = 'Property is not a class type!';
+  cErrorAddingItemToCombobox   = 'Error adding list items to combobox ' +
+                                 'Message: %s, Item Property Name: %s';
 
 procedure RegisterFallBackMediators;
 begin
-  gMediatorManager.RegisterMediator(TticxTextEditMediatorView, TtiObject, [tkString,tkLString,tkInteger,tkFloat]);
-  gMediatorManager.RegisterMediator(TticxMaskEditMediatorView, TtiObject, [tkString,tkLString,tkInteger,tkFloat]);
-  gMediatorManager.RegisterMediator(TticxButtonEditMediatorView, TtiObject, [tkString,tkLString,tkInteger,tkFloat]);
+  gMediatorManager.RegisterMediator(TticxTextEditMediatorView, TtiObject, [tkString,tkLString,tkUString,tkInteger,tkFloat]);
+  gMediatorManager.RegisterMediator(TticxMaskEditMediatorView, TtiObject, [tkString,tkLString,tkUString,tkInteger,tkFloat]);
+  gMediatorManager.RegisterMediator(TticxButtonEditMediatorView, TtiObject, [tkString,tkLString,tkUString,tkInteger,tkFloat]);
   gMediatorManager.RegisterMediator(TticxCurrencyEditMediatorView, TtiObject, [tkInteger,tkFloat]);
   gMediatorManager.RegisterMediator(TticxCalcEditMediatorView, TtiObject, [tkInteger, tkFloat]);
-  gMediatorManager.RegisterMediator(TticxHyperLinkEditMediatorView, TtiObject, [tkString,tkLString,tkInteger,tkFloat]);
+  gMediatorManager.RegisterMediator(TticxHyperLinkEditMediatorView, TtiObject, [tkString,tkLString,tkUString,tkInteger,tkFloat]);
   gMediatorManager.RegisterMediator(TticxCheckBoxMediatorView, TtiObject, [tkInteger, tkEnumeration]);
-  gMediatorManager.RegisterMediator(TticxComboBoxMediatorView, TtiObject, [tkString,tkLString]);
-  gMediatorManager.RegisterMediator(TticxMRUEditMediatorView, TtiObject, [tkString,tkLString]);
+  gMediatorManager.RegisterMediator(TticxComboBoxMediatorView, TtiObject, [tkString,tkLString,tkUString]);
+  gMediatorManager.RegisterMediator(TticxMRUEditMediatorView, TtiObject, [tkString,tkLString,tkUString]);
   gMediatorManager.RegisterMediator(TticxItemComboBoxMediatorView, TtiObject, [tkInteger, tkEnumeration]);
   gMediatorManager.RegisterMediator(TticxDynamicComboBoxMediatorView, TtiObject, [tkClass]);
   gMediatorManager.RegisterMediator(TticxLabelMediatorView, TtiObject);
   gMediatorManager.RegisterMediator(TticxTrackBarMediatorView, TtiObject, [tkInteger]);
-  gMediatorManager.RegisterMediator(TticxMemoMediatorView, TtiObject, [tkString,tkLString]);
+  gMediatorManager.RegisterMediator(TticxMemoMediatorView, TtiObject, [tkString,tkLString,tkUString]);
   gMediatorManager.RegisterMediator(TticxSpinEditMediatorView, TtiObject, [tkInteger]);
   gMediatorManager.RegisterMediator(TticxTimeEditMediatorView, TtiObject, [tkFloat]);
   gMediatorManager.RegisterMediator(TticxDateEditMediatorView, TtiObject, [tkFloat]);
   gMediatorManager.RegisterMediator(TticxRadioGroupBoxMediatorView, TtiObject, [tkInteger]);
 
-// not fully working
+  // not fully working
   gMediatorManager.RegisterMediator(TticxProgressbarMediatorView, TtiObject, [tkInteger]);
   gMediatorManager.RegisterMediator(TticxColorComboBoxMediatorView, TtiObject, [tkInteger]);
 
