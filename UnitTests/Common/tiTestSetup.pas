@@ -19,7 +19,6 @@ type
     property    TC : TtiTestCase read FTestCase;
   public
     constructor Create(const ATestCase : TtiTestCase); virtual ;
-    destructor  Destroy; override;
 
     // ToDo: Rationalise these tvToXXX methods found in TtiTestSetup.
     //       Merge them with methods like tiIncStr found in tiTestFramework.pas
@@ -29,7 +28,7 @@ type
     function    tvToInt(      const AValue: string; const AInc: integer = 0): Int64;
     function    tvToIntWithLimit(const AValue: string; const ALimit: integer): Int64;
     function    tvToBoolean(  const AValue: string): Boolean;
-    function    tvToFloat(    const AValue: string): Real;
+    function    tvToFloat(    const AValue: string; const AInc: integer = 0): Real;
     function    tvToStatus(   const AValue: string): byte;
     procedure   tvToStream(   const AStream: TStream; const AValue: string);
 
@@ -53,11 +52,11 @@ begin
   result := Now + tvToInt(AValue, AInc);
 end;
 
-function TtiTestSetup.tvToFloat(const AValue: string): Real;
+function TtiTestSetup.tvToFloat(const AValue: string; const AInc: integer = 0): Real;
 var
   lInt : Integer ;
 begin
-  lInt := tvToInt(AValue);
+  lInt := tvToInt(AValue, AInc);
   Result := lInt + Frac(lInt / 10) + Frac(lInt / 100);
 end;
 
@@ -111,10 +110,6 @@ begin
   FTestCase := ATestCase;
 end;
 
-destructor TtiTestSetup.Destroy;
-begin
-  inherited;
-end;
 
 end.
 
