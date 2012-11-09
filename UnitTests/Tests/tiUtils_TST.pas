@@ -280,6 +280,7 @@ begin
   CheckEquals(2, tiUtils.tiNumToken('adf,', ','), 'Failed on 3');
   CheckEquals(2, tiUtils.tiNumToken('adf,adf', ','), 'Failed on 4');
   CheckEquals(3, tiUtils.tiNumToken('adf,adf,adf', ','), 'Failed on 5');
+  CheckEquals(4, tiUtils.tiNumToken('adf,adf,adf,', ','), 'Failed on 6');
 end;
 
 
@@ -294,6 +295,7 @@ begin
   CheckEquals('bb', tiUtils.tiToken('aa,bb,cc', ',', 2), 'Failed on 7');
   CheckEquals('cc', tiUtils.tiToken('aa,bb,cc', ',', 3), 'Failed on 8');
   CheckEquals('', tiUtils.tiToken('aa,bb,cc', ',', 4), 'Failed on 9');
+  CheckEquals('', tiUtils.tiToken('aa,bb,cc,', ',', 4), 'Failed on 10');
 end;
 
 
