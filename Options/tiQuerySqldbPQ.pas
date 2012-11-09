@@ -229,7 +229,7 @@ begin
                                 end;
 }
         else
-          raise EtiOPFInternalException.Create('Invalid Interbase FieldType <' + lFieldType + '>');
+          raise EtiOPFInternalException.Create('Invalid PostgreSQL FieldType <' + lFieldType + '>');
 
         lField.ObjectState := posClean;
         AData.Add(lField);
