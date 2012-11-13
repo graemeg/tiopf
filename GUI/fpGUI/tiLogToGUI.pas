@@ -37,11 +37,13 @@ type
     FPopupMenu: TfpgPopupMenu;
     FViewLogMenuItem: TfpgMenuItem;
     FStatusBar: TfpgPanel;
+    FScroll: boolean;
     function    GetFormParent: TfpgWidget;
     procedure   SetFormParent(const AValue: TfpgWidget);
     function    CreateForm: TfpgForm;
     procedure   FormClearMenuItemClick(Sender: TObject);
     procedure   FormWordWrapMenuItemClick(Sender: TObject);
+    procedure   ScrollWithDataMenuItemClick(Sender: TObject);
     procedure   FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure   FormLogLevelButtonClick(Sender: TObject);
     procedure   DoViewLogFile(Sender: TObject);
@@ -75,6 +77,7 @@ constructor TtiLogToGUI.Create;
 begin
   // GUI output must be synchronized with the main thread.
   inherited CreateSynchronized;
+  FScroll := True;
   FForm := CreateForm;
   FForm.Show;
   { Make sure the log form doesn't steal MainForm status }
@@ -101,8 +104,8 @@ begin
   FForm.WindowPosition      := wpUser;
   FForm.Top                 := 10;
   FForm.Left                := 10;
-  FForm.Height              := 150;
-  FForm.Width               := fpgApplication.ScreenWidth - 20;
+  FForm.Height              := 270;
+  FForm.Width               := (fpgApplication.ScreenWidth div 3) * 2;
   FForm.WindowTitle         := 'Application event log - ' + ApplicationName;
   FForm.OnCloseQuery        := @FormCloseQuery;
 
@@ -149,6 +152,9 @@ begin
   lMenuItem                 := FPopupMenu.AddMenuItem('Word wrap', '', @FormWordWrapMenuItemClick);
   lMenuItem.Name            := 'WordWrapMenuItem';
   lMenuItem.Enabled         := False;
+  lMenuItem                 := FPopupMenu.AddMenuItem('Scroll with data', '', @ScrollWithDataMenuItemClick);
+  lMenuItem.Name            := 'ScrollWithDataMenuItem';
+  lMenuItem.Checked         := FScroll;
 
   { Setup severity toolbar buttons }
   x := 1;
@@ -228,6 +234,10 @@ begin
     end;
   end;
   UpdateStatus('done');
+  if FScroll then
+    FMemoLog.CursorLine := FMemoLog.Lines.Count-1
+  else
+    FMemoLog.CursorLine := 0;
   FMemoLog.EndUpdate;
 end;
 
@@ -264,10 +274,6 @@ begin
     begin
       for i := 0 to ciMaxLineCount div 2 do
         FMemoLog.Lines.Delete(0);
-      //{$IFDEF MSWINDOWS}
-      //SendMessage(FMemoLog.handle, WM_VSCROLL, SB_Bottom, 0);
-      //{$ENDIF MSWINDOWS}
-      { TODO : Keep bottom line of Memo visible by scrolling }
     end;
     LPosStart := 0;
     LPosEnd   := WorkingList.Count - 1;
@@ -295,6 +301,12 @@ begin
     //FMemoLog.ScrollBars := ssVertical
   //else
     //FMemoLog.ScrollBars := ssBoth;
+end;
+
+procedure TtiLogToGUI.ScrollWithDataMenuItemClick(Sender: TObject);
+begin
+  FScroll := not (Sender as TfpgMenuItem).Checked;
+  (Sender as TfpgMenuItem).Checked := FScroll;
 end;
 
 procedure TtiLogToGUI.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
