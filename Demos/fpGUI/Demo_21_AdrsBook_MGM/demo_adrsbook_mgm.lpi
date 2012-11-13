@@ -13,6 +13,9 @@
     <VersionInfo>
       <StringTable ProductVersion=""/>
     </VersionInfo>
+    <BuildModes Count="1">
+      <Item1 Name="default" Default="True"/>
+    </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
       <IgnoreBinaries Value="False"/>
@@ -30,7 +33,7 @@
         <PackageName Value="tiOPFfpGUI"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="9">
+    <Units Count="10">
       <Unit0>
         <Filename Value="demo_adrsbook_mgm.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -76,10 +79,18 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="frmAddressMaint"/>
       </Unit8>
+      <Unit9>
+        <Filename Value="contact_views.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="contact_views"/>
+      </Unit9>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="9"/>
+    <Target>
+      <Filename Value="demo_addressbook"/>
+    </Target>
     <SearchPaths>
       <UnitOutputDirectory Value="units/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
@@ -88,12 +99,12 @@
         <CStyleOperator Value="False"/>
         <AllowLabel Value="False"/>
         <CPPInline Value="False"/>
-        <UseAnsiStrings Value="False"/>
       </SyntaxOptions>
     </Parsing>
     <Other>
-      <CustomOptions Value="
-"/>
+      <CompilerMessages>
+        <UseMsgFile Value="True"/>
+      </CompilerMessages>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>

@@ -7,8 +7,10 @@ unit contactmanager;
 interface
 
 uses
+  Classes,
+  fpg_main,
   model;
-  
+
 type
 
   { TContactManager }
@@ -19,14 +21,15 @@ type
     FCityList: TCityList;
     FContactList: TContactList;
     FCountryList: TCountryList;
-    procedure PopulateCountries;
-    procedure PopulateCities;
-    procedure PopulateAddressTypes;
-    function GenPhone: string;
+    procedure   PopulateCountries;
+    procedure   PopulateCities;
+    procedure   PopulateAddressTypes;
+    function    GenPhone: string;
+    procedure   AssignRandomPicture(const Male: boolean; out APicture: TMemoryStream);
   public
     constructor Create; override;
-    destructor Destroy; override;
-    procedure PopulateContacts;
+    destructor  Destroy; override;
+    procedure   PopulateContacts;
   published
     property AddressTypeList: TAddressTypeList read FAddressTypeList;
     property CountryList: TCountryList read FCountryList;
@@ -42,7 +45,9 @@ function gContactManager: TContactManager;
 implementation
 
 uses
-  SysUtils, tiObject;
+  SysUtils,
+  tiObject,
+  tiUtils;
 
 var
   uContactManager: TContactManager;
@@ -188,6 +193,25 @@ begin
     + IntToStr(Random(9)) + IntToStr(Random(9)) + IntToStr(Random(9)) + IntToStr(Random(9));
 end;
 
+procedure TContactManager.AssignRandomPicture(const Male: boolean; out APicture: TMemoryStream);
+const
+  cImgPath = '../../Common/pictures/';
+var
+  lPictureName: string;
+begin
+  lPictureName := '0'+IntToStr(Random(5)+1)+'.png';
+  if Male then
+    lPictureName := cImgPath + 'man' + lPictureName
+  else
+    lPictureName := cImgPath + 'woman' + lPictureName;
+  lPictureName := ExpandFilename(tiFixPathDelim(lPictureName));
+  if FileExists(lPictureName) then
+  begin
+    APicture := TMemoryStream.Create;
+    APicture.LoadFromFile(lPictureName);
+  end;
+end;
+
 constructor TContactManager.Create;
 begin
   inherited Create;
@@ -218,6 +242,7 @@ var
   C: TContact;
   I,J: Integer;
   A: TAddress;
+  s: TMemoryStream;
 begin
   PopulateCountries;
   PopulateCities;
@@ -244,6 +269,8 @@ begin
       C.AddressList.Add(A);
     end;
     C.Comments := 'My name is ' + C.FirstName + '.';
+    AssignRandomPicture(Random(2)>0, s);
+    C.Photo := s;
     C.ObjectState := posClean;
     FContactList.Add(C);
   end;

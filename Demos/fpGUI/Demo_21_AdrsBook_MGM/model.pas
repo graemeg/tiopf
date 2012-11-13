@@ -154,11 +154,13 @@ type
     FFirstName: string;
     FLastName: string;
     FMobile: string;
+    FPhoto: TMemoryStream;
     procedure SetComments(const AValue: string);
     procedure SetEmail(const AValue: string);
     procedure SetFirstName(const AValue: string);
     procedure SetLastName(const AValue: string);
     procedure SetMobile(const AValue: string);
+    procedure SetPhoto(const AValue: TMemoryStream);
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -170,6 +172,7 @@ type
     property Mobile: string read FMobile write SetMobile;
     property Comments: string read FComments write SetComments;
     property AddressList: TAddressList read FAddressList;
+    property Photo: TMemoryStream read FPhoto write SetPhoto;
   end;
   
   
@@ -449,6 +452,18 @@ begin
   EndUpdate;
 end;
 
+procedure TContact.SetPhoto(const AValue: TMemoryStream);
+begin
+  if FPhoto=AValue then exit;
+  BeginUpdate;
+  // free old photo if it exits
+  if Assigned(FPhoto) then
+    FPhoto.Free;
+  FPhoto:=AValue;
+  Mark;
+  EndUpdate;
+end;
+
 constructor TContact.Create;
 begin
   inherited Create;
@@ -456,11 +471,14 @@ begin
   FAddressList.Owner:= self;
   // ToDo: Refactor to remove need for ItemOwner. Use Parent instead
   FAddressList.ItemOwner:= self;
+  FPhoto := nil;
 end;
 
 destructor TContact.Destroy;
 begin
   FAddressList.Free;
+  if Assigned(FPhoto) then
+    FPhoto.Free;
   inherited Destroy;
 end;
 

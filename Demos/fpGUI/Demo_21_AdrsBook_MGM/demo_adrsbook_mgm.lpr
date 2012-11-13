@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Classes, fpg_main, frmmain, frmcontactmaint, frmCityList, frmcitymaint,
-  frmcountrylist, frmaddressmaint;
+  frmcountrylist, frmaddressmaint, contact_views;
 
 
 
