@@ -2488,7 +2488,7 @@ Q:  How do I find one string inside another with wildcards?
 A:  There are many times when you need to compare two strings, but want to
 use wild cards in the match - all last names that begin with 'St', etc.  The
 following is a piece of code I got from Sean Stanley in Tallahassee Florida
-in C.  I translated it into Delphi an am uploading it here for all to use. I
+in C.  I translated it into Delphi and am uploading it here for all to use. I
 have not tested it extensivly, but the original function has been tested
 quite thoughly. }
 function tiWildcardMatch(const ASource, APattern: String; const ACaseSensitive: boolean = false): Boolean;
