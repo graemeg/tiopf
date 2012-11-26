@@ -25,8 +25,8 @@ type
   private
     FAsInt64 : Int64;
   protected
-    function  GetAsString: ShortString; override;
-    procedure SetAsString(const AValue: ShortString); override;
+    function  GetAsString: String; override;
+    procedure SetAsString(const AValue: String); override;
     function  GetAsVariant: Variant;override;
     procedure SetAsVariant(const AValue: Variant);override;
     //If you want to use one OID for everyone class you must override this
@@ -60,7 +60,7 @@ type
     property FBGeneratorName: string read FFBGeneratorName write FFBGeneratorName;
   end;
 
-  TOIDGeneratorIntFBGen = class(TtiOIDGenerator)
+  TOIDGeneratorIntFBGenAbs = class(TtiOIDGenerator)
   private
     FLow: Int64;
     FLowRange: Int64;
@@ -74,6 +74,11 @@ type
     destructor Destroy; override;
     procedure AssignNextOID(const AAssignTo: TtiOID; const ADatabaseAliasName: string = '';
       const APersistenceLayerName: string = ''); override;
+  end;
+
+  TOIDGeneratorIntFBGen = class(TOIDGeneratorIntFBGenAbs)
+  public
+    class function OIDClass: TtiOIDClass; override;
   end;
 
   TVisDBNextOIDAmblerRead = class(TtiObjectVisitor)
@@ -121,12 +126,12 @@ const
 
 { TOIDIntFBGen }
 
-function TOIDIntFBGen.getAsString: ShortString;
+function TOIDIntFBGen.getAsString: String;
 begin
   result := IntToStr(FAsInt64);
 end;
 
-procedure TOIDIntFBGen.SetAsString(const AValue: ShortString);
+procedure TOIDIntFBGen.SetAsString(const AValue: String);
 begin
   FAsInt64 := StrToInt(AValue);
 end;
@@ -183,10 +188,10 @@ end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
-// * TNextOIDGeneratorIntFBGen
+// * TNextOIDGeneratorIntFBGenAbs
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TOIDGeneratorIntFBGen.AssignNextOID(const AAssignTo: TtiOID;
+procedure TOIDGeneratorIntFBGenAbs.AssignNextOID(const AAssignTo: TtiOID;
   const ADatabaseAliasName: string = '';
   const APersistenceLayerName: string = '');
 begin
@@ -198,7 +203,7 @@ begin
     IntToStr(NextOID(ADatabaseAliasName, APersistenceLayerName));
 end;
 
-constructor TOIDGeneratorIntFBGen.Create;
+constructor TOIDGeneratorIntFBGenAbs.Create;
 begin
   inherited;
 
@@ -206,14 +211,14 @@ begin
   FCritSection:= TCriticalSection.Create;
 end;
 
-destructor TOIDGeneratorIntFBGen.destroy;
+destructor TOIDGeneratorIntFBGenAbs.destroy;
 begin
   FCritSection.Free;
   FNextOIDData.Free;
   inherited;
 end;
 
-function TOIDGeneratorIntFBGen.NextOID(const ADatabaseName : string;
+function TOIDGeneratorIntFBGenAbs.NextOID(const ADatabaseName : string;
   APersistenceLayerName : string): Int64;
 begin
   FCritSection.Enter;
@@ -226,6 +231,11 @@ begin
   finally
     FCritSection.Leave;
   end;
+end;
+
+class function TOIDGeneratorIntFBGen.OIDClass: TtiOIDClass;
+begin
+  Result := TOIDIntFBGen;
 end;
 
 procedure TOIDIntFBGen.SetToNull;
