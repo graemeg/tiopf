@@ -688,7 +688,6 @@ type
 
 
   TtiObjectErrors = class(TtiObjectList)
-  private
   protected
     function    GetItems(i: integer): TtiObjectError; reintroduce;
     procedure   SetItems(i: integer; const AValue: TtiObjectError); reintroduce;
@@ -703,7 +702,6 @@ type
     function    FindByErrorCode(const AErrorCode: Word): TtiObjectError;
     function    FindByErrorProperty(const AErrorProperty: string): TtiObjectError;
     property    AsString: string Read GetAsString;
-  published
   end;
 
 
