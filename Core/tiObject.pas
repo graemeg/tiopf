@@ -824,7 +824,8 @@ type
 
   // TPerVisList is here for backward compatibility.
   // Do not use. Use TtiObjectList instead.
-  TPerVisList = class(TtiObjectList);
+  TPerVisList = class(TtiObjectList)
+  end deprecated;
 
   TVisPerObjFind = class(TtiVisitor)
   private
