@@ -154,10 +154,6 @@ type
     procedure OpenQuery; override;
   end;
 
-  // alias class will be removed soon.
-  TVisOwnedQrySelect = class(TtiVisitorSelect)
-  end deprecated;
-
 
   TtiVisitorUpdate = class(TtiObjectVisitor)
   protected
@@ -166,10 +162,6 @@ type
     procedure Execute(const AData: TtiVisited); override;
   end;
 
-
-  // alias class will be removed soon.
-  TVisOwnedQryUpdate = class(TtiVisitorUpdate)
-  end deprecated;
 
 
 implementation
