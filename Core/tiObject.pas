@@ -839,7 +839,6 @@ type
   protected
     function    AcceptVisitor : boolean; override;
   public
-    constructor Create; override;
     procedure   Execute(const AVisited : TtiVisited); override;
     property    Found : TtiObject read FFound;
     property    PerObjFindMethod : TPerObjFindMethod read FPerObjFindMethod write FPerObjFindMethod;
@@ -1811,12 +1810,6 @@ function TVisPerObjFind.AcceptVisitor: boolean;
 begin
   result := (Visited is TtiObject) and
             ((FFound = nil) or (FFoundList <> nil));
-end;
-
-constructor TVisPerObjFind.Create;
-begin
-  inherited;
-
 end;
 
 procedure TVisPerObjFind.Execute(const AVisited: TtiVisited);
