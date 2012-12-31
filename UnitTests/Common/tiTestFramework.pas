@@ -68,7 +68,9 @@ type
     procedure   TearDown; override;
     procedure   TearDownOnce;override;
     function    TempFileName(const AFilename: string = ''): string;
+    procedure   UnderConstruction(const AMessage: string = '');
     property    LongString : string read GetLongString;
+    // ToDo: Merge with TtiTestSetup Seed value generation methods
     function    tstIntToStr(pInt:Integer):string;
     function    tstIntToBool(pInt:Integer): boolean;
     function    tstIntToFloat(pInt:Integer): Extended;
@@ -186,6 +188,25 @@ type
   end;
 
   TtiTestCaseClass    = class of TtiTestCase;
+
+  TtiTestSetup = class(TtiBaseObject)
+  private
+    FTestCase: TtiTestCase;
+  protected
+    property    TC : TtiTestCase read FTestCase;
+    procedure UnderConstruction(const AMessage: string = '');
+  public
+    constructor Create(const ATestCase : TtiTestCase); virtual ;
+    // ToDo: Merge with TtiTestCase Seed value generation methods
+    function    tvToStr(      const AValue: string; const AInc: integer = 0): string;
+    function    tvToDateTime( const AValue: string; const AInc: integer = 0): TDateTime;
+    function    tvToDate(     const AValue: string; const AInc: integer = 0): TDateTime;
+    function    tvToInt(      const AValue: string; const AInc: integer = 0): Int64;
+    function    tvToIntWithLimit(const AValue: string; const ALimit: integer): Int64;
+    function    tvToFloat(    const AValue: string; const AInc: integer = 0): Real;
+    function    tvToBoolean(  const AValue: string; const AInc: integer = 0): Boolean;
+    procedure   tvToStream(   const AStream: TStream; const AValue: string);
+  end;
 
 function  tiCreateStringOfSize(const ASize : LongInt): string;
 procedure tiCreateTextFileOfSize(const AFileName : string; const ASize : LongInt);
@@ -525,6 +546,18 @@ function TtiTestCase.tstStrToStr(const AStr: string;
   const AInc: Integer): string;
 begin
   result:= tiIncStr(AStr, AInc);
+end;
+
+procedure TtiTestCase.UnderConstruction(const AMessage: string = '');
+begin
+{$IFDEF IGNORE_UNDER_CONSTRUCTION}
+  Check(True);
+{$ELSE}
+  if AMessage = '' then
+    Fail('Under construction', CallerAddr)
+  else
+    Fail(AMessage, CallerAddr);
+{$ENDIF}
 end;
 
 procedure TtiTestCase.CheckFormattedMessage(const AFormat: string;
@@ -1412,6 +1445,78 @@ begin
   Check(Pos(UpperCase(AMessage), UpperCase(AException.Message)) <> 0,
          'Expected "' + AMessage +'" in exception message but found "' +
          AException.message + '"');
+end;
+
+{ TtiTestSetup }
+
+constructor TtiTestSetup.Create(const ATestCase: TtiTestCase);
+begin
+  Assert(Assigned(ATestCase), CTIErrorInvalidObject);
+  inherited Create;
+  FTestCase := ATestCase;
+end;
+
+function TtiTestSetup.tvToBoolean(const AValue: string; const AInc: integer = 0): Boolean;
+begin
+  result := ( tvToInt(AValue, AInc) mod 2 ) = 0 ;
+end;
+
+function TtiTestSetup.tvToDateTime(const AValue: string; const AInc: integer = 0): TDateTime;
+begin
+  result := Now + tvToInt(AValue, AInc);
+end;
+
+function TtiTestSetup.tvToFloat(const AValue: string; const AInc: integer = 0): Real;
+var
+  lInt : Integer ;
+begin
+  lInt := tvToInt(AValue, AInc);
+  Result := lInt + Frac(lInt / 10) + Frac(lInt / 100);
+end;
+
+function TtiTestSetup.tvToInt(const AValue: string; const AInc: integer = 0): Int64;
+begin
+  Result := StrToInt64(AValue) + AInc;
+end;
+
+function TtiTestSetup.tvToIntWithLimit(const AValue: string;
+  const ALimit: integer): Int64;
+begin
+  if ALimit = 0 then
+    Result := StrToInt64(AValue)
+  else
+    Result := StrToInt64(tiPad0(AValue, ALimit));
+end;
+
+function TtiTestSetup.tvToStr(const AValue: string;
+  const AInc: integer): string;
+begin
+  result:= IntToStr(tvToInt(AValue, AInc));
+end;
+
+procedure TtiTestSetup.tvToStream(
+  const AStream: TStream;
+  const AValue: string);
+var
+  L: string;
+begin
+  L:= tiReplicate(AValue, 1000);
+  tiStringToStream(L, AStream);
+end;
+
+function TtiTestSetup.tvToDate(const AValue: string; const AInc: integer = 0): TDateTime;
+begin
+  result := Date + tvToInt(AValue, AInc);
+end;
+
+procedure TtiTestSetup.UnderConstruction(const AMessage: string = '');
+begin
+{$IFNDEF IGNORE_UNDER_CONSTRUCTION}
+  if AMessage = '' then
+    TC.Fail('Under construction', CallerAddr)
+  else
+    TC.Fail(AMessage, CallerAddr);
+{$ENDIF}
 end;
 
 initialization

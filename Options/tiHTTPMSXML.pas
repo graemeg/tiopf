@@ -49,7 +49,7 @@ uses
   ,SysUtils
   ,Math
   ,ComObj
-
+  ,Variants
  ;
 
 var
@@ -83,6 +83,7 @@ begin
       FHTTP:= nil;
       tiWin32ForceCoInitialize;
       FHTTP := CoServerXMLHTTP.Create;
+      FHTTP.setTimeouts(ResolveTimeout, ConnectTimeout, SendTimeout, ReceiveTimeout);
     end;
   end;
 end;
@@ -94,25 +95,27 @@ begin
   inherited;
 end;
 
-procedure TtiHTTPMSXML.DoGet(const AURL : string; AInput, AOutput: TStringStream);
+procedure TtiHTTPMSXML.DoGet(const AURL: string; AInput, AOutput: TStringStream);
 var
-  lURL: string;
+  LURL: string;
 begin
   CreateHTTP;
-  lURL := CorrectURL(AURL);
+  LURL := AddURLParams(AURL, AInput.DataString);
+
   // Hack around the MSXML 'feature' of caching pages, which may not be what
   // we want
   if FAutoFlushCache then
   begin
-    LURL:= LURL + '?CacheFlushParam=' + IntToStr(FCacheFlushParam);
+    LURL := AddURLParams(LURL, 'CacheFlushParam=' + IntToStr(FCacheFlushParam));
     Inc(FCacheFlushParam);
   end;
 
+  LURL := CorrectURL(LURL);
   try
-    FHTTP.open('GET', lURL, False, '', '');
+    FHTTP.open('GET', LURL, False, '', '');
     if RequestTIOPFBlockHeader <> '' then
       FHTTP.setRequestHeader(ctiOPFHTTPBlockHeader, RequestTIOPFBlockHeader);
-    FHTTP.Send(AInput.DataString);
+    FHTTP.Send(EmptyParam);
     if FHTTP.Get_Status <> 200 then
       raise Exception.CreateFmt(cErrorHTTPServer, [FHTTP.Get_Status]);
     AOutput.Size := 0;

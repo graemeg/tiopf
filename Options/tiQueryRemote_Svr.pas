@@ -4,21 +4,23 @@ unit tiQueryRemote_Svr;
 
 interface
 uses
-  tiBaseObject
-  ,tiQueryRemote
-  ,tiQuery
-  ,tiDBConnectionPool
-  ,Contnrs
-  ,tiQueryXMLLight
-  ,Classes
-  ,Windows
-  ,tiXMLToTIDataSet
-  ,tiStreams
-  ,SyncObjs
- ;
+  tiBaseObject,
+  tiQueryRemote,
+  tiDBConnectionPool,
+  tiQueryXMLLight,
+  tiXMLToTIDataSet,
+  tiConstants,
+  tiStreams,
+  tiQuery,
+  tiThread,
+  Contnrs,
+  Classes,
+  Windows,
+  SyncObjs;
 
 const
-  cErrorTransactionTimedOut = 'Transaction ID#%s timed out';
+  CErrorTransactionTimedOut = 'Transaction ID#%s timed out';
+  CErrorDatabaseConnectionBeingRolledBack = 'Attept to execute a database command against a connection that is being rolled back';
 
 type
 
@@ -26,11 +28,14 @@ type
   TSavedDBConnectionHolder = class;
   TtiStatefulDBConnectionPool = class;
 
-  TThrdStatefulDBConnectionPoolMonitor = class(TThread)
+  TThrdStatefulDBConnectionPoolMonitor = class(TtiSleepThread)
   private
     FPool : TtiStatefulDBConnectionPool;
+    FSweepInterval: integer;
   public
-    constructor CreateExt(APool : TtiStatefulDBConnectionPool);
+    constructor CreateExt(
+      const APool : TtiStatefulDBConnectionPool;
+      const ASweepInterval: integer);
     procedure   Execute; override;
   end;
 
@@ -40,25 +45,30 @@ type
     FDBConnection: TtiDatabase;
     FLastUsed: TDateTime;
     FDBConnectionName: string;
-    FInUse: boolean;
+    FQueryIsExecuting: boolean;
     FOwner: TtiStatefulDBConnectionPool;
     FUserName: string;
     FComputerName: string;
+    FRollBackAtNextOpportunity: boolean;
     function GetSecToTimeOut: integer;
     function GetSecInUse: integer;
-    procedure SetInUse(const AValue: boolean);
+    procedure SetQueryIsExecuting(const AValue: boolean);
   public
     constructor Create;
     property Owner : TtiStatefulDBConnectionPool read FOwner write FOwner;
     property TransactionID : string read FTransactionID write FTransactionID;
     property DBConnection : TtiDatabase read FDBConnection write FDBConnection;
     property DBConnectionName : string read FDBConnectionName write FDBConnectionName;
-    property LastUsed : TDateTime read FLastUsed write FLastUsed;
-    property InUse : boolean read FInUse write SetInUse;
-    property SecToTimeOut : integer read GetSecToTimeOut;
-    property SecInUse : integer read GetSecInUse;
     property ComputerName : string read FComputerName write FComputerName;
     property UserName : string read FUserName write FUserName;
+
+    property LastUsed : TDateTime read FLastUsed;
+    property QueryIsExecuting : boolean read FQueryIsExecuting write SetQueryIsExecuting;
+    property SecToTimeOut : integer read GetSecToTimeOut;
+    property SecInUse : integer read GetSecInUse;
+    function MustRemoveItemFromPool: boolean;
+    property RollBackAtNextOpportunity: boolean read FRollBackAtNextOpportunity write FRollBackAtNextOpportunity;
+
   end;
 
   TSavedDBConnectionHolderEvent = procedure(const AItem : TSavedDBConnectionHolder) of object;
@@ -72,26 +82,26 @@ type
     FCritSect: TCriticalSection;
     FThrdStatefulDBConnectionPoolMonitor : TThrdStatefulDBConnectionPoolMonitor;
     FTimeOut : Extended;
+    FSweepInterval: integer;
     function    GetNextTransID: string;
+    procedure DoUnLockSavedDBConnection(const ASavedDBConnection: TSavedDBConnectionHolder);
     property    NextTransID : string read GetNextTransID;
-    procedure   DoCommit(pDBConnection : TtiDatabase);
-    procedure   DoRollBack(pDBConnection : TtiDatabase);
     function    GetCount: integer;
-    procedure   UnLock(          const pTransactionID : string; AMethod : TPooledDBEvent);
     function    Lock(            const ADBConnectionName : string): TSavedDBConnectionHolder;
 
   public
-    constructor Create;
+    constructor Create(const ATimeOut: Extended);
     destructor  Destroy; override;
     property    Count : integer read GetCount;
     procedure   SweepForTimeOuts;
-    property    TimeOut : Extended read FTimeOut write FTimeOut;
+    property    TimeOut : Extended read FTimeOut;
+    property    SweepInterval: integer read FSweepInterval;
 
     function    FindSavedDBConnectionHolder(const pTransactionID : string): TSavedDBConnectionHolder;
     function    FindSavedDBConnection(const pTransactionID : string): TtiDatabase;
     function    StartTransaction(const ADBConnectionName, pComputerName, AUserName : string): string;
-    procedure   Commit(          const pTransactionID : string);
-    procedure   RollBack(        const pTransactionID : string);
+    procedure   Commit(          const ATransID : string);
+    procedure   RollBack(        const ATransID : string);
 
     procedure   GetSummaryStats(var pTotalStatefulDBConnections : integer;
                                  var pInUseStatefulDBConnections : integer;
@@ -103,7 +113,6 @@ type
   TtiQueryRemoteExec = class(TtiBaseObject)
   private
     FDBRequest         : TtiDatabaseXMLLight;
-    //FDBResponse        : TtiDatabaseXMLLight;
     FErrorMessage      : string;
 
     FRemoteCommandType : TtiRemoteCommandType;
@@ -136,6 +145,7 @@ type
 
     procedure CreateResponseMetaDataTable;
     procedure InsertResponseMessageData;
+    procedure LogTransaction(const AMessage: string; const AParams: array of const);
 
   public
     constructor create;
@@ -145,22 +155,23 @@ type
   end;
 
 function ExecuteRemoteXML(const pInput : string): string;
-function gStatefulDBConnectionPool : TtiStatefulDBConnectionPool;
+function GStatefulDBConnectionPool(
+  const ATimeOut: Extended = CDefaultStatefulDBConnectionPoolTimeOut) : TtiStatefulDBConnectionPool;
+procedure FreeAndNilStatefulDBConnectionPool;
 
 implementation
 uses
-   tiUtils
-  ,tiOPFManager
-  ,Variants
-  ,tiLog
-  ,tiConstants
-  ,tiXML
-  ,tiExcept
-  ,SysUtils
- ;
+  tiLog,
+  tiXML,
+  tiUtils,
+  tiExcept,
+  tiMadExcept,
+  tiOPFManager,
+  Variants,
+  SysUtils;
 
 var
-  uStatefulDBConnectionPool : TtiStatefulDBConnectionPool;
+  UStatefulDBConnectionPool : TtiStatefulDBConnectionPool;
   uXMLTags : TtiXMLTags;
 
 function ExecuteRemoteXML(const pInput : string): string;
@@ -175,12 +186,21 @@ begin
   end;
 end;
 
-function gStatefulDBConnectionPool : TtiStatefulDBConnectionPool;
+function GStatefulDBConnectionPool(
+  const ATimeOut: Extended = CDefaultStatefulDBConnectionPoolTimeOut) : TtiStatefulDBConnectionPool;
 begin
-  if uStatefulDBConnectionPool = nil then
-    uStatefulDBConnectionPool := TtiStatefulDBConnectionPool.Create;
+  if UStatefulDBConnectionPool = nil then
+    UStatefulDBConnectionPool := TtiStatefulDBConnectionPool.Create(ATimeOut);
   result := uStatefulDBConnectionPool;
 end;
+
+procedure FreeAndNilStatefulDBConnectionPool;
+begin
+  FreeAndNil(UStatefulDBConnectionPool);
+end;
+
+const
+  CDefaultSweepInterval = 10; {Seconds}
 
 { TtiQueryRemoteExec }
 
@@ -218,6 +238,7 @@ function TtiQueryRemoteExec.ExecuteRemoteXML(const pInput: string): string;
 var
   lRequest : string;
   lResponse : string;
+  LStart: DWord;
 begin
   try
     try
@@ -229,13 +250,17 @@ begin
       on e:exception do
         FErrorMessage := e.Message;
     end;
+    LStart:= GetTickCount;
     InsertResponseMessageData;
     lResponse :=
       uXMLTags.DatabaseHeader +
       FXMLWriterMessage.TableData +
       FXMLWriterData.TableData +
       uXMLTags.DatabaseFooter;
+    LogTransaction('Time to write XML: %dms', [GetTickCount-lStart]);
+    LStart:= GetTickCount;
     lResponse := tiCompressEncode(lResponse, cgsCompressZLib);
+    LogTransaction('Time to compress and encode result set: %dms', [GetTickCount-lStart]);
     result:= LResponse;
     Assert(Trim(result) <> '', 'Error in result string.');
   except
@@ -371,7 +396,9 @@ begin
   lQuery := GTIOPFManager.DefaultPerLayer.QueryClass.Create;
   try
     lSavedDBConnectionHolder := gStatefulDBConnectionPool.FindSavedDBConnectionHolder(FTransactionID);
-    lSavedDBConnectionHolder.InUse := true;
+    if LSavedDBConnectionHolder.RollBackAtNextOpportunity then
+      raise Exception.Create(CErrorDatabaseConnectionBeingRolledBack);
+    lSavedDBConnectionHolder.QueryIsExecuting := true;
     try
       Assert(lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), CTIErrorInvalidObject);
       Assert(lSavedDBConnectionHolder.DBConnection.TestValid(TtiDatabase), CTIErrorInvalidObject);
@@ -384,13 +411,16 @@ begin
       lSQL:= tiStrTran(lSQL, #10, '');
       lSQL:= tiStrTran(lSQL, #13, ' ');
       lSQL:= tiAddEllipsis(lSQL, 975);
-      Log('About to run SQL: ' + lSQL);
+      LogTransaction('About to run SQL: %s', [lSQL]);
       lStart:= GetTickCount;
       lQuery.Active := true;
+      LogTransaction('Time to execute query: %dms', [GetTickCount-lStart]);
+      lStart:= GetTickCount;
       FRowCount := FXMLWriterData.AssignFromTIQuery(uXMLTags.TableNameResultSet, lQuery);
-      Log('  Rows returned: ' + IntToStr(FRowCount) + ' taking ' + IntToStr(GetTickCount-lStart) + 'ms');
+      LogTransaction('Time to fetch result set (%d rows): %dms', [FRowCount, GetTickCount-lStart]);
     finally
-      lSavedDBConnectionHolder.InUse := false;
+      lQuery.Active := false;
+      lSavedDBConnectionHolder.QueryIsExecuting := false;
     end;
   finally
     lQuery.Free;
@@ -417,6 +447,14 @@ begin
   FXMLWriterMessage.AddCellAsString(uXMLTags.FieldNameResultError, FErrorMessage);
   FXMLWriterMessage.AddCellAsString(uXMLTags.FieldNameTransactionID, FTransactionID);
   FXMLWriterMessage.AddCellAsInteger(uXMLTags.FieldNameResultRowCount, FRowCount);
+end;
+
+procedure TtiQueryRemoteExec.LogTransaction(const AMessage: string;
+  const AParams: array of const);
+begin
+  if FTransactionID <> '' then
+    Log('Trans ID: ' + FTransactionID + '. ' +
+        AMessage, AParams, lsQueryTiming);
 end;
 
 procedure TtiQueryRemoteExec.DoCreateTable;
@@ -534,14 +572,16 @@ end;
 
 { TtiStatefulDBConnectionPool }
 
-constructor TtiStatefulDBConnectionPool.Create;
+constructor TtiStatefulDBConnectionPool.Create(
+  const ATimeOut: Extended);
 begin
-  inherited;
+  inherited Create;
   FSavedDBConnections := TObjectList.Create;
   FNextTransID := 1;
   FCritSect:= TCriticalSection.Create;
-  FTimeOut := cDBProxyServerTimeOut;
-  FThrdStatefulDBConnectionPoolMonitor := TThrdStatefulDBConnectionPoolMonitor.CreateExt(Self);
+  FTimeOut := ATimeOut;
+  FSweepInterval:= CDefaultSweepInterval;
+  FThrdStatefulDBConnectionPoolMonitor := TThrdStatefulDBConnectionPoolMonitor.CreateExt(Self, FSweepInterval);
 end;
 
 destructor TtiStatefulDBConnectionPool.Destroy;
@@ -565,7 +605,6 @@ begin
     result.Owner := Self;
     Assert(result.DBConnection.TestValid(TtiDatabase), CTIErrorInvalidObject);
     FSavedDBConnections.Add(result);
-    result.LastUsed      := now;
   finally
     FCritSect.Leave;
   end;
@@ -584,13 +623,12 @@ begin
     Assert(lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), CTIErrorInvalidObject);
     if (lSavedDBConnectionHolder.TransactionID = pTransactionID) then
     begin
-      lSavedDBConnectionHolder.LastUsed := now;
       result := lSavedDBConnectionHolder;
       Break; //==>
     end;
   end;
   if result = nil then
-    raise exception.CreateFmt(cErrorTransactionTimedOut, [pTransactionID]);
+    raise exception.CreateFmt(CErrorTransactionTimedOut, [pTransactionID]);
 end;
 
 function TtiStatefulDBConnectionPool.GetNextTransID: string;
@@ -599,37 +637,12 @@ begin
   Inc(FNextTransID);
 end;
 
-procedure TtiStatefulDBConnectionPool.DoCommit(pDBConnection: TtiDatabase);
+procedure TtiStatefulDBConnectionPool.DoUnLockSavedDBConnection(
+  const ASavedDBConnection: TSavedDBConnectionHolder);
 begin
-  Assert(pDBConnection.TestValid(TtiDatabase), CTIErrorInvalidObject);
-  pDBConnection.Commit;
-end;
-
-procedure TtiStatefulDBConnectionPool.DoRollBack(pDBConnection: TtiDatabase);
-begin
-  Assert(pDBConnection.TestValid(TtiDatabase), CTIErrorInvalidObject);
-  pDBConnection.RollBack;
-end;
-
-procedure TtiStatefulDBConnectionPool.UnLock(const pTransactionID : string;
-                                             AMethod: TPooledDBEvent);
-var
-  lSavedDBConnection : TSavedDBConnectionHolder;
-  i : integer;
-begin
-  FCritSect.Enter;
-  try
-    lSavedDBConnection := FindSavedDBConnectionHolder(pTransactionID);
-    Assert(lSavedDBConnection.TestValid(TSavedDBConnectionHolder), CTIErrorInvalidObject);
-    Assert(lSavedDBConnection.DBConnection.TestValid(TtiDatabase), CTIErrorInvalidObject);
-    AMethod(lSavedDBConnection.DBConnection);
-    GTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(lSavedDBConnection.DBConnectionName,
-                                 lSavedDBConnection.DBConnection);
-    i := FSavedDBConnections.IndexOf(lSavedDBConnection);
-    FSavedDBConnections.Delete(i);
-  finally
-    FCritSect.Leave;
-  end;
+  GTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(
+  ASavedDBConnection.DBConnectionName,
+  ASavedDBConnection.DBConnection);
 end;
 
 function TtiStatefulDBConnectionPool.GetCount: integer;
@@ -639,25 +652,65 @@ end;
 
 function TtiStatefulDBConnectionPool.StartTransaction(const ADBConnectionName, pComputerName, AUserName : string): string;
 var
-  lSavedDBConnectionHolder : TSavedDBConnectionHolder;
+  LSavedDBConnectionHolder : TSavedDBConnectionHolder;
 begin
-  lSavedDBConnectionHolder := Lock(ADBConnectionName);
-  Assert(lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), CTIErrorInvalidObject);
-  Assert(lSavedDBConnectionHolder.DBConnection.TestValid(TtiDatabase), CTIErrorInvalidObject);
-  lSavedDBConnectionHolder.ComputerName := pComputerName;
-  lSavedDBConnectionHolder.UserName := AUserName;
-  result := lSavedDBConnectionHolder.TransactionID;
-  lSavedDBConnectionHolder.DBConnection.StartTransaction;
+  LSavedDBConnectionHolder := Lock(ADBConnectionName);
+  Assert(LSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), CTIErrorInvalidObject);
+  Assert(LSavedDBConnectionHolder.DBConnection.TestValid(TtiDatabase), CTIErrorInvalidObject);
+  if LSavedDBConnectionHolder.RollBackAtNextOpportunity then
+    raise Exception.Create(CErrorDatabaseConnectionBeingRolledBack);
+  LSavedDBConnectionHolder.ComputerName := pComputerName;
+  LSavedDBConnectionHolder.UserName := AUserName;
+  result := LSavedDBConnectionHolder.TransactionID;
+  LSavedDBConnectionHolder.DBConnection.StartTransaction;
 end;
 
-procedure TtiStatefulDBConnectionPool.Commit(const pTransactionID: string);
+procedure TtiStatefulDBConnectionPool.Commit(const ATransID: string);
+var
+  LSavedDBConnectionHolder : TSavedDBConnectionHolder;
 begin
-  UnLock(pTransactionID, DoCommit);
+  FCritSect.Enter;
+  try
+    LSavedDBConnectionHolder := FindSavedDBConnectionHolder(ATransID);
+    if LSavedDBConnectionHolder.RollBackAtNextOpportunity then
+      raise Exception.Create(CErrorDatabaseConnectionBeingRolledBack);
+    FSavedDBConnections.Extract(LSavedDBConnectionHolder);
+  finally
+    FCritSect.Leave;
+  end;
+  try
+    LSavedDBConnectionHolder.DBConnection.Commit;
+  finally
+    DoUnLockSavedDBConnection(LSavedDBConnectionHolder);
+    LSavedDBConnectionHolder.Free;
+  end;
 end;
 
-procedure TtiStatefulDBConnectionPool.RollBack(const pTransactionID: string);
+procedure TtiStatefulDBConnectionPool.RollBack(const ATransID: string);
+var
+  LSavedDBConnection : TSavedDBConnectionHolder;
+  LRollBack: boolean;
 begin
-  UnLock(pTransactionID, DoRollBack);
+  FCritSect.Enter;
+  try
+    LSavedDBConnection := FindSavedDBConnectionHolder(ATransID);
+    LRollBack:= not LSavedDBConnection.QueryIsExecuting;
+    if LRollBack then
+      FSavedDBConnections.Extract(LSavedDBConnection)
+    else
+      LSavedDBConnection.RollBackAtNextOpportunity:= true;
+  finally
+    FCritSect.Leave;
+  end;
+  if LRollBack then
+  begin
+    try
+      LSavedDBConnection.DBConnection.RollBack;
+    finally
+      DoUnLockSavedDBConnection(LSavedDBConnection);
+      LSavedDBConnection.Free;
+    end;
+  end;
 end;
 
 function TtiStatefulDBConnectionPool.FindSavedDBConnection(const pTransactionID: string): TtiDatabase;
@@ -674,60 +727,68 @@ begin
     result := nil;
 end;
 
-constructor TThrdStatefulDBConnectionPoolMonitor.CreateExt(APool: TtiStatefulDBConnectionPool);
+constructor TThrdStatefulDBConnectionPoolMonitor.CreateExt(
+  const APool : TtiStatefulDBConnectionPool;
+  const ASweepInterval: integer);
 begin
   Create(false);
+  Priority := tpLowest;
   FreeOnTerminate := false;
   FPool := APool;
+  FSweepInterval:= ASweepInterval;
 end;
 
 procedure TThrdStatefulDBConnectionPoolMonitor.Execute;
-var
-  i : integer;
 begin
-  while not terminated do
-  begin
-    // Sleep for 10 seconds, but keep checking terminated
-    i := 0;
-    while (i < 10) and
-          (not terminated) do
-    begin
-      Inc(i);
-      sleep(1000);
-    end;
-    if not Terminated then
-      FPool.SweepForTimeOuts;
-  end;
-
+  while SleepAndCheckTerminated(FSweepInterval * 1000) do
+    FPool.SweepForTimeOuts;
 end;
 
 procedure TtiStatefulDBConnectionPool.SweepForTimeOuts;
-var
-  i : integer;
-  lSavedDBConnectionHolder : TSavedDBConnectionHolder;
-begin
-  FCritSect.Enter;
-  try
-    if Count = 0 then
-      Exit; //==>
-    // TimeOut is in minutes, so convert to TDateTime
-    for i :=  Count - 1 downto 0 do
-    begin
-      lSavedDBConnectionHolder := FSavedDBConnections.Items[i] as TSavedDBConnectionHolder;
-      Assert(lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), CTIErrorInvalidObject);
-      Assert(lSavedDBConnectionHolder.DBConnection.TestValid(TtiDatabase), CTIErrorInvalidObject);
-      if (not lSavedDBConnectionHolder.InUse) and
-         (lSavedDBConnectionHolder.SecToTimeOut <= 0) then
+  procedure _ScanForTimeOuts(const ATargetList: TObjectList);
+  var
+    i: integer;
+    LItem: TSavedDBConnectionHolder;
+  begin
+    FCritSect.Enter;
+    try
+      for i :=  Count - 1 downto 0 do
       begin
-        if lSavedDBConnectionHolder.DBConnection.InTransaction then
-            lSavedDBConnectionHolder.DBConnection.Rollback;
-        GTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(lSavedDBConnectionHolder.DBConnectionName,
-                                     lSavedDBConnectionHolder.DBConnection);
-        FSavedDBConnections.Delete(i);
+        LItem := FSavedDBConnections.Items[i] as TSavedDBConnectionHolder;
+        if LItem.MustRemoveItemFromPool then
+        begin
+          FSavedDBConnections.Extract(LItem);
+          ATargetList.Add(LItem);
+          Log('TransID: ' + LItem.TransactionID + '. Added to sweep list');
+        end;
       end;
+    finally
+      FCritSect.Leave;
     end;
+  end;
+
+  procedure _SweepList(const AList: TObjectList);
+  var
+    i: integer;
+    LItem: TSavedDBConnectionHolder;
+  begin
+    for i := 0 to AList.Count-1 do
+    begin
+      LItem:= AList.Items[i] as TSavedDBConnectionHolder;
+      DoUnLockSavedDBConnection(LItem);
+    end;
+  end;
+var
+  FSweepList: TObjectList;
+begin
+  if Count = 0 then
+    Exit; //==>
+  FSweepList:= TObjectList.Create;
+  try
+    _ScanForTimeOuts(FSweepList);
+    _SweepList(FSweepList);
   finally
-    FCritSect.Leave;
+    FSweepList.Free;
   end;
 end;
 
@@ -746,7 +807,7 @@ begin
     for i := 0 to FSavedDBConnections.Count - 1 do
     begin
       lSavedDBConnectionHolder := TSavedDBConnectionHolder(FSavedDBConnections.Items[i]);
-      if lSavedDBConnectionHolder.InUse then
+      if lSavedDBConnectionHolder.QueryIsExecuting then
         Inc(pInUseStatefulDBConnections)
       else
         Inc(pWaitingStatefulDBConnections);
@@ -779,7 +840,9 @@ end;
 constructor TSavedDBConnectionHolder.Create;
 begin
   inherited;
-  FInUse := false;
+  FQueryIsExecuting := false;
+  FLastUsed      := now;
+  FRollBackAtNextOpportunity:= false;
 end;
 
 function TSavedDBConnectionHolder.GetSecInUse: integer;
@@ -789,16 +852,26 @@ end;
 
 function TSavedDBConnectionHolder.GetSecToTimeOut: integer;
 begin
-  if FInUse then
+  if FQueryIsExecuting then
     result := cSecToTimeOutLocked
   else
     result := Trunc(Owner.TimeOut * 60) - SecInUse;
 end;
 
-procedure TSavedDBConnectionHolder.SetInUse(const AValue: boolean);
+function TSavedDBConnectionHolder.MustRemoveItemFromPool: boolean;
+var
+  LNotInUse:   Boolean;
+  LTimeOut:     Boolean;
 begin
-  FInUse := AValue;
-  LastUsed := Now;
+  LNotInUse  := not QueryIsExecuting;
+  LTimeOut    := (SecToTimeOut <= 0);
+  result      := LNotInUse and (LTimeOut or RollBackAtNextOpportunity);
+end;
+
+procedure TSavedDBConnectionHolder.SetQueryIsExecuting(const AValue: boolean);
+begin
+  FQueryIsExecuting := AValue;
+  FLastUsed := Now;
 end;
 
 initialization
@@ -806,7 +879,7 @@ initialization
   uXMLTags.OptXMLDBSize := optDBSizeOn;
 
 finalization
-  uStatefulDBConnectionPool.Free;
+  FreeAndNilStatefulDBConnectionPool;
   uXMLTags.Free;
 
 end.

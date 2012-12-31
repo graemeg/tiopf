@@ -46,7 +46,7 @@ type
 
 implementation
 
-{ TtiGenericObjectList<T>.TEnumerator }
+{ TtiGenericEnumerator<T> }
 
 constructor TtiGenericEnumerator<T>.Create(AList: TtiObjectList);
 begin

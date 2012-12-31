@@ -26,6 +26,7 @@ const
                                       'The application will now shut down';
   cTIOPFExcMsgErrorOnRemoteServer = 'Error reading response from remote server:' + #13#10 + '%s';
   cTIOPFErrorAttemptedToConnectTo = 'Attempted to connect to';
+  CTIOPFHTTPErrorRetry = 'HTTP Post failed. Try %d of %d. Message = "%s"';
 
   cParamProxyServer = 'proxyserver';
   cParamProxyPort   = 'proxyport';
@@ -163,7 +164,7 @@ type
 
     // ToDo: Rename SQLText CommandText, as it is now used for flat info like table names
     procedure InsertRemoteRequest(pRemoteCommandType: TtiRemoteCommandType; const pSQLText: string);
-    procedure TryHTTPPost(const AInput: string);
+    procedure HTTPPost(const AInput: string);
 
   protected
     procedure SetConnected(AValue : boolean); override;
@@ -688,6 +689,7 @@ begin
     DBRequestXML.Commit;
 
   ls := DBRequestXML.AsString;
+
   ls := tiCompressEncode(ls,cgsCompressZLib);
 
   // This is to stop the HTTP Server melting down.
@@ -717,7 +719,7 @@ begin
 
   RefreshHTTPInstance;
 
-  TryHTTPPost(ls);
+  HTTPPost(ls);
 
   if GTIOPFManager.Terminated then
     Exit; //==>
@@ -819,33 +821,11 @@ begin
   result:= TtiQueryRemoteXML;
 end;
 
-procedure TtiDatabaseRemoteXML.TryHTTPPost(const AInput: string);
-var
-  LTryCount: Integer;
-  LTrySuccessful: Boolean;
+procedure TtiDatabaseRemoteXML.HTTPPost(const AInput: string);
 begin
-  LTryCount:= 1;
-  LTrySuccessful:= False;
-  // ToDo: Retry not required in TtiDatabaseRemoteXML.TryHTTPPost
-  while (not LTrySuccessful) do
-  begin
-    try
-      FHTTP.Clear;
-      FHTTP.Input.WriteString(AInput);
-      FHTTP.Post(DatabaseName + cgTIDBProxy);
-      LTrySuccessful:= True;
-    except
-      on e:Exception do
-      begin
-        if LTryCount < cRetryCount then
-        begin
-          Inc(LTryCount);
-          Sleep(cRetrySleep);
-        end else
-          raise;
-      end;
-    end;
-  end;
+  FHTTP.Clear;
+  FHTTP.Input.WriteString(AInput);
+  FHTTP.Post(DatabaseName + cgTIDBProxy);
 end;
 
 procedure TtiDatabaseRemoteXML.RefreshHTTPInstance;

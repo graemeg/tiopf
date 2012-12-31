@@ -46,7 +46,8 @@ type
     property    Data: TtiBaseObject read FData write FData;
     property    SecInUse: integer read GetSecInUse;
     // The list may already be locked, so count will not be accessable. Pass it in here.
-    function    MustRemoveItemFromPool(AListCount: Integer): boolean; virtual;
+    function    MustRemoveItemFromPool: boolean; virtual;
+    function    IsStaticConnection: boolean;
     function    SecToTimeOut: integer;
   end;
 
@@ -58,8 +59,9 @@ type
   TtiThrdPoolMonitor = class(TtiSleepThread)
   private
     FPool : TtiPool;
+    FSweepInterval: integer;
   public
-    constructor CreateExt(APool : TtiPool);
+    constructor CreateExt(const APool : TtiPool; const ASweepInterval: integer);
     procedure   Execute; override;
   end;
 
@@ -79,6 +81,7 @@ type
     FWaitTime: Word;
     FTimeOut: Extended;
     FThrdPoolMonitor: TtiThrdPoolMonitor;
+    FSweepInterval: integer;
     procedure   CreatePoolSemaphore;        // ToDo: --->
     procedure   DestroyPoolSemaphore;       //  Move the semaphore
     function    LockPoolSemaphore: boolean; //  operations to a class wrapper
@@ -100,7 +103,7 @@ type
     procedure   SetTimeOut(const AValue: Extended); virtual;
     procedure   SetWaitTime(const AValue: Word); virtual;
   public
-    constructor Create(const AMinPoolSize, AMaxPoolSize: Word); overload;
+    constructor Create(const AMinPoolSize, AMaxPoolSize, APoolTimeOut: Word); overload;
     destructor  Destroy; override;
     {: TimeOut is the time a pooled item will remain in the pool (in minutes) before it is destroyed by the SweepForTimeOutes thread}
     property    TimeOut    : Extended read GetTimeOut;
@@ -110,6 +113,8 @@ type
     property    MaxPoolSize : Word read GetMaxPoolSize;
     {: WaitTime is the time (in seconds) that the pool will wait for a successful lock before raising an exception}
     property    WaitTime   : Word read GetWaitTime;
+    {: Time to wait (in seconds) before the pool is sweept for items that need to be removed.}
+    property    SweepTime: integer read FSweepInterval;
     property    Count   : integer read GetCount;
     property    CountLocked : integer read GetCountLocked;
     function    Lock: TtiBaseObject; virtual;
@@ -120,31 +125,28 @@ type
 
 implementation
 uses
-  tiLog
-  ,tiConstants
-  ,tiExcept
-  ,SysUtils
- ;
+  tiLog,
+  tiExcept,
+  tiConstants,
+  SysUtils;
 
 const
-  CMaxPoolSize =  9999; // Maximum number of items allowed in the pool
-  CMinPoolSize =     1; // Minimum number of items to remain in the pool
-  CTimeOut     =     1; // Time (minutes) before items are purged from the pool
-  CWaitTime    =    60; // Time to wait for a pool item (in seconds)
-
+  CDefaultWaitTime    = 60; // Time to wait for a pool item (in seconds)
+  CDefaultSweepInterval   = 10; // Time to wait before the pool is sweept for items that need to be removed (in seconds)
 
 { TtiPool }
 
-constructor TtiPool.Create(const AMinPoolSize, AMaxPoolSize: Word);
+constructor TtiPool.Create(const AMinPoolSize, AMaxPoolSize, APoolTimeOut: Word);
 begin
   inherited create;
   FPool := TThreadList.Create;
   FMinPoolSize := AMinPoolSize;
   FMaxPoolSize := AMaxPoolSize;
-  FWaitTime    := CWaitTime;
-  FTimeOut    := CTimeOut;
+  FTimeOut     := APoolTimeOut;
+  FWaitTime    := CDefaultWaitTime;
+  FSweepInterval := CDefaultSweepInterval;
   CreatePoolSemaphore;
-  FThrdPoolMonitor := TtiThrdPoolMonitor.CreateExt(self);
+  FThrdPoolMonitor := TtiThrdPoolMonitor.CreateExt(self, FSweepInterval);
 end;
 
 destructor TtiPool.Destroy;
@@ -254,7 +256,7 @@ begin
     // and exit.
     LItem := (TObject(AList.Items[i]) as TtiPooledItem);
     if (not LItem.Locked) and
-       (not LItem.MustRemoveItemFromPool(AList.Count)) then
+       (not LItem.MustRemoveItemFromPool) then
     begin
       Result:= LItem;
       Result.Locked := true;
@@ -385,16 +387,21 @@ begin
 end;
 
 
-function TtiPooledItem.MustRemoveItemFromPool(AListCount: Integer): boolean;
-var
-  lNotLocked:   Boolean;
-  lTimeOut:     Boolean;
-  lMinPoolSize: Boolean;
+function TtiPooledItem.IsStaticConnection: boolean;
 begin
-  lNotLocked  := (not Locked);
-  lTimeOut    := (SecToTimeOut <= 0);
-  lMinPoolSize := (AListCount > Owner.MinPoolSize);
-  result      := lNotLocked and lTimeOut and lMinPoolSize;
+  result:= Index < Owner.MinPoolSize;
+end;
+
+function TtiPooledItem.MustRemoveItemFromPool: boolean;
+var
+  LNotLocked:   Boolean;
+  LTimeOut:     Boolean;
+  LMinPoolSize: Boolean;
+begin
+  LNotLocked  := (not Locked);
+  LTimeOut    := (SecToTimeOut <= 0);
+  LMinPoolSize := (not IsStaticConnection);
+  result      := LNotLocked and LTimeOut and LMinPoolSize;
 end;
 
 
@@ -420,17 +427,18 @@ end;
 // * TThrdPoolMonitor
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiThrdPoolMonitor.CreateExt(APool: TtiPool);
+constructor TtiThrdPoolMonitor.CreateExt(const APool : TtiPool; const ASweepInterval: integer);
 begin
   Create(False);
   FreeOnTerminate := false;
   FPool := APool;
   Priority := tpLowest;
+  FSweepInterval:= ASweepInterval;
 end;
 
 procedure TtiThrdPoolMonitor.Execute;
 begin
-  while SleepAndCheckTerminated(10000) do
+  while SleepAndCheckTerminated(FSweepInterval * 1000) do
     FPool.SweepForTimeOuts;
 end;
 
@@ -461,7 +469,7 @@ begin
   try
     for i := lList.Count - 1 downto 0 do begin
       lPooledItem := TtiPooledItem(lList.Items[i]);
-      if lPooledItem.MustRemoveItemFromPool(lList.Count) then
+      if lPooledItem.MustRemoveItemFromPool then
       begin
         Log('Pooled item (' + ClassName + ') #' +
              IntToStr(lPooledItem.Index) +

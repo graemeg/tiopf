@@ -11,6 +11,9 @@ uses
   ,tiVisitor
   ,tiVisitorDB
   ,tiAutoMap
+{$IFDEF DELPHI2010ORABOVE}
+  ,tiAutoMapSelect
+{$ENDIF}
   ,tiOID
   ,tiThread
   ,SysUtils
@@ -90,19 +93,33 @@ type
                                            const ADatabaseName : string;
                                            const AUserName    : string;
                                            const APassword    : string;
+                                           const ADBParams      : string;
+                                           const AQueryOptions: string;
+                                           const APersistenceLayerName : string;
+                                           const AMinPoolSize: integer;
+                                           const AMaxPoolSize: integer;
+                                           const APoolTimeOut: integer): boolean; overload;
+
+    function    TestThenConnectDatabase(   const ADatabaseAlias : string;
+                                           const ADatabaseName : string;
+                                           const AUserName    : string;
+                                           const APassword    : string;
                                            const AParams      : string;
+                                           const AQueryOptions: string;
                                            const APersistenceLayerName : string): boolean; overload;
 
     function   TestThenConnectDatabase(    const ADatabaseName : string;
                                            const AUserName    : string;
                                            const APassword    : string;
                                            const AParams      : string;
+                                           const AQueryOptions: string;
                                            const APersistenceLayerName: string): boolean; overload;
 
     function   TestThenConnectDatabase(    const ADatabaseName : string;
                                            const AUserName    : string;
                                            const APassword    : string;
-                                           const AParams      : string): boolean; overload;
+                                           const AParams      : string;
+                                           const AQueryOptions: string): boolean; overload;
 
     function    TestThenConnectDatabase(   const ADatabaseName : string;
                                            const AUserName    : string;
@@ -112,8 +129,20 @@ type
                                            const ADatabaseName:  string;
                                            const AUserName:      string;
                                            const APassword:      string;
-                                           const ARetryCount:    Word;
-                                           const ARetryInterval: Word);
+                                           const ADBConnectionRetryCount:    Word;
+                                           const ADBConnectionRetryInterval: Word); overload;
+
+    procedure   ConnectDatabaseWithRetry(  const ADatabaseAlias : string;
+                                           const ADatabaseName:  string;
+                                           const AUserName:      string;
+                                           const APassword:      string;
+                                           const ADBParams:      string;
+                                           const AQueryOptions:  string;
+                                           const ADBConnectionRetryCount:    Word;
+                                           const ADBConnectionRetryInterval: Word;
+                                           const AMinPoolSize: integer;
+                                           const AMaxPoolSize: integer;
+                                           const APoolTimeOut: integer); overload;
 
     procedure   DisconnectDatabase(        const ADatabaseAlias: string;
                                            const ADatabaseName : string;
@@ -140,6 +169,9 @@ type
     procedure   Read(    const AVisited : TtiVisited;
                           const ADBConnectionName : string = '';
                           const APersistenceLayerName    : string = ''); reintroduce;
+{$IFDEF DELPHI2010ORABOVE}
+    function    Select<T: TtiObject>: ItiAutoMapSelect<T>;
+{$ENDIF}
     procedure   Save(    const AVisited : TtiVisited;
                           const ADBConnectionName : string = '';
                           const APersistenceLayerName    : string = ''); reintroduce;
@@ -465,6 +497,14 @@ begin
 end;
 
 
+{$IFDEF DELPHI2010ORABOVE}
+function TtiOPFManager.Select<T>: ItiAutoMapSelect<T>;
+begin
+  Result := TtiAutoMapSelectExt<T>.Create;
+end;
+{$ENDIF}
+
+
 procedure TtiOPFManager.ReadPK(const AVisited         : TtiVisited;
                           const ADBConnectionName : string = '';
                           const APersistenceLayerName    : string = '');
@@ -504,7 +544,9 @@ begin
     VisitorManager.RegisterVisitor(cuStandardTask_ReadPK,   TVisAutoCollectionPKRead);
     VisitorManager.RegisterVisitor(cuStandardTask_ReadThis, TVisAutoReadThis);
     VisitorManager.RegisterVisitor(cuStandardTask_Read,     TVisAutoReadThis);
-    VisitorManager.RegisterVisitor(cuStandardTask_Read,     TVisAutoCollectionRead);
+    VisitorManager.RegisterVisitor(cuStandardTask_Read,     TVisAutoCollectionReadRegistered);
+    VisitorManager.RegisterVisitor(cuStandardTask_Read,     TVisAutoCollectionReadNotRegisteredInternalCriteria);
+    VisitorManager.RegisterVisitor(cuStandardTask_Read,     TVisAutoCollectionReadNotRegisteredExternalCriteria);
     VisitorManager.RegisterVisitor(cuStandardTask_Save,     TVisAutoDelete);
     VisitorManager.RegisterVisitor(cuStandardTask_Save,     TVisAutoUpdate);
     VisitorManager.RegisterVisitor(cuStandardTask_Save,     TVisAutoCreate);
@@ -827,11 +869,13 @@ function TtiOPFManager.TestThenConnectDatabase(
   const AUserName    : string;
   const APassword : string;
   const AParams      : string;
+  const AQueryOptions: string;
   const APersistenceLayerName   : string): boolean;
 begin
   result := TestThenConnectDatabase(
     ADatabaseName, ADatabaseName, AUserName,
-    APassword, AParams, APersistenceLayerName);
+    APassword, AParams, AQueryOptions,
+    APersistenceLayerName);
 end;
 
 procedure TtiOPFManager.CreateDatabase(const ADatabaseName, AUserName,
@@ -872,20 +916,20 @@ begin
   ConnectDatabase(ADatabaseName, AUserName, APassword, '');
 end;
 
-procedure TtiOPFManager.ConnectDatabaseWithRetry(
-  const ADatabaseAlias : string;
-  const ADatabaseName:  string;
-  const AUserName:      string;
-  const APassword:      string;
-  const ARetryCount:    Word;
-  const ARetryInterval: Word);
-
+procedure TtiOPFManager.ConnectDatabaseWithRetry(const ADatabaseAlias,
+  ADatabaseName, AUserName, APassword, ADBParams, AQueryOptions: string; const ADBConnectionRetryCount,
+  ADBConnectionRetryInterval: Word; const AMinPoolSize, AMaxPoolSize,
+  APoolTimeOut: integer);
   procedure LogDatabaseConnectionAttempt(
-    const ADatabaseAlias, ADatabaseName, AUserName: string;
-    const ARetryCount: Integer);
+    const ADatabaseAlias, ADatabaseName, AUserName, ADBParams, AQueryOptions: string;
+    const ARetryCount, AMinPoolSize, AMaxPoolSize, APoolTimeOut: Integer);
   begin
-    Log('Attempt %d to connect to database %s as %s (alias "%s"',
-      [ARetryCount, ADatabaseName, AUserName, ADatabaseAlias], lsUserInfo);
+    Log('Attempt "%d" to connect to database "%s" as "%s" (alias "%s"). ' +
+        'DBParams="%s"; QueryOptions="%s"; ' +
+        'MinPoolSize="%d"; MaxPoolSize="%d"; PoolTimeOut="%d"',
+      [ARetryCount, ADatabaseName, AUserName, ADatabaseAlias,
+       ADBParams, AQueryOptions,
+       AMinPoolSize, AMaxPoolSize, APoolTimeOut], lsUserInfo);
   end;
 
 var
@@ -895,29 +939,56 @@ begin
   //       For example, incorrect username/password does not warrent a retry
   //       Database unavailable does.
   LRetryCount:= 1;
-  LogDatabaseConnectionAttempt(ADatabaseAlias, ADatabaseName, AUserName, LRetryCount);
-  while (LRetryCount <= ARetryCount) and
+  LogDatabaseConnectionAttempt(
+    ADatabaseAlias, ADatabaseName, AUserName, ADBParams, AQueryOptions,
+    LRetryCount, AMinPoolSize, AMaxPoolSize, APoolTimeOut);
+  while (LRetryCount <= ADBConnectionRetryCount) and
     (not gTIOPFManager.TestThenConnectDatabase(
-      ADatabaseAlias, ADatabaseName, AUsername, APassword, '', '')) do
+      ADatabaseAlias, ADatabaseName, AUsername, APassword, ADBParams, AQueryOptions, '',
+      AMinPoolSize, AMaxPoolSize, APoolTimeOut)) do
   begin
-    Sleep(ARetryInterval * 1000);
+    Sleep(ADBConnectionRetryInterval * 1000);
     Inc(LRetryCount);
-    if LRetryCount <= ARetryCount then
-      LogDatabaseConnectionAttempt(ADatabaseAlias, ADatabaseName, AUserName, LRetryCount);
+    if LRetryCount <= ADBConnectionRetryCount then
+      LogDatabaseConnectionAttempt(
+        ADatabaseAlias, ADatabaseName, AUserName, ADBParams, AQueryOptions,
+        LRetryCount, AMinPoolSize, AMaxPoolSize, APoolTimeOut);
   end;
 
-  if LRetryCount > ARetryCount then
+  if LRetryCount > ADBConnectionRetryCount then
     raise EtiOPFDBExceptionCanNotConnect.Create(
       GTIOPFManager.DefaultPersistenceLayerName,
       ADatabaseName,
       AUserName,
       CPasswordMasked,
       Format(CTIOPFExcMsgCanNotConnectToDatabaseAfterRetry,
-             [ARetryCount, ARetryInterval]));
+             [ADBConnectionRetryCount, ADBConnectionRetryInterval]));
 
   Log('Connecting to database successful' + tiLineEnd +
       gTIOPFManager.DefaultDBConnectionPool.DetailsAsString, lsUserInfo);
 
+end;
+
+procedure TtiOPFManager.ConnectDatabaseWithRetry(
+  const ADatabaseAlias : string;
+  const ADatabaseName:  string;
+  const AUserName:      string;
+  const APassword:      string;
+  const ADBConnectionRetryCount:    Word;
+  const ADBConnectionRetryInterval: Word);
+begin
+  ConnectDatabaseWithRetry(
+    ADatabaseAlias,
+    ADatabaseName,
+    AUserName,
+    APassword,
+    '',
+    '',
+    ADBConnectionRetryCount,
+    ADBConnectionRetryInterval,
+    0,
+    0,
+    0);
 end;
 
 procedure TtiOPFManager.DisconnectDatabase(const ADatabaseName: string);
@@ -931,22 +1002,22 @@ begin
 end;
 
 function TtiOPFManager.TestThenConnectDatabase(const ADatabaseName,
-  AUserName, APassword, AParams: string): boolean;
+  AUserName, APassword, AParams, AQueryOptions: string): boolean;
 begin
-  Result := TestThenConnectDatabase(ADatabaseName, AUserName, APassword, AParams, '');
+  Result := TestThenConnectDatabase(ADatabaseName, AUserName, APassword, AParams, AQueryOptions, '');
 end;
 
 
 function TtiOPFManager.TestThenConnectDatabase(const ADatabaseName,
   AUserName, APassword: string): boolean;
 begin
-  Result := TestThenConnectDatabase(ADatabaseName, AUserName, APassword, '');
+  Result := TestThenConnectDatabase(ADatabaseName, AUserName, APassword, '', '');
 end;
 
 
 function TtiOPFManager.TestThenConnectDatabase(const ADatabaseAlias,
-  ADatabaseName, AUserName, APassword, AParams,
-  APersistenceLayerName: string): boolean;
+  ADatabaseName, AUserName, APassword, ADBParams, AQueryOptions, APersistenceLayerName: string;
+  const AMinPoolSize, AMaxPoolSize, APoolTimeOut: integer): boolean;
 var
   LPersistenceLayer  : TtiPersistenceLayer;
 begin
@@ -962,12 +1033,38 @@ begin
   if LPersistenceLayer.DBConnectionPools.IsConnected(ADatabaseAlias) then
     result := true  // Assume OK if already connect (Warning: Could be a different user)
   else
-    if LPersistenceLayer.DatabaseClass.TestConnectTo(ADatabaseName, AUserName, APassword, AParams) then
+    if LPersistenceLayer.DatabaseClass.TestConnectTo(ADatabaseName, AUserName, APassword, ADBParams) then
     begin
-      LPersistenceLayer.DBConnectionPools.Connect(ADatabaseAlias, ADatabaseName, AUserName, APassword, AParams);
+      LPersistenceLayer.DBConnectionPools.Connect(
+        ADatabaseAlias,
+        ADatabaseName,
+        AUserName,
+        APassword,
+        ADBParams,
+        AQueryOptions,
+        AMinPoolSize,
+        AMaxPoolSize,
+        APoolTimeOut);
       result := true;
     end else
       Result := false;
+end;
+
+function TtiOPFManager.TestThenConnectDatabase(const ADatabaseAlias,
+  ADatabaseName, AUserName, APassword, AParams, AQueryOptions,
+  APersistenceLayerName: string): boolean;
+begin
+  result:= TestThenConnectDatabase(
+    ADatabaseAlias,
+    ADatabaseName,
+    AUserName,
+    APassword,
+    AParams,
+    AQueryOptions,
+    APersistenceLayerName,
+    0,
+    0,
+    0);
 end;
 
 procedure TtiOPFManager.DisconnectDatabase;

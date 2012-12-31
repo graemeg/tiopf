@@ -209,6 +209,10 @@ const
   cResTI_View24D                 = 'ti_View_24D';
   cResTI_View24H                 = 'ti_View_24H';
   cResTI_View24N                 = 'ti_View_24N';
+  cResTI_Warning                 = 'ti_Warning';
+  cResTI_Warning16D              = 'ti_Warning_16D';
+  cResTI_Warning16H              = 'ti_Warning_16H';
+  cResTI_Warning16N              = 'ti_Warning_16N';
   cResTI_WorkList                = 'ti_WorkList';
   cResTI_ZoomIn                  = 'ti_ZoomIn';
   cResTI_ZoomIn16D               = 'ti_ZoomIn_16D';

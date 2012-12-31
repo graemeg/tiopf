@@ -136,7 +136,7 @@ type
     function    GetOptXMLDBSizeAsString: string;
   public
     constructor Create;
-    class function DefaultDocHeader : string; 
+    class function DefaultDocHeader : string;
     property    OptXMLDBSize: TtiOptXMLDBSize read FOptXMLDBSize Write SetOptXMLDBSize;
     property    OptXMLDBSizeAsString: string read GetOptXMLDBSizeAsString Write SetOptXMLDBSizeAsString;
     property    DocData: string read FDocData;
@@ -228,7 +228,7 @@ const
   // These may be passed as the document name in a HTTP.Post()
   // ToDo: Improve the way the simple XML packets are build up
   cgTIDBProxy                = 'tidbproxy';
-  cgTIDBProxyTestHTML        = 'test';
+  CTIViewAppServerStatus     = 'ViewAppServerStatus';
   cgTIDBProxyTestXML         = 'testxml';
   // For a legacy system. Use cgTIDBProxyTestAlive1 in new systems.
   cgTIDBProxyTestAlive       = 'tidbproxytestalive';
@@ -432,7 +432,7 @@ var
 begin
   lNode := tiParseForSingleNode(pXMLFragment, pNodeName);
   if lNode <> '' then
-    Result := tiParseForSingleAttribute(lNode, AAttrName)  
+    Result := tiParseForSingleAttribute(lNode, AAttrName)
   else
     Result := '';
 end;

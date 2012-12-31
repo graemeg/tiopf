@@ -29,7 +29,8 @@ type
     function GetPassword: string;
     function GetPersistenceLayerName: string;
     function GetUserName: string;
-    function GetParams: string;
+    function GetQueryParams: string;
+    function GetPoolTimeout: Integer;
   protected
     FSelected: Boolean;
     // Gives you the chance to override default database, username
@@ -46,7 +47,8 @@ type
     property    DBName       : string read GetDatabaseName;
     property    Username     : string read GetUserName;
     property    Password     : string read GetPassword;
-    property    Params       : string read GetParams;
+    property    QueryParams  : string read GetQueryParams;
+    property    PoolTimeout  : Integer read GetPoolTimeout;
     property    CanCreateDatabase : boolean read GetCanCreateDatabase;
     property    CanDropDatabase : boolean read GetCanDropDatabase;
     procedure   ForceTestDataDirectory;
@@ -318,6 +320,27 @@ begin
     FPersistenceLayerDefaults.Password);
 end;
 
+function TtiOPFTestSetupData.GetPoolTimeout: Integer;
+var
+  LStrTimeout : string;
+begin
+  Assert(FPersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  LStrTimeout:= ReadFromReg(
+    FPersistenceLayerDefaults.PersistenceLayerName,
+    'PoolTimeout',
+    '0');
+  Result := StrToIntDef(LStrTimeout,0);
+end;
+
+function TtiOPFTestSetupData.GetQueryParams: string;
+begin
+  Assert(FPersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  Result:= ReadFromReg(
+    FPersistenceLayerDefaults.PersistenceLayerName,
+    'QueryParams',
+    '');
+end;
+
 function TtiOPFTestSetupData.GetPersistenceLayerName: string;
 begin
   Assert(FPersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
@@ -331,15 +354,6 @@ begin
     FPersistenceLayerDefaults.PersistenceLayerName,
     'UserName',
     FPersistenceLayerDefaults.UserName);
-end;
-
-function TtiOPFTestSetupData.GetParams: string;
-begin
-  Assert(FPersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
-  Result:= ReadFromReg(
-    FPersistenceLayerDefaults.PersistenceLayerName,
-    'Params',
-    FPersistenceLayerDefaults.Params);
 end;
 
 function TtiOPFTestSetupData.ReadFromReg(const pPerLayer, pProp, pDefault: string): string;

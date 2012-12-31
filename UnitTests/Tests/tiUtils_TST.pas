@@ -133,6 +133,7 @@ type
     procedure tiInsertStringToStream;
     procedure tiIntegerList;
     procedure tiIntegerList_Sort;
+    procedure tiUniqueIntegerList;
     procedure tiIntlDateDispAsDateTime;
     procedure tiIntlDateStorAsDateTime;
     procedure tiIntToCommaStr;
@@ -202,7 +203,6 @@ type
     procedure tiSwapExt;
     procedure tiTestStreamsIdentical;
     procedure tiTimeToStr;
-    procedure tiToken;
     procedure tiTokens;
     procedure tiTrim;
     procedure tiTrimL;
@@ -222,7 +222,41 @@ type
     procedure tiCheckFileCanBeCreated;
     procedure tiDeleteOldFiles;
   end;
-  
+
+  TtiTokenTests = class (TtiTestCase)
+  published
+    procedure TestHappyPath1;
+    procedure TestHappyPath2;
+    procedure TestHappyPath3;
+    procedure TestTokenIndex1;
+    procedure TestTokenIndex2;
+    procedure TestTokenIndex3;
+    procedure TestEmptyValue1;
+    procedure TestEmptyValue2;
+    procedure TestEmptyValue3;
+    procedure TestEmptyValue4;
+    procedure TestEmptyStartToken1;
+    procedure TestEmptyStartToken2;
+    procedure TestEmptyFinishToken1;
+    procedure TestEmptyFinishToken2;
+    procedure TestEmptyMidToken1;
+    procedure TestEmptyMidToken2;
+    procedure TestEmptyMidToken3;
+    procedure TestEmptyMidToken4;
+    procedure TestPartialSeparator1;
+    procedure TestPartialSeparator2;
+    procedure TestPartialSeparator3;
+    procedure TestPartialSeparator4;
+    procedure TestPartialSeparator5;
+    procedure TestTokenIsSeparatorSubset1;
+    procedure TestTokenIsSeparatorSubset2;
+    procedure TestTokenIsSeparatorSubset3;
+    procedure TestTokenIsSeparatorSubset4;
+    procedure TestEmptySeparator1;
+    procedure TestEmptySeparator2;
+    procedure TestEmptySeparator3;
+    procedure TestEmptySeparator4;
+  end;
 
 procedure RegisterTests;
 
@@ -241,11 +275,13 @@ uses
   ,Variants
   ,TypInfo
   ,DateUtils
+  ,StrUtils
  ;
 
 procedure RegisterTests;
 begin
   tiRegisterNonPersistentTest(TTestTIUtils);
+  tiRegisterNonPersistentTest(TtiTokenTests);
 end;
 
 
@@ -283,28 +319,38 @@ end;
 
 
 procedure TTestTIUtils.tiNumToken;
+  procedure _Check(const AInputValue, AInputSeparator: string; const AExpectedOutput: integer);
+  var
+    LActualOutput: integer;
+  begin
+    LActualOutput := tiUtils.tiNumToken(AInputValue, AInputSeparator);
+    CheckEquals(AExpectedOutput, LActualOutput,
+                  Format('Failed on input [%s] ', [AInputValue]));
+  end;
 begin
-  CheckEquals(0, tiUtils.tiNumToken('', ','), 'Failed on 1');
-  CheckEquals(1, tiUtils.tiNumToken('adf adf', ','), 'Failed on 2');
-  CheckEquals(2, tiUtils.tiNumToken('adf,', ','), 'Failed on 3');
-  CheckEquals(2, tiUtils.tiNumToken('adf,adf', ','), 'Failed on 4');
-  CheckEquals(3, tiUtils.tiNumToken('adf,adf,adf', ','), 'Failed on 5');
+  _Check('',            ',', 0);
+  _Check('adf adf',     ',', 1);
+  _Check('adf,',        ',', 2);
+  _Check('adf,adf',     ',', 2);
+  _Check('adf,adf,adf', ',', 3);
+
+  _Check(',',   ',', 2);
+  _Check(',,',  ',', 3);
+  _Check(',,,', ',', 4);
+
+  _Check('a,',     ',', 2);
+  _Check(',a',     ',', 2);
+  _Check(',a,',    ',', 3);
+  _Check(',,a,',   ',', 4);
+  _Check(',,,a',   ',', 4);
+  _Check('abc,',   ',', 2);
+  _Check(',abc',   ',', 2);
+  _Check(',abc,',  ',', 3);
+  _Check(',,abc,', ',', 4);
+  _Check(',,,abc', ',', 4);
+
+  _Check('abcdefghidefjkl', 'def', 3);
 end;
-
-
-procedure TTestTIUtils.tiToken;
-begin
-  CheckEquals('', tiUtils.tiToken('', ',', 1), 'Failed on 1');
-  CheckEquals('a', tiUtils.tiToken('a,b,c', ',', 1), 'Failed on 2');
-  CheckEquals('b', tiUtils.tiToken('a,b,c', ',', 2), 'Failed on 3');
-  CheckEquals('c', tiUtils.tiToken('a,b,c', ',', 3), 'Failed on 4');
-  CheckEquals('', tiUtils.tiToken('a,b,c', ',', 4), 'Failed on 5');
-  CheckEquals('aa', tiUtils.tiToken('aa,bb,cc', ',', 1), 'Failed on 6');
-  CheckEquals('bb', tiUtils.tiToken('aa,bb,cc', ',', 2), 'Failed on 7');
-  CheckEquals('cc', tiUtils.tiToken('aa,bb,cc', ',', 3), 'Failed on 8');
-  CheckEquals('', tiUtils.tiToken('aa,bb,cc', ',', 4), 'Failed on 9');
-end;
-
 
 procedure TTestTIUtils.tiTokens;
 var
@@ -366,6 +412,7 @@ begin
   CheckEquals('abc', tiUtils.tiPadR('abc', 3), 'Failed on 4');
   CheckEquals('ab', tiUtils.tiPadR('abc', 2), 'Failed on 5');
   CheckEquals('a', tiUtils.tiPadR('abc', 1), 'Failed on 6');
+  CheckEquals('abc', tiUtils.tiPadR('abcd', 3), 'Failed on 7');
 end;
 
 
@@ -377,6 +424,7 @@ begin
   CheckEquals('abc', tiUtils.tiPadL('abc', 3), 'Failed on 4');
   CheckEquals('bc', tiUtils.tiPadL('abc', 2), 'Failed on 5');
   CheckEquals('c', tiUtils.tiPadL('abc', 1), 'Failed on 6');
+  CheckEquals('bcd', tiUtils.tiPadL('abcd', 3), 'Failed on 7');
 end;
 
 
@@ -402,12 +450,13 @@ end;
 
 procedure TTestTIUtils.tiPad0;
 begin
-  CheckEquals('1', tiUtils.tiPad0('1', 1), 'Failed on 1');
-  CheckEquals('01', tiUtils.tiPad0('1', 2), 'Failed on 2');
-  CheckEquals('001', tiUtils.tiPad0('1', 3), 'Failed on 3');
-  CheckEquals('000', tiUtils.tiPad0('', 3), 'Failed on 4');
-  // Perhaps not what you would expect, but anyway...
-  CheckEquals('123',   tiUtils.tiPad0('1234', 3), 'Failed on 1');
+  CheckEquals('1',    tiUtils.tiPad0('1',    1), 'Failed on 1');
+  CheckEquals('01',   tiUtils.tiPad0('1',    2), 'Failed on 2');
+  CheckEquals('001',  tiUtils.tiPad0('1',    3), 'Failed on 3');
+  CheckEquals('000',  tiUtils.tiPad0('',     3), 'Failed on 4');
+  // See comment in tiUtils.tiPad0() Explaining this strange result,
+  // and suggesting an improvement for L8r Ron.
+  CheckEquals('123', tiUtils.tiPad0('1234', 3), 'Failed on 5');
 end;
 
 
@@ -681,6 +730,27 @@ begin
   CheckEquals('abc' + lCr + lLf + 'def', tiUtils.tiTrimTrailingWhiteSpace('abc' + lCr + lLf + 'def'), 'Failed on 7');
 end;
 
+
+procedure TTestTIUtils.tiUniqueIntegerList;
+var
+  L: TtiUniqueIntegerList;
+begin
+  L:= TtiUniqueIntegerList.Create;
+  try
+    L.Add(1);
+    CheckEquals(1, L.Count);
+    L.Add(2);
+    CheckEquals(2, L.Count);
+    L.Add(1);
+    CheckEquals(2, L.Count);
+    L.Add(2);
+    CheckEquals(2, L.Count);
+    L.Add(3);
+    CheckEquals(3, L.Count);
+  finally
+    L.Free;
+  end;
+end;
 
 procedure TTestTIUtils.tiURIDecode;
 begin
@@ -2711,8 +2781,17 @@ begin
 end;
 
 procedure TTestTIUtils.tiAppendStringToFile;
+var
+  lsFrom : string;
+  lFileName : string;
 begin
-  Assert(false, 'Under construction');
+  ForceDirectories(TempDirectory);
+  lFileName := TempFileName('DUnitTest.txt');
+  lsFrom := BuildLongString;
+  tiUtils.tiStringToFile(lsFrom, lFileName);
+  tiUtils.tiAppendStringToFile(lsFrom, lFileName);
+  CheckEquals(tiUtils.tiFileToString(lFileName), lsFrom+lsFrom);
+  tiDeleteFile(lFileName);
 end;
 
 procedure TTestTIUtils.tiAppendStringToStream;
@@ -4045,6 +4124,11 @@ begin
       L.Remove(i);
     CheckEquals(0, L.Count);
 
+    L.Add(10);
+    L.Add(20);
+    CheckEquals(2, L.Count);
+    L.Clear;
+    CheckEquals(0, L.Count);
   finally
     L.Free;
   end;
@@ -4230,6 +4314,161 @@ begin
   if DirectoryExists(TempDirectory) then
     tiUtils.tiForceRemoveDir(TempDirectory);
   inherited;
+end;
+
+procedure TtiTokenTests.TestEmptyFinishToken1;
+begin
+  CheckEquals('a', tiToken('abc', 'bc', 1));
+end;
+
+procedure TtiTokenTests.TestEmptyFinishToken2;
+begin
+  CheckEquals('', tiToken('abc', 'bc', 2));
+end;
+
+procedure TtiTokenTests.TestEmptyMidToken1;
+begin
+  CheckEquals('', tiToken('abcbc', 'bc', 2));
+end;
+
+procedure TtiTokenTests.TestEmptyMidToken2;
+begin
+  CheckEquals('', tiToken('abcbcd', 'bc', 2));
+end;
+
+procedure TtiTokenTests.TestEmptyMidToken3;
+begin
+  CheckEquals('', tiToken('bcbcd', 'bc', 2));
+end;
+
+procedure TtiTokenTests.TestEmptyMidToken4;
+begin
+  CheckEquals('', tiToken('bcbc', 'bc', 2));
+end;
+
+procedure TtiTokenTests.TestEmptySeparator1;
+begin
+  CheckEquals('abcd', tiToken('abcd', '', 1));
+end;
+
+procedure TtiTokenTests.TestEmptySeparator2;
+begin
+  CheckEquals('abcd', tiToken('abcd', '', 2));
+end;
+
+procedure TtiTokenTests.TestEmptySeparator3;
+begin
+  CheckEquals('', tiToken('abcd', '', 0));
+end;
+
+procedure TtiTokenTests.TestEmptySeparator4;
+begin
+  CheckEquals('', tiToken('abcd', '', -1));
+end;
+
+procedure TtiTokenTests.TestEmptyStartToken1;
+begin
+  CheckEquals('', tiToken('bcd', 'bc', 1));
+end;
+
+procedure TtiTokenTests.TestEmptyStartToken2;
+begin
+  CheckEquals('d', tiToken('bcd', 'bc', 2));
+end;
+
+procedure TtiTokenTests.TestEmptyValue1;
+begin
+  CheckEquals('', tiToken('', 'bc', 1));
+end;
+
+procedure TtiTokenTests.TestEmptyValue2;
+begin
+  CheckEquals('', tiToken('', 'bc', 2));
+end;
+
+procedure TtiTokenTests.TestEmptyValue3;
+begin
+  CheckEquals('', tiToken('', 'bc', 0));
+end;
+
+procedure TtiTokenTests.TestEmptyValue4;
+begin
+  CheckEquals('', tiToken('', 'bc', -1));
+end;
+
+procedure TtiTokenTests.TestHappyPath1;
+begin
+  CheckEquals('a', tiToken('abcd', 'bc', 1));
+end;
+
+procedure TtiTokenTests.TestHappyPath2;
+begin
+  CheckEquals('d', tiToken('abcd', 'bc', 2));
+end;
+
+procedure TtiTokenTests.TestHappyPath3;
+begin
+  CheckEquals('d', tiToken('abcdbce', 'bc', 2));
+end;
+
+procedure TtiTokenTests.TestTokenIndex1;
+begin
+  CheckEquals('', tiToken('abcd', 'bc', -1));
+end;
+
+procedure TtiTokenTests.TestTokenIndex2;
+begin
+  CheckEquals('', tiToken('abcd', 'bc', 0));
+end;
+
+procedure TtiTokenTests.TestTokenIndex3;
+begin
+  CheckEquals('', tiToken('abcd', 'bc', 3));
+end;
+
+procedure TtiTokenTests.TestPartialSeparator1;
+begin
+  CheckEquals('abde', tiToken('abde', 'bc', 1));
+end;
+
+procedure TtiTokenTests.TestPartialSeparator2;
+begin
+  CheckEquals('adeb', tiToken('adeb', 'bc', 1));
+end;
+
+procedure TtiTokenTests.TestPartialSeparator3;
+begin
+  CheckEquals('bade', tiToken('bade', 'bc', 1));
+end;
+
+procedure TtiTokenTests.TestPartialSeparator4;
+begin
+  CheckEquals('', tiToken('bade', 'bc', 2));
+end;
+
+procedure TtiTokenTests.TestPartialSeparator5;
+begin
+  CheckEquals('', tiToken('adeb', 'bc', 2));
+end;
+
+procedure TtiTokenTests.TestTokenIsSeparatorSubset1;
+begin
+  CheckEquals('abc', tiToken('abc', 'abcd', 1));
+end;
+
+procedure TtiTokenTests.TestTokenIsSeparatorSubset2;
+begin
+  CheckEquals('abc', tiToken('abcabcd', 'abcd', 1));
+end;
+
+procedure TtiTokenTests.TestTokenIsSeparatorSubset3;
+begin
+  CheckEquals('abc', tiToken('abcabcde', 'abcd', 1));
+end;
+
+procedure TtiTokenTests.TestTokenIsSeparatorSubset4;
+begin
+  CheckEquals('e', tiToken('abcabcde', 'abcd', 2));
 end;
 
 end.

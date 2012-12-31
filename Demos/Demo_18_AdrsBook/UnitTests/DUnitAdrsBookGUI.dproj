@@ -47,7 +47,7 @@
 			<DCC_ExeOutput>_bin</DCC_ExeOutput>
 			<DCC_Define>DUNIT2;FASTMM;USE_JEDI_JCL;$(DCC_Define)</DCC_Define>
 			<DCC_DcuOutput>_dcu</DCC_DcuOutput>
-			<DCC_UnitSearchPath>..\..\..\..\3rdParty\FastMM;..\BOM;..\..\..\UnitTests\Common;..\..\..\Core;..\..\..\Options;..\..\..\GUI;..\..\..\..\3rdParty\DUnit;..\..\..\..\3rdParty\JCL\include;..\..\..\..\3rdParty\JCL\common;..\..\..\..\3rdParty\JCL\windows;..\..\..\..\3rdParty\JCL\include\jedi;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_UnitSearchPath>$(tiOPF3_3rdParty)\FastMM;..\BOM;..\..\..\UnitTests\Common;..\..\..\Core;..\..\..\Options;..\..\..\GUI;$(tiOPF3_3rdParty)\DUnit;$(tiOPF3_3rdParty)\JCL\include;$(tiOPF3_3rdParty)\JCL\common;$(tiOPF3_3rdParty)\JCL\windows;$(tiOPF3_3rdParty)\JCL\include\jedi;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_DependencyCheckOutputName>_bin\DUnitAdrsBookGUI.exe</DCC_DependencyCheckOutputName>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base_Win32)'!=''">
@@ -90,6 +90,7 @@
 			<DCC_MapFile>3</DCC_MapFile>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+			<Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
 			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 		</PropertyGroup>
 		<ProjectExtensions>

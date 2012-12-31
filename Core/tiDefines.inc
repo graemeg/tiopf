@@ -92,6 +92,12 @@
 // equivalents like <tn> and <fn>.
 {.$DEFINE OPTIMISE_XMLDB_SIZE}
 
+{: The TtiTestCase class adds the method UnderConstruction, that can be called
+   to force the test to fail. This can be useful while the test is being
+   written. The Fail('Under construction') call can be turned off with this
+   conditional define.}
+{.$DEFINE IGNORE_UNDER_CONSTRUCTION}
+
 // Turn ThirdPartyExceptionHandling on to change how the tiOPF handles exceptions.
 // If ThridPartyExceptionHandling is on, then an exception will usually cause
 // a scrolling exception window to display, but will not cause the application
@@ -135,6 +141,7 @@
   // These warnings might be turned back on as we fix the Unicode related warnings
   {$WARN EXPLICIT_STRING_CAST OFF}
   {$WARN EXPLICIT_STRING_CAST_LOSS OFF}
+  {$WARN HRESULT_COMPAT OFF}
 {$ENDIF}
 
 (*

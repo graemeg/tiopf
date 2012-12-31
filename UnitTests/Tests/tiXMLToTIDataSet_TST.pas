@@ -185,7 +185,7 @@ const
 
   cRowCount               = 20000;
   cImprovement            = 10;
-  cMSPer1000Rows          = 130;
+  cMSPer1000Rows          = 100;
 
 procedure RegisterTests;
 begin

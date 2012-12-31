@@ -74,8 +74,11 @@ type
   protected
     function    GetOwner: TtiCriteria; reintroduce; virtual;
     procedure   SetOwner(const Value: TtiCriteria); reintroduce; virtual;
+    procedure   AssignClassProps(ASource: TtiObject); override;
+    procedure   AssignPublicProps(ASource: TtiObject); override;
   public
-    constructor Create(pName: string); reintroduce; virtual;
+    constructor Create; overload; override;
+    constructor Create(pName: string); reintroduce; overload; virtual;
     destructor  Destroy; override;
     procedure   MapFieldNames(AClass: TtiClass);
     procedure   AddAndCriteria(ACriteria: TtiCriteria);
@@ -104,7 +107,7 @@ type
     procedure   AddNull(AAttribute: string);
     procedure   AddOrCriteria(ACriteria: TtiCriteria);
     procedure   AddOrderBy(AField: string; ASorterAscending: boolean = True); overload;
-    procedure   AddOrderBy(AFields: array of string); overload;
+    procedure   AddOrderBy(AFields: array of string; ASorterAscending: boolean = True); overload;
     procedure   AddOrderByAscending(AField: string); overload;
     procedure   AddOrderByAscending(AFields: array of string); overload;
     procedure   AddOrderByDescending(AField: string); overload;
@@ -150,6 +153,7 @@ type
   protected
     function    GetOwner: TtiCriteria; reintroduce; virtual;
     procedure   SetOwner(const Value: TtiCriteria); reintroduce; virtual;
+    procedure   AssignPublicProps(ASource: TtiObject); override;
   public
     constructor Create(AAttribute: string; AValue: variant; ANegative: boolean = False; AFieldName: string = ''); reintroduce; virtual;
     destructor  Destroy; override;
@@ -273,6 +277,7 @@ uses
   SysUtils
   ,tiAutoMap
   ,tiOPFManager
+  ,tiConstants
   ;
 
   
@@ -340,10 +345,9 @@ end;
 
 { TtiCriteria }
 
-constructor TtiCriteria.Create(pName: string);
+constructor TtiCriteria.Create;
 begin
   inherited Create;
-  FName           := pName;
   FCriteriaType   := crNONE;
   FisEmbraced     := False;
 
@@ -351,15 +355,15 @@ begin
   FCriterias.Owner                := Self;
   FCriterias.OwnsObjects          := true;
   FCriterias.AutoSetItemOwner     := False;
-  
+
   FSelectionCriterias := TtiSelectionCriteriaList.Create;
   FSelectionCriterias.Owner       := Self;
   FSelectionCriterias.OwnsObjects := True;
-  
+
   FGroupByList := TtiColumns.Create;
   FGroupByList.Owner              := Self;
   FGroupByList.OwnsObjects        := True;
-  
+
   FOrderByList := TtiColumns.Create;
   FOrderByList.Owner              := Self;
   FOrderByList.OwnsObjects        := true;
@@ -367,6 +371,12 @@ begin
   FCriteriaAttrColMaps            := TtiAttrColMaps.Create;
   FCriteriaAttrColMaps.OwnsObjects := False;
   FCriteriaAttrColMaps.AutoSetItemOwner := False;
+end;
+
+constructor TtiCriteria.Create(pName: string);
+begin
+  Create;
+  FName := pName;
 end;
 
 destructor TtiCriteria.Destroy;
@@ -605,40 +615,32 @@ begin
   FOrderByList.Add(lData);
 end;
 
-procedure TtiCriteria.AddOrderBy(AFields: array of string);
+procedure TtiCriteria.AddOrderBy(AFields: array of string; ASorterAscending: boolean = True);
 var
   i: Integer;
 begin
   for i := Low(AFields) to High(AFields) do
-    AddOrderBy(AFields[i], true);
+    AddOrderBy(AFields[i], ASorterAscending);
 end;
 
 procedure TtiCriteria.AddOrderByAscending(AField: string);
 begin
-  Assert(AField <> '', 'AField is blank!');
   AddOrderBy(AField, true);
 end;
 
 procedure TtiCriteria.AddOrderByAscending(AFields: array of string);
-var
-  i: Integer;
 begin
-  for i := Low(AFields) to High(AFields) do
-    AddOrderByAscending(AFields[i]);
+  AddOrderBy(AFields, true);
 end;
 
 procedure TtiCriteria.AddOrderByDescending(AField: string);
 begin
-  Assert(AField <> '', 'AField is blank!');
   AddOrderBy(AField, false);
 end;
 
 procedure TtiCriteria.AddOrderByDescending(AFields: array of string);
-var
-  i: Integer;
 begin
-  for i := Low(AFields) to High(AFields) do
-    AddOrderByDescending(AFields[i]);
+  AddOrderBy(AFields, false);
 end;
 
 procedure TtiCriteria.AddSQL(ASQLStm: string);
@@ -647,6 +649,31 @@ var
 begin
   lData := TtiSQLCriteria.Create(ASQLStm);
   FSelectionCriterias.Add(lData);
+end;
+
+procedure TtiCriteria.AssignClassProps(ASource: TtiObject);
+var
+  LSource: TtiCriteria;
+begin
+  Assert(ASource.TestValid(TtiCriteria), CTIErrorInvalidObject);
+  LSource := ASource as TtiCriteria;
+  FGroupByList.Assign(LSource.FGroupByList);
+  FOrderByList.Assign(LSource.FOrderByList);
+  FCriteriaAttrColMaps.Assign(LSource.FCriteriaAttrColMaps);
+  FCriterias.Assign(LSource.FCriterias);
+  FSelectionCriterias.Assign(LSource.FSelectionCriterias);
+end;
+
+procedure TtiCriteria.AssignPublicProps(ASource: TtiObject);
+var
+  LSource: TtiCriteria;
+begin
+  Assert(ASource.TestValid(TtiCriteria), CTIErrorInvalidObject);
+  inherited;
+  LSource := ASource as TtiCriteria;
+  FCriteriaType := LSource.FCriteriaType;
+  FisEmbraced := LSource.FisEmbraced;
+  FName := LSource.FName;
 end;
 
 procedure TtiCriteria.ClearAll;
@@ -770,6 +797,19 @@ end;
 
 
 { TtiSelectionCriteriaAbs }
+
+procedure TtiSelectionCriteriaAbs.AssignPublicProps(ASource: TtiObject);
+var
+  LSource: TtiSelectionCriteriaAbs;
+begin
+  Assert(ASource.TestValid(TtiSelectionCriteriaAbs), CTIErrorInvalidObject);
+  inherited;
+  LSource := ASource as TtiSelectionCriteriaAbs;
+  FFieldName := LSource.FFieldName;
+  FAttribute := LSource.FAttribute;
+  FisNegative := LSource.FisNegative;
+  FValue := LSource.FValue;
+end;
 
 constructor TtiSelectionCriteriaAbs.Create(AAttribute: string; AValue: variant;
     ANegative: boolean = False; AFieldName: string = '');

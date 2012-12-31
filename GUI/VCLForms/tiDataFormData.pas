@@ -28,12 +28,14 @@ type
     function GetIsDirty: boolean; virtual;
     procedure DoPrepareSave; virtual;
     procedure DoSave; virtual;
+    procedure DoAfterSave; virtual;
     procedure DoCancel; virtual;
   public
     constructor Create(AOwnsData: boolean; ASavesData: boolean; AOwnsReferenceData: boolean = false); reintroduce; virtual;
     destructor Destroy; override;
     procedure PrepareSave;
     procedure Save; override;
+    procedure AfterSave;
     procedure Cancel;
     function IsValid(var AErrorMessage: string): boolean; overload;
     function IsValid: boolean; overload;
@@ -56,6 +58,7 @@ type
     procedure SetData(AData: TtiObject); override;
     function GetIsDirty: boolean; override;
     procedure DoPrepareSave; override;
+    procedure DoAfterSave; override;
     procedure DoUndo; virtual;
   public
     destructor Destroy; override;
@@ -100,6 +103,11 @@ begin
   DoSave;
 end;
 
+procedure TtiDataFormData.AfterSave;
+begin
+  DoAfterSave;
+end;
+
 procedure TtiDataFormData.Cancel;
 begin
   DoCancel;
@@ -117,6 +125,11 @@ procedure TtiDataFormData.DoSave;
 begin
   if Assigned(FOnEditsSave) then
     FOnEditsSave(FData);
+end;
+
+procedure TtiDataFormData.DoAfterSave;
+begin
+  // Implement in descendants if needed
 end;
 
 procedure TtiDataFormData.DoCancel;
@@ -189,8 +202,21 @@ procedure TtiDataFormClonedData.DoPrepareSave;
 begin
   Assert(FEditedData.TestValid(TtiObject), CTIErrorInvalidObject);
   inherited;
+  // Copy the edited data to the original (the object to be saved)
   OriginalData.Assign(EditedData);
   EditedData.ObjectState := OriginalData.ObjectState;
+end;
+
+procedure TtiDataFormClonedData.DoAfterSave;
+begin
+  Assert(FEditedData.TestValid(TtiObject), CTIErrorInvalidObject);
+  inherited;
+  // To support Save Without Close we should copy the saved (original) data
+  // back to the edited data so that the data to edit is not considered
+  // modified. When saving the ObjectState, LastChanged and other properties
+  // might change. Control bindings need to be reset. For the moment this is
+  // done within specific forms DoAfterSave.
+  //EditedData.Assign(OriginalData);
 end;
 
 procedure TtiDataFormClonedData.DoUndo;

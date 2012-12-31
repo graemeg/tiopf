@@ -14,7 +14,7 @@ const
   cTIPersistBDEParadox    = 'BDEParadox';
   cTIPersistCrSdac        = 'CrSdac';
   cTIPersistCSV           = 'CSV';
-  cTIPersistDOA           = 'DOA';
+  cTIPersistDOA           = 'DOA'; CtiQueryOptionDOAReadBuffer = 'ReadBuffer';
   cTIPersistFBL           = 'FBL';          // Free Pascal only
   cTIPersistFIBP          = 'FIBP';         // FIBPlus
   cTIPersistIBO           = 'IBO';
@@ -31,7 +31,7 @@ const
   cTIPersistTAB           = 'TAB';
   cTIPersistXML           = 'XML';          // ToDo: Rename this MSXML
   cTIPersistXMLLight      = 'XMLLight';
-  cTIPersistZeosFB        = 'Zeos_FB';
+  cTIPersistZeosFB15      = 'Zeos_FB15';
   cTIPersistZeosMySQL41   = 'Zeos_MySQL41';
   cTIPersistZeosMySQL50   = 'Zeos_MySQL50';
   cTIPersistDBISAM4       = 'DBISAM4';
@@ -39,8 +39,6 @@ const
   cTIPersistUIB_EB        = 'UIB_EB';  // Embedded server
   cTIPersistUIB_FB        = 'UIB_FB';  // Firebird server
   cTIPersistUIB_IB        = 'UIB_IB';  // Interbase server
-
-  cDBProxyServerTimeOut   = 1; // Minute
 
   cTIPersistPackageRootName = 'tiPersist';
   // When multiple database names are provided to GTIOPFManager.DetectAndConnect()
@@ -50,19 +48,19 @@ const
 
   CTIErrorInternal = 'tiOPF Internal Error: ';
   CTIErrorInvalidObject = CTIErrorInternal + ' TtiBaseObject.TestValid failed';
-  // Don't use these ones, they are to allow old code to compile
-  //CTIErrorInvalidObject = CTIErrorInvalidObject;
-  //CTIErrorInvalidObject = CTIErrorInvalidObject;
 
   // Constants for the remote persistence layer
-  cLocalHost = 'http://localhost:80';
-  cRemoteServerMainFormCaption = 'TechInsite DB Proxy Server';
-  cTIDBProxyServiceName = 'tiDBProxyServer';
-  cSecToTimeOutLocked = 999999;
+  CDefaultPort                            = '80';
+  CLocalHost                              = 'http://localhost:' + CDefaultPort;
+  CRemoteServerMainFormCaption            = 'TechInsite DB Proxy Server';
+  CTIDBProxyServiceName                   = 'tiDBProxyServer';
+  CDefaultStatefulDBConnectionPoolTimeOut = 1; // Minute
+  CSecToTimeOutLocked                     = 999999;
 
   CTIProtocolHTTP = 'http';
   CTIProtocolFile = 'file';
   CTIProtocolSelf = 'self';
+  CTIProtocolMailTo = 'mailto';
 
 {$IFDEF DELPHIXE2}
   cPackageSuffix = '230';

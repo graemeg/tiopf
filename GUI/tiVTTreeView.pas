@@ -172,6 +172,7 @@ type
     FApplyFilter: Boolean;
     FOnFilter: TtiVTTVOnFilterDataEvent;
     FOnNodeCheckboxClick: TtiVTTVNodeCheckboxClickEvent;
+    FOnGetImageIndex: TtiVTGetImageIndexEvent;
 ///
     FpmiShowFind: TMenuItem;
     FSearching: boolean;
@@ -292,6 +293,7 @@ type
     property OnFilter: TtiVTTVOnFilterDataEvent read FOnFilter write FOnFilter;
     property OnKeyDown: TKeyEvent read GetOnKeyDown write SetOnKeyDown;
     property OnSelectNode: TtiVTTVNodeEvent read FOnSelectNode write FOnSelectNode;
+    property OnGetImageIndex: TtiVTGetImageIndexEvent read FOnGetImageIndex write FOnGetImageIndex;
 
     property OnGetNodeHint;
     property OnPaintText;
@@ -310,6 +312,7 @@ uses
   ,tiResources
   ,tiUtils
   ,tiGUIConstants
+  ,tiRTTI
   ,SysUtils
   ,TypInfo
  ;
@@ -411,7 +414,7 @@ begin
 
   VT.TreeOptions.AnimationOptions := VT.TreeOptions.AnimationOptions + [toAnimatedToggle];
   VT.CheckImageKind := ckSystemDefault;
-  
+
   FVTDefaultDataMapping := TtiVTTVDataMapping.Create(nil);
   FVTDefaultDataMapping.DisplayPropName := 'Caption';
   FVTDefaultDataMapping.ImageIndex := 0;
@@ -704,10 +707,8 @@ end;
 procedure TtiVTTreeView.DoOnChange(sender: TBaseVirtualTree; node: PVirtualNode);
 begin
   if Assigned(Node) and Assigned(FOnSelectNode) then
-  begin
     FOnSelectNode(Self, Node, GetObjectFromNode(Node));
-    FCtrlBtnPnl.EnableButtons;
-  end;
+  FCtrlBtnPnl.EnableButtons;
 end;
 
 procedure TtiVTTreeView.DoOnCheckChange(Sender: TBaseVirtualTree;
@@ -1173,6 +1174,7 @@ begin
   tiCtrlButtonPanel.CreateCtrlBtnPnl(FCtrlBtnPnl, AValue, Self,
                                       CanView, CanInsert,
                                        CanEdit,CanDelete);
+  FCtrlBtnPnl.Align := alTop;
 
   FCtrlBtnPnl.OnNew      := DoInsert;
   FCtrlBtnPnl.OnEdit     := DoEdit;
@@ -1188,25 +1190,8 @@ begin
 end;
 
 procedure TtiVTTreeView.DoReSize(Sender: TObject);
-var
-  lTop : integer;
 begin
-  if FCtrlBtnPnl.VisibleButtons = [] then
-    lTop := 1
-  else
-    lTop := FCtrlBtnPnl.Height + 2;
-
-  VT.SetBounds(
-    1,
-    lTop,
-    Width - 2,
-    Height - lTop - 1 - SP.Height);
-
-  VT.Anchors := [akLeft, akTop, akRight, akBottom];
-
-  // Hack to correct values for SP
-  // SP.Left previously 0, not 1
-//  SP.SetBounds(VT.Left, VT.Top + VT.Height, VT.Width, SP.Height);
+  // Do nothing
 end;
 
 procedure TtiVTTreeView.DoShowFind(Sender: TObject);
@@ -1417,7 +1402,10 @@ procedure TtiVTTreeView.DoOnGetImageIndex(
   var Ghosted: Boolean;
   var ImageIndex: Integer);
 begin
-  if Assigned(GetMappingForNode(Node)) then
+  if Assigned(FOnGetImageIndex) then
+    FOnGetImageIndex(Self, Node, GetObjectFromNode(Node), Kind, Column,
+        Ghosted, ImageIndex)
+  else if Assigned(GetMappingForNode(Node)) then
     ImageIndex := GetMappingForNode(Node).ImageIndex;
 end;
 
@@ -1522,7 +1510,7 @@ begin
   Result := Assigned(AtiVTTVDataMapping) and Assigned(AObj);
   if Result then
     Result := IsClassOfType  (AObj, AtiVTTVDataMapping.DataClass.ClassName)
-          and IsPublishedProp(AObj, AtiVTTVDataMapping.DisplayPropName   );
+          and tiIsPublishedProp(AObj, AtiVTTVDataMapping.DisplayPropName);
 end;
 
 function TtiVTTreeView.CalcMappingForObject(pObj: TtiObject): TtiVTTVDataMapping;
@@ -1534,7 +1522,7 @@ begin
     if IsClassOfType(pObj, DataMappings.Items[i].DataClass.ClassName) then
     begin
       Result := DataMappings.Items[i];
-      if (IsPublishedProp(pObj, Result.DisplayPropName))
+      if (tiIsPublishedProp(pObj, Result.DisplayPropName))
       or (assigned(Result.OnDeriveNodeText)) then
         Exit; //==>
     end;

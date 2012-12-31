@@ -17,7 +17,7 @@ uses
 
 const
   cErrorUnableToFindPerLayerToUnload = 'Unable to determine which persistence layer to unload.';
-  cErrorAttemtpToLoadPerLayerThatsNotLoaded = 'Attempt to unload persistence layer <%s> that''s not currently loaded.';
+  cErrorAttemptToLoadPerLayerThatsNotLoaded = 'Attempt to unload persistence layer <%s> that''s not currently loaded.';
   CDefaultDatabaseName = 'Demo';
   CDefaultDatabaseDirectory = '..' + PathDelim + '_Data' + PathDelim;
 
@@ -441,7 +441,7 @@ begin
     raise EtiOPFProgrammerException.Create(cErrorUnableToFindPerLayerToUnload);
 
   if not IsLoaded(APersistenceLayerName) then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorAttemtpToLoadPerLayerThatsNotLoaded, [LPackageID]);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorAttemptToLoadPerLayerThatsNotLoaded, [LPackageID]);
 
   LPersistenceLayer := FindByPersistenceLayerName(APersistenceLayerName);
   Assert(LPersistenceLayer.TestValid, CTIErrorInvalidObject);
@@ -542,8 +542,8 @@ function TtiPersistenceLayer.TestConnectToDatabase(const ADatabaseName,
   AUserName, APassword, AParams: string): boolean;
 begin
   Assert(DatabaseClass<>nil, 'DatabaseClass not assigned');
-  result := DatabaseClass.TestConnectTo(ADatabaseName, AUserName, APassword,
-                                           AParams);
+  result := DatabaseClass.TestConnectTo(
+    ADatabaseName, AUserName, APassword, AParams);
 end;
 
 constructor TtiPersistenceLayers.Create;

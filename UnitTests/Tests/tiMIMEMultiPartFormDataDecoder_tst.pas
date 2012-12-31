@@ -4,13 +4,17 @@ unit tiMIMEMultiPartFormDataDecoder_tst;
 
 interface
 uses
-   tiTestFrameWork;
+   tiTestFrameWork,
+   tiMIMEMultipartFormDataDecoder;
 
 type
 
   TtiMIMEMultiPartFormDataDecoderTestCase = class(TtiTestCase)
   private
+    FMimeDecoder: TtiMIMEMultipartFormDataDecoder;
   protected
+    procedure SetUp; override;
+    procedure TearDown; override;
     function PathToInputFiles: string;
     procedure MIMEiMultipartFormDataDecoder_Execute(
       const AInputFileName: string;
@@ -35,11 +39,12 @@ procedure RegisterTests;
 
 implementation
 uses
-  tiUtils, tiDialogs,
+  tiUtils,
+  tiDialogs,
   SysUtils,
   Classes,
-  tiTestDependencies,
-  tiMIMEMultipartFormDataDecoder;
+  tiTestDependencies
+  ;
 
 procedure RegisterTests;
 begin
@@ -47,6 +52,18 @@ begin
 end;
 
 { TtiMIMEMultiPartFormDataDecoderTestCase }
+
+procedure TtiMIMEMultiPartFormDataDecoderTestCase.SetUp;
+begin
+  inherited;
+  FMimeDecoder:= TtiMIMEMultipartFormDataDecoder.Create;
+end;
+
+procedure TtiMIMEMultiPartFormDataDecoderTestCase.TearDown;
+begin
+  FMimeDecoder.Free;
+  inherited;
+end;
 
 function TtiMIMEMultiPartFormDataDecoderTestCase.PathToInputFiles: string;
 begin
@@ -57,39 +74,34 @@ procedure TtiMIMEMultiPartFormDataDecoderTestCase.MIMEiMultipartFormDataDecoder_
   const AInputFileName, AReturnFormat, AEmail, AFieldFileName,
   ADataFileName: string);
 var
-  LDecoder: TtiMIMEMultipartFormDataDecoder;
   LStream: TMemoryStream;
   LExpected: TMemoryStream;
 begin
   LStream:= nil;
-  LDecoder:= nil;
   try
     LStream:= TMemoryStream.Create;
     tiFileToStream(PathToInputFiles + AInputFileName, LStream);
-    LDecoder:= TtiMIMEMultipartFormDataDecoder.Create;
-    LDecoder.Execute(LStream);
 
-    CheckEquals(3, LDecoder.ItemList.Count);
-    CheckEquals('pdf_file', LDecoder.ItemList.Items[0].FieldName);
-    CheckEquals(AFieldFileName, LDecoder.ItemList.Items[0].FileName);
+    FMimeDecoder.Execute(LStream);
+    CheckEquals(3, FMimeDecoder.ItemList.Count);
+    CheckEquals('pdf_file', FMimeDecoder.ItemList.Items[0].FieldName);
+    CheckEquals(AFieldFileName, FMimeDecoder.ItemList.Items[0].FileName);
 
     LExpected:= TMemoryStream.Create;
     try
       LExpected.LoadFromFile(PathToInputFiles + ADataFileName);
-      CheckStreamContentsSame(LExpected, LDecoder.ItemList.Items[0].Data);
+      CheckStreamContentsSame(LExpected, FMimeDecoder.ItemList.Items[0].Data);
     finally
       LExpected.Free;
     end;
 
-    CheckEquals('return_format', LDecoder.ItemList.Items[1].FieldName);
-    CheckEquals(AReturnFormat, LDecoder.ItemList.Items[1].DataAsString);
+    CheckEquals('return_format', FMimeDecoder.ItemList.Items[1].FieldName);
+    CheckEquals(AReturnFormat, FMimeDecoder.ItemList.Items[1].DataAsString);
 
-    CheckEquals('email', LDecoder.ItemList.Items[2].FieldName);
-    CheckEquals(AEmail, LDecoder.ItemList.Items[2].DataAsString);
-
+    CheckEquals('email', FMimeDecoder.ItemList.Items[2].FieldName);
+    CheckEquals(AEmail, FMimeDecoder.ItemList.Items[2].DataAsString);
   finally
     LStream.Free;
-    LDecoder.Free;
   end;
 end;
 
@@ -114,28 +126,77 @@ begin
 end;
 
 procedure TtiMIMEMultiPartFormDataDecoderTestCase.MIMEiMultipartFormDataDecoder_FileData;
+var
+  LStream : TMemoryStream;
 begin
+  LStream := TMemoryStream.Create;
+  try
+    MIMEiMultipartFormDataDecoder_Execute(
+    'FormParams-text-emptyemail.dat',
+    'QIF',
+    '',
+    'ATestUpload.txt',
+    'MIMEUploadTest.txt');
 
+    FMimeDecoder.FileData('pdf_file',LStream);
+    CheckEquals(tiStreamtoString(LStream),'AAAAAAAA'+ CrLf + 'BBBBBBBB'+ CrLf + 'CCCCCCCC'+ CrLf);
+  finally
+    LStream.Free;
+  end;
 end;
 
 procedure TtiMIMEMultiPartFormDataDecoderTestCase.MIMEiMultipartFormDataDecoder_FileName;
 begin
+  MIMEiMultipartFormDataDecoder_Execute(
+    'FormParams-text-emptyemail.dat',
+    'QIF',
+    '',
+    'ATestUpload.txt',
+    'MIMEUploadTest.txt');
 
+  CheckEquals(FMimeDecoder.FileName('pdf_file'),'ATestUpload.txt');
 end;
 
 procedure TtiMIMEMultiPartFormDataDecoderTestCase.MIMEiMultipartFormDataDecoder_SaveFileDataToFile;
 begin
+  MIMEiMultipartFormDataDecoder_Execute(
+  'FormParams-text.dat',
+  'QIF',
+  'test',
+  'ATestUpload.txt',
+  'MIMEUploadTest.txt');
 
+  FMimeDecoder.SaveFileDataToFile('email',PathToInputFiles +'test.out');
+  CheckEquals('test', tiFileToString(PathToInputFiles +'test.out'));
+  tiDeleteFile(PathToInputFiles +'test.out');
 end;
 
 procedure TtiMIMEMultiPartFormDataDecoderTestCase.MIMEiMultipartFormDataDecoder_StringValue;
 begin
+  MIMEiMultipartFormDataDecoder_Execute(
+      'FormParams-text.dat',
+      'QIF',
+      'test',
+      'ATestUpload.txt',
+      'MIMEUploadTest.txt');
 
+  CheckEquals(FMimeDecoder.StringValue('email'),'test');
 end;
 
 procedure TtiMIMEMultiPartFormDataDecoderTestCase.MIMEiMultipartFormDataDecoder_ValueExists;
 begin
-
+  MIMEiMultipartFormDataDecoder_Execute(
+  'FormParams-text-emptyemail.dat',
+  'QIF',
+  '',
+  'ATestUpload.txt',
+  'MIMEUploadTest.txt');
+  if not FMimeDecoder.ValueExists('email')
+  then
+    Check(false,'email section not found when it should have been');
+  if FMimeDecoder.ValueExists('email1')
+  then
+    Check(false,'section email1 found when it shouldnt have been');
 end;
 
 procedure TtiMIMEMultiPartFormDataDecoderTestCase.MIMEiMultipartFormDataDecoder_Execute_PDF;

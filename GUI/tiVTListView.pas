@@ -127,14 +127,6 @@ type
   TtiVTOnFilterDataEvent  = procedure(AData  : TtiObject; var pInclude : boolean) of object;
 
 
-  TtiVTGetImageIndexEvent = procedure(pSender: TtiCustomVirtualTree;
-                                      pNode: PVirtualNode;
-                                      AData: TtiObject;
-                                      pKind: TVTImageKind;
-                                      pColumn: TColumnIndex;
-                                      var pGhosted: Boolean;
-                                      var pImageIndex: Integer) of object;
-
   //TtiVTEvent              = procedure(pVT : TtiCustomVirtualTree) of object;
   TtiVTItemEvent          = procedure(pVT : TtiCustomVirtualTree; AData : TtiObject; AItem : PVirtualNode) of object;
   TtiVTItemEditEvent      = procedure(pVT : TtiCustomVirtualTree; AData : TtiObject; AItem : PVirtualNode ) of object;
@@ -1522,13 +1514,11 @@ begin
   if not Assigned(Data) then
     Exit;
 
-  if SortOrders.Count = 0 then
-    raise Exception.Create('No sort orders defined');
-
 {$IFDEF _PROFILE}
   StartTick := GetTickCount;
 {$ENDIF}
-  FFilteredData.SortList(SortProc);
+  if SortOrders.Count > 0 then
+    FFilteredData.SortList(SortProc);
   FSorted := true;
 
   FGroupingApplied := AApplyGrouping;
@@ -2692,8 +2682,6 @@ begin
   if Enabled <> AValue then
   begin
     inherited;
-    VT.Enabled := AValue;
-    // ToDo: Make these properties on TtiCustomVirtualTree;
     if AValue then
       VT.Color := clWindow
     else

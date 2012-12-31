@@ -46,6 +46,9 @@ type
 
   TtiBaseObjectClass = class of TtiBaseObject;
 
+const
+  CAllowNil = true;
+
 implementation
 {$IFNDEF FPC}
 uses

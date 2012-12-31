@@ -1,4 +1,4 @@
-﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
 			<ProjectGuid>{d9255806-549b-490e-b4ef-81ea43c76498}</ProjectGuid>
 			<MainSource>tiOPFCore.dpk</MainSource>

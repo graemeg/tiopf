@@ -39,9 +39,6 @@ type
     procedure HTTPGet_BlockResponseEvent(AContext:TIdContext;
                            ARequestInfo: TIdHTTPRequestInfo;
                            AResponseInfo: TIdHTTPResponseInfo);
-    procedure HTTPGetCache_Event(AContext:TIdContext;
-                           ARequestInfo: TIdHTTPRequestInfo;
-                           AResponseInfo: TIdHTTPResponseInfo);
 
     procedure tiHTTPGetTest(AClass: TtiHTTPClass);
     procedure tiHTTPPostTest(AClass: TtiHTTPClass);
@@ -61,7 +58,7 @@ type
     procedure CheckTIOPFBlockHeader(const ABlockHeader: string;
                                     const ABlockIndex, ABlockCount, ABlockSize, ATransID: Longword);
     function  GetRandom: string;
-    function  IE7OrAboveInstalled: boolean;
+
 
   protected
     procedure SetUpOnce; override;
@@ -72,6 +69,7 @@ type
 
     procedure StringStreamCopyFrom;
     procedure CorrectURL;
+    procedure tiPortFromURL;
     procedure tiMakeTIOPFHTTPBlockHeader;
     procedure tiParseTIOPFHTTPBlockHeader;
 
@@ -88,8 +86,6 @@ type
     procedure tiHTTPIndyPostCustomHeaderInput;
     procedure tiHTTPIndyPostCustomHeaderOutput;
     procedure tiHTTPIndyPostBlockResponse;
-
-    procedure tiHTTPMSXMLHTTPGetCacheFeature;
 
     procedure tiHTTPMSXMLHTTPGet;
     procedure tiHTTPMSXMLHTTPGetError;
@@ -134,7 +130,7 @@ const
   cTestParams  = 'prop1=value1,prop2=2,prop3=1.234';
   cExpectedResponseText = 'HTTP/1.1 200 OK';
   cExpectedResponseErrorText = 'HTTP/1.1 500 Internal Server Error';
-  cExpectedResponseErrorTextCountAttempts = 'HTTP/1.1 500 Internal Server Error (After 1 attempts)';
+  cExpectedResponseErrorTextCountAttempts = 'HTTP/1.1 500 Internal Server Error';
 
   cIndyTimePerCall    = 50;
   cMSXMLTimePerCall   = 65;
@@ -238,8 +234,8 @@ begin
       if LHTTP is TtiHTTPMSXML then
         (LHTTP as TtiHTTPMSXML).AutoFlushCache:= false;
 
-      tiStringToStream(cTestParams, LHTTP.Input);
-      LHTTP.Get(MakeTestURL(cTestDocName));
+      //Get passes params in URL rather than body like post
+      LHTTP.Get(MakeTestURL(cTestDocName + '?' + cTestParams));
       lActual := tiStreamToString(LHTTP.Output);
       lExpected := MakeXMLResponse(cTestDocName, cTestParams);
       CheckEquals(cTestDocName, FDocName, 'DocName');
@@ -427,31 +423,6 @@ begin
   Check(gTIHTTPClass = TtiHTTPIndy, cHTTPIndy);
 end;
 
-function TTestTIHTTP.IE7OrAboveInstalled: boolean;
-var
-  LReg: TRegistry;
-  LVersionReg: string;
-  LVersionExtracted: string;
-  LVersion: integer;
-begin
-  Result:= False;
-  //See http://support.microsoft.com/kb/164539 for details
-  LReg:= TRegistry.Create;
-  try
-    LReg.RootKey:= HKEY_LOCAL_MACHINE;
-    if LReg.KeyExists('Software\Microsoft\Internet Explorer') then
-    begin
-      LReg.OpenKeyReadOnly('Software\Microsoft\Internet Explorer');
-      LVersionReg:= LReg.ReadString('Version');
-      LVersionExtracted:= tiToken(LVersionReg, '.', 1);
-      LVersion:= StrToIntDef(LVersionExtracted, 0);
-      Result:= LVersion >= 7;
-    end;
-  finally
-    LReg.Free;
-  end;
-end;
-
 procedure TTestTIHTTP.IsInstanceOfType;
 var
   LHTTP: TtiHTTPAbs;
@@ -577,6 +548,32 @@ begin
   finally
     LHTTP.Free;
   end;
+end;
+
+procedure TTestTIHTTP.tiPortFromURL;
+var
+  LDefPort : word;
+begin
+  LDefPort := StrToInt(tiConstants.CDefaultPort);
+
+  CheckEquals(1234,tiHTTP.tiPortFromURL('http://localhost:1234',LDefPort));
+  //Invalid should be default
+  CheckEquals(LDefPort,tiHTTP.tiPortFromURL('http://localhost:/81',LDefPort));
+  CheckEquals(LDefPort,tiHTTP.tiPortFromURL('http://localhost/test:123',LDefPort));
+  CheckEquals(123,tiHTTP.tiPortFromURL('http://localhost:123?param=value',LDefPort));
+  CheckEquals(LDefPort,tiHTTP.tiPortFromURL('http://localhost/kjf/ksd:123/aaa',LDefPort));
+  CheckEquals(11,tiHTTP.tiPortFromURL('http://localhost:11?param="value\value"',LDefPort));
+  CheckEquals(65535,tiHTTP.tiPortFromURL('http://localhost:65535?param="value\value"',LDefPort));
+  CheckEquals(LDefPort,tiHTTP.tiPortFromURL('http://localhost:65536?param="value\value"',LDefPort));
+  CheckEquals(1,tiHTTP.tiPortFromURL('http://localhost:1/param="value\value"',LDefPort));
+  CheckEquals(LDefPort,tiHTTP.tiPortFromURL('://localhost:1234',LDefPort));
+  CheckEquals(LDefPort,tiHTTP.tiPortFromURL('localhost:5555',LDefPort));
+  CheckEquals(LDefPort,tiHTTP.tiPortFromURL(':6543',LDefPort));
+  CheckEquals(LDefPort,tiHTTP.tiPortFromURL('dfasdfsdf',LDefPort));
+  CheckEquals(LDefPort,tiHTTP.tiPortFromURL('http://localhost:012345',LDefPort));
+  CheckEquals(1234,tiHTTP.tiPortFromURL('http://localhost:01234',LDefPort));
+  CheckEquals(LDefPort,tiHTTP.tiPortFromURL('ftp://localhost:0',LDefPort));
+  CheckEquals(LDefPort,tiHTTP.tiPortFromURL('',LDefPort));
 end;
 
 function TTestTIHTTP.MakeTestURL(const ADocPath: string): string;
@@ -939,86 +936,6 @@ begin
   end;
 end;
 
-procedure TTestTIHTTP.tiHTTPMSXMLHTTPGetCacheFeature;
-var
-  LHTTP : TtiHTTPMSXML;
-  LActual  : string;
-  LRandom: string;
-begin
 
-  // Read about it here: http://support.microsoft.com/kb/q201535/
-  // and here: http://en.wikipedia.org/wiki/XMLHTTP#Microsoft_Internet_Explorer_Cache_issues
-  // If this test starts failing, check the value of IE's "Check for newer versions of sotred pages"
-  // under Tools | Internet Options | General | Temporary internet files | Settings...
-  // Or, set the registry setting:
-  //  HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\InternetSettings
-  //    SyncMode5 = 0
-
-  LRandom:= GetRandom; // To stop caching from previous tests
-  FHTTPServer.OnCommandGet:= HTTPGetCache_Event;
-  FHTTPServer.Active:= True;
-  try
-    LHTTP := TtiHTTPMSXML.Create;
-    try
-      LHTTP.AutoFlushCache:= false;
-
-      FExpectedResult:= 'test';
-      LHTTP.Get(MakeTestURL(cTestDocName+LRandom));
-      LActual := tiStreamToString(LHTTP.Output);
-      CheckEquals('test', LActual, '#1');
-
-      FExpectedResult:= 'test1';
-      LHTTP.Get(MakeTestURL(cTestDocName+LRandom));
-      LActual := tiStreamToString(LHTTP.Output);
-
-      // Should return the old page.
-      // If the test is failing here, change IE's cache setting as described
-      // above.
-      if IE7OrAboveInstalled then
-        CheckEquals('test', LActual, '#2')
-      else
-        CheckEquals('test1', LActual, '#2');
-
-      FExpectedResult:= 'test3';
-      LHTTP.Get(MakeTestURL(cTestDocName+LRandom) + '?param=1');
-      LActual := tiStreamToString(LHTTP.Output);
-      // Should return the new page
-      CheckEquals('test3', LActual, '#3');
-
-    finally
-      LHTTP.Free;
-    end;
-
-    LHTTP := TtiHTTPMSXML.Create;
-    try
-      LHTTP.AutoFlushCache:= true;
-      FExpectedResult:= 'test';
-      LHTTP.Get(MakeTestURL(cTestDocName));
-      LActual := tiStreamToString(LHTTP.Output);
-      CheckEquals('test', LActual, '#1');
-
-      FExpectedResult:= 'test1';
-      LHTTP.Get(MakeTestURL(cTestDocName));
-      LActual := tiStreamToString(LHTTP.Output);
-      CheckEquals('test1', LActual, '#2');
-
-      FExpectedResult:= 'test3';
-      LHTTP.Get(MakeTestURL(cTestDocName));
-      LActual := tiStreamToString(LHTTP.Output);
-      CheckEquals('test3', LActual, '#3');
-    finally
-      LHTTP.Free;
-    end;
-
-  finally
-    FHTTPServer.Active:= False;
-  end;
-end;
-
-procedure TTestTIHTTP.HTTPGetCache_Event(AContext: TIdContext;
-  ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
-begin
-  AResponseInfo.ContentText:= FExpectedResult;
-end;
 
 end.

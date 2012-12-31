@@ -53,6 +53,7 @@ type
     procedure SetData(const AValue: TtiObject);
     property  FormData: TtiDataFormData read FFormData;
     procedure DoSetControlDataBindings; virtual;
+    function AllowUneditedData: boolean; virtual;
   public
     destructor Destroy; override;
 
@@ -85,7 +86,6 @@ uses
 
 {$R *.dfm}
 
-
 destructor TFormTIPopupData.Destroy;
 begin
   FFormData.Free;
@@ -109,7 +109,7 @@ begin
   Assert(FaOK <> nil, 'FaOK must be assigned');
   Assert(FaCancel <> nil, 'FaCancel must be assigned');
   LFormIsValid:= FormIsValid(LMessage);
-  FaOK.Enabled := LFormIsValid and FormDataIsEdited;
+  FaOK.Enabled := LFormIsValid and (AllowUneditedData or FormDataIsEdited);
   if LMessage <> FLastErrorMessage then
   begin
     gAMS.FormErrorMessage:= LMessage;
@@ -184,6 +184,11 @@ function TFormTIPopupData.FormDataIsEdited: boolean;
 begin
   Assert(FormData.TestValid(TtiObject), CTIErrorInvalidObject);
   Result:= FormData.IsDirty;
+end;
+
+function TFormTIPopupData.AllowUneditedData: boolean;
+begin
+  result := false;
 end;
 
 procedure TFormTIPopupData.FormDeactivate(Sender: TObject);

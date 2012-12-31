@@ -50,12 +50,13 @@ type
     procedure Dirty_And_OID;
     procedure Index;
     procedure tiObject_Equals;
+    procedure tiObject_EqualsDifMessage;
     procedure ObjectStateAsString;
     procedure FindByOID;
     procedure FindWithMethod;
     procedure FindWithMethodAndParam;
     procedure FindAllWithMethod;
-    procedure IsUnique;
+    procedure IsUniqueOID;
     procedure AssignFlat;
     procedure AssignList;
     procedure AssignCompound;
@@ -114,6 +115,7 @@ type
     FInBothAndNotEquals: TtiObjectList;
     FIn1Only: TtiObjectList;
     FIn2Only: TtiObjectList;
+    FDifferenceMessage: string;
 
     procedure InBothAndEqualsEvent(AItem1, AItem2: TtiObject);
     procedure InBothAndNotEqualsEvent(const AItem1, AItem2: TtiObject; var ADifferenceMessage: string);
@@ -124,6 +126,7 @@ type
 
     function  CreateList: TtiObjectListForTesting;
     procedure DoForEachMethod(const AData: TtiObject);
+    function DoIsUnique(const AItem1, AItem2: TtiObject): integer;
   public
     procedure   SetUp; override;
     procedure   TearDown; override;
@@ -171,6 +174,7 @@ type
     procedure   tiListToStreamFields;
     procedure   GetEnumerator;
     procedure   ForIn;
+    procedure   IsUniqueCustom;
   end;
 
 
@@ -1100,6 +1104,41 @@ begin
   end;
 end;
 
+type
+ TtiObjectForTestingDifMessage = class(TtiObjectForTesting)
+ protected
+   function GetCaption: string; override;
+ end;
+
+  function TtiObjectForTestingDifMessage.GetCaption: string;
+  begin
+    result:= ClassName + '.OID="' + OID.AsString + '"';
+  end;
+
+procedure TtiObjectTestCase.tiObject_EqualsDifMessage;
+var
+  LObj1     : TtiObjectForTestingDifMessage;
+  LObj2     : TtiObjectForTestingDifMessage;
+  LActual: string;
+const
+  CExpected =
+    '"TtiObjectForTestingDifMessage: TtiObjectForTestingDifMessage.OID="1" <> TtiObjectForTestingDifMessage.OID="2""';
+begin
+  LObj1:= nil;
+  LObj2:= nil;
+  try
+    LObj1:= TtiObjectForTestingDifMessage.Create;
+    LObj1.OID.AsString:='1';
+    LObj2:= TtiObjectForTestingDifMessage.Create;
+    LObj2.OID.AsString:='2';
+    LObj2.BoolProp := true;
+    LObj1.Equals(LObj2, LActual);;
+    CheckEquals(CExpected, LActual);
+  finally
+    LObj1.Free;
+    LObj2.Free;
+  end;
+end;
 
 procedure TtiObjectTestCase.FindAllWithMethod;
 var
@@ -1332,8 +1371,7 @@ begin
   end;
 end;
 
-
-procedure TtiObjectTestCase.IsUnique;
+procedure TtiObjectTestCase.IsUniqueOID;
 var
   lTop : TtiObjectListForTesting;
   lItem : TtiObjectForTesting;
@@ -3932,6 +3970,52 @@ begin
   end;
 end;
 
+function TtiObjectListTestCase.DoIsUnique(const AItem1, AItem2: TtiObject): integer;
+var
+  LItem1: TtiObjectForTesting;
+  LItem2: TtiObjectForTesting;
+begin
+  LItem1:= AItem1 as TtiObjectForTesting;
+  LItem2:= AItem2 as TtiObjectForTesting;
+  result:= CompareStr(LItem1.StrProp, LItem2.StrProp);
+end;
+
+procedure TtiObjectListTestCase.IsUniqueCustom;
+var
+  LList: TtiObjectListForTesting;
+  LItem1 : TtiObjectForTesting;
+  LItem2 : TtiObjectForTesting;
+  LItem3 : TtiObjectForTesting;
+begin
+  LList := TtiObjectListForTesting.Create;
+  try
+    LItem1 := TtiObjectForTesting.Create;
+    LItem1.StrProp:= 'Test 1';
+    LList.Add(LItem1);
+    LItem2 := TtiObjectForTesting.Create;
+    LItem2.StrProp:= 'Test 2';
+    LList.Add(LItem2);
+
+    Check(LList.IsUnique(LItem1, DoIsUnique), 'Failed on test 1');
+    Check(LList.IsUnique(LItem2, DoIsUnique), 'Failed on test 2');
+    LItem2.StrProp:= 'Test 1';
+    Check(not LList.IsUnique(LItem1, DoIsUnique), 'Failed on test 3');
+    Check(not LList.IsUnique(LItem2, DoIsUnique), 'Failed on test 4');
+    LItem1.Deleted:= True;
+    Check(LList.IsUnique(LItem2, DoIsUnique), 'Failed on test 5');
+    LItem3 := TtiObjectForTesting.Create;
+    LItem3.StrProp:= 'Test 1';
+    Check(not LList.IsUnique(LItem3, DoIsUnique), 'Failed on test 6');
+    Check(LList.IsUnique(LItem2, DoIsUnique), 'Failed on test 7');
+    LList.Add(LItem3);
+    Check(not LList.IsUnique(LItem3, DoIsUnique), 'Failed on test 8');
+    Check(not LList.IsUnique(LItem2, DoIsUnique), 'Failed on test 9');
+
+  finally
+    LList.Free;
+  end;
+end;
+
 procedure TtiObjectListTestCase.InsertByIndex;
 var
   lList      : TtiObjectListForTesting;
@@ -4731,6 +4815,7 @@ begin
       CheckEquals(1, FInBothAndNotEquals.Count, 'FInBothAndNotEquals.Count');
       CheckEquals(1, FIn1Only.Count,            'FIn1Only.Count');
       CheckEquals(1, FIn2Only.Count,            'FIn2Only.Count');
+      CheckEquals('"TtiObjectForTesting: TtiObjectForTesting <> TtiObjectForTesting"', FDifferenceMessage);
 
       CheckSame(LItemInBothSame1, FInBothAndEquals.Items[0], 'LItemInBothSame1');
       CheckSame(LItemInBothNotSame1, FInBothAndNotEquals.Items[0], 'LItemInBothNotSame1');
@@ -4774,6 +4859,7 @@ begin
       CheckEquals(1, FInBothAndNotEquals.Count, 'FInBothAndNotEquals.Count');
       CheckEquals(1, FIn1Only.Count,            'FIn1Only.Count');
       CheckEquals(1, FIn2Only.Count,            'FIn2Only.Count');
+      CheckEquals('', FDifferenceMessage); // Difference not implemented in ItemCompareFunc
 
       CheckSame(LItemInBothSame1, FInBothAndEquals.Items[0], 'LItemInBothSame1');
       CheckSame(LItemInBothNotSame1, FInBothAndNotEquals.Items[0], 'LItemInBothNotSame1');
@@ -4805,6 +4891,8 @@ begin
   FIn2Only           := TtiObjectList.Create;
   FIn2Only.OwnsObjects:= False;
   FIn2Only.AutoSetItemOwner:= False;
+
+  FDifferenceMessage:= '';
 end;
 
 procedure TtiObjectListTestCase.TearDown;
@@ -4842,11 +4930,11 @@ end;
 procedure TtiObjectListTestCase.InBothAndNotEqualsEvent(
   const AItem1, AItem2: TtiObject; var ADifferenceMessage: string);
 begin
-  {$MESSAGE 'Unit test TtiObject.Compare() with new DifferenceMessage parameter'}
   Assert(AItem1.TestValid, CTIErrorInvalidObject);
   Assert(AItem2.TestValid, CTIErrorInvalidObject);
   Assert(FInBothAndNotEquals.TestValid, CTIErrorInvalidObject);
   FInBothAndNotEquals.Add(AItem1);
+  FDifferenceMessage:= ADifferenceMessage;
 end;
 
 function TtiObjectListTestCase.ItemMatchFunc(const AItem1, AItem2: TtiObject): Boolean;
@@ -4862,6 +4950,8 @@ begin
   Assert(AItem2.TestValid(TtiObjectForTesting), CTIErrorInvalidObject);
   result := TtiObjectForTesting(AItem1).StrProp = TtiObjectForTesting(AItem2).StrProp;
 end;
+
+{ TtiObjectForTestingDifMessage }
 
 end.
 

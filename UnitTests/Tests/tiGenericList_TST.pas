@@ -15,7 +15,7 @@ uses
 type
   TTestGenericObjectList = class(TtiTestCase)
   private
-    FList: TtiGenericObjectList<TtiOPFTestIntegerProp>;
+    FList: TtiObjectList<TtiOPFTestIntegerProp>;
   protected
     procedure   SetUp; override;
     procedure   TearDown; override;
@@ -70,7 +70,7 @@ end;
 procedure TTestGenericObjectList.SetUp;
 begin
   inherited;
-  FList:= TtiGenericObjectList<TtiOPFTestIntegerProp>.Create;
+  FList:= TtiObjectList<TtiOPFTestIntegerProp>.Create;
   FList.OwnsObjects:= true;
 end;
 

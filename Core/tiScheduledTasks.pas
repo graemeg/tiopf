@@ -45,7 +45,7 @@ type
   published
   end;
   
-  TtiSceduledFilePurgeThread = class(TtiThread)
+  TtiScheduledFilePurgeThread = class(TtiThread)
   private
     FProcessEvent: TEvent;
 
@@ -67,7 +67,7 @@ type
   
   TtiScheduledFilePurge = class(TtiBaseObject)
   private
-    FTaskThread: TtiSceduledFilePurgeThread;
+    FTaskThread: TtiScheduledFilePurgeThread;
     FScheduledFilePurgeDetailsList: TtiScheduledFilePurgeDetailsList;    
   public
     constructor Create(const AINIFile: TtiINIFile;
@@ -91,7 +91,7 @@ const
     
 { TtiScheduledTask }
 
-constructor TtiSceduledFilePurgeThread.Create(const ATimeToRunPurge: TDateTime; 
+constructor TtiScheduledFilePurgeThread.Create(const ATimeToRunPurge: TDateTime;
     const AScheduledFilePurgeDetailsList: TtiScheduledFilePurgeDetailsList);
 begin
   inherited Create(true {suspended});
@@ -103,13 +103,13 @@ begin
   FProcessEvent := TEvent.Create(nil, True, False, '');
 end;
 
-destructor TtiSceduledFilePurgeThread.Destroy;
+destructor TtiScheduledFilePurgeThread.Destroy;
 begin
   FreeAndNil(FProcessEvent);
   inherited;
 end;
 
-procedure TtiSceduledFilePurgeThread.Execute;
+procedure TtiScheduledFilePurgeThread.Execute;
 begin
   while not Terminated do
   begin
@@ -121,7 +121,7 @@ begin
   end;
 end;
 
-function TtiSceduledFilePurgeThread.TimeUntilNextScheduledRunInMS: Cardinal;
+function TtiScheduledFilePurgeThread.TimeUntilNextScheduledRunInMS: Cardinal;
 var
   LTimeOfNow: TDateTime;
   LTimeOfRunPurge: TDateTime;
@@ -135,12 +135,12 @@ begin
     Result := MSecsPerDay - MilliSecondsBetween(LTimeOfNow, LTimeOfRunPurge);
 end;
 
-procedure TtiSceduledFilePurgeThread.WakeUp;
+procedure TtiScheduledFilePurgeThread.WakeUp;
 begin
   FProcessEvent.SetEvent;
 end;
 
-procedure TtiSceduledFilePurgeThread.DeleteOldFiles;
+procedure TtiScheduledFilePurgeThread.DeleteOldFiles;
 begin
   FScheduledFilePurgeDetailsList.DeleteOldFiles;
   FDateTimeLastRun := Now;
@@ -192,7 +192,7 @@ begin
     FreeAndNil(LINIFilePurgeSettingsList);
   end;
 
-  FTaskThread := TtiSceduledFilePurgeThread.Create(
+  FTaskThread := TtiScheduledFilePurgeThread.Create(
       LTimeToPurge, FScheduledFilePurgeDetailsList);
   FTaskThread.Start;
 end;

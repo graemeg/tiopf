@@ -21,7 +21,9 @@ uses
 const
   cCaptionUndo        = 'Undo  [Ctrl+Z]';
   cCaptionCancelClose = 'Cancel and close  [Esc]';
-  cCaptionSaveClose   = 'Save and close  [Ctrl+S]';
+  cCaptionSave        = 'Save  [Ctrl+S]';
+  cCaptionSaveClose   = 'Save and close  [Ctrl+S]'; // Only if no Save action
+  cCaptionSaveCloseSupportsSave = 'Save and close'; // If have Save action
 
 type
 
@@ -31,6 +33,7 @@ type
   private
     FFormData: TtiDataFormData;
     FaUndo: TtiAMSAction;
+    FaSave: TtiAMSAction;
     FaSaveClose: TtiAMSAction;
     FaCancelClose: TtiAMSAction;
     FFormSettings: TtiObject;
@@ -47,11 +50,13 @@ type
 
     procedure aCloseExecute(Sender: TObject); override;
     procedure aUndoExecute(Sender: TObject);virtual;
+    procedure aSaveExecute(Sender: TObject);virtual;
     procedure aSaveCloseExecute(Sender: TObject);virtual;
     procedure aCancelCloseExecute(Sender: TObject);virtual;
 
     procedure DoCancelClose;
 
+    function  SupportsSaveWithoutClose: boolean; virtual;
     procedure Save;
     procedure SetupButtons; override;
     procedure SetButtonsVisible(const AValue: TtiButtonsVisible); override;
@@ -78,7 +83,7 @@ type
     procedure DoAfterDiscard; virtual;
     procedure DoAfterUndo; virtual;
 
-    // If using model-GUI-mediator return a model mediator name for the form data 
+    // If using model-GUI-mediator return a model mediator name for the form data
     function  ModelMediatorName: string; virtual;
     property  ModelMediators: TtiModelMediatorList read FModelMediators;
   public
@@ -90,6 +95,7 @@ type
     property  FormData: TtiDataFormData read FFormData;
 
     property aUndo: TtiAMSAction read FaUndo;
+    property aSave: TtiAMSAction read FaSave;
     property aSaveClose: TtiAMSAction read FaSaveClose;
     property aCancelClose: TtiAMSAction read FaCancelClose;
   end;
@@ -127,7 +133,13 @@ begin
   FaUndo := AddAction(cCaptionUndo, 'Un-do changes' + ClassName , aUndoExecute, Ord('Z'), [ssCtrl]);
   FaUndo.ImageIndex := gTIImageListMgr.ImageIndex16(cResTI_UnDo);
 
-  FaSaveClose := AddAction(cCaptionSaveClose, 'Save changes' + ClassName , aSaveCloseExecute, Ord('S'), [ssCtrl]);
+  FaSave := AddAction(cCaptionSave, 'Save changes' + ClassName , aSaveExecute, Ord('S'), [ssCtrl]);
+  FaSave.ImageIndex := gTIImageListMgr.ImageIndex16(cResTI_Save);
+
+  if SupportsSaveWithoutClose then
+    FaSaveClose := AddAction(cCaptionSaveCloseSupportsSave, 'Save changes and close' + ClassName , aSaveCloseExecute, 0, [])
+  else
+    FaSaveClose := AddAction(cCaptionSaveClose, 'Save changes and close' + ClassName , aSaveCloseExecute, 0, []);
   FaSaveClose.ImageIndex := gTIImageListMgr.ImageIndex16(cResTI_Save);
 
   FModelMediators := TtiModelMediatorList.Create(Self);
@@ -199,9 +211,12 @@ end;
 
 function TtiFormMgrDataForm.EditedData: TtiObject;
 begin
-  Assert(FFormData.TestValid(TtiDataFormData), CTIErrorInvalidObject);
-  // Note: Data is virtual
-  Result := FFormData.Data;
+  Assert(FFormData.TestValid(TtiDataFormData, true), CTIErrorInvalidObject);
+  if Assigned(FFormData) then
+    // Note: Data is virtual
+    Result := FFormData.Data
+  else
+    Result := nil;
 end;
 
 function TtiFormMgrDataForm.GetOnEditsSave: TtiObjectEvent;
@@ -278,6 +293,12 @@ begin
   end;
 end;
 
+function TtiFormMgrDataForm.SupportsSaveWithoutClose: boolean;
+begin
+  // Override in descendants
+  result := false;
+end;
+
 procedure TtiFormMgrDataForm.DoALUpdate(Action: TBasicAction; var Handled: Boolean);
 var
   LFormIsDirty: Boolean;
@@ -293,8 +314,9 @@ begin
     begin
       LFormIsDirty := FormIsDirty;
       FaUndo.Enabled := ContextActionsEnabled and (FFormData is TtiDataFormClonedData) and LFormIsDirty;
+      FaSave.Enabled := ContextActionsEnabled and LFormIsValid and LFormIsDirty;
       FaSaveClose.Enabled := ContextActionsEnabled and LFormIsValid and LFormIsDirty;
-      FaCancelClose.Enabled := ContextActionsEnabled;
+      FaCancelClose.Enabled := ContextActionsEnabled and EscapeKeyEnabled;
       if LFormIsDirty then
         FaCancelClose.Caption := cCaptionCancelClose
       else
@@ -310,6 +332,15 @@ begin
   FFormData.PrepareSave;
   DoSave;
   FFormData.Save;
+  // To support Save Without Close we should clear the control data bindings,
+  // copy the saved (original) data back to the edited data (see
+  // TtiClonedFormData.DoAfterSave) then set the control data bindings to the
+  // new objects but many forms do not handle data binding in a standard way.
+  // For the moment the Save Without Close is handled within specific forms
+  // DoAfterSave.
+  //DoClearControlDataBindings;
+  FFormData.AfterSave;
+  //DoSetControlDataBindings;
   DoAfterSave;
 end;
 
@@ -321,6 +352,11 @@ end;
 procedure TtiFormMgrDataForm.aCloseExecute(Sender: TObject);
 begin
   DoCancelClose;
+end;
+
+procedure TtiFormMgrDataForm.aSaveExecute(Sender: TObject);
+begin
+  Save;
 end;
 
 procedure TtiFormMgrDataForm.aSaveCloseExecute(Sender: TObject);
@@ -372,6 +408,7 @@ procedure TtiFormMgrDataForm.SetButtonsVisible(const AValue: TtiButtonsVisible);
 begin
   inherited;
   FaUndo.Visible := (ButtonsVisible = btnVisReadWrite) and (FFormData is TtiDataFormClonedData);
+  FaSave.Visible := (ButtonsVisible = btnVisReadWrite) and SupportsSaveWithoutClose;
   FaSaveClose.Visible := ButtonsVisible = btnVisReadWrite;
   FaCancelClose.Visible := ButtonsVisible = btnVisReadWrite;
 end;

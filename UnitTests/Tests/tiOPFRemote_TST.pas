@@ -109,12 +109,16 @@ uses
   TestFramework,
   {$ENDIF}
   SysUtils,
+  StrUtils,
+  tiDUnitINI,
   tiTestDependencies,
   tiQuery,
   tiQueryRemote_Svr,
   tiOPFTestCase,
   tiOPFTestManager,
-  tiOPFManager;
+  tiOPFManager,
+  tiUtils,
+  tiHTTP;
 
 const
   cRemoteServerMainFormName = 'TFormMainTIDBProxyServer';
@@ -162,6 +166,14 @@ begin
   inherited;
 end;
 
+function CreateAppServer(APersistenceLayerName: string) : TtiDBApplicationServerForTesting;
+var
+  DBName: string;
+begin
+  DBName := GTIOPFTestManager.FindByPersistenceLayerName(APersistenceLayerName).DBName;
+  Result := TtiDBApplicationServerForTesting.Create(tiHTTP.tiPortFromURL(DBName,StrToInt(tiConstants.CDefaultPort)));
+end;
+
 { TTestTIDatabaseRemote }
 
 procedure TTestTIDatabaseRemote.CreateDatabase;
@@ -181,7 +193,7 @@ end;
 
 procedure TTestTIDatabaseRemote.SetUpOnce;
 begin
-  FAppServer:= TtiDBApplicationServerForTesting.Create(80);
+  FAppServer:= CreateAppServer(PersistenceLayerName);
   inherited;
 end;
 
@@ -195,43 +207,44 @@ procedure TTestTIDatabaseRemote.Transaction_TimeOut;
 var
   LQuery: TtiQuery;
   LDatabase: TtiDatabase;
-  LTimeOut: Extended;
 begin
+  FreeAndNilStatefulDBConnectionPool;
+  // ToDo: * We should pass the SweepInterval as well as the TimeOut to give
+  //         better control over unit testing.
+  //       * SweepInterval is in Sec; TimeOut is in Min. Standardise on Sec.
+  GStatefulDBConnectionPool(5/60 {Time out (min)});
   DropTable(cTableNameTestGroup);
   CreateTableTestGroup;
   InsertIntoTestGroup(1);
-  LTimeOut:= GStatefulDBConnectionPool.TimeOut;
-  gStatefulDBConnectionPool.Timeout:= 0.1;
+  LDatabase:= DBConnectionPool.Lock;
   try
-    LDatabase:= DBConnectionPool.Lock;
+    LDatabase.StartTransaction;
+    LQuery := LDatabase.CreateAndAttachTIQuery;
     try
       LDatabase.StartTransaction;
-      LQuery := LDatabase.CreateAndAttachTIQuery;
+      LQuery.SelectRow(cTableNameTestGroup, nil);
+      Check(not LQuery.EOF, 'Transaction not committed');
+      LQuery.Next;
+      Check(LQuery.EOF, 'Wrong number of records');
+      Sleep(gStatefulDBConnectionPool.SweepInterval * 2 * 1000);
       try
-        LDatabase.StartTransaction;
-        LQuery.SelectRow(cTableNameTestGroup, nil);
-        Check(not LQuery.EOF, 'Transaction not committed');
-        LQuery.Next;
-        Check(LQuery.EOF, 'Wrong number of records');
-        Sleep(Trunc(gStatefulDBConnectionPool.Timeout * 60000 * 1.5));
-        try
-          lDatabase.Commit;
-          Fail('tiDBProxyServer did not time out as expected');
-        except
-          on e: Exception do
-            Check(Pos('TIMED OUT', UpperCase(e.message)) <> 0,
-              'tiDBProxyServer did not raise the right exception. Exception message: ' + e.message);
-        end;
-      finally
-        LQuery.Free;
+        lDatabase.Commit;
+        Fail('tiDBProxyServer did not time out as expected');
+      except
+        on e: ETestFailure do
+          raise;
+        on e: Exception do
+          if (Pos('ERROR READING RESPONSE FROM REMOTE SERVER', UpperCase(e.message)) = 0) or
+             (Pos('TIMED OUT', UpperCase(e.message)) = 0) then
+          Fail('Exception message not as expected: "' + e.message + '"');
       end;
     finally
-      DBConnectionPool.UnLock(LDatabase);
+      LQuery.Free;
     end;
-    DropTable(cTableNameTestGroup);
   finally
-    gStatefulDBConnectionPool.Timeout:= LTimeOut;
+    DBConnectionPool.UnLock(LDatabase);
   end;
+  DropTable(cTableNameTestGroup);
 end;
 
 { TTestTIPersistenceLayersRemote }
@@ -243,7 +256,7 @@ end;
 
 procedure TTestTIPersistenceLayersRemote.SetUpOnce;
 begin
-  FAppServer:= TtiDBApplicationServerForTesting.Create(80);
+  FAppServer:= CreateAppServer(PersistenceLayerName);
   inherited;
 end;
 
@@ -262,7 +275,7 @@ end;
 
 procedure TTestTIQueryRemote.SetUpOnce;
 begin
-  FAppServer:= TtiDBApplicationServerForTesting.Create(80);
+  FAppServer:= CreateAppServer(PersistenceLayerName);
   inherited;
 end;
 
@@ -281,7 +294,7 @@ end;
 
 procedure TTestTIAutoMapOperationRemote.SetUpOnce;
 begin
-  FAppServer:= TtiDBApplicationServerForTesting.Create(80);
+  FAppServer:= CreateAppServer(PersistenceLayerName);
   inherited;
 end;
 
@@ -307,7 +320,7 @@ end;
 
 procedure TTestTIOIDPersistentGUIDRemote.SetUpOnce;
 begin
-  FAppServer:= TtiDBApplicationServerForTesting.Create(80);
+  FAppServer:= CreateAppServer(PersistenceLayerName);
   inherited;
 end;
 
@@ -333,7 +346,7 @@ end;
 
 procedure TTestTIOIDPersistentIntegerRemote.SetUpOnce;
 begin
-  FAppServer:= TtiDBApplicationServerForTesting.Create(80);
+  FAppServer:= CreateAppServer(PersistenceLayerName);
   inherited;
 end;
 

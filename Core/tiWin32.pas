@@ -9,8 +9,9 @@ uses
   SysUtils,
   Windows;
 
-  procedure tiWin32RunEXEAndWait(const AEXE : string); overload;
-  procedure tiWin32RunEXEAndWait(const AEXEPathAndName, AParameters, ACurrentDir : string); overload;
+  procedure tiWin32RunEXEAndWait(const AEXE : string; AInheritParentStartInfo: boolean = true); overload;
+  procedure tiWin32RunEXEAndWait(const AEXEPathAndName, AParameters, ACurrentDir : string;
+      AInheritParentStartInfo: boolean = true); overload;
   function tiCreateProcess(const AProcessName: string;
       const ACommandLineParams: string;
       var AProcessInfo: TProcessInformation): Boolean;
@@ -41,6 +42,7 @@ type
     CommandLineParams: string;
     WorkingDirectory: string;
     TimeoutAfterSecs: cardinal;
+    wShowWindow: WORD; // See STARTUPINFO structure and ShowWindow function
   end;
 
   TtiCreateProcessResult = record
@@ -186,12 +188,22 @@ begin
   result := _GetSpecialDir(CSIDL_PERSONAL);
 end;
 
-procedure tiWin32RunEXEAndWait(const AEXE: string);
+procedure tiWin32RunEXEAndWait(const AEXE: string;
+    AInheritParentStartInfo: boolean = true);
 var
   SI: TStartupInfo;
   PI: TProcessInformation;
 begin
-  GetStartupInfo(SI);
+  if AInheritParentStartInfo then
+    GetStartupInfo(SI)
+  else
+  begin
+    //Don't inherit the parents startup info, in this case just use
+    //default values for the startup info (blank).
+    ZeroMemory(@SI, SizeOf(TStartupInfo));
+    SI.cb := SizeOf(TStartupInfo);
+  end;
+
   CreateProcess(
     nil, PChar(AEXE), nil, nil,
     False, 0, nil, nil, SI, PI);
@@ -199,15 +211,26 @@ begin
   WaitForSingleObject(PI.hProcess, Infinite);
 end;
 
-procedure tiWin32RunEXEAndWait(const AEXEPathAndName, AParameters, ACurrentDir : string);
+procedure tiWin32RunEXEAndWait(const AEXEPathAndName, AParameters, ACurrentDir : string;
+    AInheritParentStartInfo: boolean = true );
 var
   SI: TStartupInfo;
   PI: TProcessInformation;
   LExePathNameAndParameters: string;
 begin
-  LEXEPathNameAndParameters:=
+  LEXEPathNameAndParameters :=
     Trim(AEXEPathAndName + ' ' + AParameters);
-  GetStartupInfo(SI);
+
+  if AInheritParentStartInfo then
+    GetStartupInfo(SI)
+  else
+  begin
+    //Don't inherit the parents startup info, in this case just use
+    //default values for the startup info (blank).
+    ZeroMemory(@SI, SizeOf(TStartupInfo));
+    SI.cb := SizeOf(TStartupInfo);
+  end;
+
   CreateProcess(
     nil,                              // lpApplicationName
     PChar(LEXEPathNameAndParameters), // lpCommandLine
@@ -281,7 +304,17 @@ begin
   else
     LPProcessCurrentDirectory := PChar(tiRemoveTrailingSlash(AParams.WorkingDirectory));
 
-  GetStartupInfo(SI);
+  // GetStartupInfo uses startup info of our process. As we might not have
+  // control over that it can cause unexpected behaviour such as stin/stdout
+  // not working. Instead we set the startup info explicitly
+  //GetStartupInfo(SI);
+  ZeroMemory(@SI, SizeOf(TStartupInfo));
+  SI.cb := SizeOf(TStartupInfo);
+  if AParams.wShowWindow <> 0 then
+  begin
+    SI.dwFlags := SI.dwFlags or STARTF_USESHOWWINDOW;
+    SI.wShowWindow := AParams.wShowWindow;
+  end;
 
   try
     // CreateProcess docs are here: http://msdn.microsoft.com/en-us/library/ms682425.aspx

@@ -14,6 +14,7 @@ uses
   {$ENDIF}
   ,SysUtils
   ,Classes
+  ,TypInfo
   ;
 
 
@@ -31,6 +32,7 @@ type
     procedure tiLog_TestLogFileContention;
     procedure tiLog_Log;
     procedure tiLog_Purge;
+    procedure tiLog_Skip;
     procedure tiLog_Free;
   end;
 
@@ -50,6 +52,9 @@ uses
   ,SyncObjs
   ,tiThread
   ;
+
+const
+  CLogEventCount = 20000;
 
 procedure RegisterTests;
 begin
@@ -122,7 +127,7 @@ type
     i: integer;
   begin
     SleepAndCheckTerminated(Random(500));
-    for i := 1 to 20000 do
+    for i := 1 to CLogEventCount do
       FLog.Log(IntToStr(i), lsNormal);
     FLog.Purge;
   end;
@@ -130,10 +135,12 @@ type
 procedure TtiLogToFileTestCase.tiLog_Purge;
 var
   LLog: TtiLog;
+  LLogTo: TtiLogToFile;
   LThreadList: TtiThreadList;
   i: Integer;
 const
   CLogFileCount = 5;
+  CThreadWriterCount = 10;
 
   function _FileName(const AIndex: Integer): string;
   begin
@@ -146,21 +153,17 @@ begin
   LLog:= TtiLog.Create;
   try
     for i := 0 to CLogFileCount - 1 do
-      LLog.RegisterLog(TtiLogToFile.CreateWithFileName(TempDirectory,
-          ExtractFileName(_FileName(i)), true));
+    begin
+      LLogTo := TtiLogToFile.CreateWithFileName(TempDirectory,
+          ExtractFileName(_FileName(i)), true);
+      LLogTo.MaxListSize := CLogEventCount * CThreadWriterCount; // No skipping
+      LLog.RegisterLog(LLogTo);
+    end;
 
     LThreadList:= TtiThreadList.Create;
     try
-      LThreadList.Add(TThreadWriteToLog.Create(LLog));
-      LThreadList.Add(TThreadWriteToLog.Create(LLog));
-      LThreadList.Add(TThreadWriteToLog.Create(LLog));
-      LThreadList.Add(TThreadWriteToLog.Create(LLog));
-      LThreadList.Add(TThreadWriteToLog.Create(LLog));
-      LThreadList.Add(TThreadWriteToLog.Create(LLog));
-      LThreadList.Add(TThreadWriteToLog.Create(LLog));
-      LThreadList.Add(TThreadWriteToLog.Create(LLog));
-      LThreadList.Add(TThreadWriteToLog.Create(LLog));
-      LThreadList.Add(TThreadWriteToLog.Create(LLog));
+      for i := 1 to CThreadWriterCount do
+        LThreadList.Add(TThreadWriteToLog.Create(LLog));
       LThreadList.StartAll;
       LThreadList.WaitForAll;
     finally
@@ -168,7 +171,58 @@ begin
     end;
 
     for i := 0 to CLogFileCount - 1 do
-      CheckEquals(200000, LogFileLineCount(_FileName(i)));
+      CheckEquals(CLogEventCount * CThreadWriterCount, LogFileLineCount(_FileName(i)));
+  finally
+    LLog.Free;
+  end;
+end;
+
+procedure TtiLogToFileTestCase.tiLog_Skip;
+var
+  LLog: TtiLog;
+  LLogTo: TtiLogToList;
+  i: Integer;
+const
+  CMaxListSize = 5;
+  CEventsToSkip = 3;
+begin
+  LLog := TtiLog.Create;
+  try
+    LLogTo := TtiLogToList.Create;
+    LLogTo.MaxListSize := CMaxListSize;
+    LLog.RegisterLog(LLogTo);
+
+    // Log events to produce the following:
+    // Norm 1
+    // Norm 2
+    // Norm ...
+    // Norm n
+    // Warn Limit reached
+    // Warn Skipped m
+    // Norm n+m+1
+
+    // Log n, skip m
+    for i := 1 to CMaxListSize + CEventsToSkip do
+      LLog.Log(IntToStr(i), lsNormal);
+    // Increase size so we can resume logging
+    LLogTo.MaxListSize := CMaxListSize + 2 + 1; // Prev max + 2xWarn + 1 new
+    // Log another item
+    LLog.Log(IntToStr(CMaxListSize + CEventsToSkip + 1), lsNormal);
+
+    // Now check the list contains the expected items
+    CheckEquals(CMaxListSize + 2 + 1, LLogTo.Count);
+    // Before skip
+    for i := 0 to CMaxListSize - 1 do
+      CheckEquals(IntToStr(i+1), LLogTo.Items[i].LogMessage);
+    // Skip starts
+    CheckEquals(Format('Log limit of %d reached, skipping events...', [CMaxListSize]),
+        LLogTo.Items[CMaxListSize].LogMessage);
+    // Skip ends
+    CheckEquals(Format('%d log events were skipped', [CEventsToSkip]),
+        LLogTo.Items[CMaxListSize + 1].LogMessage);
+    // After skip
+    CheckEquals(IntToStr(CMaxListSize + CEventsToSkip + 1),
+        LLogTo.Items[CMaxListSize + 2].LogMessage);
   finally
     LLog.Free;
   end;
@@ -240,20 +294,57 @@ begin
       LThreadList.Add(TThreadWriteToLog.Create(LLog));
       LThreadList.StartAll;
       LThreadList.WaitForAll;
+
     finally
       LThreadList.Free;
     end;
   finally
     LLog.Free;
   end;
+  //Just ensure there is no exception
+  Check(True);
 end;
 
 { TtiLogTestCase }
 
 procedure TtiLogTestCase.LogLevel;
+var
+   LLog: TtiLog;
+   LMinLevel,LCurLevel : TtiLogSeverity;
+   LWrittenString : string;
+   LFileName : TFileName;
+   LFileLog  : TtiLogToFile;
 begin
- Check(True);
- // ToDo: Implement
+   LLog:= TtiLog.Create;
+  try
+    LFileLog := TtiLogToFile.CreateWithFileName(TempDirectory, 'LoggingTest1.log', true);
+    LFileName := LFileLog.FileName;
+    LLog.RegisterLog(LFileLog);
+
+    for LMinLevel := Low(TtiLogSeverity) to High(TtiLogSeverity) do
+    begin
+      //only log if within minLevel to maxLevel
+      LLog.SevToLog := [LMinLevel .. High(TtiLogSeverity)];
+      for LCurLevel := Low(TtiLogSeverity) to High(TtiLogSeverity) do
+      begin
+        LWrittenString := 'Level set as ' + GetEnumName(TypeInfo(TtiLogSeverity),integer(LMinLevel)) +
+                            ' written as ' + GetEnumName(TypeInfo(TtiLogSeverity),integer(LCurLevel));
+
+        LLog.Log(LWrittenString, LCurLevel);
+        LLog.Purge;
+        if LCurLevel >= LMinLevel then
+          Check(tiStrPos(PChar(tiUtils.tiFileToString(LFileName)), PChar(LWrittenString)) <> nil,
+                  'No matching line found when it should have been logged '+ GetEnumName(TypeInfo(TtiLogSeverity),integer(LMinLevel)) + ' ' +  GetEnumName(TypeInfo(TtiLogSeverity),integer(LCurLevel)))
+        else
+          Check(tiStrPos(PChar(tiUtils.tiFileToString(LFileName)), PChar(LWrittenString)) = nil,
+                  'Matching line found when it shouldnt have been ' + GetEnumName(TypeInfo(TtiLogSeverity),integer(LMinLevel)) + ' ' +  GetEnumName(TypeInfo(TtiLogSeverity),integer(LCurLevel)));
+      end;
+
+    end;
+  finally
+    LLog.Free;
+  end;
+
 end;
 
 end.

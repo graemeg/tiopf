@@ -61,6 +61,7 @@ type
   published
     procedure Values;
     procedure Assign;
+    procedure Clear;
   end;
 
 procedure RegisterTests;
@@ -309,7 +310,7 @@ begin
       on e:exception do
       begin
         CheckIs(e, Exception);
-        CheckEquals('HTTP/1.1 404 Not Found (After 1 attempts)', e.message);
+        CheckEquals('HTTP/1.1 404 Not Found', e.message);
       end;
     end;
     CheckEquals('', LResult);
@@ -322,7 +323,7 @@ begin
       begin
         CheckIs(e, Exception);
         CheckEquals(
-          'HTTP/1.1 404 Not Found (After 1 attempts)',
+          'HTTP/1.1 404 Not Found',
           e.message);
       end;
     end;
@@ -1010,6 +1011,22 @@ begin
   finally
     LA.Free;
     LB.Free;
+  end;
+end;
+
+procedure TTestTICGIParams.Clear;
+var
+  L: TtiCGIParams;
+begin
+  L:= TtiCGIParams.Create;
+  try
+    L.Values[CParam1]:= CValue1;
+    L.Values[CParam2]:= CValue2;
+    CheckEquals(2, L.Count);
+    L.Clear;
+    CheckEquals(0, L.Count);
+  finally
+    L.Free;
   end;
 end;
 

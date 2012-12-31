@@ -15,7 +15,7 @@ uses
 
 type
 
-  TtiGenericObjectList<T: TtiObject> = class(TtiObjectList)
+  TtiObjectList<T: TtiObject> = class(TtiObjectList)
   protected
     function GetItems(i:integer): T; reintroduce;
     procedure SetItems(i:integer; const Value: T); reintroduce;
@@ -41,14 +41,13 @@ type
 
     property Items[i:integer]: T read GetItems write SetItems;
         default;
-      end;
+  end;
 
 implementation
 
-{ TtiGenericObjectList<T> }
+{ TtiObjectList<T> }
 
-
-function TtiGenericObjectList<T>.Add(const AObject: T): integer;
+function TtiObjectList<T>.Add(const AObject: T): integer;
 var obj: TtiObject;
 begin
   obj:= TtiObject(GenericAsObject(AObject));
@@ -57,57 +56,57 @@ begin
 //   result:= inherited Add(TtiObject(AObject));
 end;
 
-function TtiGenericObjectList<T>.Find(AOIDToFindAsString: string): T;
+function TtiObjectList<T>.Find(AOIDToFindAsString: string): T;
 var obj: TtiObject;
 begin
   obj:= inherited Find(AOIDToFindAsString);
   result:= ObjectAsGeneric(obj);
 end;
 
-function TtiGenericObjectList<T>.Find(const AOIDToFind: TtiOID): T;
+function TtiObjectList<T>.Find(const AOIDToFind: TtiOID): T;
 var obj: TtiObject;
 begin
   obj:= inherited Find(AOIDToFind);
   result:= ObjectAsGeneric(obj);
 end;
 
-function TtiGenericObjectList<T>.Find(AOIDToFind: TtiOID; ASortType: TtiPerObjListSortType): T;
+function TtiObjectList<T>.Find(AOIDToFind: TtiOID; ASortType: TtiPerObjListSortType): T;
 var obj: TtiObject;
 begin
   obj:= inherited Find(AOIDToFind, ASortType);
   result:= ObjectAsGeneric(obj);
 end;
 
-function TtiGenericObjectList<T>.FilteredEnumerator(APredicate: TPredicate<T>): TGenericEnumeratorHost<T>;
+function TtiObjectList<T>.FilteredEnumerator(APredicate: TPredicate<T>): TGenericEnumeratorHost<T>;
 begin
   result:= TGenericEnumeratorHost<T>.Create(self, APredicate);
 end;
 
-function TtiGenericObjectList<T>.First: T;
+function TtiObjectList<T>.First: T;
 var obj: TtiObject;
 begin
   obj:= inherited First;
   result:= ObjectAsGeneric(obj);
 end;
 
-function TtiGenericObjectList<T>.FirstExcludeDeleted: T;
+function TtiObjectList<T>.FirstExcludeDeleted: T;
 var obj: TtiObject;
 begin
   obj:= inherited FirstExcludeDeleted;
   result:= ObjectAsGeneric(obj);
 end;
 
-class function TtiGenericObjectList<T>.GenericAsObject(const Value): TObject;
+class function TtiObjectList<T>.GenericAsObject(const Value): TObject;
 begin
   Result := TObject(Value);
 end;
 
-function TtiGenericObjectList<T>.GetEnumerator: TtiGenericEnumerator<T>;
+function TtiObjectList<T>.GetEnumerator: TtiGenericEnumerator<T>;
 begin
   Result := TtiGenericEnumerator<T>.Create(Self);
 end;
 
-function TtiGenericObjectList<T>.GetItems(i: integer): T;
+function TtiObjectList<T>.GetItems(i: integer): T;
 var obj: TtiObject;
 begin
   obj:= inherited GetItems(i);
@@ -116,40 +115,41 @@ begin
   // result:= inherited Add(AObject);
 end;
 
-procedure TtiGenericObjectList<T>.Insert(const AIndex: integer;
+procedure TtiObjectList<T>.Insert(const AIndex: integer;
   const AObject: T);
 begin
   inherited Insert(AIndex, TtiObject(GenericAsObject(AObject)));
 end;
 
-procedure TtiGenericObjectList<T>.Insert(const AInsertBefore: T;
+procedure TtiObjectList<T>.Insert(const AInsertBefore: T;
   const AObject: T);
 begin
   inherited Insert(TtiObject(GenericAsObject(AInsertBefore)), TtiObject(GenericAsObject(AObject)));
 end;
 
-function TtiGenericObjectList<T>.Last: T;
+function TtiObjectList<T>.Last: T;
 var obj: TtiObject;
 begin
   obj:= inherited Last;
   result:= ObjectAsGeneric(obj);
 end;
 
-function TtiGenericObjectList<T>.LastExcludeDeleted: T;
+function TtiObjectList<T>.LastExcludeDeleted: T;
 var obj: TtiObject;
 begin
   obj:= inherited LastExcludeDeleted;
   result:= ObjectAsGeneric(obj);
 end;
 
-class function TtiGenericObjectList<T>.ObjectAsGeneric(const Value): T;
+class function TtiObjectList<T>.ObjectAsGeneric(const Value): T;
 begin
   Result := T(Value);
 end;
 
-procedure TtiGenericObjectList<T>.SetItems(i: integer; const Value: T);
+procedure TtiObjectList<T>.SetItems(i: integer; const Value: T);
 begin
   inherited SetItems(i, Value);
 end;
 
 end.
+

@@ -4,10 +4,10 @@ interface
 uses
   tiObject
   ,tiFilteredObjectList
+  ,tiAutoMap
  ;
 
 type
-
   TClient = class;
   TClients = class;
 
@@ -20,6 +20,11 @@ type
     property Criteria;
   end;
 
+  // The following attribute will automatically register the class for auto
+  // mapping. We disable this in this demo as the user can choose the
+  // persistence mechanism.
+  //[TAutoMap] // Class automatically registered for auto mapping
+  [TAutoMapTable('Client')] // Auto mapping table
   TClient = class(TtiObject)
   private
     FClientID: string;
@@ -27,8 +32,12 @@ type
   public
     constructor CreateNew(const pDatabaseName: string = ''; const pPersistenceLayerName: string = ''); override;
   published
-    property    ClientName: string read FClientName write FClientName;
-    property    ClientID  : string read FClientID write FClientID;
+    [TAutoMapColumn('OID', [pktDB])] // Auto mapping column
+    property OID;
+    [TAutoMapColumn('Client_Name')] // Auto mapping column
+    property ClientName: string read FClientName write FClientName;
+    [TAutoMapColumn('Client_ID')] // Auto mapping column
+    property ClientID: string read FClientID write FClientID;
   end;
 
 implementation

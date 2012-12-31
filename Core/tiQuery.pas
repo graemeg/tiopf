@@ -73,7 +73,8 @@ type
     DatabaseName: string;
     UserName: string;
     Password: string;
-    Params: string
+    DBParams: string;
+    QueryOptions: string;
   end;
 
   TtiQueryType = (
@@ -90,8 +91,8 @@ type
   TtiDBMetaDataField  = class;
   TtiQueryParams      = class;
   TtiQueryParamAbs    = class;
-  TTableName          = String; //[ 255 ];   //
-  TFieldName          = String; // [ 255 ];
+  TTableName          = String;
+  TFieldName          = String;
   TtiQueryClass       = class of TtiQuery;
   TtiDatabaseClass    = class of TtiDatabase;
   TtiQueryParamClass  = class of TtiQueryParamAbs;
@@ -103,22 +104,20 @@ type
     function    GetItems(i: integer): TtiDBMetaDataTable; reintroduce;
     procedure   SetItems(i: integer; const AValue: TtiDBMetaDataTable); reintroduce;
     function    GetCaption : string; override;
-//    function    GetOwner: TtiObject; reintroduce;
-//    procedure   SetOwner(const AValue: TtiObject); reintroduce;
   public
     property    Items[i:integer]: TtiDBMetaDataTable read GetItems write SetItems;
     procedure   Add(AObject: TtiDBMetaDataTable); reintroduce;
-//    property    Owner       : TtiObject   read GetOwner      write SetOwner;
     procedure   Read(const ADBConnectionName: string = ''; APersistenceLayerName : string = ''); override;
     procedure   Clear; override;
     function    FindByTableName(const ATableName : TTableName): TtiDBMetaDataTable;
   end;
-  
+
 
   TtiDBMetaDataTable = class(TtiObjectList)
   private
     FName : TTableName;
     FMaxFieldWidth : word;
+    FLastResultIndexFindByFieldName: integer;
   protected
     function    GetItems(i: integer):TtiDBMetaDataField ; reintroduce;
     procedure   SetItems(i: integer; const AValue: TtiDBMetaDataField); reintroduce;
@@ -128,6 +127,7 @@ type
   public
     constructor Create; override;
     destructor  Destroy; override;
+    procedure Clear; override;
     property    Items[i:integer]: TtiDBMetaDataField read GetItems write SetItems;
     property    Owner      : TtiDBMetaData   read GetOwner      write SetOwner;
     procedure   Add(AObject: TtiDBMetaDataField); reintroduce;
@@ -180,6 +180,7 @@ type
     FDatabaseName : string;
     FParams       : TStringList;
     FErrorInLastCall: boolean;
+    FQueryOptions: string;
   protected
     // Implement these in the concrete
     procedure   SetConnected(AValue : boolean); virtual; abstract;
@@ -189,19 +190,20 @@ type
     constructor Create; virtual;
     destructor  Destroy; override;
 
-    procedure   Connect(const ADatabaseName, AUserName, APassword, AParams : string);
+    procedure   Connect(const ADatabaseName, AUserName, APassword, AParams, AQueryOptions : string);
 
     property    DatabaseName : string  read FDatabaseName  write FDatabaseName;
-    property    UserName    : string  read FUserName      write FUserName    ;
-    property    Password    : string  read FPassword      write FPassword    ;
-    property    Connected   : boolean read GetConnected    write SetConnected  ;
+    property    UserName     : string  read FUserName      write FUserName    ;
+    property    Password     : string  read FPassword      write FPassword    ;
+    property    QueryOptions : string  read FQueryOptions  write FQueryOptions;
+    property    Connected    : boolean read GetConnected   write SetConnected  ;
     property    ErrorInLastCall : boolean read FErrorInLastCall write FErrorInLastCall;
 
     // Implement these in the concrete
     class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string; const AParams: string = ''): boolean; virtual; abstract;
     class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string; const AParams: string = ''); virtual; abstract;
     class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string; const AParams: string = ''); virtual; abstract;
-    class function  TestConnectTo( const ADatabaseName, AUserName, APassword, AParams: string): boolean; virtual;
+    class function  TestConnectTo(const ADatabaseName, AUserName, APassword, AParams: string): boolean; virtual;
 
     procedure   StartTransaction; virtual; abstract;
     function    InTransaction : boolean; virtual; abstract;
@@ -226,7 +228,7 @@ type
                              const AParams : TtiQueryParams;
                              const AWhere    : TtiQueryParams); virtual;
   end;
-  
+
 
   TtiQuery = class(TtiBaseObject)
   private
@@ -790,6 +792,12 @@ begin
   Add(Result);
 end;
 
+procedure TtiDBMetaDataTable.Clear;
+begin
+  inherited;
+  FLastResultIndexFindByFieldName := -1;
+end;
+
 function TtiDBMetaDataTable.Clone: TtiDBMetaDataTable;
 begin
   result := TtiDBMetaDataTable(inherited Clone);
@@ -798,6 +806,7 @@ end;
 constructor TtiDBMetaDataTable.Create;
 begin
   inherited;
+  FLastResultIndexFindByFieldName := -1;
   FMaxFieldWidth := 0;
 end;
 
@@ -807,29 +816,63 @@ begin
 end;
 
 function TtiDBMetaDataTable.FindByFieldName(const AFieldName: TFieldName): TtiDBMetaDataField;
-var
-  i : integer;
-begin
-  result := nil;
-  for i := 0 to Count - 1 do
-    if SameText(Items[i].Name, AFieldName) then
+  function _FindInRange(const AStartIndex, AEndIndex: Integer): TtiDBMetaDataField;
+  var
+    LItemIndex: Integer;
+    LItem: TtiDBMetaDataField;
+  begin
+    Result := nil;
+    for LItemIndex := AStartIndex to AEndIndex do
     begin
-      result := Items[i];
-      Exit; //==>
+      LItem := Items[LItemIndex];
+      if SameText(LItem.Name, AFieldName) then
+      begin
+        FLastResultIndexFindByFieldName := LItemIndex;
+        Exit(LItem);
+      end;
     end;
+  end;
+begin
+  // we often process rows sequentially so we can get a speed improvement by starting at the last
+  // row found for subsequent calls to FindByFieldValue rather than starting at index = 0 every time.
+  if (FLastResultIndexFindByFieldName >= 0) and (FLastResultIndexFindByFieldName <= Count-1) then
+  begin
+    Result := _FindInRange(FLastResultIndexFindByFieldName, Count-1);
+    if Result = nil then Result := _FindInRange(0, FLastResultIndexFindByFieldName-1);
+  end else
+  begin
+    Result := _FindInRange(0, Count-1);
+  end;
 end;
 
 function TtiDBMetaDataTable.IndexOfFieldName(const AFieldName: TFieldName): Integer;
-var
-  i : integer;
-begin
-  result := -1;
-  for i := 0 to Count - 1 do
-    if SameText(Items[i].Name, AFieldName) then
+  function _FindInRange(const AStartIndex, AEndIndex: Integer): Integer;
+  var
+    LItemIndex: Integer;
+    LItem: TtiDBMetaDataField;
+  begin
+    Result := -1;
+    for LItemIndex := AStartIndex to AEndIndex do
     begin
-      result := i;
-      Exit; //==>
+      LItem := Items[LItemIndex];
+      if SameText(LItem.Name, AFieldName) then
+      begin
+        FLastResultIndexFindByFieldName := LItemIndex;
+        Exit(LItemIndex);
+      end;
     end;
+  end;
+begin
+  // we often process rows sequentially so we can get a speed improvement by starting at the last
+  // row found for subsequent calls to FindByFieldValue rather than starting at index = 0 every time.
+  if (FLastResultIndexFindByFieldName >= 0) and (FLastResultIndexFindByFieldName <= Count-1) then
+  begin
+    Result := _FindInRange(FLastResultIndexFindByFieldName, Count-1);
+    if Result = -1 then Result := _FindInRange(0, FLastResultIndexFindByFieldName-1);
+  end else
+  begin
+    Result := _FindInRange(0, Count-1);
+  end;
 end;
 
 function TtiDBMetaDataTable.GetCaption: string;
@@ -928,7 +971,8 @@ end;
 // *  tiDatabase
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TtiDatabase.Connect(const ADatabaseName, AUserName, APassword, AParams: string);
+procedure TtiDatabase.Connect(
+  const ADatabaseName, AUserName, APassword, AParams, AQueryOptions: string);
 var
   i : Integer;
 begin
@@ -936,6 +980,7 @@ begin
   DatabaseName    := ADatabaseName;
   UserName        := AUserName    ;
   Password        := APassword    ;
+  QueryOptions    := AQueryOptions;
   for i := 1 to tiNumToken(AParams, ',') do
     FParams.Add(tiToken(AParams, ',', i));
   if gCommandLineParams.IsParam('VerboseDBConnection') then
@@ -953,6 +998,7 @@ begin
   inherited;
   FErrorInLastCall := false;
   FParams         := TStringList.Create;
+  FQueryOptions:= '';
 end;
 
 function TtiDatabase.CreateAndAttachTIQuery: TtiQuery;
@@ -1020,6 +1066,7 @@ end;
 
 procedure TtiQuery.AttachDatabase(ADatabase: TtiDatabase);
 begin
+  Options.Text:= ADatabase.QueryOptions;
   FDatabase := ADatabase;
 end;
 
@@ -1171,6 +1218,7 @@ begin
   end;
   result:= FOptions;
 end;
+
 function TtiQuery.GetQueryType: TtiQueryType;
 var
   lSQL : string;
@@ -2332,10 +2380,11 @@ function TtiDatabase.CreateTIQuery: TtiQuery;
 begin
   Assert(TIQueryClass <> nil, 'TIQueryClass not assigned');
   result := TIQueryClass.Create;
+  result.Options.Text:= FQueryOptions;
 end;
 
-class function TtiDatabase.TestConnectTo(const ADatabaseName, AUserName,
-                                         APassword, AParams: string): boolean;
+class function TtiDatabase.TestConnectTo(
+  const ADatabaseName, AUserName, APassword, AParams: string): boolean;
 var
   lDatabase : TtiDatabase;
 begin
@@ -2344,7 +2393,7 @@ begin
   try
     try
       // ToDo: Pass this params value
-      lDatabase.Connect(ADatabaseName, AUserName, APassword, AParams);
+      lDatabase.Connect(ADatabaseName, AUserName, APassword, AParams, '');
       result := true;
     except
       on e:EtiOPFDBExceptionWrongServerVersion do

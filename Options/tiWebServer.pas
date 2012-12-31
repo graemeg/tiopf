@@ -16,6 +16,7 @@ uses
   Classes;
 
 const
+  CFavIconFileName = 'favicon.ico';
   cErrorInvalidCachedBlockStreamTransID = 'Invalid cached block TransID "%d"';
   cDefaultBlockStreamCacheTimeout= 120;
   cDefaultBlockStreamCacheSweepEvery= 120;
@@ -432,7 +433,7 @@ begin
       tiStringToStream(LTemp, LResponse);
       LBlockCRC:= tiCRC32FromStream(LResponse);
       if LBlockCount > 1 then
-        Log('Returning block 0 of ' + IntToStr(LBlockCount) + ' in TransID ' + IntToStr(LTransID));
+        Log('HTTP Trans ID: ' + IntToStr(LTransID) + '. Returning block 0 of ' + IntToStr(LBlockCount), lsQueryTiming);
       LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(0, LBlockCount, LBlockSize, LTransID, LBlockCRC);
     end
     // BlockSize <> 0 and TransID <> 0, Retrun and existing block from the cache
@@ -441,7 +442,7 @@ begin
       FBlockStreamCache.ReadBlock(LTransID, LBlockIndex, LTemp);
       tiStringToStream(LTemp, LResponse);
       LBlockCRC:= tiCRC32FromStream(LResponse);
-      Log('Returning block ' + IntToStr(LBlockIndex) + ' of ' + IntToStr(LBlockCount) + ' in TransID ' + IntToStr(LTransID));
+      Log('HTTP Trans ID: ' + IntToStr(LTransID) + '. Returning block ' + IntToStr(LBlockIndex) + ' of ' + IntToStr(LBlockCount), lsQueryTiming);
       LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
     end;
 
@@ -826,7 +827,8 @@ procedure TtiWebServerAction_CanFindPage.Execute(
   var   AResponseCode: Integer;
   const AResponseInfo: TIdHTTPResponseInfo);
 begin
-  Log('Processing document <' + ADocument + '> in <' + ClassName + '>');
+  if not SameText(CFavIconFileName, ADocument) then
+    Log('Processing document <' + ADocument + '> in <' + ClassName + '>');
   GetReturnPage(StaticPageLocation + ADocument, AResponse, AContentType);
 end;
 
@@ -1173,19 +1175,22 @@ var
   LPassThrough: string;
   LRequestArgs: TStrings;
 begin
+  if Trim(ADocument) = '' then
+    Exit(false); //==>
+
   LRequestArgs := TStringList.Create;
   try
-    LRequestArgs := TStringList.Create;
     LRequestArgs.Delimiter := '/';
     LRequestArgs.StrictDelimiter := true;
     LRequestArgs.DelimitedText := ADocument;
+    if LRequestArgs.Count = 0 then
+      Exit(false); //==>
+
     LPassThrough := PassThroughLocation + LRequestArgs[0];
-    Log('Processing TtiWebServerAction_PassThrough.CanExecute <' + LPassThrough  + '>');
-    result := (ADocument <> '') and FileExists(LPassThrough);
+    result := FileExists(LPassThrough);
   finally
     LRequestArgs.Free;
   end;
-
 end;
 
 procedure TtiWebServerAction_PassThrough.Execute(

@@ -99,7 +99,7 @@ function  tiQueryToTIDataSet(const AQuery: TtiQuery; const pDataSet: TtiDataBuff
     lCell : TtiDataBufferCell;
     lStream : TMemoryStream;
   begin
-    lRow := TtiDataBufferRow.Create;
+    lRow := TtiDataBufferRow.Create(AQuery.FieldCount);
     pDataSet.Add(lRow);
     for i := 0 to AQuery.FieldCount - 1 do
     begin
@@ -128,7 +128,7 @@ function  tiQueryToTIDataSet(const AQuery: TtiQuery; const pDataSet: TtiDataBuff
   end;
 begin
   Assert(AQuery.TestValid(TtiQuery), CTIErrorInvalidObject);
-  Assert(pDataSet.TestValid(TtiDataBuffer), CTIErrorInvalidObject);
+  //Assert(pDataSet.TestValid(TtiDataBuffer), CTIErrorInvalidObject);
   _AssignMetaData(AQuery, pDataSet);
   while not AQuery.EOF do
   begin
@@ -140,31 +140,37 @@ end;
 
 function  tiDataSetToString(pDataSet : TtiDataBuffer): string;
 var
-  i, j : integer;
-  lsLine : string;
+  LFieldIndex, LRowIndex : integer;
+  LStringBuilder: TStringBuilder;
+  LRow: TtiDataBufferRow;
 begin
 
   Result := '';
-
-  for i := 0 to pDataSet.Fields.Count-1 do
-  begin
-    Result := tiAddTrailingValue(Result, ',');
-    Result := Result + pDataSet.Fields.Items[i].Name;
-  end;
-  Result := Result + CrLf;
-
-  for i := 0 to pDataSet.Count - 1 do
-  begin
-    lsLine := '';
-    for j := 0 to pDataSet.Items[i].Count-1 do
+  LStringBuilder := TStringBuilder.Create;
+  try
+    for LFieldIndex := 0 to pDataSet.Fields.Count-1 do
     begin
-      lsLine := tiAddTrailingValue(lsLine, ',');
-      lsLine := lsLine + pDataSet.Items[i].Items[j].ValueAsString;
+      if LFieldIndex > 0 then
+        LStringBuilder.Append(',');
+      LStringBuilder.Append(pDataSet.Fields.Items[LFieldIndex].Name);
     end;
-    Result := Result + CrLf;
-    Result := Result + lsLine;
-  end;
+    LStringBuilder.Append(CrLf);
 
+    for LRowIndex := 0 to pDataSet.Count - 1 do
+    begin
+      LStringBuilder.Append(CrLf);
+      LRow := pDataSet.Items[LRowIndex];
+      for LFieldIndex := 0 to LRow.Count-1 do
+      begin
+        if LFieldIndex > 0 then
+          LStringBuilder.Append(',');
+        LStringBuilder.Append(LRow.Items[LFieldIndex].ValueAsString);
+      end;
+    end;
+    Result := LStringBuilder.ToString;
+  finally
+    LStringBuilder.Free;
+  end;
 end;
 
 procedure tiDataSetToTextFile(pDataSet : TtiDataBuffer; AFileName : TFileName);

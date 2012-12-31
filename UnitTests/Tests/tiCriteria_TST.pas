@@ -1311,6 +1311,7 @@ var
   lList: TtiSelectionCriteriaList;
   lItem: TtiEqualToCriteria;
 begin
+  {$WARN SYMBOL_DEPRECATED OFF}
   lList := TtiSelectionCriteriaList.Create;
   try
     CheckEquals('', lList.AsSQL, 'Failed on 1');
@@ -1329,6 +1330,7 @@ begin
   finally
     lList.Free;
   end;
+  {$WARN SYMBOL_DEPRECATED ON}
 end;
 
 procedure TTestTICriteria.TestPerSelectionCriteriaList_via_AsSQLClause;

@@ -110,6 +110,7 @@ type
     procedure   Get(const AURL : string);
 
     function    CorrectURL(const pURL: string): string;
+    function    AddURLParams(const AURL: string; const AParams: string): string;
     function    GetMappingName: string;
 
     property    Input : TStringStream read FInput;
@@ -164,6 +165,7 @@ procedure tiParseTIOPFHTTPBlockHeader(
   const AValue: string;
   var ABlockIndex, ABlockCount, ABlockSize, ATransID, ABlockCRC: LongWord);
 function  tiGetTIOPFHTTPBlockIndex(const AValue: string): LongWord;
+function  tiPortFromURL(const AURL: string; const ADef: Word): Word;
 
 const
   cLocalHost = 'http://localhost';
@@ -178,6 +180,7 @@ uses
   ,tiUtils
   ,tiCRC32
   ,tiExcept
+  ,RegularExpressions
  ;
 
 var
@@ -235,6 +238,32 @@ begin
   ABlockCRC:=    StrToInt64Def(LBlockCRC,    0);
 end;
 
+function tiPortFromURL(const AURL: string; const ADef: Word) : Word;
+var
+  LMatcher : TRegEx;
+  LPortStr : string;
+  LTempResult : integer;
+const
+  //Maximum port is 65535 hence only 5 digits------------V
+  cPortExtract = '\w+://[-A-Za-z0-9+&@#%?=~_|!,.;]+:(\d{1,5})([/?]+|$).*';
+begin
+  Result := ADef;
+  LMatcher := TRegEx.Create(cPortExtract);
+  if LMatcher.IsMatch(AURL) then
+  begin
+    try
+      LPortStr := LMatcher.Replace(AURL,'\1');
+      LTempResult := StrToInt(LPortStr);
+      if (LTempResult > High(Word)) or (LTempResult <= Low(Word)) then
+        Result := ADef
+      else
+        Result := LTempResult;
+    except
+      Result := ADef;
+    end;
+  end;
+end;
+
 function  tiGetTIOPFHTTPBlockIndex(const AValue: string): LongWord;
 var
   LBlockIndex: string;
@@ -260,6 +289,21 @@ begin
   FOutput.Free;
   FreeAndNil(FHeaders);
   inherited;
+end;
+
+function TtiHTTPAbs.AddURLParams(const AURL, AParams: string): string;
+begin
+  if AParams = '' then
+    Result := AURL
+  else
+  begin
+    Result := AURL;
+    if Pos('?', AURL) = 0 then
+      Result := Result + '?'
+    else
+      Result := Result + '&';
+    Result := Result + AParams;
+  end;
 end;
 
 procedure TtiHTTPAbs.Clear;
@@ -424,7 +468,8 @@ begin
   LTransID:= 0;
   LBlockCRC:= 0;
   LBlockCount:= 0;
-  DoGetOrPostBlockWithRetry(AURL, AGetOrPostMethod, Input, Output, 0, LTransID, LBlockCRC, LBlockCount);
+
+  DoGetOrPostBlock(AURL, AGetOrPostMethod, Input, Output, 0, LTransID, LBlockCRC, LBlockCount);
 
   if (LBlockCount > 1) and not IsTerminated then
   begin

@@ -328,6 +328,9 @@ type
     procedure SetItemIndex(const AValue: integer);
     function GetCharCase: TEditCharCase;
     procedure SetCharCase(const AValue: TEditCharCase);
+    function GetOnDrawItem: TDrawItemEvent;
+    procedure SetOnDrawItem(const AValue: TDrawItemEvent);
+    function GetItemText(AIndex: Integer): string;
   protected
     procedure   SetOnChangeActive(AValue : boolean); override;
     procedure   SetReadOnly(const AValue: Boolean);override;
@@ -340,9 +343,11 @@ type
   published
     property    DropDownCount : integer read GetDropDownCount write SetDropDownCount;
     property    CharCase : TEditCharCase read GetCharCase write SetCharCase;
+    property    OnDrawItem: TDrawItemEvent read GetOnDrawItem write SetOnDrawItem;
   public
     constructor Create(AOwner : TComponent); override;
     property    ItemIndex : integer read GetItemIndex write SetItemIndex;
+    property    ItemText[AIndex: Integer]: string read GetItemText;
     procedure   DoOnKeyPress(Sender : TObject; var Key : Char); override;
   end;
 
@@ -541,6 +546,7 @@ type
     procedure SetUnknownValue(const rValue: double);
     function GetIsKnown: boolean;
     procedure SetIsKnown(const bValue: boolean);
+    procedure SetEditMask(const AValue: string);
   protected
     procedure   DataToWinControl; override;
     procedure   WinControlToData; override;
@@ -556,6 +562,7 @@ type
     property    ValueAsString : string read GetValueAsString write SetValueAsString;
     property    Value    : double    read GetValue   write SetValue ;
     property    Precision : integer read FiPrecision write setPrecision;
+    property    EditMask  : string read FsEditMask write SetEditMask;
     property    MinValue : double    read FrMinValue write setMinValue;
     property    MaxValue : double    read FrMaxValue write setMaxValue;
     property    UnknownValue : double    read FrUnknownValue write SetUnknownValue;
@@ -793,8 +800,10 @@ uses
 
 const
   cValidFloatChrs : set of AnsiChar = [ '-', '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ];
-  cIntEditMask        =    '#0' ;  //ipk 2001-03-01
-  cFloatEditMask     : string = '' ;
+  cIntEditMask                = '#0';
+  cFloatEditMask     : string = ''; // See initialization
+  cCurrencyEditMask  : string = ''; // See initialization
+  cPercentEditMask   : string = ''; // See initialization
 //  cusImageFilters     = 'Bitmap files|*.bmp|GIF files|*.gif|JPeg files|*.jpg|All files|*.*';
   cusImageDefaultExt  = '.bmp';
 
@@ -2062,32 +2071,37 @@ procedure TtiPerAwareFloatEdit.setPrecision(iValue : integer);
 var
   i : integer;
   lFrac : string;
+  LDecimalPos: integer;
 begin
-  if FiPrecision <> iValue then              //ipk 2001-03-01
+  if FiPrecision <> iValue then
   begin
     FiPrecision := iValue;
-    FFloatEditStyle := fesUser;
-  end;                                       //ipk 2001-03-01
 
-  if FFloatEditStyle = fesInteger then       //ipk 2001-03-01
-    FsEditMask := cIntEditMask               //ipk 2001-03-01
-  else                                       //ipk 2001-03-01
-    FsEditMask := cFloatEditMask;
+    // Change from formats that don't support decimal fraction to user format
+    if FFloatEditStyle = fesInteger then
+    begin
+      FFloatEditStyle := fesUser;
+      FsEditMask := cFloatEditMask;
+    end;
 
-  if FiPrecision > 0 then
-  begin
-    if AnsiPos(FsEditMask,
-        {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}DecimalSeparator) <> 0 then
-      FsEditMask := Copy(FsEditMask, 1, Pos(FsEditMask, '.') - 1);
-    lFrac := '';
-    for i := 1 to FiPrecision do
-      lFrac := lFrac + '0';
-    FsEditMask := FsEditMask +
-        {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}DecimalSeparator +
-        lFrac;
+    // Set decimal point and precision of existing edit mask
+    LDecimalPos := AnsiPos(
+        {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}DecimalSeparator,
+        FsEditMask);
+    if LDecimalPos <> 0 then
+      FsEditMask := Copy(FsEditMask, 1, LDecimalPos - 1);
+    if FiPrecision > 0 then
+    begin
+      lFrac := '';
+      for i := 1 to FiPrecision do
+        lFrac := lFrac + '0';
+      FsEditMask := FsEditMask +
+          {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}DecimalSeparator +
+          lFrac;
+    end;
+
+    Value := Value;
   end;
-  Value := Value;
-
 end;
 
 
@@ -2128,30 +2142,23 @@ end;
 
 procedure TtiPerAwareFloatEdit.setTextAfter(sValue : string);
 begin
-  if FsTextAfter <> sValue then         //ipk 2001-03-01
+  if FsTextAfter <> sValue then
   begin
     FsTextAfter := sValue;
     FFloatEditStyle := fesUser;
-  end;                                  //ipk 2001-03-01
+  end;
   Value := Value;
-
-//  FsTextAfter := sValue;
-//  FFloatEditStyle := fesUser;
-//  AValue := AValue;
 end;
 
 
 procedure TtiPerAwareFloatEdit.setTextBefore(sValue : string);
 begin
-  if FsTextBefore <> sValue then        //ipk 2001-03-01
+  if FsTextBefore <> sValue then
   begin
     FsTextBefore := sValue;
     FFloatEditStyle := fesUser;
-  end;                                  //ipk 2001-03-01
+  end;
   Value := Value;
-//  FsTextBefore := sValue;
-//  FFloatEditStyle := fesUser;
-//  AValue := AValue;
 end;
 
 
@@ -2168,35 +2175,64 @@ begin
 end;
 
 
+procedure TtiPerAwareFloatEdit.SetEditMask(const AValue: string);
+var
+  LDecimalPos: integer;
+begin
+  if AValue <> FsEditMask then
+  begin
+    FsEditMask := AValue;
+    FFloatEditStyle := fesUser;
+    // Set precision
+    LDecimalPos := AnsiPos(
+        {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}DecimalSeparator,
+        FsEditMask);
+    if LDecimalPos > 0 then
+      FiPrecision := Length(FsEditMask) - LDecimalPos
+    else
+      FiPrecision := 0;
+    Value := Value;
+  end;
+end;
+
 procedure TtiPerAwareFloatEdit.SetFloatEditStyle(const AValue: TtiFloatEditStyle);
 begin
-  FFloatEditStyle := AValue;
-  case AValue of
-  fesUser    :;// Do nothing
-  fesInteger : begin
-                  TextBefore := '';
-                  Precision :=  0;
-                  TextAfter := '';
-                end;
-  fesFloat   : begin
-                  TextBefore := '';
-                  Precision :=  3;
-                  TextAfter := '';
-                end;
-  fesCurrency : begin
-                  TextBefore := '$ ';
-                  Precision :=  2;
-                  TextAfter := '';
-                end;
-  fesPercent : begin
-                  TextBefore := '';
-                  Precision :=  1;
-                  TextAfter := ' %';
-                end;
-  else
-    raise EtiOPFInternalException.Create(cErrorInvalidLabelStyle);
+  if AValue <> FFloatEditStyle then
+  begin
+    FFloatEditStyle := AValue;
+    case AValue of
+    fesUser    :;// Do nothing
+    fesInteger : begin
+                    FsEditMask := cIntEditMask;
+                    FsTextBefore := '';
+                    FiPrecision :=  0;
+                    FsTextAfter := '';
+                  end;
+    fesFloat   : begin
+                    FsEditMask := cFloatEditMask;
+                    FsTextBefore := '';
+                    FiPrecision := 3;
+                    FsTextAfter := '';
+                  end;
+    fesCurrency : begin
+                    FsEditMask := cCurrencyEditMask;
+                    FsTextBefore :=
+                        {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}CurrencyString + ' ';
+                    FiPrecision := 2;
+                    FsTextAfter := '';
+                  end;
+    fesPercent : begin
+                    FsEditMask := cPercentEditMask;
+                    FsTextBefore := '';
+                    FiPrecision := 1;
+                    FsTextAfter := ' %';
+                  end;
+    else
+      raise EtiOPFInternalException.Create(cErrorInvalidLabelStyle);
+    end;
+
+    Value := Value;
   end;
-  FFloatEditStyle := AValue; //ipk 2001-03-01  Likely to be changed to fesUser
 end;
 
 
@@ -3141,6 +3177,16 @@ begin
   result := TComboBox(FWinControl).ItemIndex;
 end;
 
+function TtiPerAwareComboBoxAbs.GetItemText(AIndex: Integer): string;
+begin
+  result := ComboBox.Items[AIndex];
+end;
+
+function TtiPerAwareComboBoxAbs.GetOnDrawItem: TDrawItemEvent;
+begin
+  result := ComboBox.OnDrawItem;
+end;
+
 procedure TtiPerAwareComboBoxAbs.SetDropDownCount(const AValue: integer);
 begin
   TComboBox(WinControl).DropDownCount := AValue;
@@ -3163,6 +3209,11 @@ begin
     TComboBox(WinControl).OnClick := nil;
     TComboBox(WinControl).OnExit  := nil;
   end;
+end;
+
+procedure TtiPerAwareComboBoxAbs.SetOnDrawItem(const AValue: TDrawItemEvent);
+begin
+  ComboBox.OnDrawItem := AValue;
 end;
 
 procedure TtiPerAwareComboBoxAbs.SetReadOnly(const AValue: Boolean);
@@ -3890,10 +3941,16 @@ end;
 
 
 initialization
-  // 02/01/2002, Ha-Hoe, Made change to decimal separator
+  // Runtime decimal separator
   cFloatEditMask     := '#' +
       {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}ThousandSeparator  +
-      '##0' ;
+      '##0.000';
+  cCurrencyEditMask  := '#' +
+      {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}ThousandSeparator  +
+      '##0.00';
+  cPercentEditMask   := '#' +
+      {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}ThousandSeparator  +
+      '##0.0';
   cValidFloatChrs    :=
     [ '-', {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}DecimalSeparator ,
       '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ];

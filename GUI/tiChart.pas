@@ -617,12 +617,14 @@ public
     function PointsVisible: Integer;
     procedure SelectUserPanel;
     procedure DeselectAllSeries;
+    procedure CopyToClipBoard;
 
     property VisiblesSeriesMinX: real read GetVisiblesSeriesMinX;
     property VisiblesSeriesMaxX: real read GetVisiblesSeriesMaxX;
     property VisiblesSeriesMinY: real read GetVisiblesSeriesMinY;
     property VisiblesSeriesMaxY: real read GetVisiblesSeriesMaxY;
     property UserPanel: TtiChartUserPanel read GetUserPanel;
+
   published
     property Align;
     property Anchors;
@@ -2741,6 +2743,11 @@ begin
 end;
 
 procedure TtiTimeSeriesChart.DoSBCopyToClipBrdClick(sender : TObject);
+begin
+  CopyToClipBoard;
+end;
+
+procedure TtiTimeSeriesChart.CopyToClipBoard;
 var
   LScratchChart: TtiTimeSeriesChart;
   LSeries: TtiChartSeries;

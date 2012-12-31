@@ -100,7 +100,8 @@ type
     function    GetDatabaseName: string;
     function    GetUserName: string;
     function    GetPassword: string;
-    function    GetParams: string;
+    function    GetQueryParams: string;
+    function    GetPoolTimeout: Integer;
   protected
     procedure SetUpOnce; override;
     procedure SetUp; override;
@@ -110,10 +111,13 @@ type
     property    DatabaseName     : string read GetDatabaseName;
     property    UserName         : string read GetUserName;
     property    Password         : string read GetPassword;
-    property    Params           : string read GetParams;
+    property    QueryParams      : string read GetQueryParams;
+    property    PoolTimeout      : Integer read GetPoolTimeout;
     property DBConnectionPool: TtiDBConnectionPool read FDBConnectionPool;
 
     procedure   CreateTable(const ATable : TtiDBMetaDataTable; const ADatabase: TtiDatabase = nil);
+    procedure   CreateTableInPassedDB(const ATable: TtiDBMetaDataTable; const ADatabase: TtiDatabase);
+    procedure   CreateTableInDefaultDB(const ATable : TtiDBMetaDataTable);
     procedure   InsertRow(const ATableName: string; AParams: TtiQueryParams; const ADatabase: TtiDatabase = nil);
     procedure   DropTable(const ATableName: string; const ADatabase: TtiDatabase = nil);
     procedure   DropCreatedTables;
@@ -426,19 +430,19 @@ begin
       TestSetupData.DBName,
       TestSetupData.Username,
       TestSetupData.Password,
-      TestSetupData.Params) then
+      TestSetupData.QueryParams) then
     begin
       LDatabaseClass.CreateDatabase(
         TestSetupData.DBName,
         TestSetupData.Username,
         TestSetupData.Password,
-        TestSetupData.Params);
+        TestSetupData.QueryParams);
       if not LDatabaseClass.DatabaseExists(
         TestSetupData.DBName,
         TestSetupData.Username,
         TestSetupData.Password,
-        TestSetupData.Params) then
-        EtiOPFDUnitException.Create('Unable to create database <' + TestSetupData.DBName + '>');
+        TestSetupData.QueryParams) then
+        raise EtiOPFDUnitException.Create('Unable to create database <' + TestSetupData.DBName + '>');
     end;
   end;
 end;
@@ -537,23 +541,47 @@ begin
   result := TestSetupData.DBName;
 end;
 
-procedure TtiTestCaseWithDatabaseConnection.CreateTable(
-  const ATable: TtiDBMetaDataTable;
-  const ADatabase: TtiDatabase = nil);
+procedure TtiTestCaseWithDatabaseConnection.CreateTableInDefaultDB(
+  const ATable: TtiDBMetaDataTable);
 var
   LDatabase: TtiDatabase;
 begin
-  if ADatabase = nil then
-  begin
-    LDatabase:= DBConnectionPool.Lock;
-    try
-      LDatabase.CreateTable(ATable);
-    finally
-      DBConnectionPool.UnLock(LDatabase);
-    end;
-  end else
+  LDatabase := DBConnectionPool.Lock;
+  try
+    CreateTable(ATable, LDatabase);
+  finally
+    DBConnectionPool.UnLock(LDatabase);
+  end;
+end;
+
+procedure TtiTestCaseWithDatabaseConnection.CreateTableInPassedDB(
+  const ATable: TtiDBMetaDataTable;
+  const ADatabase: TtiDatabase);
+begin
+  try
     ADatabase.CreateTable(ATable);
-  FCreatedTables.Add(LowerCase(ATable.Name));
+    FCreatedTables.Add(LowerCase(ATable.Name));
+  except
+    on e:exception do
+    begin
+      // The most probable cause of an exception is the table already existing.
+      // Try dropping and then creating the table.
+      // If this does not work, another exception will be raised.
+      DropTable(ATable.Name,ADatabase);
+      ADatabase.CreateTable(ATable);
+      FCreatedTables.Add(LowerCase(ATable.Name));
+    end;
+  end;
+end;
+
+procedure TtiTestCaseWithDatabaseConnection.CreateTable(
+  const ATable: TtiDBMetaDataTable;
+  const ADatabase: TtiDatabase = nil);
+begin
+  if ADatabase = nil then
+    CreateTableInDefaultDB(ATable)
+  else
+    CreateTableInPassedDB(ATable, ADatabase);
 end;
 
 procedure TtiTestCaseWithDatabaseConnection.CreateTableBoolean(const ADatabase : TtiDatabase = nil);
@@ -708,10 +736,10 @@ begin
   result := TestSetupData.Password;
 end;
 
-function TtiTestCaseWithDatabaseConnection.GetParams: string;
+function TtiTestCaseWithDatabaseConnection.GetQueryParams: string;
 begin
   Assert(TestSetupData.TestValid, CTIErrorInvalidObject);
-  Result := TestSetupData.Params;
+  Result := TestSetupData.QueryParams;
 end;
 
 
@@ -721,6 +749,11 @@ begin
   result := TestSetupData.Username;
 end;
 
+function TtiTestCaseWithDatabaseConnection.GetPoolTimeout: Integer;
+begin
+  Assert(TestSetupData.TestValid, CTIErrorInvalidObject);
+  result := TestSetupData.PoolTimeout;
+end;
 
 function TtiTestCaseWithPersistenceLayer.GetName: string;
 begin
@@ -769,7 +802,11 @@ begin
     DatabaseName,
     Username,
     Password,
-    Params);
+    '',
+    QueryParams,
+    0,
+    0,
+    PoolTimeout);
   FDBConnectionPool:= PersistenceLayer.DBConnectionPools.Find(TestSetupData.DBName);
 end;
 
@@ -784,8 +821,9 @@ begin
   try
     DropCreatedTables;
   finally
-    PersistenceLayer.DBConnectionPools.Disconnect(TestSetupData.DBName);
-    inherited TearDown;
+    PersistenceLayer.DBConnectionPools.Disconnect(
+      TestSetupData.DBName);
+    inherited;
   end;
 end;
 

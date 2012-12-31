@@ -159,9 +159,14 @@ type
   private
     FEvents: TtiLogEvents;
     FEventsCritSect: TCriticalSection;
+    FMaxListSize: Integer;
+    FSkipCount: Integer;
     function GetItems(AIndex: Integer): TtiLogEvent;
     function GetAsString: string;
     function Extract(const AItem: TtiLogEvent): TtiLogEvent;
+    procedure ResumeLogging;
+    procedure AddLogEvent(const ADateTime, AThreadID,
+        AMessage: string; const ASeverity: TtiLogSeverity);
   protected
     procedure WriteToOutput; override;
     property EventsCritSect: TCriticalSection read FEventsCritSect;
@@ -174,6 +179,7 @@ type
     procedure Purge; override;
     property Items[AIndex: Integer]: TtiLogEvent Read GetItems;
     property AsString: string read GetAsString;
+    property MaxListSize: Integer read FMaxListSize write FMaxListSize;
     function Count: Integer;
     function ErrorMessage(out AMessage: string): TtiLogSeverity;
   end;
@@ -363,7 +369,11 @@ const
                    ,lsSQL
               ];
 
-  cErrorListStart = 'The following %s were encountered:<br><ul>';
+  CDefaultMaxListSize = 10000;
+  CLogEventsSkippedStartMsg = 'Log limit of %d reached, skipping events...';
+  CLogEventsSkippedEndMsg = '%d log events were skipped';
+
+  cErrorListStart = 'The following %s were encountered:<ul>';
   cErrorsOnly = 'errors';
   cWarningsOnly = 'warnings';
   cErrorsAndWarnings = 'errors and warnings';
@@ -705,7 +715,20 @@ begin
 end;
 
 
-  { TtiLog }
+function _CurrentLogTimestamp: string;
+begin
+  // Current time padded for logging
+  Result := _PadR(FormatDateTime(cIntlDateTimeDisp, Now), Length(cIntlDateTimeDisp));
+end;
+
+function _CurrentLogThreadID: string;
+begin
+  // Compatible with MacOSX, padded for logging
+  Result := _PadL(IntToStr(PtrUInt(GetCurrentThreadID)), cuiWidthThread);
+end;
+
+
+{ TtiLog }
 
 constructor TtiLog.Create;
 begin
@@ -774,11 +797,9 @@ begin
   if UFinalization then
     Exit; //==>
 
-  lsNow := _PadR(FormatDateTime(cIntlDateTimeDisp, Now), Length(cIntlDateTimeDisp));
+  lsNow := _CurrentLogTimestamp;
   lsMessage := AMessage;
-
-  lsThreadID := IntToStr(PtrUInt(GetCurrentThreadID));   // So it's compatible with MacOSX
-  lsThreadID := _PadL(lsThreadID, cuiWidthThread);
+  lsThreadID := _CurrentLogThreadID;
 
   FCritSect.Enter;
   try
@@ -791,7 +812,6 @@ begin
     FCritSect.Leave;
   end;
 end;
-
 
 { TtiLogToAbs }
 
@@ -841,6 +861,8 @@ begin
   inherited;
   FEvents := TtiLogEvents.Create;
   FEventsCritSect := TCriticalSection.Create;
+  FMaxListSize := CDefaultMaxListSize;
+  FSkipCount := 0;
 end;
 
 
@@ -935,28 +957,64 @@ begin
   EventsCritSect.Enter;
   try
     FEvents.Clear;
+    FSkipCount := 0;
   finally
     EventsCritSect.Leave;
   end;
 end;
 
 
+procedure TtiLogToList.ResumeLogging;
+begin
+  if FSkipCount > 0 then
+  begin
+    AddLogEvent(_CurrentLogTimestamp, _CurrentLogThreadID,
+        Format(CLogEventsSkippedEndMsg, [FSkipCount]), lsWarning);
+    FSkipCount := 0;
+  end;
+end;
+
+
+procedure TtiLogToList.AddLogEvent(const ADateTime, AThreadID,
+  AMessage: string; const ASeverity: TtiLogSeverity);
+var
+  LLogEvent: TtiLogEvent;
+begin
+  LLogEvent := TtiLogEvent.Create;
+  LLogEvent.DateTime := ADateTime;
+  LLogEvent.LogMessage := AMessage;
+  LLogEvent.Severity := ASeverity;
+  LLogEvent.ThreadID := AThreadID;
+  FEvents.Add(LLogEvent);
+end;
+
+
 procedure TtiLogToList.Log(const ADateTime, AThreadID, AMessage: string;
   ASeverity: TtiLogSeverity);
-var
-  lLogEvent: TtiLogEvent;
 begin
   if not AcceptEvent(ADateTime, AMessage, ASeverity) then
     Exit; //==>
 
   EventsCritSect.Enter;
   try
-    lLogEvent := TtiLogEvent.Create;
-    lLogEvent.DateTime := ADateTime;
-    lLogEvent.LogMessage := AMessage;
-    lLogEvent.Severity := ASeverity;
-    lLogEvent.ThreadID := AThreadID;
-    FEvents.Add(lLogEvent);
+    // Restrict the number of items
+    if FMaxListSize > 0 then
+    begin
+      // We need to skip this log event
+      if FEvents.Count >= FMaxListSize then
+      begin
+        // Just started skipping
+        if FSkipCount = 0 then
+          AddLogEvent(ADateTime, AThreadID,
+              Format(CLogEventsSkippedStartMsg, [FMaxListSize]), lsWarning);
+        Inc(FSkipCount);
+        Exit; //==>
+      end
+      else
+        ResumeLogging;
+    end;
+
+    AddLogEvent(ADateTime, AThreadID, AMessage, ASeverity);
   finally
     EventsCritSect.Leave;
   end;
@@ -965,6 +1023,7 @@ end;
 
 procedure TtiLogToList.Purge;
 begin
+  ResumeLogging;
   inherited;
   Clear;
 end;
@@ -1106,28 +1165,42 @@ var
   LMessagePrefixLen: integer;
   LMessage: string;
   i: Integer;
+  LLines: ItiTokens;
+  LResultBuilder: TStringBuilder;
 begin
-  // ToDo: This will need a going over for possible combinations of CrLf, Cr, LF, etc
-  if Pos(Cr, LogMessage) = 0 then
-    Result := GetFormattedMessageTimeStamp + LogMessage
-  else
-  begin
-    LMessagePrefix:= GetFormattedMessageTimeStamp;
-    LMessagePrefixLen:= Length(LMessagePrefix);
-    Result := LMessagePrefix;
-    LMessage := tiStrTran(LogMessage, CrLf, Cr);
-    LMessage := tiStrTran(LMessage, Lf, Cr);
-    for i:= 1 to tiNumToken(LMessage, Cr) do
+  LResultBuilder := TStringBuilder.Create;
+  try
+    if Pos(Cr, LogMessage) = 0 then
     begin
-      if i > 1 then
+      LResultBuilder.Append(GetFormattedMessageTimeStamp);
+      LResultBuilder.Append(LogMessage);
+    end else
+    begin
+      LMessagePrefix:= GetFormattedMessageTimeStamp;
+      LMessagePrefixLen:= Length(LMessagePrefix);
+      LResultBuilder.Append(LMessagePrefix);
+
+      LMessage := tiStrTran1(LogMessage, CrLf, Cr);
+      LMessage := tiStrTran1(LMessage, Lf, Cr);
+
+      LLines := CreateTiTokens(LMessage, Cr); // 1-based
+      for i:= 1 to LLines.Count do
       begin
-        Result := Result + tiLineEnd + tiSpace(LMessagePrefixLen) + tiToken(LMessage, Cr, i);
-      end else
-        Result := Result + tiToken(LMessage, Cr, i);
+        if i = 1 then
+          LResultBuilder.Append(LLines.Tokens[i])
+        else
+        begin
+          LResultBuilder.Append(StringOfChar(' ', LMessagePrefixLen));
+          LResultBuilder.Append(LLines.Tokens[i]);
+          LResultBuilder.Append(CrLf);
+        end;
+      end;
     end;
+    Result := LResultBuilder.ToString;
+  finally
+    LResultBuilder.Free;
   end;
 end;
-
 
 function TtiLogEvent.AsString: string;
 begin
@@ -1225,10 +1298,22 @@ procedure TtiThrdLog.Execute;
 begin
   inherited;
   while SleepAndCheckTerminated(200) do
-    if FLogTo.Synchronized then
-      Synchronize(WriteToOutput)
-    else
-      WriteToOutput;
+    try
+      if FLogTo.Synchronized then
+        Synchronize(WriteToOutput)
+      else
+        WriteToOutput;
+    except
+      // Catch exceptions, otherwise the thread dies and logging simply stops
+      // (a call to Purge such as on app exit should flush the log)
+      on E: Exception do
+        // At first it seems pointless logging problems with the logging
+        // framework but if it only affects one LogTo instance then at least
+        // the others will report it, and for errors like LogToFile where the
+        // file is temporarily locked we'll write out the othe log messages
+        // eventually and log the fact that there was a problem.
+        Log(E.Message, lsWarning);
+    end;
 end;
 
 procedure TtiThrdLog.SetLogTo(const AValue: TtiLogToCacheAbs);

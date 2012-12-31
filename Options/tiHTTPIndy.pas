@@ -63,6 +63,8 @@ begin
 end;
 
 procedure TtiHTTPIndy.DoGet(const AURL : string; AInput, AOutput: TStringStream);
+var
+  LURL: string;
 begin
   Assert(AURL<>'', 'AURL not assigned');
   Assert(AInput<>nil, 'AInput not assigned');
@@ -73,7 +75,8 @@ begin
     FHTTP.Response.KeepAlive:= False;
     FHTTP.Request.CustomHeaders.Values[ctiOPFHTTPBlockHeader]:= RequestTIOPFBlockHeader;
     AOutput.Size:= 0;
-    FHTTP.Get(AURL + '?' + AInput.DataString, AOutput);
+    LURL := CorrectURL(AddURLParams(AURL, AInput.DataString));
+    FHTTP.Get(LURL, AOutput);
   except
     on e:exception do
       raise EtiOPFHTTPException.Create(e.message);

@@ -57,6 +57,11 @@ type
                       const AResponse: TStream; var AContentType: string;
                       var   AResponseCode: Integer;
                       const AResponseInfo: TIdHTTPResponseInfo); override;
+    const cPassed =
+          '<?xml version="1.0" ?><a><tidbproxytestalive status="passed" /></a>';
+    const cFailed =
+          '<?xml version="1.0" ?><a><tidbproxytestalive status="failed" /></a>';
+
   end;
 
   TtiDBPS_TestAlive1 = class(TtiWebServerAction)
@@ -100,6 +105,7 @@ type
     destructor  Destroy; override;
     property    XMLTags           : TtiXMLTags read FXMLTags;
   end;
+
 
 
 implementation
@@ -217,7 +223,7 @@ end;
 
 function TtiDBPS_TestHTML.CanExecute(const ADocument: string): boolean;
 begin
-  result := SameText(ADocument, cgTIDBProxyTestHTML);
+  result := SameText(ADocument, CTIViewAppServerStatus);
 end;
 
 procedure TtiDBPS_TestHTML.Execute(
@@ -231,9 +237,6 @@ procedure TtiDBPS_TestHTML.Execute(
 var
   lDBProxyServerStats : TtiDBProxyServerStats;
 begin
-  // Don't log this. AutoRefresh will cause the log to become full
-  //Log('Processing document <' + ADocument +
-  //    ' in <' + ClassName + '>');
   lDBProxyServerStats := TtiDBProxyServerStats.Create;
   try
     // ToDo: Read RefreshRate from RequestInfo
@@ -292,19 +295,6 @@ var
   LDatabase : TtiDatabase;
   lResult  : string;
   lDBConnectionName : string;
-const
-  cPassed =
-          '<?xml version="1.0" ?>' +
-          '<a>' +
-          '<tidbproxytestalive status="passed" />' +
-          '</a>';
-
-  cFailed =
-          '<?xml version="1.0" ?>' +
-          '<a>' +
-          '<tidbproxytestalive status="failed" />' +
-          '</a>';
-
 begin
   Log('Processing document <' + ADocument + '> in <' + ClassName + '>');
   lDBConnectionName := GTIOPFManager.DefaultPerLayer.DefaultDBConnectionName;

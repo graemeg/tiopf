@@ -62,6 +62,7 @@ type
     procedure ParseString6;
     procedure ParseString7;
     procedure ParseString8;
+    procedure ParseString9;
     procedure ParseMissingArg1;
     procedure ParseMissingArg2;
     procedure ParseMissingArg3;
@@ -309,6 +310,19 @@ begin
   CheckResults(cNewLine, 9, 1, 11);
   CheckResults(cEndOfLine, 10, 1, 11);
   CheckResults(cEndOfText, 11, 1, 11);
+end;
+
+procedure TtiTestParserTests.ParseString9;
+begin
+  FParser.ParseString('cell1,' + #9 + 'cell2,ce' + #9 + 'll3');
+  CheckCount(7);
+  CheckResults(cBeforeParse, 0, 0, 0);
+  CheckResults(cStartOfLine, 1, 0, 0);
+  CheckResults('cell1', 2, 0, 6);
+  CheckResults(#9 + 'cell2', 3, 0, 13);
+  CheckResults('ce' + #9 + 'll3', 4, 0, 19);
+  CheckResults(cEndOfLine, 5, 0, 19);
+  CheckResults(cEndOfText, 6, 0, 19);
 end;
 
 procedure TtiTestParserTests.ParseMissingArg1;

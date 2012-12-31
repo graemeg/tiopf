@@ -108,6 +108,8 @@ type
     procedure GUIToObject;
     // Copy GUI to Object. Calls OnObjectToGUI if set, and then calls DoGUIToObject if needed
     procedure ObjectToGUI(const AForceUpdate: boolean = false);
+    // Force update of GUI and error validation
+    procedure UpdateView;
     // Called by NotifyObservers of subject. Calls ObjectToGUI by default.
     procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation); override;
     // Call when GUI changed. Will call GUIToObject.
@@ -488,6 +490,15 @@ begin
   // do nothing
 end;
 
+procedure TtiMediatorView.UpdateView;
+begin
+  if Active then
+  begin
+    ObjectToGUI;
+    TestIfValid;
+  end
+end;
+
 function TtiMediatorView.DataAndPropertyValid: Boolean;
 begin
   Result := (FSubject <> nil) and ((not CompositeMediator) or (FFieldName <> ''));
@@ -623,16 +634,33 @@ end;
 procedure TtiMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
 begin
   inherited Update(ASubject, AOperation);
-  { We can be observing FSubject and ValueList, so make sure we handle the
-    correct one. }
+// A conflict while merging AEMO with tiOPF.
+// Here is the conflict message.
+// Done my best to resolve.
+//<<<<<<< .working
+//  if (AOperation=noChanged) then
+//    UpdateView
+//  else if (AOperation=noFree) and (ASubject=FSubject) then
+//    FSubject:=Nil;
+//=======
+//  { We can be observing FSubject and ValueList, so make sure we handle the
+//    correct one. }
+//  if FSubject = ASubject then
+//  begin
+//    if (AOperation=noChanged) and Active then
+//    begin
+//      ObjectToGUI;
+//      TestIfValid;
+//    end
+//    else if (AOperation=noFree) and (ASubject=FSubject) then
+//      FSubject:=Nil;
+//  end;
+//>>>>>>> .merge-right.r2283
   if FSubject = ASubject then
   begin
-    if (AOperation=noChanged) and Active then
-    begin
-      ObjectToGUI;
-      TestIfValid;
-    end
-    else if (AOperation=noFree) and (ASubject=FSubject) then
+    if (AOperation=noChanged) then
+      UpdateView
+    else if (AOperation=noFree) then
       FSubject:=Nil;
   end;
 end;
@@ -927,7 +955,8 @@ begin
   // We check subject class and not the subject itself as this allows us to
   // have a nil subject (e.g. class property where property is unassigned,
   // such as Order.Product.ProductName where Product is nil).
-  Result := AGUI.InheritsFrom(FMC.ComponentClass) and ASubjectClass.InheritsFrom(FMSC);
+  Result := Assigned(AGUI) and AGUI.InheritsFrom(FMC.ComponentClass) and
+      ASubjectClass.InheritsFrom(FMSC);
   if Result and not FMC.CompositeMediator then
     if (PropertyName <> '') then
       Result := (CompareText(N, PropertyName) = 0)
@@ -1318,10 +1347,20 @@ end;
 procedure TtiCustomListMediatorView.SetOnBeforeSetupField(const Value: TtiOnBeforeSetupField);
 var
   I: integer;
+  LItemMediator: TtiListItemMediator;
 begin
-  FOnBeforeSetupField := Value;
-  for I := 0 to FMediatorList.Count - 1 do
-    TtiListItemMediator(FMediatorList[i]).OnBeforeSetupField := Value;
+  if @Value <> @FOnBeforeSetupField then
+  begin
+    FOnBeforeSetupField := Value;
+    for I := 0 to FMediatorList.Count - 1 do
+    begin
+      LItemMediator := TtiListItemMediator(FMediatorList[i]);
+      LItemMediator.OnBeforeSetupField := Value;
+      // Trigger GUI update
+      if Assigned(LItemMediator.Model) then
+        LItemMediator.Model.NotifyObservers;
+    end;
+  end;
 end;
 
 procedure TtiCustomListMediatorView.FieldInfoChanged(Item: TtiMediatorFieldInfo;

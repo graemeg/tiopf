@@ -113,8 +113,10 @@ begin
   lSetupCount := GTIOPFTestManager.Count;
   lLayerCount := GTIOPFManager.PersistenceLayers.Count;
 
+  //tiQueryRemote uses tiQueryXMLLight query which as part of its initalization block
+  //registers as a persistence layer.  Need to decrement layer count if XMLLight not included
   if GTIOPFTestManager.ToRun(cTIPersistRemote) and
-     (not GTIOPFTestManager.ToRun(cTIPersistXML)) then
+     (not GTIOPFTestManager.ToRun(cTIPersistXMLLight)) then
     Dec(lLayerCount);
   CheckEquals(lSetupCount, lLayerCount,
             'GTIOPFTestManager.Count <> GTIOPFManager.PersistenceLayers.Count');

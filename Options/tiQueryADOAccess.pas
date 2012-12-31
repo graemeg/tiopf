@@ -96,7 +96,7 @@ begin
   lDatabase := TtiDatabaseADOAccess.Create;
   try
     try
-      lDatabase.Connect(ADatabaseName, AUserName, APassword, '');
+      lDatabase.Connect(ADatabaseName, AUserName, APassword, '', '');
       result := true;
     except
       on e:exception do

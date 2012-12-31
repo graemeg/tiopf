@@ -543,7 +543,7 @@ begin
   begin
     LMediator := FDefs[i].Mediator;
     if Assigned(LMediator) then
-      LMediator.ObjectToGUI;
+      LMediator.UpdateView;
   end;
 end;
 

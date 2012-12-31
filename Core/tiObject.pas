@@ -328,6 +328,12 @@ type
     destructor Destroy; override;
   end;
 
+  TtiObjectListCompareEvent = procedure(AItem1, AItem2: TtiObject) of object;
+  TtiObjectListCompareWithDifferenceMessageEvent = procedure(const AItem1, AItem2: TtiObject; var ADifferenceMessage: string) of object;
+  TtiObjectListFindCompareFunc = function(const AObject: TtiObject; const AValue): integer of object;
+  TtiObjectListItemMatchFunc = reference to function(const AItem1, AItem2: TtiObject): Boolean;
+  TtiObjectListItemCompareFunc = reference to function(const AItem1, AItem2: TtiObject): Boolean;
+  TtiObjectCompareEvent = function(const AItem1, AItem2: TtiObject): integer of object;
 
   TtiObject = class(TtiVisited)
   private
@@ -461,7 +467,8 @@ type
     {: Find all objects in the hierarchy using the find method passed}
     function    FindAll(ATIObjectFindMethodData : TPerObjFindMethodData; AList : TList; AData : TtiObject): integer; overload;
     {: Is this object unique in the hierarchy?}
-    function    IsUnique(const AObject : TtiObject): boolean; virtual;
+    function    IsUnique(const AObject : TtiObject): boolean; overload; virtual;
+
     {: Creates a cloned instance of this object. }
     function    Clone : TtiObject; virtual; // Must override and typecast if to be used
     {: Copy this object to another.}
@@ -531,14 +538,6 @@ type
        specific properties changed. }
     property    UpdateTopicList: TStringList read GetUpdateTopicList;
   end;
-
-
-  TtiObjectListCompareEvent = procedure(AItem1, AItem2: TtiObject) of object;
-  TtiObjectListCompareWithDifferenceMessageEvent = procedure(const AItem1, AItem2: TtiObject; var ADifferenceMessage: string) of object;
-  TtiObjectListFindCompareFunc = function(const AObject: TtiObject; const AValue): integer of object;
-  TtiObjectListItemMatchFunc = reference to function(const AItem1, AItem2: TtiObject): Boolean;
-  TtiObjectListItemCompareFunc = reference to function(const AItem1, AItem2: TtiObject): Boolean;
-
 
   TtiEnumerator = class(TtiBaseObject)
   private
@@ -679,6 +678,8 @@ type
 //                            AIn2Only: TtiObjectList); overload;
     {: Allows the use of the for-in loop in Delphi 2005+}
     function GetEnumerator: TtiEnumerator;
+    function IsUnique(const AObject : TtiObject; const ACompareEvent: TtiObjectCompareEvent): boolean; overload;
+
   published
     // This must be published so it can be used by the tiPerAware controls.
     property    List : TList read GetList;
@@ -1706,6 +1707,25 @@ begin
   end;
 end;
 
+
+function TtiObjectList.IsUnique(const AObject: TtiObject;
+  const ACompareEvent: TtiObjectCompareEvent): boolean;
+var
+  i : integer;
+  LItem: TtiObject;
+begin
+  Assert(Assigned(AObject), 'AObject not assigned');
+  Assert(Assigned(ACompareEvent), 'ACompareEvent not assigned');
+  for i := 0 to Count-1 do
+  begin
+    LItem:= Items[i];
+    if (ACompareEvent(AObject, LItem) = 0) and
+       (not LItem.Deleted) and
+       (LItem <> AObject) then
+      Exit(false);
+  end;
+  Exit(true);
+end;
 
 { TVisPerObjFindByOID }
  

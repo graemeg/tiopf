@@ -5,6 +5,7 @@ unit tiDataBuffer_BOM;
 interface
 uses
    Classes
+  ,Generics.Collections
   ,tiConstants
   ,tiBaseObject
   ,tiQuery
@@ -33,78 +34,6 @@ type
   TtiDataBuffer       = class;
   TtiDataBufferRow    = class;
   TtiDataBufferCell   = class;
-
-  TtiDataBufferList = class(TtiBaseObject)
-  private
-    FList : TObjectList;
-    function  GetItems(AIndex: Integer): TtiDataBuffer;
-    procedure SetItems(AIndex: Integer; const AValue: TtiDataBuffer);
-  public
-    constructor Create;
-    destructor  Destroy; override;
-    property    Items[AIndex:Integer]:TtiDataBuffer read GetItems write SetItems;
-    procedure   Add(const AData : TtiDataBuffer);
-    function    AddInstance(const AName : string = ''): TtiDataBuffer;
-    procedure   Clear;
-    function    Count : integer;
-    function    FindByName(const AName : string): TtiDataBuffer;
-    function    FindCell(const ADataBufferName: string;
-        const AFieldName: string; const ARowIndex: Integer): TtiDataBufferCell;
-    procedure   Remove(const AValue : TtiDataBuffer);
-    procedure   Extract(const AValue: TtiDataBuffer);
-  end;
-
-
-  TtiDataBuffer = class(TtiBaseObject)
-  private
-    FFields: TtiDBMetaDataTable;
-    FRows : TObjectList;
-    FName: string;
-    function GetRows: TList;
-  protected
-    function  GetItems(AIndex: integer): TtiDataBufferRow;
-  public
-    constructor Create;
-    destructor  Destroy; override;
-    procedure   Clear;
-    property    Items[ AIndex : integer ]: TtiDataBufferRow read GetItems;
-    function    Count : integer;
-    procedure   Add(const AValue : TtiDataBufferRow);
-    function    AddInstance : TtiDataBufferRow;
-    property    List : TList read GetRows;
-    function    IndexOf(const AValue : TtiDataBufferRow): integer;
-    function    FindByFieldValue(const AFieldName, AFieldValue: string): TtiDataBufferRow;
-    function    FindCell(const AFieldName: string; const ARowIndex: Integer): TtiDataBufferCell;
-    property    Name : string read FName write FName;
-    procedure   Remove(const pRow : TtiDataBufferRow);
-    procedure   Delete(const AIndex: Integer);
-    property    Fields : TtiDBMetaDataTable read FFields write FFields;
-  end;
-
-
-  TtiDataBufferRow = class(TtiBaseObject)
-  private
-    FList : TObjectList;
-    FOwner : TtiDataBuffer;
-  protected
-    function  GetItems(AIndex: integer): TtiDataBufferCell;
-    procedure SetItems(AIndex: integer; const AValue: TtiDataBufferCell);
-    function  GetOwner: TtiDataBuffer; reintroduce;
-    procedure SetOwner(const AValue: TtiDataBuffer);
-    function  GetIndex : integer;
-  public
-    constructor Create;
-    destructor  Destroy; override;
-    property    Items[ AIndex : integer ]: TtiDataBufferCell read GetItems write SetItems;
-    property    Owner : TtiDataBuffer read GetOwner      write SetOwner;
-    procedure   Add(const AValue : TtiDataBufferCell);
-    function    AddInstance : TtiDataBufferCell;
-    function    IndexOf(const AValue : TtiDataBufferCell): integer;
-    function    Count : integer;
-    property    Index : integer read GetIndex;
-    function    FindByFieldName(const AName : string): TtiDataBufferCell;
-  end;
-
 
   TtiDataBufferCell = class(TtiBaseObject)
   private
@@ -136,6 +65,98 @@ type
     property  Name : string read GetName;
   end;
 
+  TtiDataBufferRow = class(TtiBaseObject)
+  private
+    FList : TObjectList<TtiDataBufferCell>;
+    FOwner : TtiDataBuffer;
+  protected
+    function  GetItems(AIndex: integer): TtiDataBufferCell;
+    procedure SetItems(AIndex: integer; const AValue: TtiDataBufferCell);
+    function  GetOwner: TtiDataBuffer; reintroduce;
+    procedure SetOwner(const AValue: TtiDataBuffer);
+    function  GetIndex : integer;
+    function GetFieldAsBoolean(const AName: string): boolean;
+    function GetFieldAsDateTime(const AName: string): TDateTime;
+    function GetFieldAsFloat(const AName: string): extended;
+    function GetFieldAsInteger(const AName: string): Int64;
+    function GetFieldAsString(const AName: string): string;
+    procedure SetFieldAsBoolean(const AName: string; const AValue: boolean);
+    procedure SetFieldAsDateTime(const AName: string; const AValue: TDateTime);
+    procedure SetFieldAsFloat(const AName: string; const AValue: extended);
+    procedure SetFieldAsInteger(const AName: string; const AValue: Int64);
+    procedure SetFieldAsString(const AName, AValue: string);
+  public
+    constructor Create(const AInitFieldCount: Cardinal);
+    destructor  Destroy; override;
+    property    Items[ AIndex : integer ]: TtiDataBufferCell read GetItems write SetItems;
+    property    Owner : TtiDataBuffer read GetOwner      write SetOwner;
+    procedure   Add(const AValue : TtiDataBufferCell);
+    function    AddInstance : TtiDataBufferCell;
+    function    IndexOf(const AValue : TtiDataBufferCell): integer;
+    function    Count : integer;
+    property    Index : integer read GetIndex;
+    function    FindByFieldName(const AName : string): TtiDataBufferCell;
+    property  FieldAsString[const AName: string]: string
+                read GetFieldAsString write SetFieldAsString;
+    property  FieldAsFloat[const AName: string]: extended
+                read  GetFieldAsFloat write SetFieldAsFloat;
+    property  FieldAsBoolean[const AName : string] : boolean
+                read GetFieldAsBoolean write SetFieldAsBoolean;
+    property  FieldAsInteger[const AName : string]: Int64
+                read GetFieldAsInteger write SetFieldAsInteger;
+    property  FieldAsDateTime[const AName : string]: TDateTime
+                read GetFieldAsDateTime write SetFieldAsDateTime;
+
+  end;
+
+  TtiDataBuffer = class(TtiBaseObject)
+  private
+    FFields: TtiDBMetaDataTable;
+    FRows : TObjectList<TtiDataBufferRow>;
+    FLastResultIndexFindByFieldValue: integer;
+    FName: string;
+    function GetRows: TObjectList<TtiDataBufferRow>;
+  protected
+    function  GetItems(AIndex: integer): TtiDataBufferRow;
+  public
+    constructor Create;
+    destructor  Destroy; override;
+    procedure   Clear;
+    procedure   ClearRows;
+    property    Items[ AIndex : integer ]: TtiDataBufferRow read GetItems;
+    function    Count : integer;
+    procedure   Add(const AValue : TtiDataBufferRow);
+    function    AddInstance : TtiDataBufferRow;
+    property    List : TObjectList<TtiDataBufferRow> read GetRows;
+    function    IndexOf(const AValue : TtiDataBufferRow): integer;
+    function    FindByFieldValue(const AFieldName, AFieldValue: string): TtiDataBufferRow;
+    function    FindCell(const AFieldName: string; const ARowIndex: Integer): TtiDataBufferCell;
+    property    Name : string read FName write FName;
+    procedure   Remove(const pRow : TtiDataBufferRow);
+    procedure   Delete(const AIndex: Integer);
+    property    Fields : TtiDBMetaDataTable read FFields;
+  end;
+
+  TtiDataBufferList = class(TtiBaseObject)
+  private
+    FList : TObjectList<TTiDataBuffer>;
+    function  GetItems(AIndex: Integer): TtiDataBuffer;
+    procedure SetItems(AIndex: Integer; const AValue: TtiDataBuffer);
+  public
+    constructor Create;
+    destructor  Destroy; override;
+    property    Items[AIndex:Integer]:TtiDataBuffer read GetItems write SetItems;
+    procedure   Add(const AData : TtiDataBuffer);
+    function    AddInstance(const AName : string = ''): TtiDataBuffer;
+    procedure   Clear;
+    function    Count : integer;
+    function    FindByName(const AName : string): TtiDataBuffer;
+    function    FindCell(const ADataBufferName: string;
+        const AFieldName: string; const ARowIndex: Integer): TtiDataBufferCell;
+    procedure   Remove(const AValue : TtiDataBuffer);
+    procedure   Extract(const AValue: TtiDataBuffer);
+
+  end;
 
 implementation
 uses
@@ -172,7 +193,7 @@ end;
 constructor TtiDataBufferList.Create;
 begin
   inherited;
-  FList := TObjectList.Create(true);
+  FList := TObjectList<TtiDataBuffer>.Create(true);
 end;
 
 destructor TtiDataBufferList.Destroy;
@@ -184,7 +205,7 @@ end;
 procedure TtiDataBufferList.Extract(const AValue: TtiDataBuffer);
 begin
   FList.Extract(AValue);
-  FList.Capacity:= FList.Count; // To suppress a reported leak in testing
+  //FList.Capacity:= FList.Count; // To suppress a reported leak in testing
 end;
 
 function TtiDataBufferList.FindByName(const AName: string): TtiDataBuffer;
@@ -214,13 +235,13 @@ end;
 
 function TtiDataBufferList.GetItems(AIndex: Integer): TtiDataBuffer;
 begin
-  result := TtiDataBuffer(FList.Items[AIndex])
+  result := FList.Items[AIndex];
 end;
 
 procedure TtiDataBufferList.Remove(const AValue: TtiDataBuffer);
 begin
   FList.Remove(AValue);
-  FList.Capacity:= FList.Count; // To suppress a reported leak in testing
+  //FList.Capacity:= FList.Count; // To suppress a reported leak in testing
 end;
 
 procedure TtiDataBufferList.SetItems(AIndex: Integer; const AValue: TtiDataBuffer);
@@ -240,7 +261,7 @@ function TtiDataBuffer.AddInstance: TtiDataBufferRow;
 var
   i : integer;
 begin
-  result := TtiDataBufferRow.Create;
+  result := TtiDataBufferRow.Create(Fields.Count);
   Add(Result);
   for i := 0 to Fields.Count - 1 do
     Result.AddInstance;
@@ -248,7 +269,14 @@ end;
 
 procedure TtiDataBuffer.Clear;
 begin
+  FLastResultIndexFindByFieldValue := -1;
+
   FFields.Clear;
+  FRows.Clear;
+end;
+
+procedure TtiDataBuffer.ClearRows;
+begin
   FRows.Clear;
 end;
 
@@ -260,8 +288,10 @@ end;
 constructor TtiDataBuffer.Create;
 begin
   inherited;
-  FRows  := TObjectList.Create(true);
+  FRows  := TObjectList<TtiDataBufferRow>.Create(true);
   FFields := TtiDBMetaDataTable.Create;
+
+  FLastResultIndexFindByFieldValue := -1;
 end;
 
 destructor TtiDataBuffer.Destroy;
@@ -273,10 +303,10 @@ end;
 
 function TtiDataBuffer.GetItems(AIndex: integer): TtiDataBufferRow;
 begin
-  result := TtiDataBufferRow(FRows.Items[AIndex]);
+  result := FRows.Items[AIndex];
 end;
 
-function TtiDataBuffer.GetRows: TList;
+function TtiDataBuffer.GetRows: TObjectList<TtiDataBufferRow>;
 begin
   result := FRows;
 end;
@@ -289,19 +319,40 @@ end;
 function TtiDataBuffer.FindByFieldValue(const AFieldName, AFieldValue: string): TtiDataBufferRow;
 var
   LFieldIndex: Integer;
-  I: Integer;
+
+  function _FindInRange(const AStartIndex, AEndIndex: Integer): TtiDataBufferRow;
+  var
+    LRowIndex: Integer;
+    LRow: TtiDataBufferRow;
+  begin
+    Result := nil;
+    for LRowIndex := AStartIndex to AEndIndex do
+    begin
+      LRow := Items[LRowIndex];
+      if LRow.Items[LFieldIndex].ValueAsString = AFieldValue then
+      begin
+        FLastResultIndexFindByFieldValue := LRowIndex;
+        Exit(LRow);
+      end;
+    end;
+  end;
 begin
   Result := nil;
 
   LFieldIndex := Fields.IndexOfFieldName(AFieldName);
+
   if LFieldIndex >= 0 then
   begin
-    for I := 0 to Pred(Count) do
-      if Items[I].Items[LFieldIndex].ValueAsString = AFieldValue then
-      begin
-        Result := Items[I];
-        Break; //==>
-      end;
+    // we often process rows sequentially so we can get a speed improvement by starting at the last
+    // row found for subsequent calls to FindByFieldValue rather than starting at index = 0 every time.
+    if (FLastResultIndexFindByFieldValue >= 0) and (FLastResultIndexFindByFieldValue <= Count-1) then
+    begin
+      Result := _FindInRange(FLastResultIndexFindByFieldValue, Count-1);
+      if Result = nil then Result := _FindInRange(0, FLastResultIndexFindByFieldValue-1);
+    end else
+    begin
+      Result := _FindInRange(0, Count-1);
+    end;
   end;
 end;
 
@@ -328,7 +379,7 @@ end;
 
 procedure TtiDataBufferRow.Add(const AValue: TtiDataBufferCell);
 begin
-  Assert(Owner.TestValid(TtiDataBuffer), CTIErrorInvalidObject);
+  //Assert(Owner.TestValid(TtiDataBuffer), CTIErrorInvalidObject);
   if (Owner.Fields.Count > 0) and
      (Count = Owner.Fields.Count) then
     raise EtiOPFProgrammerException.Create(cErrorDataMetaDataMisMatch);
@@ -347,10 +398,11 @@ begin
   result := FList.Count;
 end;
 
-constructor TtiDataBufferRow.Create;
+constructor TtiDataBufferRow.Create(const AInitFieldCount: Cardinal);
 begin
-  inherited;
-  FList := TObjectList.Create;
+  inherited Create;
+  FList := TObjectList<TtiDataBufferCell>.Create;
+  FList.Capacity := AInitFieldCount;
 end;
 
 destructor TtiDataBufferRow.Destroy;
@@ -373,15 +425,55 @@ begin
   result := Items[lIndex];
 end;
 
+function TtiDataBufferRow.GetFieldAsBoolean(const AName: string): boolean;
+var
+  LCell: TtiDataBufferCell;
+begin
+  LCell:= FindByFieldName(AName);
+  result:= LCell.ValueAsBool;
+end;
+
+function TtiDataBufferRow.GetFieldAsDateTime(const AName: string): TDateTime;
+var
+  LCell: TtiDataBufferCell;
+begin
+  LCell:= FindByFieldName(AName);
+  result:= LCell.ValueAsDateTime;
+end;
+
+function TtiDataBufferRow.GetFieldAsFloat(const AName: string): extended;
+var
+  LCell: TtiDataBufferCell;
+begin
+  LCell:= FindByFieldName(AName);
+  result:= LCell.ValueAsFloat;
+end;
+
+function TtiDataBufferRow.GetFieldAsInteger(const AName: string): Int64;
+var
+  LCell: TtiDataBufferCell;
+begin
+  LCell:= FindByFieldName(AName);
+  result:= LCell.ValueAsInteger;
+end;
+
+function TtiDataBufferRow.GetFieldAsString(const AName: string): string;
+var
+  LCell: TtiDataBufferCell;
+begin
+  LCell:= FindByFieldName(AName);
+  result:= LCell.ValueAsString;
+end;
+
 function TtiDataBufferRow.GetIndex: integer;
 begin
-  Assert(Owner.TestValid, CTIErrorInvalidObject);
+  //Assert(Owner.TestValid, CTIErrorInvalidObject);
   result := Owner.IndexOf(Self);
 end;
 
 function TtiDataBufferRow.GetItems(AIndex: integer): TtiDataBufferCell;
 begin
-  result := TtiDataBufferCell(FList.Items[AIndex]);
+  result := FList.Items[AIndex];
 end;
 
 function TtiDataBufferRow.GetOwner: TtiDataBuffer;
@@ -399,6 +491,50 @@ begin
   result := FList.IndexOf(AValue);
 end;
 
+procedure TtiDataBufferRow.SetFieldAsBoolean(const AName: string;
+  const AValue: boolean);
+var
+  LCell: TtiDataBufferCell;
+begin
+  LCell:= FindByFieldName(AName);
+  LCell.ValueAsBool:= AValue;
+end;
+
+procedure TtiDataBufferRow.SetFieldAsDateTime(const AName: string;
+  const AValue: TDateTime);
+var
+  LCell: TtiDataBufferCell;
+begin
+  LCell:= FindByFieldName(AName);
+  LCell.ValueAsDateTime:= AValue;
+end;
+
+procedure TtiDataBufferRow.SetFieldAsFloat(const AName: string;
+  const AValue: extended);
+var
+  LCell: TtiDataBufferCell;
+begin
+  LCell:= FindByFieldName(AName);
+  LCell.ValueAsFloat:= AValue;
+end;
+
+procedure TtiDataBufferRow.SetFieldAsInteger(const AName: string;
+  const AValue: Int64);
+var
+  LCell: TtiDataBufferCell;
+begin
+  LCell:= FindByFieldName(AName);
+  LCell.ValueAsInteger:= AValue;
+end;
+
+procedure TtiDataBufferRow.SetFieldAsString(const AName, AValue: string);
+var
+  LCell: TtiDataBufferCell;
+begin
+  LCell:= FindByFieldName(AName);
+  LCell.ValueAsString:= AValue;
+end;
+
 procedure TtiDataBufferRow.SetItems(AIndex: integer; const AValue: TtiDataBufferCell);
 begin
   FList.Items[AIndex]:= AValue;
@@ -408,7 +544,7 @@ end;
 
 function  TtiDataBufferCell.GetIndex : integer;
 begin
-  Assert(Owner.TestValid, CTIErrorInvalidObject);
+  //Assert(Owner.TestValid, CTIErrorInvalidObject);
   result := Owner.IndexOf(Self);
 end;
 
@@ -521,8 +657,8 @@ end;
 
 function TtiDataBufferCell.GetDataSetField: TtiDBMetaDataField;
 begin
-  Assert(Owner.TestValid,       CTIErrorInvalidObject);
-  Assert(Owner.Owner.TestValid, CTIErrorInvalidObject);
+//  Assert(Owner.TestValid,       CTIErrorInvalidObject);
+//  Assert(Owner.Owner.TestValid, CTIErrorInvalidObject);
   if Owner.Count <> Owner.Owner.Fields.Count then
     raise exception.Create(cErrorTIDataSetCellMetaData);
   result := Owner.Owner.Fields.Items[Index];

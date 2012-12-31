@@ -19,8 +19,9 @@ const
   cErrorInvalidFieldName = 'Invalid field name <%s>';
   cErrorNoRowsSelected   = 'No rows currently selected so can''t perform this operation';
   cErrorUnableToAccessDirectory = 'Unable to find or create directory <%s>';
-  cErrorAttemtpToCreateDuplicateTableName = 'Attempt to create duplicate table name <%s>';
-  cErrorAttemtpToDeleteNonExistantTable = 'Attemtp to delete table that does not exist <%s>';
+  cErrorAttemptToCreateDuplicateTableName = 'Attempt to create duplicate table name <%s>';
+  cErrorAttemptToCreateTableWithoutMetadata = 'Attempt to create table without metadata <%s>';
+  cErrorAttemptToDeleteNonExistantTable = 'Attempt to delete table that does not exist <%s>';
   cErrorInvalidFieldIndex = 'Invalid field index <%d>';
 
 type
@@ -634,7 +635,9 @@ var
 begin
   inherited CreateTable(ATableMetaData);
   lDataSet := FDataSets.FindByName(ATableMetaData.Name);
-  Assert(lDataSet.TestValid(TtiDataBuffer), CTIErrorInvalidObject);
+  if lDataSet = nil then
+    raise EtiOPFProgrammerException.CreateFmt(
+        cErrorAttemptToCreateTableWithoutMetadata, [ATableMetaData.Name]);
   SaveDataSet(lDataSet);
 end;
 
@@ -645,7 +648,9 @@ var
   lFileName : string;
 begin
   lDataSet := FDataSets.FindByName(ATableMetaData.Name);
-  Assert(lDataSet.TestValid(TtiDataBuffer), CTIErrorInvalidObject);
+  if lDataSet = nil then
+    raise EtiOPFProgrammerException.CreateFmt(
+        cErrorAttemptToDeleteNonExistantTable, [ATableMetaData.Name]);
   lFileName := ExpandFileName(lDataSet.Name);
   inherited DropTable(ATableMetaData);
   Assert(FileExists(lFileName), 'File <' + lFileName + '> does not exist');
@@ -803,7 +808,7 @@ begin
   if FSelectedRows.Count > 0 then
   begin
     result := TtiDataBufferRow(FSelectedRows.Items[FCurrentRecordIndex]);
-    Assert(Result.TestValid, CTIErrorInvalidObject);
+    //Assert(Result.TestValid, CTIErrorInvalidObject);
   end
   else
     result := nil;
@@ -844,12 +849,12 @@ procedure TTXTToTIDataSetAbs.DoExtractData(AIndex: integer; const AValue: string
 var
   lCell : TtiDataBufferCell;
 begin
-  Assert(FDataSetRow.TestValid, CTIErrorInvalidObject);
+  //Assert(FDataSetRow.TestValid, CTIErrorInvalidObject);
   if FDataSetRow.Count < AIndex then
   begin
     lCell := FDataSetRow.AddInstance;
     lCell.ValueAsString := AValue;
-  end 
+  end
   else
     FDataSetRow.Items[AIndex-1].ValueAsString := AValue;
 end;
@@ -881,7 +886,7 @@ end;
 
 procedure TTXTToTIDataSetAbs.Read(pDataSet: TtiDataBuffer; AFileName: TFileName);
 begin
-  Assert(pDataSet.TestValid, CTIErrorInvalidObject);
+  //Assert(pDataSet.TestValid, CTIErrorInvalidObject);
   FDataSet := pDataSet;
   FStream := TtiFileStream.CreateReadOnly(AFileName);
   try
@@ -921,9 +926,9 @@ end;
 
 procedure TTXTToTIDataSetAbs.Save(pDataSet: TtiDataBuffer; AFileName: TFileName);
 var
-  i : integer;             
+  i : integer;
 begin
-  Assert(pDataSet.TestValid, CTIErrorInvalidObject);
+  //Assert(pDataSet.TestValid, CTIErrorInvalidObject);
   FDataSet := pDataSet;
   FStream := TtiFileStream.CreateReadWrite(AFileName, true);
   try
@@ -955,7 +960,7 @@ var
   i : integer;
 begin
   Assert(FStream<>nil, 'FStream not assigned');
-  Assert(FDataSet.TestValid, CTIErrorInvalidObject);
+  //Assert(FDataSet.TestValid, CTIErrorInvalidObject);
   for i := 0 to FDataSet.Fields.Count - 1 do
   begin
     Assert(FDataSet.Fields.Items[i].TestValid, CTIErrorInvalidObject);
@@ -1039,7 +1044,7 @@ var
 begin
   lDataSet := FDataSets.FindByName(ATableMetaData.Name);
   if lDataSet <> nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorAttemtpToCreateDuplicateTableName, [ATableMetaData.Name]);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorAttemptToCreateDuplicateTableName, [ATableMetaData.Name]);
   lDataSet := TtiDataBuffer.Create;
   FDataSets.Add(lDataSet);
   lDataSet.Name := tiExtractFileNameOnly(ATableMetaData.Name);
@@ -1056,7 +1061,7 @@ var
 begin
   lDataSet := FDataSets.FindByName(ATableMetaData.Name);
   if lDataSet = nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorAttemtpToDeleteNonExistantTable, [ATableMetaData.Name]);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorAttemptToDeleteNonExistantTable, [ATableMetaData.Name]);
   FDataSets.Remove(lDataSet);
   Assert(FDataSets.FindByName(ATableMetaData.Name) = nil,
           'Unable to remove metadata for <' + ATableMetaData.Name + '>');
@@ -1078,7 +1083,7 @@ end;
 function TtiDatabaseTXTAbs.Test: boolean;
 begin
   result := false;
-  Assert(false, 'Under construction');  
+  Assert(false, 'Under construction');
 end;
 
 

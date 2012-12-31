@@ -496,7 +496,7 @@ begin
     {$ENDIF}
 
     if (LIdentLong = '') or (LIdentShort = '') then
-      EtiOPFDUnitException.Create('Unknown Delphi version');
+      raise EtiOPFDUnitException.Create('Unknown Delphi version');
     lINIFile.WriteString('Report_Long',  lIdentLong, LLong);
     lINIFile.WriteString('Report_Short', lIdentShort, LShort);
   finally

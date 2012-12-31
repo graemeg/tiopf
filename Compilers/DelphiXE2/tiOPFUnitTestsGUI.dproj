@@ -1,4 +1,4 @@
-	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
 			<ProjectGuid>{1180B8C7-A5C3-4A2E-A1A4-1A6592A3813B}</ProjectGuid>
 			<ProjectVersion>13.4</ProjectVersion>
@@ -54,7 +54,7 @@
 			<DCC_EXPLICIT_STRING_CAST_LOSS>true</DCC_EXPLICIT_STRING_CAST_LOSS>
 			<DCC_MapFile>3</DCC_MapFile>
 			<DCC_Define>DUNIT2;USE_JEDI_JCL;LINK_XMLLIGHT;LINK_XML;LINK_CSV;LINK_TAB;LINK_BDEPARADOX;LINK_ADOACCESS;LINK_IBX;LINK_ADOSQLSERVERx;LINK_REMOTE;LINK_DOAx;$(DCC_Define)</DCC_Define>
-			<DCC_UnitSearchPath>..\..\UnitTests\Common;..\..\UnitTests\Tests;..\..\Core;..\..\Options;..\..\GUI;..\..\GUI\VCL;..\..\GUI\VCLForms;..\..\ApplicationServer;..\..\ApplicationServer\tiDBProxyServerExtension;..\..\..\3rdParty\DUnit;..\..\..\3rdParty\JCL\common;..\..\..\3rdParty\JCL\windows;..\..\..\3rdParty\JCL\include;..\..\..\3rdParty\JCL\include\jedi;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_UnitSearchPath>..\..\UnitTests\Common;..\..\UnitTests\Tests;..\..\Core;..\..\Options;..\..\GUI;..\..\GUI\VCL;..\..\GUI\VCLForms;..\..\ApplicationServer;..\..\ApplicationServer\tiDBProxyServerExtension;$(tiOPF3_3rd_Party)\JCL\common;$(tiOPF3_3rd_Party)\JCL\include;$(tiOPF3_3rd_Party)\JCL\include\jedi;$(tiOPF3_3rd_Party)\JCL\windows;$(tiOPF3_3rd_Party)\DUnit;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_DependencyCheckOutputName>..\..\_bin\tiOPFUnitTestsGUI.exe</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_Platform>x86</DCC_Platform>
@@ -75,7 +75,6 @@
 		<PropertyGroup Condition="'$(Base_Win32)'!=''">
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
 			<DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
-			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 			<VerInfo_Locale>1033</VerInfo_Locale>
 			<Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
 		</PropertyGroup>
@@ -90,6 +89,7 @@
 			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+			<DCC_Define>EnableMemoryLeakReporting;FastMM;$(DCC_Define)</DCC_Define>
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
 			<VerInfo_Locale>1033</VerInfo_Locale>
 		</PropertyGroup>

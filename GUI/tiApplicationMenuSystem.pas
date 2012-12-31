@@ -1638,8 +1638,6 @@ begin
 end;
 
 procedure TtiApplicationMenuSystem.SetEscapeKeyEnabled(const AValue: boolean);
-var
-  i: integer;
 begin
   if FEscapeContextAction = nil then
     Exit; //==>
@@ -1649,8 +1647,7 @@ begin
   else
     FEscapeContextAction.ShortCut:= 0;
 
-  FormMgr.ActiveForm.SetEscapeKeyEnabled(True);
-
+  FormMgr.ActiveForm.EscapeKeyEnabled := AValue;
 end;
 
 procedure TtiApplicationMenuSystem.SetFormCaption(const AValue: TCaption);
@@ -1725,8 +1722,9 @@ begin
       FLblMessageOnHotSpotClickEvent(ASrc);
     AHandled := true;
   end
-  // 'http://...'
-  else if Pos(CTIProtocolHTTP + ':', ASrc) = 1 then
+  // 'http://...' or 'mailto://...'
+  else if (Pos(CTIProtocolHTTP + ':', ASrc) = 1) or
+          (Pos(CTIProtocolMailTo + ':', ASrc) = 1) then
   begin
     tiShellExecute(ASrc);
     AHandled := true;

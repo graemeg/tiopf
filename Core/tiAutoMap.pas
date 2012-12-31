@@ -72,6 +72,12 @@ type
     procedure RegisterMapping(const AClass: TtiClass; const ATableName: string; const AAttrName: string;
       const AColName: string; const APKInfo: TPKInfo = []);
       overload;
+{$IFDEF DELPHI2010ORABOVE}
+    // Register the given class using attributes
+    procedure RegisterMapping(const AClass: TtiClass); overload;
+    // Find and register all classes marked with the TAutoMap attribute
+    procedure RegisterMappings;
+{$ENDIF}
     procedure RegisterCollection(const ACollectionClass: TPerObjListClass; const ACollectionOfClass: TtiClass); overload;
     procedure RegisterInheritance(const AParentClass: TtiClass; const AChildClass: TtiClass);
   published
@@ -379,30 +385,70 @@ type
     procedure Execute(const AData: TtiVisited); override;
   end;
 
-  TVisAutoCollectionRead = class(TVisAutoAbs)
+  TVisAutoCollectionReadAbs = class abstract(TVisAutoAbs)
   private
-    FClassDBCollection: TtiClassDBCollection;
     FClassToCreate:     TtiClass;
     FHasParent:         boolean;
-    FClassesWithParent: TList;
+//    FClassesWithParent: TList;
     FCriteria:          TtiCriteria;
-    procedure ReadDataForParentClass(ACollection: TtiClassDBCollection);
-    procedure ReadDataForChildClasses(ACollection: TtiClassDBCollection);
-    procedure SetUpCriteria;
   protected
-    FSetObjectState: boolean;
     procedure GetWhereAttrColMaps; override;
     procedure GetAttrColMaps; override;
     function AcceptVisitor: boolean; override;
     procedure MapRowToObject(ACheckForDuplicates: boolean);
+    function HasCriteria: Boolean; virtual;
+    function GetCriteria: TtiCriteria; virtual;
+    procedure SetUpCriteria;
+    function PerObjAbsClass: TtiClass; virtual; abstract;
+    procedure ReadData; virtual; abstract;
+    function GetList: TtiObjectList; virtual;
     procedure SetContinueVisiting; virtual;
+    property List: TtiObjectList read GetList;
   public
     constructor Create; override;
     destructor Destroy; override;
     procedure Execute(const AData: TtiVisited); override;
   end;
 
-  TVisAutoCollectionPKRead = class(TVisAutoCollectionRead)
+  {: Visitor used for auto map collection read when the list class is
+     registered as a collection of the item class }
+  TVisAutoCollectionReadRegistered = class(TVisAutoCollectionReadAbs)
+  private
+    FClassDBCollection: TtiClassDBCollection;
+    procedure ReadDataForParentClass(ACollection: TtiClassDBCollection);
+    procedure ReadDataForChildClasses(ACollection: TtiClassDBCollection);
+  protected
+    function AcceptVisitor: boolean; override;
+    function PerObjAbsClass: TtiClass; override;
+    procedure ReadData; override;
+  end;
+
+  TVisAutoCollectionReadNotRegisteredAbs = class(TVisAutoCollectionReadAbs)
+  protected
+    function PerObjAbsClass: TtiClass; override;
+    procedure ReadData; override;
+  end;
+
+  {: Visitor used for auto map collection read when the list class is
+     not registered as a collection of the item class but it is a list
+     of an item class that is registered for auto mapping  }
+  TVisAutoCollectionReadNotRegisteredInternalCriteria = class(TVisAutoCollectionReadNotRegisteredAbs)
+  protected
+    function AcceptVisitor: boolean; override;
+  end;
+
+  {: Visitor used for auto map collection read when a select wrapper
+     provides the temporary criteria }
+  TVisAutoCollectionReadNotRegisteredExternalCriteria =
+    class(TVisAutoCollectionReadNotRegisteredAbs)
+  protected
+    function AcceptVisitor: boolean; override;
+    function GetList: TtiObjectList; override;
+    function HasCriteria: Boolean; override;
+    function GetCriteria: TtiCriteria; override;
+  end;
+
+  TVisAutoCollectionPKRead = class(TVisAutoCollectionReadRegistered)
   protected
     procedure GetAttrColMaps; override;
     procedure SetContinueVisiting; override;
@@ -440,6 +486,46 @@ type
     procedure DoExecuteQuery; override;
   end;
 
+  // Auto mapping using attributes
+{$IFDEF DELPHI2010ORABOVE}
+  TAutoMapAttributeAbs = class abstract(TCustomAttribute);
+{$ENDIF}
+
+  // [TAutoMap]
+  // Usage: class declaration
+  // The class will be automatically registered for automapping
+{$IFDEF DELPHI2010ORABOVE}
+  TAutoMapAttribute = class(TAutoMapAttributeAbs);
+{$ENDIF}
+
+  // [TAutoMapTable]
+  // Usage: class declaration
+  // Specifies the table name to use for property-column mappings
+{$IFDEF DELPHI2010ORABOVE}
+  TAutoMapTableAttribute = class(TAutoMapAttributeAbs)
+  private
+    FTableName: string;
+  public
+    constructor Create(const ATableName: string);
+    property TableName: string read FTableName write FTableName;
+  end;
+{$ENDIF}
+
+  // [TAutoMapColumn]
+  // Usage: property declaration
+  // Specifies the column name to map the property to
+{$IFDEF DELPHI2010ORABOVE}
+  TAutoMapColumnAttribute = class(TAutoMapAttributeAbs)
+  private
+    FColumnName: string;
+    FPKInfo: TPKInfo;
+  public
+    constructor Create(const AColumnName: string; const APKInfo: TPKInfo = []); reintroduce;
+    property ColumnName: string read FColumnName write FColumnName;
+    property PKInfo: TPKInfo read FPKInfo write FPKInfo;
+  end;
+{$ENDIF}
+
 implementation
 
 uses
@@ -448,9 +534,14 @@ uses
   ,tiExcept
   ,tiOID
   ,tiRTTI
-//##  ,tiFilteredObjectList
+  ,tiConstants
+  ,tiFilteredObjectList
+  ,tiAutoMapSelect
   ,TypInfo
   ,SysUtils
+{$IFDEF DELPHI2010ORABOVE}
+  ,Rtti
+{$ENDIF}
   ;
 
  // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -510,8 +601,8 @@ end;
 procedure TtiClassDBMappingMgr.RegisterMapping(const AClass: TtiClass; const ATableName: string;
   const AAttrName: string; const AColName: string; const APKInfo: TPKInfo = []);
 begin
-       // ToDo: This will load before a persistence layer is loaded, so the call to
-       //       DefautlDBConnectionName is invalid.
+  // ToDo: This will load before a persistence layer is loaded, so the call to
+  //       DefautlDBConnectionName is invalid.
   RegisterMapping(
     '',{TtiOPFManager(Owner).DefaultDBConnectionName,}
     AClass,
@@ -520,6 +611,68 @@ begin
     AColName,
     APKInfo);
 end;
+
+{$IFDEF DELPHI2010ORABOVE}
+procedure TtiClassDBMappingMgr.RegisterMapping(const AClass: TtiClass);
+var
+  LContext: TRttiContext;
+  LType: TRttiType;
+  LProperty: TRttiProperty;
+  LClassAttribute: TCustomAttribute;
+  LPropertyAttribute: TCustomAttribute;
+begin
+  LContext := TRttiContext.Create;
+  try
+    LType := LContext.GetType(AClass);
+    for LClassAttribute in LType.GetAttributes do
+      // The class must have the table attribute
+      if LClassAttribute is TAutoMapTableAttribute then
+      begin
+        // Register public and published properties with column map attributes
+        for LProperty in LType.GetProperties do
+          if LProperty.Visibility in [mvPublic, mvPublished] then
+            for LPropertyAttribute in LProperty.GetAttributes do
+              if LPropertyAttribute is TAutoMapColumnAttribute then
+              begin
+                RegisterMapping(AClass,
+                    TAutoMapTableAttribute(LClassAttribute).TableName,
+                    LProperty.Name,
+                    TAutoMapColumnAttribute(LPropertyAttribute).ColumnName,
+                    TAutoMapColumnAttribute(LPropertyAttribute).PKInfo);
+                break;
+              end;
+        break;
+      end;
+  finally
+    LContext.Free;
+  end;
+end;
+{$ENDIF}
+
+{$IFDEF DELPHI2010ORABOVE}
+procedure TtiClassDBMappingMgr.RegisterMappings;
+var
+  LContext: TRttiContext;
+  LType: TRttiType;
+  LAttribute: TCustomAttribute;
+begin
+  LContext := TRttiContext.Create;
+  try
+    // Register all TtiObject descendants that have the auto map attribute
+    for LType in LContext.GetTypes do
+      if (LType.TypeKind = tkClass) and
+         LType.AsInstance.MetaclassType.InheritsFrom(TtiObject) then
+        for LAttribute in LType.GetAttributes do
+          if LAttribute is TAutoMapAttribute then
+          begin
+            RegisterMapping(TtiClass(LType.AsInstance.MetaclassType));
+            break;
+          end;
+  finally
+    LContext.Free;
+  end;
+end;
+{$ENDIF}
 
 constructor TtiClassDBMappingMgr.Create;
 begin
@@ -1364,147 +1517,118 @@ begin
   inherited;
 end;
 
+{ TVisAutoCollectionReadAbs }
 
-{ TVisAutoCollectionRead }
-
-function TVisAutoCollectionRead.AcceptVisitor: boolean;
+constructor TVisAutoCollectionReadAbs.Create;
 begin
-  Result :=
-    ((Visited.ObjectState = posEmpty) or
-    (Visited.ObjectState = posPK)) and
-    (GTIOPFManager.ClassDBMappingMgr.Collections.IsCollection(
-    TtiClass(Visited.ClassType)));
+  inherited;
+//  FClassesWithParent := TList.Create;
 end;
 
-procedure TVisAutoCollectionRead.Execute(const AData: TtiVisited);
-var
-  lCollections: TList;
-  i: integer;
+destructor TVisAutoCollectionReadAbs.Destroy;
+begin
+//  FClassesWithParent.Free;
+  inherited;
+end;
+
+function TVisAutoCollectionReadAbs.AcceptVisitor: boolean;
+begin
+  Result := Visited.ObjectState in [posEmpty, posPK];
+end;
+
+procedure TVisAutoCollectionReadAbs.Execute(const AData: TtiVisited);
 begin
   inherited Execute(AData);
   if not AcceptVisitor then
     Exit; //==>
-  FSetObjectState := False;
-  FClassesWithParent.Clear;
-  lCollections    := TList.Create;
-  try
-    lCollections.Clear;
-    GTIOPFManager.ClassDBMappingMgr.Collections.FindByCollection(
-      FVisitedClassType,
-      lCollections);
-    ReadDataForParentClass(TtiClassDBCollection(lCollections.Items[0]));
-    for i := 1 to lCollections.Count - 1 do
-      ReadDataForChildClasses(TtiClassDBCollection(lCollections.Items[i]));
-  finally
-    lCollections.Free;
-  end;
+
+//  FClassesWithParent.Clear;
+  ReadData;
   SetContinueVisiting;
 end;
 
-procedure TVisAutoCollectionRead.ReadDataForParentClass(ACollection: TtiClassDBCollection);
+function TVisAutoCollectionReadAbs.HasCriteria: Boolean;
+var
+  LFiltered: ItiFiltered;
 begin
-  FClassDBCollection := ACollection;
-  SetupParams;
-  SetUpCriteria; 
+  Result := Supports(List, ItiFiltered, LFiltered) and
+      (LFiltered.HasCriteria or LFiltered.HasOrderBy);
+end;
 
-  // use 2 different SelectRow methods so that non-criteria-aware queries still work
-  if Assigned(FCriteria) then
-    Query.SelectRow(FAttrColMaps.TableName, FWhere, FCriteria)
+function TVisAutoCollectionReadAbs.GetCriteria: TtiCriteria;
+var
+  LFiltered: ItiFiltered;
+begin
+  if Supports(List, ItiFiltered, LFiltered) then
+    Result := LFiltered.GetCriteria
   else
-    Query.SelectRow(FAttrColMaps.TableName, FWhere);
-
-  while not Query.EOF do
-  begin
-    MapRowToObject(False);
-    Query.Next;
-  end;
-  Query.Close;
+    Result := nil;
 end;
 
-procedure TVisAutoCollectionRead.ReadDataForChildClasses(ACollection: TtiClassDBCollection);
-
-  procedure _GetWhereAttrColMaps(const AData: TtiObject);
-  var
-    i: integer;
-  begin
-    Assert(FVisitedClassType <> NIL, 'FVisitedClassType = nil');
-
-    GTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
-      TtiClass(FClassDBCollection.PerObjAbsClass), FWhereAttrColMaps);
-
-    // Remove any mappings that are not foreign key mappings
-    for i := FWhereAttrColMaps.Count - 1 downto 0 do
-      if (not (pktFK in FWhereAttrColMaps.Items[i].DBColMap.PKInfo)) then
-        FWhereAttrColMaps.Delete(i);
-
-    AddToParams(FWhere, FWhereAttrColMaps, AData);
-
-  end;
-
-var
-  i:          integer;
-  lCount:     integer;
-  lTableName: string;
+procedure TVisAutoCollectionReadAbs.SetUpCriteria;
 begin
-  FClassDBCollection := ACollection;
-  GetAttrColMaps;
-  for i := 0 to TtiObjectList(Visited).Count - 1 do
+  if HasCriteria then
   begin
-    _GetWhereAttrColMaps(TtiObjectList(Visited).Items[i]);
-    lTableName := FWhereAttrColMaps.TableName;
-    Assert(lTableName <> '', 'Unable to find table name. FWhereAttrColMaps.Count = ' +
-      IntToStr(FWhereAttrColMaps.Count) + '. Suspect a missing [pktFK] value ' +
-      'in the child classes RegisterMapping calls.');
-    Query.SelectRow(lTableName, FWhere);
-    lCount     := 0;
-    while not Query.EOF do
-    begin
-      MapRowToObject(True);
-      Query.Next;
-      Inc(lCount);
-    end;
-    Query.Close;
-    if lCount > 1 then
-      raise EtiOPFDataException.CreateFmt(CErrorQueryReturnedMoreThanOneRow, [lCount]);
-  end;
+    FCriteria := GetCriteria;
+    FCriteria.MapFieldNames(PerObjAbsClass);
+  end
+  else
+    FCriteria := nil;
 end;
 
+procedure TVisAutoCollectionReadAbs.SetContinueVisiting;
+begin
+  //  Do nothing, this method is used in the child class
+end;
 
+procedure TVisAutoCollectionReadAbs.GetWhereAttrColMaps;
+var
+  i: integer;
+begin
+  GTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
+    PerObjAbsClass, FWhereAttrColMaps);
+
+  // Remove any mappings that are not foreign key mappings
+  for i := FWhereAttrColMaps.Count - 1 downto 0 do
+    if (not (pktFK in FWhereAttrColMaps.Items[i].DBColMap.PKInfo)) then
+      FWhereAttrColMaps.Delete(i);
+
+  AddToParams(FWhere, FWhereAttrColMaps, List);
+end;
+
+procedure TVisAutoCollectionReadAbs.GetAttrColMaps;
+var
+  i: integer;
+begin
+  GTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
+    PerObjAbsClass, FAttrColMaps);
+
+  FClassToCreate := FAttrColMaps.Items[0].AttrMap.Owner.PerObjAbsClass;
+  FHasParent     := GTIOPFManager.ClassDBMappingMgr.ClassMaps.HasParent(FClassToCreate);
+
+  // If the class we are reading is a concrete class and it
+  // has parents registered, the we should only read its
+  // OID and read its data in a subsequent call.
+  if (FHasParent) then
 {
-procedure TVisAutoCollectionRead.PopulateIfChildClasses;
-var
-  i : integer;
-  lVisAutoReadThis : TVisAutoReadThis;
-begin
-  // If a class has a registered parent, then only its PK info will
-  // have been read. This will read remaining data on these classes.
-  // It was tempting to just call ReadThis on each object in the list, but
-  // that caused another database connection to be created which failed if
-  // the dbConnectionPool.MaxCount value was 1
-  // (as it is for the XML persistence layer.)
-  if FClassesWithParent.Count <> 0 then
-  begin
-    lVisAutoReadThis := TVisAutoReadThis.Create;
-    try
-      lVisAutoReadThis.DBConnection := Self.DBConnection;
-      for i := 0 to FClassesWithParent.Count - 1 do
-        TtiObject(FClassesWithParent.Items[i]).Iterate(lVisAutoReadThis);
-
-      // Force Final to be called (calling Final is usually handled by the visitor manager)
-      for i := 0 to FClassesWithParent.Count - 1 do
-      begin
-        lVisAutoReadThis.Visited := TtiObject(FClassesWithParent.Items[i]);
-        lVisAutoReadThis.Final;
-      end;
-
-    finally
-      lVisAutoReadThis.Free;
-    end;
-  end;
-end;
+    // Remove any mappings that are not PK mappings
+    for i := FAttrColMaps.Count - 1 downto 0 do
+      if not(pktDB in FAttrColMaps.Items[i].DBColMap.PKInfo) then
+        FAttrColMaps.Delete(i);
 }
+  else
+    for i := FAttrColMaps.Count - 1 downto 0 do
+      if pktFK in FAttrColMaps.Items[i].DBColMap.PKInfo then
+        FAttrColMaps.Delete(i); // Remove any foreign key mappings
+end;
 
-procedure TVisAutoCollectionRead.MapRowToObject(ACheckForDuplicates: boolean);
+function TVisAutoCollectionReadAbs.GetList: TtiObjectList;
+begin
+  Assert(Visited.TestValid(TtiObjectList), CTIErrorInvalidObject);
+  Result := Visited as TtiObjectList;
+end;
+
+procedure TVisAutoCollectionReadAbs.MapRowToObject(ACheckForDuplicates: boolean);
 
   function _DoesOwnObjects(AData: TtiObject): boolean;
   var
@@ -1548,20 +1672,20 @@ procedure TVisAutoCollectionRead.MapRowToObject(ACheckForDuplicates: boolean);
     Assert(lPKColName <> '', 'Can not determine primary key column. FAttrColMaps.Count <> 1');
     {$IFDEF OID_AS_INT64}
     lOID   := Query.FieldAsInteger[lPKColName];
-    lData  := TtiObjectList(Visited).Find(lOID);
+    lData  := List.Find(lOID);
     Result := (lData <> NIL);
     if Result then
-      AIndex := TtiObjectList(Visited).IndexOf(lData)
+      AIndex := List.IndexOf(lData)
     else
       AIndex := -1;
     {$ELSE}
     lOID := GTIOPFManager.DefaultOIDGenerator.OIDClass.Create;
     try
       lOID.AssignFromTIQuery(lPKColName, Query);
-      lData  := TtiObjectList(Visited).Find(lOID);
+      lData  := List.Find(lOID);
       Result := (lData <> NIL);
       if Result then
-        AIndex := TtiObjectList(Visited).IndexOf(lData)
+        AIndex := List.IndexOf(lData)
       else
         AIndex := -1;
     finally
@@ -1574,35 +1698,33 @@ var
   lDataOld: TtiObject;
   lDataNew: TtiObject;
   lIndex:   integer;
-  lList:    TtiObjectList;
 begin
   if FAttrColMaps.Count = 0 then
     Exit; //==>
 
-          // If we are working with a collection of objects of different types, there
-          // is a chance that the object will be read more than once from more than one
-          // table. For example, if we have a parent and child object, which are
-          // persisted accross two tables, and the parent object is a valid object.
-          // Say there are some entries in the parent table only, and some in both
-          // the parent and child tables. The parent table will be read first so
-          // an instance of the abstract class will be created. Next the child table
-          // will be read and if there is a record there, then the first object will
-          // be of the wrong type. To fix this, the original instance is removed and
-          // a new copy created.
-  lList := TtiObjectList(Visited);
+  // If we are working with a collection of objects of different types, there
+  // is a chance that the object will be read more than once from more than one
+  // table. For example, if we have a parent and child object, which are
+  // persisted accross two tables, and the parent object is a valid object.
+  // Say there are some entries in the parent table only, and some in both
+  // the parent and child tables. The parent table will be read first so
+  // an instance of the abstract class will be created. Next the child table
+  // will be read and if there is a record there, then the first object will
+  // be of the wrong type. To fix this, the original instance is removed and
+  // a new copy created.
   if ACheckForDuplicates and _DuplicateObject(lIndex) then
   begin
-    lDataOld := lList.Items[lIndex];
+    lDataOld := List.Items[lIndex];
     lDataNew := FClassToCreate.Create;
     lDataNew.Assign(lDataOld);
-    lIndex   := lList.IndexOf(lDataOld);
-    lList.Insert(lIndex, lDataNew);
-    lList.Remove(lDataOld);
+    lIndex   := List.IndexOf(lDataOld);
+    List.Insert(lIndex, lDataNew);
+    List.Remove(lDataOld);
   end
   else
   begin
     lDataNew := FClassToCreate.Create;
-    lList.Add(lDataNew);
+    List.Add(lDataNew);
   end;
 
   QueryResultToObject(lDataNew, FAttrColMaps);
@@ -1616,12 +1738,234 @@ begin
   else
     lDataNew.ObjectState := posClean;
 
-  if FHasParent then
-    FClassesWithParent.Add(lDataNew);
-
+//  if FHasParent then
+//    FClassesWithParent.Add(lDataNew);
 end;
 
-{ TVisAutoUpdateAbs }
+{ TVisAutoCollectionReadRegistered }
+
+function TVisAutoCollectionReadRegistered.AcceptVisitor: boolean;
+begin
+  // Execute if the visited class is registered as a collection
+  Result := (inherited AcceptVisitor) and
+      (Visited is TtiObjectList) and
+      GTIOPFManager.ClassDBMappingMgr.Collections.IsCollection(
+          TtiClass(List.ClassType));
+end;
+
+procedure TVisAutoCollectionReadRegistered.ReadData;
+var
+  lCollections: TList;
+  i: integer;
+begin
+  lCollections := TList.Create;
+  try
+    lCollections.Clear;
+    GTIOPFManager.ClassDBMappingMgr.Collections.FindByCollection(
+      FVisitedClassType,
+      lCollections);
+    ReadDataForParentClass(TtiClassDBCollection(lCollections.Items[0]));
+    for i := 1 to lCollections.Count - 1 do
+      ReadDataForChildClasses(TtiClassDBCollection(lCollections.Items[i]));
+  finally
+    lCollections.Free;
+  end;
+end;
+
+procedure TVisAutoCollectionReadRegistered.ReadDataForParentClass(ACollection: TtiClassDBCollection);
+begin
+  FClassDBCollection := ACollection;
+  SetupParams;
+  SetUpCriteria; 
+
+  // use 2 different SelectRow methods so that non-criteria-aware queries still work
+  if Assigned(FCriteria) then
+    Query.SelectRow(FAttrColMaps.TableName, FWhere, FCriteria)
+  else
+    Query.SelectRow(FAttrColMaps.TableName, FWhere);
+
+  while not Query.EOF do
+  begin
+    MapRowToObject(False);
+    Query.Next;
+  end;
+  Query.Close;
+end;
+
+procedure TVisAutoCollectionReadRegistered.ReadDataForChildClasses(ACollection: TtiClassDBCollection);
+
+  procedure _GetWhereAttrColMaps(const AData: TtiObject);
+  var
+    i: integer;
+  begin
+    GTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
+        PerObjAbsClass, FWhereAttrColMaps);
+
+    // Remove any mappings that are not foreign key mappings
+    for i := FWhereAttrColMaps.Count - 1 downto 0 do
+      if (not (pktFK in FWhereAttrColMaps.Items[i].DBColMap.PKInfo)) then
+        FWhereAttrColMaps.Delete(i);
+
+    AddToParams(FWhere, FWhereAttrColMaps, AData);
+
+  end;
+
+var
+  i:          integer;
+  lCount:     integer;
+  lTableName: string;
+begin
+  FClassDBCollection := ACollection;
+  GetAttrColMaps;
+  for i := 0 to List.Count - 1 do
+  begin
+    _GetWhereAttrColMaps(List.Items[i]);
+    lTableName := FWhereAttrColMaps.TableName;
+    Assert(lTableName <> '', 'Unable to find table name. FWhereAttrColMaps.Count = ' +
+      IntToStr(FWhereAttrColMaps.Count) + '. Suspect a missing [pktFK] value ' +
+      'in the child classes RegisterMapping calls.');
+    Query.SelectRow(lTableName, FWhere);
+    lCount     := 0;
+    while not Query.EOF do
+    begin
+      MapRowToObject(True);
+      Query.Next;
+      Inc(lCount);
+    end;
+    Query.Close;
+    if lCount > 1 then
+      raise EtiOPFDataException.CreateFmt(CErrorQueryReturnedMoreThanOneRow, [lCount]);
+  end;
+end;
+
+
+{
+procedure TVisAutoCollectionReadRegistered.PopulateIfChildClasses;
+var
+  i : integer;
+  lVisAutoReadThis : TVisAutoReadThis;
+begin
+  // If a class has a registered parent, then only its PK info will
+  // have been read. This will read remaining data on these classes.
+  // It was tempting to just call ReadThis on each object in the list, but
+  // that caused another database connection to be created which failed if
+  // the dbConnectionPool.MaxCount value was 1
+  // (as it is for the XML persistence layer.)
+  if FClassesWithParent.Count <> 0 then
+  begin
+    lVisAutoReadThis := TVisAutoReadThis.Create;
+    try
+      lVisAutoReadThis.DBConnection := Self.DBConnection;
+      for i := 0 to FClassesWithParent.Count - 1 do
+        TtiObject(FClassesWithParent.Items[i]).Iterate(lVisAutoReadThis);
+
+      // Force Final to be called (calling Final is usually handled by the visitor manager)
+      for i := 0 to FClassesWithParent.Count - 1 do
+      begin
+        lVisAutoReadThis.Visited := TtiObject(FClassesWithParent.Items[i]);
+        lVisAutoReadThis.Final;
+      end;
+
+    finally
+      lVisAutoReadThis.Free;
+    end;
+  end;
+end;
+}
+
+function TVisAutoCollectionReadRegistered.PerObjAbsClass: TtiClass;
+begin
+  Result := TtiClass(FClassDBCollection.PerObjAbsClass);
+end;
+
+ //function TVisAutoCollectionReadRegistered.GetObjectState: TPerObjectState;
+ //begin
+ //  result := posClean;
+ //end;
+
+
+{ TVisAutoCollectionReadNotRegisteredAbs }
+
+function TVisAutoCollectionReadNotRegisteredAbs.PerObjAbsClass: TtiClass;
+begin
+  Result := (List as ItiFilteredSelectable).ItemClass;
+end;
+
+procedure TVisAutoCollectionReadNotRegisteredAbs.ReadData;
+begin
+  SetupParams;
+  SetUpCriteria;
+
+  // Use 2 different SelectRow methods so that non-criteria-aware queries still work
+  if Assigned(FCriteria) then
+    Query.SelectRow(FAttrColMaps.TableName, FWhere, FCriteria)
+  else
+    Query.SelectRow(FAttrColMaps.TableName, FWhere);
+
+  while not Query.EOF do
+  begin
+    MapRowToObject(False);
+    Query.Next;
+  end;
+
+  Query.Close;
+end;
+
+{ TVisAutoCollectionReadNotRegisteredInternalCriteria }
+
+function TVisAutoCollectionReadNotRegisteredInternalCriteria.AcceptVisitor: boolean;
+var
+  LList: ItiFilteredSelectable;
+begin
+  // Execute if the list class is not registered as a collection but it is
+  // a selectable list of a class that is registered for auto mapping
+  Result := (inherited AcceptVisitor) and
+    (Visited is TtiObjectList) and
+    (not GTIOPFManager.ClassDBMappingMgr.Collections.IsCollection(
+        TtiClass(List.ClassType))) and
+    Supports(List, ItiFilteredSelectable, LList) and
+    (GTIOPFManager.ClassDBMappingMgr.ClassMaps.IsClassReg(LList.ItemClass));
+end;
+
+{ TVisAutoCollectionReadNotRegisteredExternalCriteria }
+
+function TVisAutoCollectionReadNotRegisteredExternalCriteria.AcceptVisitor: boolean;
+var
+  LList: ItiFilteredSelectable;
+begin
+  Result := (inherited AcceptVisitor) and
+    (Visited is TtiSelectListWrapper) and
+    (not GTIOPFManager.ClassDBMappingMgr.Collections.IsCollection(
+        TtiClass(List.ClassType))) and
+    Supports(List, ItiFilteredSelectable, LList) and
+    (GTIOPFManager.ClassDBMappingMgr.ClassMaps.IsClassReg(LList.ItemClass));
+end;
+
+function TVisAutoCollectionReadNotRegisteredExternalCriteria.GetCriteria: TtiCriteria;
+var
+  LListWrapper: TtiSelectListWrapper;
+begin
+  LListWrapper := Visited as TtiSelectListWrapper;
+  Result := LListWrapper.Criteria;
+end;
+
+function TVisAutoCollectionReadNotRegisteredExternalCriteria.GetList: TtiObjectList;
+begin
+  Assert(Visited.TestValid(TtiSelectListWrapper), CTIErrorInvalidObject);
+  Result := (Visited as TtiSelectListWrapper).List;
+end;
+
+function TVisAutoCollectionReadNotRegisteredExternalCriteria.HasCriteria: Boolean;
+var
+  LListWrapper: TtiSelectListWrapper;
+begin
+  LListWrapper := Visited as TtiSelectListWrapper;
+  Result :=
+      (LListWrapper.Criteria.HasCriteria) or
+      (LListWrapper.Criteria.HasOrderBy);
+end;
+
+{ TtiVisAutoUpdateAbs }
 
 procedure TVisAutoUpdateAbs.Execute(const AData: TtiVisited);
 var
@@ -1990,53 +2334,6 @@ begin
   end;
 end;
 
-procedure TVisAutoCollectionRead.GetAttrColMaps;
-var
-  i: integer;
-begin
-  Assert(FVisitedClassType <> NIL, 'FVisitedClassType = nil');
-
-  GTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
-    TtiClass(FClassDBCollection.PerObjAbsClass), FAttrColMaps);
-
-  FClassToCreate := FAttrColMaps.Items[0].AttrMap.Owner.PerObjAbsClass;
-  FHasParent     := GTIOPFManager.ClassDBMappingMgr.ClassMaps.HasParent(FClassToCreate);
-
-  // If the class we are reading is a concrete class and it
-  // has parents registered, the we should only read its
-  // OID and read its data in a subsequent call.
-  if (FHasParent) then
-  {
-    // Remove any mappings that are not PK mappings
-    for i := FAttrColMaps.Count - 1 downto 0 do
-      if not(pktDB in FAttrColMaps.Items[i].DBColMap.PKInfo) then
-        FAttrColMaps.Delete(i);
-}
-  else
-    for i := FAttrColMaps.Count - 1 downto 0 do
-      if pktFK in FAttrColMaps.Items[i].DBColMap.PKInfo then
-        FAttrColMaps.Delete(i)// Remove any foreign key mappings
-  ;
-
-end;
-
-procedure TVisAutoCollectionRead.GetWhereAttrColMaps;
-var
-  i: integer;
-begin
-  Assert(FVisitedClassType <> NIL, 'FVisitedClassType = nil');
-
-  GTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
-    TtiClass(FClassDBCollection.PerObjAbsClass), FWhereAttrColMaps);
-
-  // Remove any mappings that are not foreign key mappings
-  for i := FWhereAttrColMaps.Count - 1 downto 0 do
-    if (not (pktFK in FWhereAttrColMaps.Items[i].DBColMap.PKInfo)) then
-      FWhereAttrColMaps.Delete(i);
-
-  AddToParams(FWhere, FWhereAttrColMaps, Visited);
-end;
-
  { TVisAutoCollectionPKRead }
 
  //procedure TVisAutoCollectionPKRead.Final;
@@ -2069,38 +2366,6 @@ begin
   FVisitedClassType := TtiClass(AData.ClassType);
 end;
 
- //procedure TVisAutoCollectionRead.Final;
- //begin
- //  if FSetObjectState then
- //    if (GTIOPFManager.ClassDBMappingMgr.Collections.IsCollection(
- //       TtiClass(Visited.ClassType))) then
- //      Visited.ObjectState := posPK
- //    else
- //      Visited.ObjectState := posClean;
- //end;
-
-procedure TVisAutoCollectionRead.SetContinueVisiting;
-begin
-  //  Do nothing, this method is used in the child class
-end;
-
-procedure TVisAutoCollectionRead.SetUpCriteria;
-var
-  lFiltered: ItiFiltered;
-begin
-  FCriteria := NIL;
-
-  Supports(visited, ItiFiltered, lFiltered);
-
-  if assigned(lFiltered) and (lFiltered.HasCriteria or lFiltered.HasOrderBy) then
-  begin
-    FCriteria := lFiltered.GetCriteria;
-
-    FCriteria.MapFieldNames(TtiClass(FClassDBCollection.PerObjAbsClass));
-  end;
-
-end;
-
  //function TVisAutoCollectionPKRead.GetObjectState: TPerObjectState;
  //begin
  //  result := posPK;
@@ -2109,23 +2374,6 @@ end;
 procedure TVisAutoCollectionPKRead.SetContinueVisiting;
 begin
   ContinueVisiting := False;
-end;
-
- //function TVisAutoCollectionRead.GetObjectState: TPerObjectState;
- //begin
- //  result := posClean;
- //end;
-
-constructor TVisAutoCollectionRead.Create;
-begin
-  inherited;
-  FClassesWithParent := TList.Create;
-end;
-
-destructor TVisAutoCollectionRead.Destroy;
-begin
-  FClassesWithParent.Free;
-  inherited;
 end;
 
 function TVisAutoAbs.ParamsToString(const AParams: TtiQueryParams): string;
@@ -2143,4 +2391,32 @@ begin
   end;
 end;
 
+{ TAutoMapTableAttribute }
+
+{$IFDEF DELPHI2010ORABOVE}
+constructor TAutoMapTableAttribute.Create(const ATableName: string);
+begin
+  inherited Create;
+  FTableName := ATableName;
+end;
+{$ENDIF}
+
+{ TAutoMapColumnAttribute }
+
+{$IFDEF DELPHI2010ORABOVE}
+constructor TAutoMapColumnAttribute.Create(const AColumnName: string;
+  const APKInfo: TPKInfo = []);
+begin
+  inherited Create;
+  FColumnName := AColumnName;
+  FPKInfo := APKInfo;
+end;
+{$ENDIF}
+
+initialization
+{$IFDEF DELPHI2010ORABOVE}
+  GTIOPFManager.ClassDBMappingMgr.RegisterMappings;
+{$ENDIF}
+
 end.
+

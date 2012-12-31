@@ -171,6 +171,7 @@ begin
     // ToDo: Cell delim, line delim and quotes around strings should be
     //       params
     case lChar of
+    chr(9),
     chr(32)..chr(43),
     chr(45)..chr(126)
        : begin

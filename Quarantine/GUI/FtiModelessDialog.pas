@@ -13,8 +13,9 @@ type
     procedure FormShow(Sender: TObject); virtual;
     procedure FormDeactivate(Sender: TObject);
     procedure FormActivate(Sender: TObject);
-  private
-    { Private declarations }
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+  protected
+    procedure SelectAndClose; virtual;
   public
     procedure Paint; override;
   end;
@@ -61,6 +62,15 @@ begin
   // Override in inherited if needed
 end;
 
+procedure TtiFormModelessDialog.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+    SelectAndClose
+  else if Key = VK_ESCAPE then
+    Close;
+end;
+
 procedure TtiFormModelessDialog.FormShow(Sender: TObject);
 begin
   // Override in inherited if needed
@@ -80,4 +90,11 @@ begin
   end;
 end;
 
+procedure TtiFormModelessDialog.SelectAndClose;
+begin
+  Close;
+  // Implement selection behaviour in concrete
+end;
+
 end.
+

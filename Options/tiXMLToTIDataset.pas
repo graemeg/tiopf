@@ -11,6 +11,7 @@ uses
   ,tiXML
   // Delphi
   ,Classes
+  ,SysUtils
  ;
 
 const
@@ -105,7 +106,7 @@ type
   TtiDataBufferToXMLWriter = class(TtiBaseObject)
   private
     FState : TtiXMLWriterState;
-    FRow : string;
+    FRow : TStringBuilder;
     FCellIndex: Integer;
     FPreSizedStream : TtiPreSizedStream;
     FXMLRCTrans: IXMLReservedCharsTranslator;
@@ -205,7 +206,6 @@ uses
   ,tiExcept
   ,tiCompress
   // Delphi
-  ,SysUtils
   {$IFDEF MSWINDOWS}
   ,Windows // Debugging
   {$ENDIF}
@@ -320,7 +320,6 @@ function TtiXMLToDataBufferReaderWriter.GetAsString: string;
 var
   lXMLWriter : TtiDataBufferToXMLWriter;
 begin
-  Assert(DataSets.TestValid(TtiDataBufferList, true), CTIErrorInvalidObject);
   lXMLWriter := TtiDataBufferToXMLWriter.Create;
   try
     lXMLWriter.XMLFieldNameStyle := FXMLFieldNameStyle;
@@ -339,7 +338,7 @@ procedure TtiXMLToDataBufferReaderWriter.SetAsString(const AValue: string);
 var
   lXMLToDataSetReader: TtiXMLToDataBufferReader;
 begin
-  Assert(FDataSets.TestValid(TtiDataBufferList), CTIErrorInvalidObject);
+  Assert(FDataSets <> nil, CTIErrorInvalidObject);
   Clear;
   lXMLToDataSetReader:= TtiXMLToDataBufferReader.Create;
   try
@@ -382,7 +381,7 @@ end;
 
 procedure TtiXMLToDataBufferReader.Execute(const pXML: string; const pDataSets: TtiDataBufferList);
 begin
-  Assert(pDataSets.TestValid(TtiDataBufferList), CTIErrorInvalidObject);
+  Assert(pDataSets <> nil, CTIErrorInvalidObject);
   XML := pXML;
   DataSets := pDataSets;
   while FState <> xdbsEnd do
@@ -601,7 +600,7 @@ var
   lFieldKind : TtiQueryFieldKind;
   lFieldWidth : integer;
 begin
-  Assert(FDataSet.TestValid(TtiDataBuffer), CTIErrorInvalidObject);
+  Assert(FDataSet <> nil, CTIErrorInvalidObject);
   lFieldKind := StrToQueryFieldKind(AFieldKind);
   lFieldWidth := StrToInt(pFieldSize);
   FDataSet.Fields.AddInstance(AFieldName, lFieldKind, lFieldWidth);
@@ -609,13 +608,13 @@ end;
 
 procedure TtiXMLToDataBufferReader.DoAddRow;
 begin
-  Assert(FDataSet.TestValid(TtiDataBuffer), CTIErrorInvalidObject);
+  Assert(FDataSet <> nil, CTIErrorInvalidObject);
   FDataSetRow := FDataSet.AddInstance;
 end;
 
 procedure TtiXMLToDataBufferReader.DoAddTable(const ATableName: string);
 begin
-  Assert(FDataSets.TestValid(TtiDataBufferList), CTIErrorInvalidObject);
+  Assert(FDataSets <> nil, CTIErrorInvalidObject);
   FDataSet := FDataSets.AddInstance(ATableName);
 end;
 
@@ -624,7 +623,7 @@ var
   lCell: TtiDataBufferCell;
   lIndex: Integer;
 begin
-  Assert(FDataSetRow.TestValid(TtiDataBufferRow), CTIErrorInvalidObject);
+  Assert(FDataSetRow <> nil, CTIErrorInvalidObject);
   case FXMLFieldNameStyle of
     xfnsString : lCell := FDataSetRow.FindByFieldName(AFieldName);
     xfnsInteger: begin
@@ -702,11 +701,19 @@ end;
 procedure TtiDataBufferToXMLWriter.DoAddCellAsString(const AName, AValue: string);
 begin
   Assert(FState = xwsRow, 'State <> xwsRow');
-  if FRow <> '' then FRow := FRow + ' ';
+  if FRow.Length <> 0 then FRow.Append(' ');
   case FXMLFieldNameStyle of
-    xfnsString : FRow := FRow + LowerCase(AName) + '="' + AValue + '"';
+    xfnsString : begin
+                   FRow.Append(LowerCase(AName));
+                   FRow.Append('="');
+                   FRow.Append(AValue);
+                   FRow.Append('"');
+                 end;
     xfnsInteger: begin
-                   FRow := FRow + tiEncodeWordBase26(FCellIndex) + '="' + AValue + '"';
+                   FRow.Append(tiEncodeWordBase26(FCellIndex));
+                   FRow.Append('="');
+                   FRow.Append(AValue);
+                   FRow.Append('"');
                    Inc(FCellIndex);
                  end;
   else
@@ -733,12 +740,12 @@ var
 begin
   case FState of
     xwsFields: ls := FXMLTags.FieldsEnd + FXMLTags.RowsStart;
-    xwsRow:    ls := FRow + FXMLTags.RowEnd;
+    xwsRow:    ls := FRow.ToString + FXMLTags.RowEnd;
   else
     raise EtiOPFProgrammerException.Create(cErrorInvalidXMLWriterState);
   end;
   FPreSizedStream.Write(ls + FXMLTags.RowStart);
-  FRow := '';
+  FRow.Clear;
   FState := xwsRow;
   FCellIndex:= 0;
 end;
@@ -749,7 +756,7 @@ begin
   xwsEmpty:  Result := '';
   xwsFields: Result := FXMLTags.FieldsEnd + FXMLTags.RowsStart + FXMLTags.RowsEnd + FXMLTags.TableEnd;
   xwsRows:   Result := FXMLTags.RowsEnd + FXMLTags.TableEnd;
-  xwsRow:    Result := FRow + FXMLTags.RowEnd + FXMLTags.RowsEnd + FXMLTags.TableEnd;
+  xwsRow:    Result := FRow.ToString + FXMLTags.RowEnd + FXMLTags.RowsEnd + FXMLTags.TableEnd;
   else
     raise EtiOPFProgrammerException.Create(cErrorInvalidXMLWriterState);
   end;
@@ -775,6 +782,7 @@ end;
 
 destructor TtiDataBufferToXMLWriter.Destroy;
 begin
+  FRow.Free;
   FXMLTags.Free;
   FPreSizedStream.Free;
   inherited;
@@ -905,7 +913,7 @@ procedure TtiDataBufferToXMLWriter.AssignFromTIDataSets(const pDataSets: TtiData
 var
   i : integer;
 begin
-  Assert(pDataSets.TestValid(TtiDataBufferList), CTIErrorInvalidObject);
+  Assert(pDataSets <> nil, CTIErrorInvalidObject);
   for i := 0 to pDataSets.Count - 1 do
     AssignFromTIDataSet(pDataSets.Items[i]);
 end;
@@ -929,34 +937,40 @@ procedure TtiDataBufferToXMLWriter.InsertDataSetData(const pDataSet: TtiDataBuff
     end;
   end;
 var
-  i, j : integer;
-  lKind : TtiQueryFieldKind;
+  LRowIndex, LFieldIndex : integer;
+  LRow: TtiDataBufferRow;
+  LField: TtiDBMetaDataField;
+  LFieldName: string;
+  LCell: TtiDataBufferCell;
   lNames : TStringList;
   lStream : TMemoryStream;
 begin
-  Assert(pDataSet.TestValid(TtiDataBuffer), CTIErrorInvalidObject);
+  Assert(pDataSet <> nil, CTIErrorInvalidObject);
   lNames := TStringList.Create;
   try
     _DataSetNamesToStringList(pDataSet, lNames);
-    for i := 0 to pDataSet.Count - 1 do
+    for LRowIndex := 0 to pDataSet.Count - 1 do
     begin
       AddRow;
-      for j := 0 to pDataSet.Fields.Count - 1 do
+      LRow := pDataSet.Items[LRowIndex];
+      for LFieldIndex := 0 to pDataSet.Fields.Count - 1 do
       begin
-        lKind := pDataSet.Fields.Items[j].Kind;
-        if j <> 0 then FRow := FRow + ' ';
-        case lKind of
+        LField := pDataSet.Fields.Items[LFieldIndex];
+        LFieldName := lNames.Strings[LFieldIndex];
+        LCell := LRow.Items[LFieldIndex];
+        if LFieldIndex <> 0 then FRow.Append(' ');
+        case LField.Kind of
           qfkString,
-          qfkLongString : AddCellAsString( lNames.Strings[j],pDataSet.Items[i].Items[j].ValueAsString);
-          qfkInteger   : AddCellAsInteger(lNames.Strings[j],pDataSet.Items[i].Items[j].ValueAsInteger);
-          qfkFloat     : AddCellAsFloat(  lNames.Strings[j],pDataSet.Items[i].Items[j].ValueAsFloat);
-          qfkDateTime  : AddCellAsDateTime(lNames.Strings[j],pDataSet.Items[i].Items[j].ValueAsDateTime);
-          qfkLogical   : AddCellAsBoolean(lNames.Strings[j],pDataSet.Items[i].Items[j].ValueAsBool);
+          qfkLongString : AddCellAsString(LFieldName, LCell.ValueAsString);
+          qfkInteger   : AddCellAsInteger(LFieldName, LCell.ValueAsInteger);
+          qfkFloat     : AddCellAsFloat(LFieldName, LCell.ValueAsFloat);
+          qfkDateTime  : AddCellAsDateTime(LFieldName, LCell.ValueAsDateTime);
+          qfkLogical   : AddCellAsBoolean(LFieldName, LCell.ValueAsBool);
           qfkBinary    : begin
                             lStream := TMemoryStream.Create;
                             try
-                              pDataSet.Items[i].Items[j].AssignToStream(lStream);
-                              AddCellAsStream(lNames.Strings[j],lStream);
+                              LCell.AssignToStream(lStream);
+                              AddCellAsStream(LFieldName, lStream);
                             finally
                               lStream.Free;
                             end;
@@ -974,18 +988,14 @@ end;
 procedure TtiDataBufferToXMLWriter.InsertDataSetMetaData(const pDataSet: TtiDataBuffer);
 var
   i : integer;
-  lFieldName : string;
-  lFieldKind : TtiQueryFieldKind;
-  lFieldSize : integer;
+  LField: TtiDBMetaDataField;
 begin
-  Assert(pDataSet.TestValid(TtiDataBuffer), CTIErrorInvalidObject);
+  Assert(pDataSet <> nil, CTIErrorInvalidObject);
   AddTable(LowerCase(pDataSet.Name));
   for i := 0 to pDataSet.Fields.Count - 1 do
   begin
-    lFieldName := pDataSet.Fields.Items[i].Name;
-    lFieldKind := pDataSet.Fields.Items[i].Kind;
-    lFieldSize := pDataSet.Fields.Items[i].Width;
-    AddField(lFieldName, lFieldKind, lFieldSize);
+    LField := pDataSet.Fields.Items[i];
+    AddField(LField.Name, LField.Kind, LField.Width);
   end;
 end;
 
@@ -1008,7 +1018,7 @@ begin
   FXMLRCTrans:= CreateXMLReservedCharsTranslator;
   FPreSizedStream := TtiPreSizedStream.Create(AInitialSize, AGrowBy);
   FState := xwsEmpty;
-  FRow := '';
+  FRow := TStringBuilder.Create;
   FCellIndex:= 0;
 end;
 
@@ -1046,7 +1056,7 @@ end;
 
 procedure TtiDataBufferToXMLWriter.AssignFromTIDataSet(const pDataSet: TtiDataBuffer);
 begin
-  Assert(pDataSet.TestValid(TtiDataBuffer), CTIErrorInvalidObject);
+  Assert(pDataSet <> nil, CTIErrorInvalidObject);
   InsertDataSetMetaData(pDataSet);
   InsertDataSetData(pDataSet);
 end;

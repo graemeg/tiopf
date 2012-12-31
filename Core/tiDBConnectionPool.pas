@@ -4,14 +4,13 @@ unit tiDBConnectionPool;
 
 interface
 uses
-   tiBaseObject
-  ,tiQuery
-  ,tiPool
-  ,Classes
-  ,Contnrs
-  ,SysUtils
-  ,SyncObjs
- ;
+  tiBaseObject,
+  tiQuery,
+  tiPool,
+  Classes,
+  Contnrs,
+  SysUtils,
+  SyncObjs;
 
 const
   cErrorAttemptToAddDuplicateDBConnectionPool = 'Attempt to register a duplicate database connection: "%s"';
@@ -40,9 +39,12 @@ type
     function    PooledItemClass: TtiPooledItemClass; override;
     procedure   AfterAddPooledItem(const APooledItem: TtiPooledItem); override;
     property    DBConnectionPools: TtiDBConnectionPools read FDBConnectionPools;
+    procedure   InitToMinPoolSize;
   public
     constructor Create(const ADBConnectionPools: TtiDBConnectionPools;
-      const ADatabaseAlias: string; const ADBConnectionParams: TtiDBConnectionParams);
+      const ADatabaseAlias: string;
+      const ADBConnectionParams: TtiDBConnectionParams;
+      const AMinPoolSize, AMaxPoolSize, APoolTimeOut: integer);
     destructor  Destroy; override;
     property    DBConnectParams : TtiDBConnectionParams read FDBConnectionParams;
     property    DatabaseAlias: string read FDatabaseAlias;
@@ -59,16 +61,20 @@ type
     FPersistenceLayer: TtiBaseObject;
     FList : TObjectList;
     FCritSect: TCriticalSection;
-    FMinPoolSize: Word;
-    FMaxPoolSize: Word;
     function GetItems(i: integer): TtiDBConnectionPool;
+    procedure GetPoolSizeDefaults(var AMinPoolSize, AMaxPoolSize, APoolTimeOut: integer);
   public
     Constructor Create(const APersistenceLayer: TtiBaseObject);
     Destructor  Destroy; override;
     function    Lock(      const ADatabaseAlias : string): TtiDatabase; reintroduce;
     procedure   UnLock(      const ADatabaseAlias : string; const ADatabase : TtiDatabase); reintroduce;
-    procedure   Connect(     const ADatabaseAlias, ADatabaseName, AUserName, APassword : string; const AParams : string);
-    procedure   AddInstance( const ADatabaseAlias, ADatabaseName, AUserName, APassword : string; const AParams : string);
+    procedure   Connect(     const ADatabaseAlias, ADatabaseName, AUserName, APassword, AParams : string); overload;
+    procedure   Connect(     const ADatabaseAlias, ADatabaseName, AUserName, APassword, AParams, AQueryOptions : string; const AMinPoolSize, AMaxPoolSize, APoolTimeOut: integer); overload;
+    procedure   AddInstance(
+      const ADatabaseAlias, ADatabaseName, AUserName, APassword, AParams : string); overload;
+    procedure   AddInstance(
+      const ADatabaseAlias, ADatabaseName, AUserName, APassword, AParams : string;
+      const AMinPoolSize, AMaxPoolSize, APoolTimeOut: integer); overload;
     function    Find(        const ADatabaseAlias : string): TtiDBConnectionPool; reintroduce;
     procedure   Disconnect(  const ADatabaseAlias : string);
     procedure   DisconnectAll;
@@ -80,19 +86,17 @@ type
     property    Items[i:integer]:TtiDBConnectionPool read GetItems;
 
     property    PersistenceLayer: TtiBaseObject read FPersistenceLayer;
-    property    MinPoolSize: Word read FMinPoolSize;
-    property    MaxPoolSize: Word read FMaxPoolSize;
+
   end;
 
 
 implementation
 uses
-   tiLog
-  ,tiUtils
-  ,tiPersistenceLayers
-  ,tiConstants
-  ,tiExcept
- ;
+  tiLog,
+  tiUtils,
+  tiConstants,
+  tiExcept,
+  tiPersistenceLayers;
 
 const
 
@@ -100,7 +104,7 @@ const
 
   cusConnectionNames = 'ConnectionNames';
   cusFileName        = 'DBParams.DCD';
-  CDefaultMinPoolSize = 1;
+  CDefaultMinPoolSize = 0;
   CDefaultMaxPoolSizeMultiUser = 9999;
   CDefaultMaxPoolSizeSingleUser = 1;
 
@@ -121,19 +125,38 @@ begin
     DBConnectParams.DatabaseName,
     DBConnectParams.UserName,
     DBConnectParams.Password,
-    DBConnectParams.Params);
+    DBConnectParams.DBParams,
+    DBConnectParams.QueryOptions);
 end;
 
 constructor TtiDBConnectionPool.Create(
   const ADBConnectionPools: TtiDBConnectionPools;
   const ADatabaseAlias: string;
-  const ADBConnectionParams: TtiDBConnectionParams);
+  const ADBConnectionParams: TtiDBConnectionParams;
+  const AMinPoolSize, AMaxPoolSize, APoolTimeOut: integer);
 begin
   Assert(ADBConnectionPools.TestValid, CTIErrorInvalidObject);
-  inherited Create(ADBConnectionPools.MinPoolSize, ADBConnectionPools.MaxPoolSize);
+  inherited Create(AMinPoolSize, AMaxPoolSize, APoolTimeOut);
   FDBConnectionPools:= ADBConnectionPools;
   FDatabaseAlias:= ADatabaseAlias;
   FDBConnectionParams:= ADBConnectionParams;
+  InitToMinPoolSize;
+end;
+
+procedure TtiDBConnectionPool.InitToMinPoolSize;
+var
+  LList: TList;
+  i: integer;
+begin
+  LList:= TList.Create;
+  try
+    for i := 1 to MinPoolSize do
+      LList.Add(Lock);
+    for i := 0 to LList.Count-1 do
+      UnLock(LList.Items[i]);
+  finally
+    LList.Free;
+  end;
 end;
 
 destructor TtiDBConnectionPool.Destroy;
@@ -149,14 +172,14 @@ end;
 type
   TtiPooledDatabase = class(TtiPooledItem)
   public
-    function MustRemoveItemFromPool(AListCount: Integer): boolean; override;
+    function MustRemoveItemFromPool: boolean; override;
   end;
 
-  function TtiPooledDatabase.MustRemoveItemFromPool(AListCount: Integer): Boolean;
+  function TtiPooledDatabase.MustRemoveItemFromPool: Boolean;
   begin
     Assert(Data.TestValid(TtiDatabase), CTIErrorInvalidObject);
     result :=
-      (Inherited MustRemoveItemFromPool(AListCount)) or
+      (Inherited MustRemoveItemFromPool) or
       ((Data as TtiDatabase).ErrorInLastCall);
   end;
 
@@ -180,25 +203,12 @@ end;
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 constructor TtiDBConnectionPools.Create(const APersistenceLayer: TtiBaseObject);
-var
-  LDefaults: TtiPersistenceLayerDefaults;
 begin
   inherited Create;
   Assert(APersistenceLayer.TestValid(TtiPersistenceLayer, True), CTIErrorInvalidObject);
   FPersistenceLayer:= APersistenceLayer;
   FList := TObjectList.Create;
   FCritSect:= TCriticalSection.Create;
-  LDefaults:= TtiPersistenceLayerDefaults.Create;
-  try
-    (APersistenceLayer as TtiPersistenceLayer).AssignPersistenceLayerDefaults(LDefaults);
-    FMinPoolSize:= CDefaultMinPoolSize;
-    if LDefaults.CanSupportMultiUser then
-      FMaxPoolSize:= CDefaultMaxPoolSizeMultiUser
-    else
-      FMaxPoolSize:= CDefaultMaxPoolSizeSingleUser;
-  finally
-    LDefaults.Free;
-  end;
 end;
 
 destructor TtiDBConnectionPools.Destroy;
@@ -208,17 +218,28 @@ begin
   inherited;
 end;
 
-procedure TtiDBConnectionPools.Connect(const ADatabaseAlias, ADatabaseName,
-  AUserName, APassword, AParams: string);
+
+procedure TtiDBConnectionPools.Connect(
+  const ADatabaseAlias, ADatabaseName, AUserName, APassword, AParams, AQueryOptions: string;
+  const AMinPoolSize, AMaxPoolSize, APoolTimeOut: integer);
 var
   lDBConnectionPool : TtiDBConnectionPool;
   LDBConnectionParams: TtiDBConnectionParams;
   LDatabase: TtiDatabase;
+  LMinPoolSize: integer;
+  LMaxPoolSize: integer;
+  LPoolTimeOut: integer;
 begin
+  LMinPoolSize:= AMinPoolSize;
+  LMaxPoolSize:= AMaxPoolSize;
+  LPoolTimeOut:= APoolTimeOut;
+  GetPoolSizeDefaults(LMinPoolSize, LMaxPoolSize, LPoolTimeOut);
+
   LDBConnectionParams.DatabaseName:= ADatabaseName;
   LDBConnectionParams.UserName:= AUserName;
   LDBConnectionParams.Password:= APassword;
-  LDBConnectionParams.Params:= AParams;
+  LDBConnectionParams.DBParams:= AParams;
+  LDBConnectionParams.QueryOptions:= AQueryOptions;
 
   FCritSect.Enter;
   try
@@ -226,7 +247,7 @@ begin
     if lDBConnectionPool <> nil then
       raise EtiOPFProgrammerException.CreateFmt(cErrorAttemptToAddDuplicateDBConnectionPool, [ADatabaseName + '/' + AUserName]);
     Log('Creating database connection pool for %s/%s', [ADatabaseName, AUserName], lsConnectionPool);
-    lDBConnectionPool := TtiDBConnectionPool.Create(Self, ADatabaseAlias, LDBConnectionParams);
+    lDBConnectionPool := TtiDBConnectionPool.Create(Self, ADatabaseAlias, LDBConnectionParams, LMinPoolSize, LMaxPoolSize, LPoolTimeOut);
     try
       LDatabase:= LDBConnectionPool.Lock;
       LDBConnectionPool.Unlock(LDatabase);
@@ -241,6 +262,21 @@ begin
   finally
     FCritSect.Leave;
   end;
+end;
+
+procedure TtiDBConnectionPools.Connect(const ADatabaseAlias, ADatabaseName,
+  AUserName, APassword, AParams: string);
+begin
+  Connect(
+    ADatabaseAlias,
+    ADatabaseName,
+    AUserName,
+    APassword,
+    AParams,
+    '',
+    0,
+    0,
+    0);
 end;
 
 function TtiDBConnectionPools.Find(const ADatabaseAlias: string): TtiDBConnectionPool;
@@ -325,26 +361,41 @@ begin
     'Number in pool:      ' + IntToStr(Count);
 end;
 
-procedure TtiDBConnectionPools.AddInstance(const ADatabaseAlias, ADatabaseName,
-  AUserName, APassword, AParams: string);
+procedure TtiDBConnectionPools.AddInstance(
+  const ADatabaseAlias, ADatabaseName, AUserName, APassword, AParams : string;
+  const AMinPoolSize, AMaxPoolSize, APoolTimeOut: integer);
 var
   lDBConnectionPool : TtiDBConnectionPool;
   LDBConnectionParams: TtiDBConnectionParams;
+  LMinPoolSize: integer;
+  LMaxPoolSize: integer;
+  LPoolTimeOut: integer;
 begin
+  LMinPoolSize:= AMinPoolSize;
+  LMaxPoolSize:= AMaxPoolSize;
+  LPoolTimeOut:= APoolTimeOut;
+  GetPoolSizeDefaults(LMinPoolSize, LMaxPoolSize, LPoolTimeOut);
+
   LDBConnectionParams.DatabaseName:= ADatabaseName;
   LDBConnectionParams.UserName:= AUserName;
   LDBConnectionParams.Password:= APassword;
-  LDBConnectionParams.Params:= AParams;
+  LDBConnectionParams.DBParams:= AParams;
   FCritSect.Enter;
   try
     lDBConnectionPool := Find(ADatabaseAlias);
     if lDBConnectionPool <> nil then
       raise EtiOPFProgrammerException.CreateFmt(cErrorAttemptToAddDuplicateDBConnectionPool, [ADatabaseName + '/' + AUserName]);
-    lDBConnectionPool := TtiDBConnectionPool.Create(Self, ADatabaseAlias, LDBConnectionParams);
+    lDBConnectionPool := TtiDBConnectionPool.Create(Self, ADatabaseAlias, LDBConnectionParams, LMinPoolSize, LMaxPoolSize, LPoolTimeOut);
     FList.Add(lDBConnectionPool);
   finally
     FCritSect.Leave;
   end;
+end;
+
+procedure TtiDBConnectionPools.AddInstance(const ADatabaseAlias, ADatabaseName,
+  AUserName, APassword, AParams: string);
+begin
+  AddInstance(ADatabaseAlias, ADatabaseName, AUserName, APassword, AParams, 0, 0, 0);
 end;
 
 procedure TtiDBConnectionPools.Clear;
@@ -398,6 +449,30 @@ end;
 function TtiDBConnectionPools.GetItems(i: integer): TtiDBConnectionPool;
 begin
   result := TtiDBConnectionPool(FList.Items[i])
+end;
+
+procedure TtiDBConnectionPools.GetPoolSizeDefaults(
+  var AMinPoolSize, AMaxPoolSize, APoolTimeOut: integer);
+var
+  LDefaults: TtiPersistenceLayerDefaults;
+begin
+  LDefaults:= TtiPersistenceLayerDefaults.Create;
+  try
+    (PersistenceLayer as TtiPersistenceLayer).AssignPersistenceLayerDefaults(LDefaults);
+    if AMinPoolSize = 0 then
+      AMinPoolSize:= CDefaultMinPoolSize;
+    if AMaxPoolSize = 0 then
+    begin
+      if LDefaults.CanSupportMultiUser then
+        AMaxPoolSize:= CDefaultMaxPoolSizeMultiUser
+      else
+        AMaxPoolSize:= CDefaultMaxPoolSizeSingleUser;
+    end;
+    if APoolTimeOut = 0 then
+      APoolTimeOut:= 1;
+  finally
+    LDefaults.Free;
+  end;
 end;
 
 procedure TtiDBConnectionPools.DisconnectAll;

@@ -35,6 +35,8 @@ type
     procedure PreSizedStream_WriteLn;
     procedure PreSizedStream_Clear;
     procedure PreSizedStream_AsString;
+    procedure PreSizedStream_AssignTo;
+    procedure PreSizedStream_AssignToEmpty;
 
     procedure LineStream_Props;
     procedure LineStream_ReadLn1;
@@ -548,6 +550,51 @@ begin
   _Test(CrLf, 'CrLf');
   _Test(Cr, 'Cr');
   _Test(Lf, 'Lf');
+end;
+
+procedure TTestTIStream.PreSizedStream_AssignTo;
+var
+  LFrom: TtiPreSizedStream;
+  LTo: TMemoryStream;
+  LActual: string;
+const
+  CText = 'test';
+begin
+  LTo:= nil;
+  LFrom:= nil;
+  try
+    LTo:= TMemoryStream.Create;
+    LFrom:= TtiPreSizedStream.Create(cStreamStartSize, cStreamGrowBy);
+    tiStringToStream('junk', LTo);
+    LFrom.Write(CText);
+    LFrom.AssignTo(LTo);
+    LActual:= tiStreamToString(LTo);
+    CheckEquals(CText, LActual);
+  finally
+    LTo.Free;
+    LFrom.Free;
+  end;
+end;
+
+procedure TTestTIStream.PreSizedStream_AssignToEmpty;
+var
+  LFrom: TtiPreSizedStream;
+  LTo: TMemoryStream;
+  LActual: string;
+begin
+  LTo:= nil;
+  LFrom:= nil;
+  try
+    LTo:= TMemoryStream.Create;
+    LFrom:= TtiPreSizedStream.Create(cStreamStartSize, cStreamGrowBy);
+    tiStringToStream('junk', LTo);
+    LFrom.AssignTo(LTo);
+    LActual:= tiStreamToString(LTo);
+    CheckEquals('', LActual);
+  finally
+    LTo.Free;
+    LFrom.Free;
+  end;
 end;
 
 procedure TTestTIStream.PreSizedStream_AsString;

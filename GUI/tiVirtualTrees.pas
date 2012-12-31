@@ -1400,6 +1400,7 @@ type
     procedure ProcessMessage(var Message: TMessage); stdcall;
                                                            // Used to forward messages to the edit window(s)-
     procedure SetBounds(R: TRect); stdcall;                // Called to place the editor.
+    function HasValueChanged: Boolean; stdcall;
   end;
 
   // Indicates in the OnUpdating event what state the tree is currently in.
@@ -3167,6 +3168,7 @@ type
   TStringEditLink = class(TInterfacedObject, IVTEditLink)
   private
     FEdit: TVTEdit;                  // A normal custom edit control.
+    FCurrentText: UnicodeString;     // Value of text before edit
     procedure SetEdit(const Value: TVTEdit);
   protected
     FTree: TCustomVirtualStringTree; // A back reference to the tree calling.
@@ -3190,6 +3192,7 @@ type
     function PrepareEdit(Tree: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex): Boolean; virtual; stdcall;
     procedure ProcessMessage(var Message: TMessage); virtual; stdcall;
     procedure SetBounds(R: TRect); virtual; stdcall;
+    function HasValueChanged: boolean; stdcall;
   end;
 
   // Describes the type of text to return in the text and draw info retrival events.
@@ -12388,16 +12391,19 @@ begin
               NextColumn := FColumns.GetNextVisibleColumn(FColumns.FTrackIndex);
             end;
 
-            // The autosized column cannot be resized using the mouse normally. Instead we resize the next
-            // visible column, so it look as we directly resize the autosized column.
-            if (hoAutoResize in FOptions) and (FColumns.FTrackIndex = FAutoSizeIndex) and
-               (NextColumn > NoColumn) and (coResizable in FColumns[NextColumn].FOptions) and
-               (FColumns[FColumns.FTrackIndex].FMinWidth < NewWidth) and
-               (FColumns[FColumns.FTrackIndex].FMaxWidth > NewWidth) then
-              FColumns[NextColumn].Width := FColumns[NextColumn].Width - NewWidth
-                                            + FColumns[FColumns.FTrackIndex].Width
-            else
-              FColumns[FColumns.FTrackIndex].Width := NewWidth;
+            if FColumns.FTrackIndex > NoColumn then
+            begin
+              // The autosized column cannot be resized using the mouse normally. Instead we resize the next
+              // visible column, so it look as we directly resize the autosized column.
+              if (hoAutoResize in FOptions) and (FColumns.FTrackIndex = FAutoSizeIndex) and
+                 (NextColumn > NoColumn) and (coResizable in FColumns[NextColumn].FOptions) and
+                 (FColumns[FColumns.FTrackIndex].FMinWidth < NewWidth) and
+                 (FColumns[FColumns.FTrackIndex].FMaxWidth > NewWidth) then
+                FColumns[NextColumn].Width := FColumns[NextColumn].Width - NewWidth
+                                              + FColumns[FColumns.FTrackIndex].Width
+              else
+                FColumns[FColumns.FTrackIndex].Width := NewWidth;
+            end;
           end;
           HandleHeaderMouseMove := True;
           Result := 0;
@@ -21354,15 +21360,17 @@ end;
 //----------------------------------------------------------------------------------------------------------------------
 
 function TBaseVirtualTree.DoEndEdit: Boolean;
-
+var
+  LHasValueChanged: boolean;
 begin
   StopTimer(EditTimer);
   Result := (tsEditing in FStates) and FEditLink.EndEdit;
   if Result then
   begin
     DoStateChange([], [tsEditing]);
+    LHasValueChanged := FEditLink.HasValueChanged;
     FEditLink := nil;
-    if Assigned(FOnEdited) then
+    if Assigned(FOnEdited) and LHasValueChanged then
       FOnEdited(Self, FFocusedNode, FEditColumn);
   end;
   DoStateChange([], [tsEditPending]);
@@ -33123,13 +33131,36 @@ begin
           if Node.ChildCount > 0 then
           begin
             // Iterate through the child nodes without initializing them. We have to determine the entire height.
+            // NOTE: Fix to init child nodes (required to call MeasureItemHeight
+            // so that event handler can determine height from node data).
             Child := Node.FirstChild;
             repeat
+            // A conflict while merging AEMO with tiOPF.
+            // Here is the conflict message.
+            // Done my best to resolve.
+//<<<<<<< .working
+//              if vsVisible in Child.States then
+//              begin
+//                // Ensure the item height is measured
+//                // NOTE: Fix to init child nodes so measure event handler has
+//                // node data to inspect contents to display
+//                if not (vsInitialized in Child.States) then
+//                  InitNode(Child);
+//                MeasureItemHeight(Canvas, Child);
+//=======
+//              if vsVisible in Child.States then
+//              begin
+//                // Ensure the item height is measured
+//                MeasureItemHeight(Canvas, Child);
+//>>>>>>> .merge-right.r2283
               if vsVisible in Child.States then
               begin
                 // Ensure the item height is measured
+                // NOTE: Fix to init child nodes so measure event handler has
+                // node data to inspect contents to display
+                if not (vsInitialized in Child.States) then
+                  InitNode(Child);
                 MeasureItemHeight(Canvas, Child);
-
                 Inc(HeightDelta, Child.TotalHeight);
               end;
               Child := Child.NextSibling;
@@ -34035,14 +34066,19 @@ begin
   Result := FEdit.BoundsRect;
 end;
 
+function TStringEditLink.HasValueChanged: boolean;
+var
+  LNewText: UnicodeString;
+begin
+  FTree.GetTextInfo(Node, Column, FEdit.Font, FTextBounds, LNewText);
+  Result := not SameStr(FCurrentText, LNewText);
+end;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 function TStringEditLink.PrepareEdit(Tree: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex): Boolean;
 
 // Retrieves the true text bounds from the owner tree.
-
-var
-  Text: UnicodeString;
 
 begin
   Result := Tree is TCustomVirtualStringTree;
@@ -34052,12 +34088,12 @@ begin
     FNode := Node;
     FColumn := Column;
     // Initial size, font and text of the node.
-    FTree.GetTextInfo(Node, Column, FEdit.Font, FTextBounds, Text);
+    FTree.GetTextInfo(Node, Column, FEdit.Font, FTextBounds, FCurrentText);
     FEdit.Font.Color := clWindowText;
     FEdit.Parent := Tree;
     FEdit.RecreateWnd;
     FEdit.HandleNeeded;
-    FEdit.Text := Text;
+    FEdit.Text := FCurrentText;
 
     if Column <= NoColumn then
     begin

@@ -42,7 +42,7 @@
 			<DCC_Namespace>Vcl;Vcl.Imaging;System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
 			<Manifest_File>None</Manifest_File>
 			<VerInfo_Locale>3081</VerInfo_Locale>
-			<DCC_UnitSearchPath>..\BOM;..\..\..\UnitTests\Common;..\..\..\..\3rdParty\FastMM;..\..\..\Core;..\..\..\Options;..\..\..\GUI;..\..\..\..\3rdParty\JCL\common;..\..\..\..\3rdParty\JCL\windows;..\..\..\..\3rdParty\JCL\include;..\..\..\..\3rdParty\DUnit;..\..\..\..\3rdParty\JCL\include\jedi;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_UnitSearchPath>..\BOM;..\..\..\UnitTests\Common;$(tiOPF3_3rdParty)\FastMM;..\..\..\Core;..\..\..\Options;..\..\..\GUI;$(tiOPF3_3rdParty)\JCL\common;$(tiOPF3_3rdParty)\JCL\windows;$(tiOPF3_3rdParty)\JCL\include;$(tiOPF3_3rdParty)\DUnit;$(tiOPF3_3rdParty)\JCL\include\jedi;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_Define>DUNIT2;FASTMM;USE_JEDI_JCL;$(DCC_Define)</DCC_Define>
 			<DCC_ExeOutput>_bin</DCC_ExeOutput>
 			<DCC_DcuOutput>_dcu</DCC_DcuOutput>
@@ -72,7 +72,6 @@
 			<DCC_SYMBOL_PLATFORM>False</DCC_SYMBOL_PLATFORM>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-			<Manifest_File>None</Manifest_File>
 			<VerInfo_Locale>1033</VerInfo_Locale>
 		</PropertyGroup>
 		<ProjectExtensions>

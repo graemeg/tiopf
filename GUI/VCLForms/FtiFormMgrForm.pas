@@ -54,10 +54,12 @@ type
     FFormInfoMessage: string;
     FFormMgr: TtiFormMgr;
     FLastActiveControl: TWinControl;
+    FEscapeKeyEnabled: Boolean;
 
     procedure SetFormErrorMessage(const AValue: string);
     procedure SetFormInfoMessage(const AValue: string);
     procedure SetContextActionsEnabled(const AValue: Boolean);
+    procedure SetEscapeKeyEnabled(const AValue: boolean);
   protected
     FUpdateButtons : boolean;
 
@@ -98,7 +100,7 @@ type
     property  FormErrorMessage: string read FFormErrorMessage Write SetFormErrorMessage;
     property  FormInfoMessage: string read FFormInfoMessage Write SetFormInfoMessage;
     property  FormMgr: TtiFormMgr read FFormMgr Write FFormMgr;
-    procedure SetEscapeKeyEnabled(const AValue: boolean);
+    property  EscapeKeyEnabled: Boolean read FEscapeKeyEnabled write SetEscapeKeyEnabled;
 
     property AL: TActionList read FAL;
   end;
@@ -156,7 +158,8 @@ type
                               const AReferenceData : TtiObject = nil): TtiFormMgrForm;
     procedure   BringToFront(const pForm : TtiFormMgrForm; pFocusFirstControl : Boolean);
 
-    function    FindForm(const pFormClass : TtiFormMgrFormClass; const AData : TtiObject): TtiFormMgrForm;
+    function    FindForm(const AFormClass : TtiFormMgrFormClass): TtiFormMgrForm; overload;
+    function    FindForm(const AFormClass : TtiFormMgrFormClass; const AData : TtiObject): TtiFormMgrForm; overload;
     function    IndexOf(const pForm : TtiFormMgrForm): integer;
 
     procedure   CloseForm(const pForm : TtiFormMgrForm);
@@ -190,6 +193,7 @@ uses
   ,tiResources
   ,tiExcept
   ,FtiFormMgrDataForm
+  ,tiOPFManager
  ;
 
 {$R *.DFM}
@@ -230,6 +234,7 @@ begin
   FButtonsVisible := btnVisNone;
   FUpdateButtons := true;
   FContextActionsEnabled := true;
+  FEscapeKeyEnabled := true;
 end;
 
 procedure TtiFormMgrForm.FormDestroy(Sender: TObject);
@@ -268,7 +273,7 @@ end;
 
 procedure TtiFormMgrForm.DoALUpdate(Action: TBasicAction; var Handled: Boolean);
 begin
-  FaClose.Enabled := ContextActionsEnabled;
+  FaClose.Enabled := ContextActionsEnabled and EscapeKeyEnabled;
   Handled := True;
 end;
 
@@ -336,9 +341,13 @@ procedure TtiFormMgrForm.SetEscapeKeyEnabled(const AValue: boolean);
 var
   i: integer;
 begin
-  for i := 0 to FAL.ActionCount-1 do
-    if (FAL.Actions[i] as TAction).ShortCut = Shortcut(Word(VK_ESCAPE), []) then
-      (FAL.Actions[i] as TAction).Enabled:= AValue;
+  if FEscapeKeyEnabled <> AValue then
+  begin
+    FEscapeKeyEnabled := AValue;
+    for i := 0 to FAL.ActionCount-1 do
+      if (FAL.Actions[i] as TAction).ShortCut = Shortcut(Word(VK_ESCAPE), []) then
+        (FAL.Actions[i] as TAction).Enabled:= FEscapeKeyEnabled;
+  end;
 end;
 
 function TtiFormMgrForm.AddAction(
@@ -491,13 +500,24 @@ begin
   inherited;
 end;
 
-function TtiFormMgr.FindForm(const pFormClass: TtiFormMgrFormClass; const AData : TtiObject): TtiFormMgrForm;
+function TtiFormMgr.FindForm(
+  const AFormClass: TtiFormMgrFormClass): TtiFormMgrForm;
+var
+  i: integer;
+begin
+  result := nil;
+  for i := 0 to FForms.Count - 1 do
+    if FForms.Items[i] is AFormClass then
+      Exit(FForms.Items[i] as TtiFormMgrForm); //==>
+end;
+
+function TtiFormMgr.FindForm(const AFormClass: TtiFormMgrFormClass; const AData : TtiObject): TtiFormMgrForm;
 var
   i : integer;
 begin
   result := nil;
   for i := 0 to FForms.Count - 1 do
-    if (FForms.Items[i] is pFormClass) and
+    if (FForms.Items[i] is AFormClass) and
        ((not (FForms.Items[i] is TtiFormMgrDataForm)) or
         (TtiFormMgrDataForm(FForms.Items[i]).Data = AData)) then
     begin
@@ -557,7 +577,7 @@ end;
 
 procedure TtiFormMgr.SetEscapeKeyEnabled(const AValue: boolean);
 begin
-  FActiveForm.SetEscapeKeyEnabled(AValue);
+  FActiveForm.EscapeKeyEnabled := AValue;
 end;
 
 procedure TtiFormMgr.SetForms(i: integer; const AValue: TtiFormMgrForm);
@@ -617,6 +637,9 @@ var
   LCursor: TCursor;
   LActiveForm: TtiFormMgrForm;
 begin
+  if ShuttingDown then
+    Exit(nil); //==>
+
   Assert(ParentPnl <> nil, 'ParentPnl not assigned');
   LCursor:= Screen.Cursor; // tiAutoCursor not working here - I don't understand why
   try

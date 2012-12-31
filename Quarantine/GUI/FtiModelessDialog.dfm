@@ -10,10 +10,12 @@ object tiFormModelessDialog: TtiFormModelessDialog
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   OnActivate = FormActivate
   OnCreate = FormCreate
   OnDeactivate = FormDeactivate
+  OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 13
 end

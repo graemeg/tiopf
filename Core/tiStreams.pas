@@ -1139,11 +1139,15 @@ var
   LSavePosition: Integer;
 begin
   Assert(AStreamTo <> nil, 'AStreamTo not assigned');
-  LSavePosition:= FStream.Position;
-  FStream.Position:= 0;
-  AStreamTo.Size:= 0;
-  AStreamTo.CopyFrom(FStream, FDataSize);
-  FStream.Position:= LSavePosition;
+  if FDataSize > 0 then
+  begin
+    LSavePosition:= FStream.Position;
+    FStream.Position:= 0;
+    AStreamTo.Size:= 0;
+    AStreamTo.CopyFrom(FStream, FDataSize);
+    FStream.Position:= LSavePosition;
+  end else
+    AStreamTo.Size:= 0;
 end;
 
 function TtiPreSizedStream.AsString: string;

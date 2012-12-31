@@ -28,6 +28,7 @@ type
     function  GetPathToCGIBin: string; virtual;
     function  GetPathToStaticPages: string; virtual;
     function  GetPathToPassThrough: string; virtual;
+    function  GetAppServerSeverityToLog: string;
     function  GetCGIExtensionLogging: boolean;
     function  GetCGIExtensionSeverityToLog: string;
 
@@ -39,6 +40,7 @@ type
     property    LogPathToSharedFiles: string Read GetLogPathToSharedFiles;
     property    LogToApplicationSubDirectory: boolean read GetLogToApplicationSubDirectory;
     property    LogFullHTTPRequest: boolean read GetLogFullHTTPRequest;
+    property    AppServerSeverityToLog: string read GetAppServerSeverityToLog;
     property    CGIExtensionLogging: boolean read GetCGIExtensionLogging;
     property    CGIExtensionSeverityToLog: string read GetCGIExtensionSeverityToLog;
 
@@ -77,6 +79,7 @@ const
   cINILog_CGIExtensionSeverityToLog = 'CGIExtensionSeverityToLog';
   CINILog_LogToApplicationSubDirectory = 'LogToApplicationSubDirectory';
   CINILog_LogFullHTTPRequest = 'LogFullHTTPRequest';
+  cINILog_AppServerSeverityToLog = 'AppServerSeverityToLog';
   CINILog_DefaultLogFullHTTPRequest = false;
 
   cINIService = 'Web Server';
@@ -172,6 +175,11 @@ begin
   Result:= INI.ReadBool(cINILog, cINILog_LogToApplicationSubDirectory, cINILog_DefaultLogToApplicationSubDirectory);
 end;
 
+function TtiWebServerConfig.GetAppServerSeverityToLog: string;
+begin
+  Result := INI.ReadString(cINILog, cINILog_AppServerSeverityToLog, '');
+end;
+
 function TtiWebServerConfig.GetCGIExtensionLogging: boolean;
 begin
   Result:= INI.ReadBool(cINILog, cINILog_CGIExtensionLogging, False);
@@ -200,6 +208,10 @@ end;
 procedure TtiWebServerConfig.RegisterLog;
 begin
   gLog.RegisterLog(TtiLogToFile.CreateWithDateInFileName(LogPathToSharedFiles));
+  if AppServerSeverityToLog <> '' then
+    gLog.SevToLogAsString := AppServerSeverityToLog
+  else
+    gLog.SevToLog := [lsError, lsWarning, lsUserInfo, lsNormal];
 end;
 
 function TtiWebServerConfig.GetPathToBin: string;

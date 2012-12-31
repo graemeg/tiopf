@@ -58,9 +58,9 @@ type
   // Scan the string AValue, and replace any characters ADel with AIns (Case insensitive)
   function  tiCIStrTran(      AValue, ADel, AIns : string): string;
   // Count the number of blocks of text (tokens) in AValue separated by ASeparator
-  function  tiNumToken(       const AValue, ASeparator : string): integer;
+  function tiNumToken(const AValue, ASeparator : string): integer;
   // Extract the 1-based ATokenIndex(th) block of text (token) in AValue, seperated by ASeparator
-  function  tiToken(          const AValue, ASeparator : string; const ATokenIndex : integer): string;
+  function  tiToken(const AValue, ASeparator : string; const ATokenIndex : integer): string;
   // Return a string of spaces ALen long
   function  tiSpace(          ALen : integer): string;
 
@@ -486,7 +486,8 @@ type
   procedure tiOpenFile(const AFileName: string);
 {$ENDIF MSWINDOWS}
   // Run an EXE and wait for it to finish
-  procedure tiRunEXEAndWait(const AEXE : string; const AParams: string = '');
+  procedure tiRunEXEAndWait(const AEXE : string; const AParams: string = '';
+      AInheritParentStartInfo: boolean = true);
 
   // Get the currently logged on user ID
   function  tiGetUserName : string;
@@ -609,6 +610,7 @@ type
   public
     constructor Create; virtual;
     destructor  Destroy; override;
+    procedure   Clear;
     procedure   Add(AValue: Int64);
     function    IndexOf(AValue: Int64): Integer;
     function    Remove(AValue: Int64): Integer;
@@ -616,6 +618,33 @@ type
     property    Count: Integer Read GetCount;
     procedure   Sort;
   end;
+
+  TtiUniqueIntegerList = class(TtiIntegerList)
+  public
+    procedure   Add(AValue: Int64);
+  end;
+
+  TtiRealListItem = class(TtiBaseObject)
+  private
+    FValue: Extended;
+  public
+    property AValue: Extended Read FValue Write FValue;
+  end;
+
+  TtiRealList = class(TtiBaseObject)
+  private
+    FList: TObjectList;
+    function    GetItems(i: Integer): Extended;
+    procedure   SetItems(i: Integer; const AValue: Extended);
+    function    GetCount: Integer;
+  public
+    constructor Create; virtual;
+    destructor  Destroy; override;
+    procedure   Add(AValue: Extended);
+    property    Items[i: Integer]: Extended Read GetItems Write SetItems; default;
+    property    Count: Integer Read GetCount;
+  end;
+
 
   {: Provides similar functionality to the VCL's TMultiReadSingleWriteSynchronizer,
      except that a Read can not be promoted to a write. The VCL's version reports
@@ -800,61 +829,100 @@ begin
   Result := Result + sToChange;
 end;
 
-
 function tiNumToken(const AValue, ASeparator : string): integer;
 var
-  i, iCount : integer;
-  lsValue : string;
+  LCurrent, LCurrSeparator: PChar;
 begin
-  Result := 0;
-  if AValue = '' then
-    Exit; //==>
+  // Token index is 1-based
+  Result := 1; //(implicit value) unless set otherwise
 
-  iCount := 0;
-  lsValue := AValue;
-  i := pos(ASeparator, lsValue);
-  while i <> 0 do begin
-    delete(lsValue, i, length(ASeparator));
-    inc(iCount);
-    i := pos(ASeparator, lsValue);
+  // Check for special cases
+  if (Length(AValue) = 0) then exit(0); //==>
+  if Length(ASeparator) = 0 then exit; //==>
+
+  LCurrent := Pointer(AValue);
+
+  while LCurrent^ <> #0 do
+  begin
+    LCurrSeparator := Pointer(ASeparator);
+    // look for start of sub in str or end of str
+    while (LCurrent^ <> LCurrSeparator^) and (LCurrent^ <> #0) do
+      Inc(LCurrent);
+    // check end of str
+    if LCurrent^ <> #0 then
+    begin
+      // look for end of sub in str or end of sub or end of str
+      while (LCurrent^ = LCurrSeparator^) and (LCurrent^ <> #0) do
+      begin
+        Inc(LCurrent);
+        Inc(LCurrSeparator);
+      end;
+      // success if sub^ = #0
+      if LCurrSeparator^ = #0 then
+        Inc(Result);
+    end;
   end;
-  Result := iCount + 1;
 end;
 
-
-function tiToken(const AValue, ASeparator : string; const ATokenIndex : integer): string;
+function tiToken(const AValue, ASeparator: string; const ATokenIndex : integer): string;
 var
-  i, iCount, iNumToken : integer;
-  lsValue : string;
-begin
-  result := '';
+  LCurrent: PChar;
+  LRemainingTokens: integer;
+  LPrevTokenStart: PChar;
+  LFoundNextToken: boolean;
 
-  iNumToken := tiNumToken(AValue, ASeparator);
-  if ATokenIndex = 1 then begin
-    if pos(ASeparator, AValue) = 0 then result := AValue
-    else result := copy(AValue, 1, pos(ASeparator, AValue)-1);
-    end
-  else if (iNumToken < ATokenIndex-1) or (ATokenIndex<1) then begin
-    result := '';
-    end
-  else begin
+  function SeekNextTokenStart: boolean;
+  var
+    LSeparator: PChar;
+  begin
+    LSeparator := Pointer(ASeparator);
 
-    { Remove leading blocks }
-    iCount := 1;
-    lsValue := AValue;
-    i := pos(ASeparator, lsValue);
-    while (i<>0) and (iCount<ATokenIndex) do begin
-      delete(lsValue, 1, i + length(ASeparator) - 1);
-      inc(iCount);
-      i := pos(ASeparator, lsValue);
+    while (LCurrent^ <> #0) and (LSeparator^ <> #0) do
+    begin
+      // reset to start of separator
+      LSeparator := Pointer(ASeparator);
+
+      //seek next start of separator
+      while (LCurrent^ <> #0) and (LCurrent^ <> LSeparator^) do
+        Inc(LCurrent);
+
+      //skip to end of separator
+      while (LCurrent^ <> #0) and (LSeparator^ <> #0)
+        and (LCurrent^ = LSeparator^) do
+      begin
+        Inc(LCurrent);
+        Inc(LSeparator);
+      end;
+
     end;
-
-    if (i=0) and (iCount=ATokenIndex) then result := lsValue
-    else if (i=0) and (iCount<>ATokenIndex) then
-      result := ''
-    else
-      result := copy(lsValue, 1, i-1);
+    // at token start if separator chars exhausted
+    Result := (LSeparator^ = #0);
   end;
+
+begin
+  // Token index is 1-based
+  Result := ''; //(implicit value) unless set otherwise
+
+  // Check for special cases
+  if (Length(AValue) = 0) or (ATokenIndex < 1) then exit;
+  if Length(ASeparator) = 0 then exit(AValue);
+
+  LCurrent := Pointer(AValue);
+  LRemainingTokens := ATokenIndex;
+
+  repeat
+    Dec(LRemainingTokens);
+    LPrevTokenStart := LCurrent;
+    LFoundNextToken := SeekNextTokenStart;
+  until not (LFoundNextToken and (LRemainingTokens > 0));
+
+  if (LRemainingTokens = 0) then
+    if LFoundNextToken then
+      SetString(Result, LPrevTokenStart,
+        LCurrent - LPrevTokenStart - Length(ASeparator))
+    else
+      SetString(Result, LPrevTokenStart,
+        LCurrent - LPrevTokenStart);
 end;
 
 function tiSpace(ALen : integer): string;
@@ -941,6 +1009,10 @@ begin
   end
   else if Length(ls) > ALen then
   begin
+    // This is a somewhat bizarre - if ALen < Length(AValue) - trim from
+    // the right. However, this is how it's used to set the
+    // decimal part of the result in TtiFieldCurrency.GetAsString
+    // Ideally, tiPad0('123', 2) would raise an exception.
     ls := Copy(ls, Length(ls)-ALen, ALen);
   end;
   Result := ls;
@@ -1310,6 +1382,7 @@ var
   LExt: string;
   i: integer;
 begin
+  // Is it a known file type?
   LExt := LowerCase(tiExtractExtension(AFileName));
   for i := 0 to Length(CKnownFileTypes) - 1 do
     if LExt = CKnownFileTypes[i] then
@@ -1317,6 +1390,13 @@ begin
       tiShellExecute(AFileName);
       Exit; //==>
     end;
+
+  // Is it a directory?
+  if DirectoryExists(AFileName) then
+  begin
+    tiShellExecute(AFileName);
+    Exit; //==>
+  end;
 
   tiShellExecute('notepad.exe', AFileName);
 end;
@@ -2483,7 +2563,8 @@ begin
 end;
 
 
-procedure tiRunEXEAndWait(const AEXE : string; const AParams: string = '');
+procedure tiRunEXEAndWait(const AEXE : string; const AParams: string = '';
+                          AInheritParentStartInfo: boolean = true);
 var
   LCommand: string;
 begin
@@ -2492,7 +2573,7 @@ begin
   else
     LCommand:= AEXE;
 {$IFDEF MSWINDOWS}
-  tiWin32RunEXEAndWait(LCommand);
+  tiWin32RunEXEAndWait(LCommand, AInheritParentStartInfo);
 {$ENDIF MSWINDOWS}
 {$IFDEF UNIX}
   tiUnixRunEXEAndWait(LCommand);
@@ -2618,6 +2699,7 @@ var
 begin
   LFileDate := DateTimeToFileDate(ADateTime);
   {$IFDEF MSWINDOWS}
+  {$WARN SYMBOL_PLATFORM OFF}
   LFileHandle := FileOpen(AFileName, fmOpenWrite or fmShareDenyNone);
   try
     if LFileHandle > 0 then
@@ -4224,6 +4306,12 @@ begin
 end;
 
 
+procedure TtiIntegerList.Clear;
+begin
+  FList.Clear;
+end;
+
+
 constructor TtiIntegerList.Create;
 begin
   inherited Create;
@@ -4366,9 +4454,15 @@ Const
   rounding floating binary point numbers to the specified NDFD.  MaxRelError
   is the maximum relative error that will be allowed when determining the
   cut points for applying the rounding rules. }
-Function tiDecimalRound(AValue: extended; NDFD: integer; MaxRelErr: double;
-                         Ctrl: TtiDecimalRoundingCtrl = drHalfEven): extended;
-var i64, j64: Int64; j: integer; m, ScaledVal, ScaledErr: extended;
+function tiDecimalRound(
+  AValue: extended;
+  NDFD: integer;
+  MaxRelErr: extended;
+  Ctrl: TtiDecimalRoundingCtrl = drHalfEven): extended;
+var
+  i64, j64: Int64;
+  j: integer;
+  m, ScaledVal, ScaledErr: extended;
 begin
 
   If IsNaN(AValue) or (Ctrl = drNone)
@@ -4583,8 +4677,6 @@ begin
   begin
     Result := FTokens[AIndex - 1];
   end;
-
-
 end;
 
 procedure TtiTokens.SetText(const AText, ASeparator: string);
@@ -4611,6 +4703,52 @@ begin
   if Length(LText) > 0 then
     FTokens.Add(LText);
 
+end;
+
+{ TtiUniqueIntegerList }
+
+procedure TtiUniqueIntegerList.Add(AValue: Int64);
+begin
+  if IndexOf(AValue) = -1 then
+    inherited Add(AValue);
+end;
+
+{ TtiRealList }
+
+procedure TtiRealList.Add(AValue: Extended);
+var
+  L: TtiRealListItem;
+begin
+  L:= TtiRealListItem.Create;
+  FList.Add(L);
+  L.AValue:= AValue;
+end;
+
+constructor TtiRealList.Create;
+begin
+  inherited Create;
+  FList:= TObjectList.Create(True);
+end;
+
+destructor TtiRealList.Destroy;
+begin
+  FList.Free;
+  inherited;
+end;
+
+function TtiRealList.GetCount: Integer;
+begin
+  Result := FList.Count;
+end;
+
+function TtiRealList.GetItems(i: Integer): Extended;
+begin
+  Result := (FList.Items[i] as TtiRealListItem).AValue;
+end;
+
+procedure TtiRealList.SetItems(i: Integer; const AValue: Extended);
+begin
+  (FList.Items[i] as TtiRealListItem).AValue := AValue;
 end;
 
 end.

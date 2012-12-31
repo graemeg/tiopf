@@ -7,12 +7,11 @@ uses
   {$IFDEF FPC}
   testregistry,
   {$ENDIF}
-  tiTestFramework
-  ,tiPool
-  ,tiBaseObject
-  ,Classes
-  ,Contnrs
- ;
+  tiTestFramework,
+  tiPool,
+  tiBaseObject,
+  Classes,
+  Contnrs;
 
 type
 
@@ -65,16 +64,16 @@ procedure RegisterTests;
 
 implementation
 uses
-  tiTestDependencies
+  tiTestDependencies,
   {$IFNDEF FPC}
-  ,Windows
+  Windows,
   {$ENDIF}
-  ,SysUtils
- ;
+  SysUtils;
 
 const
-  cThreadCount      = 5;
-  cThreadItemCount  = 5;
+  CThreadCount      = 5;
+  CThreadItemCount  = 5;
+  CPoolTimeOut      = 1;
 
 
 procedure RegisterTests;
@@ -92,7 +91,7 @@ var
   lList : TObjectList;
   i    : integer;
 begin
-  lPool := TtiPoolForTesting.Create(0, ACount);
+  lPool := TtiPoolForTesting.Create(0, ACount, CPoolTimeOut);
   try
     lList := TObjectList.Create(false);
     try
@@ -136,7 +135,7 @@ begin
   Check(True); // To Force OnCheckCalled to be called
   lList := TObjectList.Create(true);
   try
-    lPool := TtiPoolForTesting.Create(0, cThreadCount * cThreadItemCount);
+    lPool := TtiPoolForTesting.Create(0, cThreadCount * cThreadItemCount, CPoolTimeOut);
     try
       for i := 1 to cThreadCount do
       begin
@@ -162,7 +161,7 @@ procedure TTestTiPool.MaxPoolSize;
 var
   lPool : TtiPoolForTesting;
 begin
-  lPool := TtiPoolForTesting.Create(0, 1);
+  lPool := TtiPoolForTesting.Create(0, 1, CPoolTimeOut);
   try
     lPool.SetWaitTime(1);
     lPool.Lock;
@@ -188,9 +187,8 @@ var
   LItem1 : TtiBaseObject;
   LItem2 : TtiBaseObject;
 begin
-  LPool := TtiPoolForTesting.Create(1 {MinPoolSize}, 2 {MaxPoolSize});
+  LPool := TtiPoolForTesting.Create(0 {MinPoolSize}, 2 {MaxPoolSize}, 0);
   try
-    LPool.SetTimeOut(0);
     LItem1 := lPool.Lock;
     LItem2 := lPool.Lock;
     Check(LItem1 <> LItem2, 'Items should not be same');
@@ -210,7 +208,7 @@ var
   LItem1 : TtiBaseObject;
   LItem2 : TtiBaseObject;
 begin
-  LPool := TtiPoolForTesting.Create(1 {MinPoolSize}, 2 {MaxPoolSize});
+  LPool := TtiPoolForTesting.Create(1 {MinPoolSize}, 2 {MaxPoolSize}, CPoolTimeOut);
   try
     LPool.SetTimeOut(0);
     LItem1 := lPool.Lock;
@@ -247,7 +245,7 @@ var
   lItem2 : TtiBaseObject;
   lItem3 : TtiBaseObject;
 begin
-  lPool := TtiPoolForTesting.Create(0, 3);
+  lPool := TtiPoolForTesting.Create(0, 3, CPoolTimeOut);
   try
 
     lPool.SetTimeOut(1/60);
@@ -297,7 +295,8 @@ procedure TTestTiPool.tiThrdPoolMonitor;
 var
   L: TtiThrdPoolMonitorForTesting;
 begin
-  L:= TtiThrdPoolMonitorForTesting.CreateExt(nil);
+  Check(True); // To Force OnCheckCalled to be called
+  L:= TtiThrdPoolMonitorForTesting.CreateExt(nil, 0);
   try
     L.Terminate;
   finally
@@ -310,7 +309,7 @@ var
   lPool : TtiPoolForTesting;
 begin
   Check(True); // To Force OnCheckCalled to be called
-  lPool := TtiPoolForTesting.Create(0, 1);
+  lPool := TtiPoolForTesting.Create(0, 1, CPoolTimeOut);
   lPool.Free;
 end;
 

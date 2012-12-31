@@ -36,6 +36,7 @@ type
     property    AsCompressedEncodedString: string read GetCompressedEncodedAsString Write SetCompressedEncodedAsString;
     property    Count: integer read GetCount;
     procedure   Assign(const ASource: TtiCGIParams);
+    procedure   Clear;
   end;
 
 implementation
@@ -44,11 +45,6 @@ uses
   ;
 
 { TtiCGIParams }
-
-procedure TtiCGIParams.Assign(const ASource: TtiCGIParams);
-begin
-  AsString:= ASource.AsString;
-end;
 
 constructor TtiCGIParams.Create;
 begin
@@ -60,6 +56,16 @@ destructor TtiCGIParams.Destroy;
 begin
   FStrings.Free;
   inherited;
+end;
+
+procedure TtiCGIParams.Assign(const ASource: TtiCGIParams);
+begin
+  AsString:= ASource.AsString;
+end;
+
+procedure TtiCGIParams.Clear;
+begin
+  FStrings.Clear;
 end;
 
 function TtiCGIParams.GetAsString: string;

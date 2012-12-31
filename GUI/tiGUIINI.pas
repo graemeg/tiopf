@@ -45,6 +45,7 @@ var
   LLeft : integer;
   LHeight : integer;
   LWidth : integer;
+  LWindowState: TWindowState;
 begin
   Assert(AForm <> nil, 'pForm not assigned');
   LINISection := AForm.name + 'State';
@@ -83,7 +84,13 @@ begin
     AForm.Height := readInteger(LINISection, 'Height', LHeight);
     AForm.Width := readInteger(LINISection, 'Width',  LWidth);
   end;
-  AForm.WindowState := TWindowState(ReadInteger(LINISection, 'WindowState', ord(wsNormal)));
+  LWindowState := TWindowState(ReadInteger(LINISection, 'WindowState', ord(wsNormal)));
+  // Don't allow minimized initial state - if the main form is minimized on
+  // opening then it won't appear and neither will the taskbar button so it
+  // cannot be restored.
+  if LWindowState = wsMinimized then
+    LWindowState := wsNormal;
+  AForm.WindowState := LWindowState;
 
   // If the form is off screen (positioned outside all monitor screens) then
   // center the form on screen.

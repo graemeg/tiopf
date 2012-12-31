@@ -65,7 +65,10 @@ contains
   tiWin32 in '..\..\Core\tiWin32.pas',
   tiOIDGUID in '..\..\Core\tiOIDGUID.pas',
   tiBaseMediator in '..\..\Core\tiBaseMediator.pas',
-  tiModelMediator in '..\..\Core\tiModelMediator.pas';
+  tiModelMediator in '..\..\Core\tiModelMediator.pas',
+  tiGenericList in '..\..\Core\tiGenericList.pas',
+  tiGenericBase in '..\..\Core\tiGenericBase.pas',
+  tiAutoMapSelect in '..\..\Core\tiAutoMapSelect.pas';
 
 {$I tiDefines.inc}
 

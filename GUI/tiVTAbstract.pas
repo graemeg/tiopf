@@ -35,6 +35,15 @@ type
     const NodeDisabled: boolean;
     const NodeSelectedAndUnfocused: boolean) of object;
 
+  TtiVTGetImageIndexEvent = procedure(
+    const AtiVT: TtiVTAbstract;
+    const ANode: PVirtualNode;
+    const AData: TtiObject;
+    const AKind: TVTImageKind;
+    const AColumn: TColumnIndex;
+    var AGhosted: Boolean;
+    var AImageIndex: Integer) of object;
+
   // ToDo: Gradual migration of TtiVTListView and TtiVTTreeView source that's
   //       duplicated into TtiVTAbstract
   TtiVTAbstract = class(TtiFocusPanel)
@@ -363,7 +372,7 @@ begin
 
   if ATextFound then
   begin
-    FLastSearchedNode.States := FLastSearchedNode.States + [vsSelected];
+    VT.Selected[FLastSearchedNode] := true;
     VT.FocusedNode := FLastSearchedNode;
   end
   // search failed - set next search start point to last success

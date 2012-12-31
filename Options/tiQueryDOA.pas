@@ -16,9 +16,6 @@ uses
   ,tiPersistenceLayers
  ;
 
-const
-  CtiQueryOptionDOAReadBuffer = 'ReadBuffer';
-
 type
 
   TtiPersistenceLayerDOA = class(TtiPersistenceLayer)
@@ -174,6 +171,19 @@ constructor TtiQueryDOA.Create;
 begin
   inherited;
   FQuery      := TOracleQuery.Create(nil);
+  // Getting exception on the app server when executing a long running query:
+  // Message: ORA-24909: call in progress. Current operation cancelled
+  //
+  //  select       s.se_time                                 as SEDTime      ,d.actual_mw_from                          as MWFrom      ,d.actual_mvar_from                        as MVARFrom      ,d.actual_mw_to                            as MWTo      ,d.actual_mvar_to                          as MVARTo from       sed_line d      ,sed_smy s where      d.EID           = :OID and  s.SE_time      >= :Date_From and  s.SE_Time       < :Date_To + 1 and ( s.se_time = d.se_time ) and ( s.bad_snapshot <> 'T' )  order by   SEDTime
+  //  Params:
+  //    DATE_FROM:= 01/07/2009
+  //    DATE_TO:= 13/04/2012
+  //    OID:= 3266036
+  //
+  // Fix described here:
+  //   http://forums.allroundautomations.com/ubb/ubbthreads.php?ubb=showflat&Number=38324&PHPSESSID=2e3c1b028a66500ae8a1730abc88b993
+  FQuery.Optimize:= false;
+
   FslVariables := TStringList.Create;
   FbActive    := false;
 end;
@@ -526,7 +536,6 @@ procedure TtiDatabaseDOA.StartTransaction;
 begin
   try
     Assert(not FInTransaction, 'Attempt to start a transaction when one is already open');
-  //  FOracleSession.SavePoint(cSavePoint);
     FInTransaction := true;
   except
     on e:exception do
@@ -541,7 +550,6 @@ function TtiDatabaseDOA.InTransaction: boolean;
 begin
   try
     result := FInTransaction;
-  //  result := FOracleSession.InTransaction;
   except
     on e:exception do
     begin

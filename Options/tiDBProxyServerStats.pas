@@ -2,83 +2,82 @@ unit tiDBProxyServerStats;
 
 interface
 uses
-  tiBaseObject
-  ,tiQueryXMLLight
-  ,tiPool
-  ,tiQueryRemote_Svr
-  ,tiQuery
- ;
+  tiBaseObject,
+  tiQueryXMLLight,
+  tiPool,
+  tiQueryRemote_Svr,
+  tiQuery,
+  tiDataBuffer_bom;
 
 type
 
   TtiDBProxyServerStats = class(TtiBaseObject)
   private
-    FDatabase : TtiDatabaseXMLLight;
+    FDBList : TtiDataBufferList;
+    FDBSummary: TtiDataBuffer;
+    FDBConPool: TtiDataBuffer;
+    FDBStatefulConPool: TtiDataBuffer;
     FTestRefreshRate: integer;
     procedure InsertSummary;
     procedure InsertDBConnectionPool;
     procedure InsertStatefulDBConPool;
-    procedure ForEachDBConnectionPoolItem(const APooledItem: TtiPooledItem);
+    procedure ForEachDBConnectionPoolItem(const AItem: TtiPooledItem);
     procedure ForEachStatefulDBConnectionItem(const AItem: TSavedDBConnectionHolder);
     procedure SetTestRefreshRate(const AValue: integer);
     function  GetStatsPageTitle : string;
     function  GetApplicationUpTimeAsString: string;
+    function  GetTimeToLiveText(
+      const AStaticConnection, ALocked, APendingRemoval: boolean;
+      const ATimeToLive: integer): string;
   public
-    constructor create;
+    constructor Create;
     destructor  Destroy; override;
     procedure   Execute;
-    function    AsXML : string;
     function    AsHTML : string;
+    function    AsXML : string;
     property    TestRefreshRate : integer read FTestRefreshRate write SetTestRefreshRate;
   end;
 
 implementation
 uses
-   SysUtils
-  ,tiDataBuffer_Cli
-  ,tiOPFManager
-  ,tiUtils
-  ,tiDBConnectionPool
-  ,tiDataBuffer_BOM
-  ,tiQueryTXTAbs
-  ,tiConstants
- ;
-
+  tiUtils,
+  tiOPFManager,
+  tiDataBuffer_Cli,
+  tiXMLtoTIDataSet,
+  tiDBConnectionPool,
+  tiQueryTXTAbs,
+  tiConstants,
+  SysUtils;
 
 const
-  cTableNameSummary                 = 'summary';
-  cFieldSummaryDatabaseName         = 'databasename';
-  cFieldSummaryTimeOnServer         = 'timeonserver';
-  cFieldSummaryApplicationStartTime = 'applicationstarttime';
-  cFieldSummaryApplicationUpTime    = 'applicationuptime';
-  cFieldSummaryPersistenceLayerName = 'persistencelayername';
-  cFieldSummaryUserName             = 'username';
-  cFieldSummaryPassword             = 'password';
+  CTableNameSummary                 = 'System Summary';
+  CFieldSummaryTimeOnServer         = 'Time on Server';
+  CFieldSummaryApplicationStartTime = 'Application Start Time';
+  CFieldSummaryApplicationUpTime    = 'Application Up Time';
 
-  cFieldSummaryTotalDBConnections   = 'totaldbconnections';
-  cFieldSummaryLockedDBConnections  = 'lockeddbconnections';
-  cFieldSummaryAvailableDBConnections = 'availabledbconnections';
-  cFieldSummaryDBConnectionTimeOut    = 'dbconnectiontimeout';
+  CFieldSummaryDBConPoolMinPoolSize           = 'DB Connection Pool - Min pool size';
+  CFieldSummaryDBConPoolMaxPoolSize           = 'DB Connection Pool - Max pool size';
+  CFieldSummaryDBConPoolWaitTime              = 'DB Connection Pool - Wait for lock time (sec)';
+  CFieldSummaryDBConPoolTimeOut               = 'DB Connection Pool - Time out (sec)';
+  CFieldSummaryDBConPoolSweepInterval             = 'DB Connection Pool - Sweep interval (sec)';
+  CFieldSummaryStatefulDBConPoolTimeOut       = 'Stateful DB Connection Pool - Time out (sec)';
+  CFieldSummaryStatefulDBConPoolSweepInterval = 'Stateful DB Connection Pool - Sweep interval (sec)';
 
-  cFieldSummaryTotalStatefulDBConnections   = 'totalstatefuldbconnections';
-  cFieldSummaryInUseStatefulDBConnections   = 'inusestatefuldbConnections';
-  cFieldSummaryWaitingStatefulDBConnections = 'waitingstatefuldbconnections';
-  cFieldSummaryStatefulDBConnectionTimeOut  = 'statefuldbconnectionTimeOut';
+  CTableNameDBConnectionPool       = 'Database Connection Pool';
+  CFieldDBConPoolID                = 'Connection ID';
+  CFieldDBConPoolLocked            = 'Is Locked?';
+  CFieldDBConPoolSecInUse          = 'Age (sec)';
+  CFieldDBConPoolSecToTimeOut      = 'Time to live (sec)';
 
-  cTableNameDBConnectionPool       = 'dbconnectionpool';
-  cFieldDBConPoolID                = 'id';
-  cFieldDBConPoolLocked            = 'locked';
-  cFieldDBConPoolError             = 'error';
-  cFieldDBConPoolSecInUse          = 'secinuse';
-  cFieldDBConPoolSecToTimeOut      = 'sectotimeout';
+  CTableNameStateFulDBConPool         = 'Stateful Database Connection Pool';
+  CFieldStateFulDBConPoolComputerName = 'Computer Name';
+  CFieldStateFulDBConPoolUserName     = 'User Name';
+  CFieldStateFulDBConPoolTransID      = 'Transaction ID';
+  CFieldStateFulDBConPoolIsQueryExecuting       = 'Is Query Executing?';
+  CFieldStateFulDBConPoolSecInUse     = 'Time in Use (sec)';
+  CFieldStateFulDBConPoolSecToTimeOut = 'Time to Live (sec)';
 
-  cTableNameStateFulDBConPool         = 'statefuldbconpool';
-  cFieldStateFulDBConPoolComputerName = 'computername';
-  cFieldStateFulDBConPoolUserName     = 'username';
-  cFieldStateFulDBConPoolTransID      = 'transactionid';
-  cFieldStateFulDBConPoollInUse       = 'inuse';
-  cFieldStateFulDBConPoolSecInUse     = 'secinuse';
-  cFieldStateFulDBConPoolSecToTimeOut = 'sectotimeout';
+  CDefaultRefreshRate = 2;
 
   cScriptAutoRefresh =
     '<script>' + #13 +
@@ -116,178 +115,116 @@ const
 
 function TtiDBProxyServerStats.AsXML: string;
 begin
-  result := FDatabase.AsString;
+  result:= tiTIDataBufferListToXMLString(FDBList);
 end;
 
 constructor TtiDBProxyServerStats.create;
-var
-  lMDT : TtiDBMetaDataTable;
 begin
   inherited;
-  FTestRefreshRate := 10;
+  FTestRefreshRate := CDefaultRefreshRate;
 
-  FDatabase := TtiDatabaseXMLLight.Create;
-  FDatabase.PersistToFile := false;
+  FDBList:= TtiDataBufferList.Create;
 
-  lMDT := TtiDBMetaDataTable.Create;
-  try
-    lMDT.Name := cTableNameSummary;
-    lMDT.AddInstance(cFieldSummaryTimeOnServer,qfkDateTIme,0);
-    lMDT.AddInstance(cFieldSummaryApplicationStartTime,qfkDateTIme,0);
-    lMDT.AddInstance(cFieldSummaryApplicationUpTime,qfkString,0);
-    lMDT.AddInstance(cFieldSummaryPersistenceLayerName,qfkString,0);
-    lMDT.AddInstance(cFieldSummaryDatabaseName,qfkString,0);
-    lMDT.AddInstance(cFieldSummaryUserName,qfkString,0);
-    lMDT.AddInstance(cFieldSummaryPassword,qfkString,0);
-    lMDT.AddInstance(cFieldSummaryTotalDBConnections,qfkInteger,0);
-    lMDT.AddInstance(cFieldSummaryLockedDBConnections,qfkInteger,0);
-    lMDT.AddInstance(cFieldSummaryAvailableDBConnections,qfkInteger,0);
-    lMDT.AddInstance(cFieldSummaryDBConnectionTimeOut,qfkInteger,0);
-    lMDT.AddInstance(cFieldSummaryTotalStatefulDBConnections,qfkInteger,0);
-    lMDT.AddInstance(cFieldSummaryInUseStatefulDBConnections,qfkInteger,0);
-    lMDT.AddInstance(cFieldSummaryWaitingStatefulDBConnections,qfkInteger,0);
-    lMDT.AddInstance(cFieldSummaryStatefulDBConnectionTimeOut,qfkInteger,0);
-    FDatabase.CreateTable(lMDT);
-  finally
-    lMDT.Free;
-  end;
+  FDBSummary:= FDBList.AddInstance(CTableNameSummary);
+  FDBSummary.Fields.AddInstance(CFieldSummaryTimeOnServer,                   qfkDateTIme, 0);
+  FDBSummary.Fields.AddInstance(CFieldSummaryApplicationStartTime,           qfkDateTIme, 0);
+  FDBSummary.Fields.AddInstance(CFieldSummaryApplicationUpTime,              qfkString,   0);
+  FDBSummary.Fields.AddInstance(CFieldSummaryDBConPoolMinPoolSize,           qfkInteger,  0);
+  FDBSummary.Fields.AddInstance(CFieldSummaryDBConPoolMaxPoolSize,           qfkInteger,  0);
+  FDBSummary.Fields.AddInstance(CFieldSummaryDBConPoolWaitTime,              qfkInteger,  0);
+  FDBSummary.Fields.AddInstance(CFieldSummaryDBConPoolTimeOut,               qfkInteger,  0);
+  FDBSummary.Fields.AddInstance(CFieldSummaryDBConPoolSweepInterval,             qfkInteger,  0);
+  FDBSummary.Fields.AddInstance(CFieldSummaryStatefulDBConPoolTimeOut,       qfkInteger,  0);
+  FDBSummary.Fields.AddInstance(CFieldSummaryStatefulDBConPoolSweepInterval, qfkInteger,  0);
 
-  lMDT := TtiDBMetaDataTable.Create;
-  try
-    lMDT.Name := cTableNameDBConnectionPool;
-    lMDT.AddInstance(cFieldDBConPoolID,qfkInteger,0);
-    lMDT.AddInstance(cFieldDBConPoolLocked,qfkLogical,0);
-    lMDT.AddInstance(cFieldDBConPoolError,qfkLogical,0);
-    lMDT.AddInstance(cFieldDBConPoolSecInUse,qfkInteger,0);
-    lMDT.AddInstance(cFieldDBConPoolSecToTimeOut,qfkInteger,0);
-    FDatabase.CreateTable(lMDT);
-  finally
-    lMDT.Free;
-  end;
+  FDBConPool:= FDBList.AddInstance(CTableNameDBConnectionPool);
+  FDBConPool.Fields.AddInstance(CFieldDBConPoolID,           qfkInteger, 0);
+  FDBConPool.Fields.AddInstance(CFieldDBConPoolLocked,       qfkLogical, 0);
+  FDBConPool.Fields.AddInstance(CFieldDBConPoolSecInUse,     qfkInteger, 0);
+  FDBConPool.Fields.AddInstance(CFieldDBConPoolSecToTimeOut, qfkString,  0);
 
-  lMDT := TtiDBMetaDataTable.Create;
-  try
-    lMDT.Name := cTableNameStateFulDBConPool;
-    lMDT.AddInstance(cFieldStateFulDBConPoolComputerName, qfkString,0);
-    lMDT.AddInstance(cFieldStateFulDBConPoolUserName,     qfkString,0);
-    lMDT.AddInstance(cFieldStateFulDBConPoolTransID,      qfkString,0);
-    lMDT.AddInstance(cFieldStateFulDBConPoollInUse,       qfkLogical,0);
-    lMDT.AddInstance(cFieldStateFulDBConPoolSecInUse,     qfkInteger,0);
-    lMDT.AddInstance(cFieldStateFulDBConPoolSecToTimeOut, qfkInteger,0);
-    FDatabase.CreateTable(lMDT);
-  finally
-    lMDT.Free;
-  end;
+  FDBStatefulConPool:= FDBList.AddInstance(CTableNameStateFulDBConPool);
+  FDBStatefulConPool.Fields.AddInstance(CFieldStateFulDBConPoolComputerName, qfkString,  0);
+  FDBStatefulConPool.Fields.AddInstance(CFieldStateFulDBConPoolUserName,     qfkString,  0);
+  FDBStatefulConPool.Fields.AddInstance(CFieldStateFulDBConPoolTransID,      qfkString,  0);
+  FDBStatefulConPool.Fields.AddInstance(CFieldStateFulDBConPoolIsQueryExecuting,       qfkLogical, 0);
+  FDBStatefulConPool.Fields.AddInstance(CFieldStateFulDBConPoolSecInUse,     qfkInteger, 0);
+  FDBStatefulConPool.Fields.AddInstance(CFieldStateFulDBConPoolSecToTimeOut, qfkString, 0);
 
 end;
 
 destructor TtiDBProxyServerStats.destroy;
 begin
-  FDatabase.Free;
+  FDBList.Free;
   inherited;
 end;
 
 procedure TtiDBProxyServerStats.Execute;
 begin
-  FDatabase.DeleteRow(cTableNameSummary, nil);
   InsertSummary;
-  FDatabase.DeleteRow(cTableNameDBConnectionPool, nil);
   InsertDBConnectionPool;
-  FDatabase.DeleteRow(cTableNameStateFulDBConPool, nil);
   InsertStatefulDBConPool;
 end;
 
 procedure TtiDBProxyServerStats.InsertSummary;
 var
-  lTotalDBConnections            : integer;
-  lLockedDBConnections           : integer;
-  lAvailableDBConnections        : integer;
-  lTotalStatefulDBConnections    : integer;
-  lInUseStatefulDBConnections   : integer;
-  lWaitingStatefulDBConnections : integer;
-  FParams : TtiQueryParams;
+  LRow: TtiDataBufferRow;
 begin
-
-  lTotalDBConnections    := GTIOPFManager.DefaultDBConnectionPool.Count;
-  lLockedDBConnections   := GTIOPFManager.DefaultDBConnectionPool.CountLocked;
-  lAvailableDBConnections := lTotalDBConnections - lLockedDBConnections;
-
-  gStatefulDBConnectionPool.GetSummaryStats(
-    lTotalStatefulDBConnections,
-    lInUseStatefulDBConnections,
-    lWaitingStatefulDBConnections);
-
-  FParams := TtiQueryParams.Create;
-  try
-    FParams.SetValueAsDateTime(cFieldSummaryTimeOnServer, Now);
-    FParams.SetValueAsDateTime(cFieldSummaryApplicationStartTime, GTIOPFManager.ApplicationStartTime);
-    FParams.SetValueAsString( cFieldSummaryApplicationUpTime, GetApplicationUpTimeAsString);
-    FParams.SetValueAsString( cFieldSummaryPersistenceLayerName, GTIOPFManager.DefaultPersistenceLayerName);
-    FParams.SetValueAsString( cFieldSummaryDatabaseName, GTIOPFManager.DefaultDBConnectionName);
-    FParams.SetValueAsString( cFieldSummaryUserName, GTIOPFManager.DefaultDBConnectionPool.DBConnectParams.UserName);
-    FParams.SetValueAsString( cFieldSummaryPassword,  tiReplicate('*', Length(GTIOPFManager.DefaultDBConnectionPool.DBConnectParams.Password)));
-    FParams.SetValueAsInteger(cFieldSummaryTotalDBConnections, lTotalDBConnections);
-    FParams.SetValueAsInteger(cFieldSummaryLockedDBConnections, lLockedDBConnections);
-    FParams.SetValueAsInteger(cFieldSummaryAvailableDBConnections, lAvailableDBConnections);
-    FParams.SetValueAsInteger(cFieldSummaryDBConnectionTimeOut, GTIOPFManager.DefaultDBConnectionPool.WaitTime);
-
-    FParams.SetValueAsInteger(cFieldSummaryTotalStatefulDBConnections,   lTotalStatefulDBConnections);
-    FParams.SetValueAsInteger(cFieldSummaryInUseStatefulDBConnections,   lInUseStatefulDBConnections);
-    FParams.SetValueAsInteger(cFieldSummaryWaitingStatefulDBConnections, lWaitingStatefulDBConnections);
-    FParams.SetValueAsInteger(cFieldSummaryStatefulDBConnectionTimeOut,  (Trunc(gStatefulDBConnectionPool.TimeOut * 60)));
-
-    FDatabase.InsertRow(cTableNameSummary, FParams);
-
-  finally
-    FParams.Free;
-  end;
-
+  FDBSummary.ClearRows;
+  LRow:= FDBSummary.AddInstance;
+  LRow.FieldAsDateTime[CFieldSummaryTimeOnServer]:= Now;
+  LRow.FieldAsDateTime[CFieldSummaryApplicationStartTime]:=  GTIOPFManager.ApplicationStartTime;
+  LRow.FieldAsString[ CFieldSummaryApplicationUpTime]:=  GetApplicationUpTimeAsString;
+  LRow.FieldAsInteger[CFieldSummaryDBConPoolMinPoolSize]:= GTIOPFManager.DefaultDBConnectionPool.MinPoolSize;
+  LRow.FieldAsInteger[CFieldSummaryDBConPoolMaxPoolSize]:= GTIOPFManager.DefaultDBConnectionPool.MaxPoolSize;
+  LRow.FieldAsInteger[CFieldSummaryDBConPoolWaitTime]   := GTIOPFManager.DefaultDBConnectionPool.WaitTime;
+  LRow.FieldAsInteger[CFieldSummaryDBConPoolTimeOut]    := Trunc(GTIOPFManager.DefaultDBConnectionPool.TimeOut * 60);
+  LRow.FieldAsInteger[CFieldSummaryDBConPoolSweepInterval]  := GTIOPFManager.DefaultDBConnectionPool.SweepTime;
+  LRow.FieldAsInteger[CFieldSummaryStatefulDBConPoolTimeOut]:= Trunc(gStatefulDBConnectionPool.TimeOut * 60);
+  LRow.FieldAsInteger[CFieldSummaryStatefulDBConPoolSweepInterval]:= gStatefulDBConnectionPool.SweepInterval;
 end;
 
-procedure TtiDBProxyServerStats.ForEachDBConnectionPoolItem(const APooledItem : TtiPooledItem);
+procedure TtiDBProxyServerStats.ForEachDBConnectionPoolItem(const AItem : TtiPooledItem);
 var
-  FParams : TtiQueryParams;
-  lListCount: Integer;
+  LRow: TtiDataBufferRow;
 begin
-  Assert(APooledItem.TestValid(TtiPooledItem), CTIErrorInvalidObject);
-  lListCount:= APooledItem.Owner.Count;
-  FParams := TtiQueryParams.Create;
-  try
-    FParams.SetValueAsInteger(  cFieldDBConPoolSecInUse,      APooledItem.SecInUse);
-    FParams.SetValueAsBoolean(  cFieldDBConPoolLocked,        APooledItem.Locked);
-    FParams.SetValueAsBoolean(  cFieldDBConPoolError,         APooledItem.MustRemoveItemFromPool(lListCount));
-    FParams.SetValueAsInteger(  cFieldDBConPoolID,            APooledItem.Index);
-    FParams.SetValueAsInteger(  cFieldDBConPoolSecToTimeOut,  APooledItem.SecToTimeOut);
-    FDatabase.InsertRow(        cTableNameDBConnectionPool, FParams);
-  finally
-    FParams.Free;
-  end;
+  LRow:= FDBConPool.AddInstance;
+  LRow.FieldAsInteger[CFieldDBConPoolSecInUse]    := AItem.SecInUse;
+  LRow.FieldAsBoolean[CFieldDBConPoolLocked]      := AItem.Locked;
+  LRow.FieldAsInteger[CFieldDBConPoolID]          := AItem.Index;
+  LRow.FieldAsString[CFieldDBConPoolSecToTimeOut]:=
+    GetTimeToLiveText(
+      AItem.IsStaticConnection,
+      AItem.Locked,
+      AItem.MustRemoveItemFromPool,
+      AItem.SecToTimeOut);
 end;
 
 procedure TtiDBProxyServerStats.InsertDBConnectionPool;
 var
-  lPool : TtiDBConnectionPool;
+  LPool : TtiDBConnectionPool;
 begin
-  lPool := GTIOPFManager.DefaultDBConnectionPool;
-  lPool.ForEachPooledItem(ForEachDBConnectionPoolItem);
+  FDBConPool.ClearRows;
+  LPool := GTIOPFManager.DefaultDBConnectionPool;
+  LPool.ForEachPooledItem(ForEachDBConnectionPoolItem);
 end;
 
 procedure TtiDBProxyServerStats.ForEachStatefulDBConnectionItem(const AItem : TSavedDBConnectionHolder );
 var
-  FParams : TtiQueryParams;
+  LRow: TtiDataBufferRow;
 begin
-  FParams := TtiQueryParams.Create;
-  try
-    FParams.SetValueAsString(   cFieldStateFulDBConPoolUserName,  AItem.UserName);
-    FParams.SetValueAsString(   cFieldStateFulDBConPoolComputerName,  AItem.ComputerName);
-    FParams.SetValueAsInteger(  cFieldStateFulDBConPoolSecInUse, AItem.SecInUse);
-    FParams.SetValueAsBoolean(  cFieldStateFulDBConPoollInUse,   AItem.InUse);
-    FParams.SetValueAsString(   cFieldStateFulDBConPoolTransID,  AItem.TransactionID);
-    FParams.SetValueAsInteger(  cFieldStateFulDBConPoolSecToTimeOut,  AItem.SecToTimeOut);
-    FDatabase.InsertRow(        cTableNameStateFulDBConPool, FParams);
-  finally
-    FParams.Free;
-  end;
+  LRow:= FDBStatefulConPool.AddInstance;
+  LRow.FieldAsString[ CFieldStateFulDBConPoolUserName        ]:= AItem.UserName;
+  LRow.FieldAsString[ CFieldStateFulDBConPoolComputerName    ]:= AItem.ComputerName;
+  LRow.FieldAsInteger[CFieldStateFulDBConPoolSecInUse        ]:= AItem.SecInUse;
+  LRow.FieldAsBoolean[CFieldStateFulDBConPoolIsQueryExecuting]:= AItem.QueryIsExecuting;
+  LRow.FieldAsString[ CFieldStateFulDBConPoolTransID         ]:= AItem.TransactionID;
+  LRow.FieldAsString[CFieldStateFulDBConPoolSecToTimeOut     ]:=
+    GetTimeToLiveText(
+      False,
+      AItem.QueryIsExecuting,
+      AItem.MustRemoveItemFromPool,
+      AItem.SecToTimeOut);
 end;
 
 procedure TtiDBProxyServerStats.InsertStatefulDBConPool;
@@ -296,8 +233,6 @@ begin
 end;
 
 function TtiDBProxyServerStats.AsHTML: string;
-var
-  lDataSet : TtiDataBuffer;
 begin
   result :=
     '<html>' +
@@ -308,16 +243,14 @@ begin
     '<body>' +
     '<h2>' + GetStatsPageTitle +'</h2>';
 
-  lDataSet := FDatabase.FindDataSetByName(cTableNameStateFulDBConPool);
-  result := result + tiDataSetToHTML(lDataSet);
+  result := result + '<p>';
+  result := result + tiDataSetToHTMLV(FDBSummary);
 
   result := result + '<p>';
-  lDataSet := FDatabase.FindDataSetByName(cTableNameDBConnectionPool);
-  result := result + tiDataSetToHTML(lDataSet);
+  result := result + tiDataSetToHTML(FDBConPool);
 
   result := result + '<p>';
-  lDataSet := FDatabase.FindDataSetByName(cTableNameSummary);
-  result := result + tiDataSetToHTMLV(lDataSet);
+  result := result + tiDataSetToHTML(FDBStatefulConPool);
 
   result := result + '</body>' + '</html>';
 end;
@@ -325,14 +258,27 @@ end;
 procedure TtiDBProxyServerStats.SetTestRefreshRate(const AValue: integer);
 begin
   if AValue <= 1 then
-    FTestRefreshRate := 2
+    FTestRefreshRate := CDefaultRefreshRate
   else
     FTestRefreshRate := AValue;
 end;
 
 function TtiDBProxyServerStats.GetStatsPageTitle: string;
 begin
-  result := GTIOPFManager.DefaultDBConnectionName + ' Status';
+  result := tiApplicationName + ' Status';
+end;
+
+function TtiDBProxyServerStats.GetTimeToLiveText(const AStaticConnection,
+  ALocked, APendingRemoval: boolean; const ATimeToLive: integer): string;
+begin
+  if AStaticConnection then
+    result:= 'Forever'
+  else if ALocked then
+    result:= 'In Use'
+  else if APendingRemoval then
+    result:= 'Pending Removal'
+  else
+    result:= IntToStr(ATimeToLive);
 end;
 
 function TtiDBProxyServerStats.GetApplicationUpTimeAsString: string;

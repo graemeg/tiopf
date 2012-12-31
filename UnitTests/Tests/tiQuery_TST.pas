@@ -247,7 +247,7 @@ begin
        TestSetupData.DBName,
        TestSetupData.Username,
        TestSetupData.Password,
-       TestSetupData.Params,
+       TestSetupData.QueryParams,
        TestSetupData.PersistenceLayerName);
      try
        CheckEquals(TestSetupData.PersistenceLayerName, LM.DefaultPersistenceLayerName, 'PersistenceLayerName');
@@ -272,7 +272,7 @@ begin
       TestSetupData.DBName,
       TestSetupData.UserName,
       TestSetupData.Password,
-      TestSetupData.Params);
+      '', '');
     Check(LDatabase.Connected, 'Connect failed');
     LDatabase.Connected := false;
     Check(not LDatabase.Connected, 'Connected := false failed');
@@ -291,7 +291,7 @@ begin
     TestSetupData.DBName,
     TestSetupData.Username,
     TestSetupData.Password,
-    TestSetupData.Params);
+    TestSetupData.QueryParams);
   CheckEquals(1, PersistenceLayer.DBConnectionPools.Count);
   PersistenceLayer.DBConnectionPools.Disconnect(CAlias);
   CheckEquals(0, PersistenceLayer.DBConnectionPools.Count);
@@ -1056,7 +1056,7 @@ begin
     TestSetupData.DBName,
     TestSetupData.Username,
     TestSetupData.Password,
-    TestSetupData.Params);
+    TestSetupData.QueryParams);
   try
     lDBConnectionName := TestSetupData.DBName;
     for i := 1 to 1 do
@@ -1081,7 +1081,7 @@ begin
       TestSetupData.DBName,
       TestSetupData.Username,
       TestSetupData.Password,
-      TestSetupData.Params);
+      TestSetupData.QueryParams);
     try
       DoThreadedDBConnectionPool(PersistenceLayer.DefaultDBConnectionPool, CThreadCount)
     finally
@@ -2299,7 +2299,7 @@ begin
       TestSetupData.DBName,
       TestSetupData.Username,
       TestSetupData.Password,
-      TestSetupData.Params);
+      TestSetupData.QueryParams);
     try
       CheckNotNull(LPersistenceLayer.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
       CheckEquals(CDatabaseAlias, LPersistenceLayer.DefaultDBConnectionName, 'DefaultDBConnectionName');
