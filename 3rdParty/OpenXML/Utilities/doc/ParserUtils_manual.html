@@ -1,0 +1,1173 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>Parser Utilities Library</title>
+<style type="text/css">
+body {
+font-family : Arial, Helvetica, sans-serif;
+font-size : small;
+font-style : normal;
+font-weight : normal;
+}
+
+div.legalnotice {
+font-family : "Courier New", Courier, monospace;
+}
+
+h1 {
+font-weight : bold;
+font-size : xx-large;
+font-style : normal;
+}
+
+h2 {
+font-weight : bold;
+font-size : xx-large;
+font-style : italic;
+}
+
+h3 {
+font-weight : bold;
+font-size : x-large;
+font-style : normal;
+}
+
+h4 {
+font-weight : normal;
+font-size : x-large;
+font-style : italic;
+}
+
+h5 {
+font-weight : bold;
+font-size : large;
+font-style : italic;
+}
+
+h6 {
+font-weight : bold;
+font-size : medium;
+font-style : normal;
+}
+
+h7 {
+font-weight : bold;
+font-size : small;
+font-style : normal;
+}
+</style>
+</head>
+
+<body>
+<h1>Parser Utilities Library 3.0.4</h1>
+<h2>Delphi 4 to 2009 and Kylix 3 Implementation</h2>
+<h3>by Dieter K&ouml;hler</h3>
+<hr />
+<div class="legalnotice">
+
+<p>LICENSE</p>
+
+<p>The contents of this file are subject to the Mozilla Public License Version
+1.1 (the "License"); you may not use this file except in compliance with
+the License. You may obtain a copy of the License at
+"http://www.mozilla.org/MPL/"</p>
+
+<p>Software distributed under the License is distributed on an "AS IS" basis,
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+the specific language governing rights and limitations under the License.</p>
+
+<p>The Original Code is "dkParserUtils.pas".</p>
+
+<p>The Initial Developer of the Original Code is Dieter Köhler (Heidelberg,
+Germany, "http://www.philo.de/"). Portions created by the Initial Developer
+are Copyright (C) 2003-2009 Dieter Köhler. All Rights Reserved.</p>
+
+<p>Alternatively, the contents of this file may be used under the terms of the
+GNU General Public License Version 2 or later (the "GPL"), in which case the
+provisions of the GPL are applicable instead of those above. If you wish to
+allow use of your version of this file only under the terms of the GPL, and
+not to allow others to use your version of this file under the terms of the
+MPL, indicate your decision by deleting the provisions above and replace them
+with the notice and other provisions required by the GPL. If you do not delete
+the provisions above, a recipient may use your version of this file under the
+terms of any one of the MPL or the GPL.</p>
+</div>
+
+<hr />
+<h4>Acknowledgment</h4>
+
+<p>The TUtilsCustomInputStream and TUtilsCustomOutputStream classes are based on code written by Robert Marquardt.</p>
+
+<hr />
+
+<h4>Introduction</h4>
+
+<p>The Parser Utilities Library contains general classes for parsing a byte stream. The latest version of this software is available at &lt;<a href="http://www.philo.de/xml/">http://www.philo.de/xml/</a>&gt;.</p>
+
+<hr />
+
+<h4>Using the unit</h4>
+
+<p>The Tree Utilities Library does not contain any components to be registered. So using it from inside your own projects is very simple: Add "dkParserUtils" to the uses clause of your unit and make sure that the path to the location of the dkParserUtils.pas file is included in Delphi's list of library paths. To include it go to the Library section of Delphi's Environment Options dialog (see the menu item: "Tools/Environment Options ...").</p>
+
+<hr />
+
+
+<h4>Helper Functions for String Conversion</h4>
+
+<h6>function ConvertFromUTF16(const TargetEncoding: string;
+          const S: WideString): AnsiString;</h6>
+
+<p>Converts a UTF-16LE encoded WideString into an AnsiString of a given character encoding.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>TargetEncoding<br />The character encoding of the target string.<li>S<br />The source string to be converted.</li>
+</ul>
+
+<p>Return Value:</p>
+<ul>
+<li>The result of the conversion as an AnsiString.</li>
+</ul>
+
+<p>Exceptions</p>
+<ul>
+<li>EConvertError<br />Raised if no encoding had been specified or the specified encoding is not supported, or if the source string contains a character that cannot be converted into the specified target encoding.</li>
+</ul>
+
+
+<h6>function ConvertToUTF16(const SourceEncoding: string;
+          const S: AnsiString): WideString;</h6>
+
+<p>Converts a string of a given character encoding into a UTF-16LE WideString.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>SourceEncoding<br />The character encoding of the source string.<li>S<br />The source string to be converted.</li>
+</ul>
+
+<p>Return Value:</p>
+<ul>
+<li>The result of the conversion as a UTF-16LE encoded WideString.</li>
+</ul>
+
+<p>Exceptions</p>
+<ul>
+<li>EConvertError<br />Raised if no encoding had been specified or the specified encoding is not supported, or if the source string contains an illegal character.</li>
+</ul>
+
+
+<h6>function ConvertToUTF16(const SourceEncoding: string;
+          const Bytes: TBytes): WideString;</h6>
+
+<p>Delphi for .NET only.</p>
+
+<p>Converts a byte array of a given character encoding into a UTF-16LE WideString.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>SourceEncoding<br />The character encoding of the source string.<li>Bytes<br />The byte array to be converted.</li>
+</ul>
+
+<p>Return Value:</p>
+<ul>
+<li>The result of the conversion as a UTF-16LE encoded WideString.</li>
+</ul>
+
+<p>Exceptions</p>
+<ul>
+<li>EConvertError<br />Raised if no encoding had been specified or the specified encoding is not supported, or if the source byte array contains an illegal character.</li>
+</ul>
+
+
+<hr />
+
+
+<h4>Exceptions</h4>
+
+<ul>
+<li>EParserUtilsException = class(Exception);</li>
+</ul>
+
+<hr />
+
+<h4>Defined Resourcestrings</h4>
+
+<p>These strings are used for the error messages of exceptions.</p>
+
+<ul>
+<li>SByteOrderMarkMismatch = 'Specified input encoding does not match byte order mark.';</li>
+<li>SDefaultEncodingNotSpecified = 'Default Encoding not specified.';</li>
+<li>SEncodingNotSupported = 'Character encoding scheme not supported.';</li>
+<li>SInputEncodingNotSpecified = 'Input Encoding not specified.';</li>
+<li>SOutputEncodingNotSpecified = 'Output Encoding not specified.';</li>
+<li>SStreamNotSpecified   = 'Stream not specified.';</li>
+<li>SStreamPositionOutOfBounds = 'Stream position (%u) out of bounds (maximum: %u)';</li>
+</ul>
+
+<hr />
+
+<h4>Typed Constants</h4>
+
+<ul>
+<li>TUtilsLineBreakOpt = (lbCRLF, lbCR, lbLF, lbNone);<br />TUtilsLineBreakOpt is used to specify the kind of line break normalization for a TUtilsCustomTranscoder object.</li>
+</ul>
+
+<hr />
+
+<h4>TUtilsUCS4CharData = record</h4>
+
+<p>The TUtilsUCS4CharData is a record structure used to store location information of a single character in a Unicode input stream.  It is used by the TUtilsUCS4Reader class.</p>
+
+<h5>Record Fields</h5>
+
+<h6>ByteCount: Int64</h6>
+
+<p>The byte index of the last byte of the character in the context of the stream.</p>
+
+<h6>CharCount: Int64</h6>
+
+<p>The character index of the character in the context of the stream.</p>
+
+<h6>CharsInLine: Int64</h6>
+
+<p>The number of characters in the line before the character (including the character itself) in the context of the stream.</p>
+
+<h6>CodePoint: UCS4Char</h6>
+
+<p>The code point of the character.</p>
+
+<h6>Line: Int64</h6>
+
+<p>The line number of the character in the context of the stream.</p>
+
+<h6>Size: Cardinal</h6>
+
+<p>The number of bytes used to encode the character.</p>
+
+<h6>TabsInLine: Int64</h6>
+
+<p>The number of TAB characters (#$09) in the line before the character (including the character itself) in the context of the stream.</p>
+
+<hr />
+
+<h4>TUtilsCustomInputStream = class</h4>
+
+<p>Use TUtilsCustomInputStream as a base class when defining a class for buffered input of stream data. </p>
+
+
+<h5>Protected Properties</h5>
+
+<h6>BufSize: Integer (readonly)</h6>
+
+<p>Returns the size of the buffer as specified in the constructor.</p>
+
+<h6>InitialStreamPosition: Int64 (readonly)</h6>
+
+<p>The intial position of the associated stream when the constructor of this TUtilsCustomInputStream object was called.</p>
+
+<h6>Position: Int64</h6>
+
+<p>Position is used to track the InputStream's position within the associated stream relative to InitialStreamPosition. The value of Position will always be inside the most recent buffer block read. Thus, for reading, Position will always be less than the associated stream's Position.</p>
+
+
+<h5>Protected Methods</h5>
+
+<h6>function GetPosition: Int64; virtual;</h6>
+
+<p>This function is called by the Position property to get the InputStream's position, relative to InitialStreamPosition, within the associated stream.</p>
+
+<p>Return Value:</p>
+<ul>
+<li>The InputStream's position, relative to InitialStreamPosition, within the associated stream.</li>
+</ul>
+
+<h6>function Read(  var Buf;
+                  const Count: Longint): Boolean; virtual;</h6>
+
+<p>Attempts to read up to Count bytes from the associated stream into Buf.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Buf<br />The target buffer for the bytes to be read.</li>
+<li>Count<br />The number of bytes to be read.</li>
+</ul>
+
+<p>Return Value:</p>
+<ul>
+<li>Returns False if Count bytes cannot be read from the associated stream, otherwise True is returned.</li>
+</ul>
+
+<h6>procedure SetPosition(Value: Int64); virtual;</h6>
+
+<p>This procedure is called by the Position property to specify the InputStream's position, relative to InitialStreamPosition, within the associated stream.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Value<br />The InputStream's new position, relative to InitialStreamPosition, within the associated stream.</li>
+</ul>
+
+
+<h5>Public Methods</h5>
+
+<h6>constructor Create(const Stream: TStream;
+                       const BufSize: Integer);</h6>
+
+<p>Creates a new TUtilsCustomInputStream object.  Create allocates memory for a TUtilsCustomInputStream object, and associates it with the stream passed in the Stream parameter, with a buffer of size BufSize.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Stream<br />The associated stream.</li>
+<li>BufSize<br />The size of the buffer. The value should be a multiplicity of 1024.</li>
+</ul>
+
+<p>Exceptions:</p>
+<ul>
+<li>EParserUtilsException<br />Raised if no stream was specified.</li>
+</ul>
+
+<h6>destructor Destroy; override;</h6>
+
+<p>Destroys the TUtilsCustomInputStream instance and frees its memory. Do not call Destroy directly in an application. Call Free instead, which checks for a nil reference before calling Destroy.</p>
+
+<h6>procedure FlushBuffer; virtual;</h6>
+
+<p>FlushBuffer synchronizes the InputStream's buffer with the associated stream by setting the associated stream's Position to match the location to which the InputStream's Position points to.</p>
+
+<hr />
+
+<h4>TUtilsCustomOutputStream = class(TUtilsCustomInputStream)</h4>
+
+<p>Use TUtilsCustomOutputStream as a base class when defining a class for buffered output of stream data.</p>
+
+
+<h5>Protected Properties</h5>
+
+<h6>BufSize: Integer (readonly)</h6>
+
+<p>Returns the size of the buffer as specified in the constructor.</p>
+
+<h6>InitialStreamPosition: Int64  (readonly)</h6>
+
+<p>The intial position of the associated Stream when the constructor of this TUtilsCustomOutputStream object was called.</p>
+
+<h6>Position: Int64</h6>
+
+<p>Position is used to track the OutputStream's position within the associated stream relative to InitialStreamPosition. The value of Position will always be inside the most recent buffer block wrote. Thus, for writing, Position will always be greater than the associated stream's Position.</p>
+
+
+<h5>Protected Methods</h5>
+
+<h6>function GetPosition: Int64; virtual;</h6>
+
+<p>This function is called by the Position property to get the OutputStream's position, relative to InitialStreamPosition, within the associated stream.</p>
+
+<p>Return Value:</p>
+<ul>
+<li>The OutputStream's position, relative to InitialStreamPosition, within the associated stream.</li>
+</ul>
+
+<h6>procedure SetPosition(Value: Int64); virtual;</h6>
+
+<p>This procedure is called by the Position property to specify the OutputStream's position, relative to InitialStreamPosition, within the associated stream.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Value<br />The OutputStream's new position, relative to InitialStreamPosition, within the associated stream.</li>
+</ul>
+
+<h6>procedure Write(const Buf;
+                    const Count: Longint): Boolean; virtual;</h6>
+
+<p>Writes Count bytes from Buf to the associated stream.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Buf<br />The source buffer for the bytes to be written.</li>
+<li>Count<br />The number of bytes to be written.</li>
+</ul>
+
+<p>Exceptions:</p>
+<ul>
+<li>EWriteError<br />Raised if the associated stream fails to write all the specified bytes.</li>
+</ul>
+
+
+<h5>Public Methods</h5>
+
+<h6>constructor Create(const Stream: TStream;
+                       const BufSize: Integer);</h6>
+
+<p>Creates a new TUtilsCustomOutputStream object.  Create allocates memory for a TUtilsCustomOutputStream object, and associates it with the stream passed in the Stream parameter, with a buffer of size BufSize.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Stream<br />The associated stream.</li>
+<li>BufSize<br />The size of the buffer. The value should be a multiplicity of 1024.</li>
+</ul>
+
+<p>Exceptions:</p>
+<ul>
+<li>EParserUtilsException<br />Raised if no stream was specified.</li>
+</ul>
+
+<h6>destructor Destroy; override;</h6>
+
+<p>Destroys the TUtilsCustomOutputStream instance and frees its memory. Do not call Destroy directly in an application. Call Free instead, which checks for a nil reference before calling Destroy.</p>
+
+<p>Before the TUtilsCustomOutputStream instance is destroyed, all data in its buffer is written to the associated stream.</p>
+
+<h6>procedure FlushBuffer; virtual;</h6>
+
+<p>FlushBuffer synchronizes the OutputStream's buffer with the associated stream by setting the associated stream's Position to the location to which the OutputStream's Position points to.  All data in the OutputStream's buffer is written to the associated stream.</p>
+
+<hr />
+
+<h4>TUtilsCustomAutodetectInputStream = class(TUtilsCustomInputStream)</h4>
+
+<p>TUtilsCustomAutodetectInputStream is a TUtilsCustomInputStream descendant which can autodetect UCS-4, UTF-8 or UTF-16 encodings when initialized with a stream starting with a byte order mark (BOM).</p>
+
+<h5>Protected Properties</h5>
+
+<h6>ByteOrderMarkSize: Cardinal (readonly)</h6>
+
+<p>Returns the size of the Byte Order Mark of the input stream, or '0' if no byte order mark has been detected that fits to the autodetected encoding of the associated stream.</p>
+
+<h6>InitialStreamPosition: Int64 (readonly) (inherited from TUtilsCustomInputStream)</h6>
+
+<p>The intial position of the associated Stream when the constructor of this TUtilsCustomAutodetectInputStream object was called.</p>
+
+<h6>Position: Int64 (inherited from TUtilsCustomInputStream)</h6>
+
+<p>Position is used to track the writers's position within the stream relative to (InitialStreamPosition + ByteOrderMarkSize). The value of Position will always be inside the most recent buffer block wrote. Thus, for writing, Position will always be greater than the associated stream's Position.</p>
+
+
+<h5>Public Properties</h5>
+
+<h6>BufSize: Integer (readonly) (inherited from TUtilsCustomInputStream)</h6>
+
+<p>Returns the size of the buffer as specified in the constructor.</p>
+
+<h6>Codec: TUnicodeCodec (readonly)</h6>
+
+<p>Returns a codec corresponding to the autodetected encoding of the associated stream.</p>
+
+
+<h5>Protected Methods</h5>
+
+<h6>function GetPosition: Int64; override;</h6>
+
+<p>This function is called by the Position property to get the InputStream's position, relative to (InitialStreamPosition + ByteOrderMarkSize), within the associated stream.</p>
+
+<p>Return Value:</p>
+<ul>
+<li>The InputStream's position, relative to (InitialStreamPosition + ByteOrderMarkSize), within the associated stream.</li>
+</ul>
+
+<h6>function Read(  var Buf;
+                  const Count: Longint): Boolean; virtual; (inherited from TUtilsCustomInputStream)</h6>
+
+<p>Attempts to read up to Count bytes from the associated stream into Buf.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Buf<br />The target buffer for the bytes to be read.</li>
+<li>Count<br />The number of bytes to be read.</li>
+</ul>
+
+<p>Return Value:</p>
+<ul>
+<li>Returns False if Count bytes cannot be read from the associated stream, otherwise True is returned.</li>
+</ul>
+
+<h6>procedure SetPosition(Value: Int64); override;</h6>
+
+<p>This procedure is called by the Position property to specify the InputStream's position, relative to (InitialStreamPosition + ByteOrderMarkSize), within the associated stream.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Value<br />The InputStream's new position, relative to (InitialStreamPosition + ByteOrderMarkSize), within the associated stream.</li>
+</ul>
+
+
+<h5>Public Methods</h5>
+
+<h6>constructor Create(const Stream: TStream;
+                       const BufSize: Integer;
+                       const ExpectedEncoding,
+                             DefaultEncoding: string);</h6>
+
+<p>Constructs and initializes an instance of TUtilsCustomAutodetectInputStream with the specified Stream. If the specified Stream starts with a UCS-4, UTF-8 or UTF-16 byte order mark, the byte order mark is skipped.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Stream<br />The associated stream.</li>
+<li>BufSize<br />The size of the buffer. The value should be a multiplicity of 1024.</li>
+<li>ExpectedEncoding<br /> The character encoding for the associated stream if known, or an empty string if unkown.<br /> If no encoding had been specified, the effective codec is determined with the help of the associated stream's byte order mark according to the following table (The notation ## is used to denote any byte value except that two consecutive ##s cannot be both 00.):
+	<ul>
+	<li>TUCS4BECodec<br />The input stream has a UCS-4BE byte order mark ($00 $00 $FE $FF). The octet order is 1234.</li>
+	<li>TUCS4LECodec<br />The input stream has a UCS-4LE byte order mark ($FE $FF $00 $00). The octet order is 4321.</li>
+	<li>TUCS4_2143Codec<br />The input stream has a UCS-4 byte order mark with an unusal octet order ($00 $00 $FF $FE). The octet order is 2143.</li>
+	<li>TUCS4_3412Codec<br />The input stream has a UCS-4 byte order mark with an unusal octet order ($FF $FE $00 $00). The octet order is 3412.</li>
+	<li>TUTF16BECodec<br />The input stream has a UTF-16BE byte order mark ($FE $FF ## ##).</li>
+	<li>TUTF16LECodec<br />The input stream has a UTF-16LE byte order mark ($FF $FE ## ##).</li>
+	<li>TUTF8Codec<br />The input stream has a UTF-8 byte order mark ($EF $BB $BF).</li>
+	</ul>
+After creation the stream's position is set directly behind a byte order mark (if any was found that fits to the effective codec class).</li>
+<li>DefaultEncoding<br /> The character encoding for the associated stream if no byte order mark had been found and no expected encoding had been specified.</li>
+</ul>
+
+<p>Exceptions:</p>
+<ul>
+<li>EConvertError<br />Raised if the specified ExpectedEncoding is UTF-16BE but an UTF-16LE byte order mark had been detected, or if the specified ExpectedEncoding is UTF-16LE but an UTF-16BE byte order mark had been detected, or if no byte order mark had been found and no expected encoding and no default encoding had been specified.</li>
+</ul>
+
+<hr />
+
+<h4>TUtilsAutodetectInputStream = class(TUtilsCustomAutodetectInputStream)</h4>
+
+<p>TUtilsAutodetectInputStream is a TUtilsCustomAutodetectInputStream descendant which declares some of the protected properties of TUtilsCustomAutodetectInputStream as public.</p>
+
+<h5>Protected Properties</h5>
+
+<h6>ByteOrderMarkSize: Cardinal (readonly) (inherited from TUtilsCustomAutodetectInputStream)</h6>
+
+<p>Returns the size of the Byte Order Mark of the input stream, or '0' if no Byte Order Mark has been detected that fits to the autodetected encoding of the associated stream.</p>
+
+<h6>InitialStreamPosition: Int64 (readonly) (inherited from TUtilsCustomInputStream)</h6>
+
+<p>The intial position of the associated Stream when the constructor of this TUtilsAutodetectInputStream object was called.</p>
+
+<h5>Public Properties</h5>
+
+<h6>BufSize: Integer (readonly) (inherited from TUtilsCustomInputStream)</h6>
+
+<p>Returns the size of the buffer as specified in the constructor.</p>
+
+<h6>Codec: TUnicodeCodec (readonly) (inherited from TUtilsCustomAutodetectInputStream)</h6>
+
+<p>Returns a codec corresponding to the autodetected encoding of the associated stream.</p>
+
+<h6>HasByteOrderMark: Boolean (readonly)</h6>
+
+<p>Returns True if the input stream has a byte order mark that fits to the autodetected encoding, False otherwise.</p>
+
+<h6>Position: Int64 (inherited from TUtilsCustomInputStream)</h6>
+
+<p>Position is used to track the writers's position within the stream relative to (InitialStreamPosition + ByteOrderMarkSize). The value of Position will always be inside the most recent buffer block wrote. Thus, for writing, Position will always be greater than the associated stream's Position.</p>
+
+
+<h5>Protected Methods</h5>
+
+<h6>function GetHasByteOrderMark: Boolean; virtual;</h6>
+
+<p>This function is called by the HasByteOrderMark property to determine whether the input stream has a byte order mark that fits to the autodetected encoding.</p>
+
+<p>Return Value:</p>
+<ul>
+<li>True if the input stream has a byte order mark that fits to the autodetected encoding, False otherwise.</li>
+</ul>
+
+<h6>function GetPosition: Int64; override; (inherited from TUtilsCustomAutodetectInputStream)</h6>
+
+<p>This function is called by the Position property to get the InputStream's position, relative to (InitialStreamPosition + ByteOrderMarkSize), within the associated stream.</p>
+
+<p>Return Value:</p>
+<ul>
+<li>The InputStream's position, relative to (InitialStreamPosition + ByteOrderMarkSize), within the associated stream.</li>
+</ul>
+
+<h6>function Read(  var Buf;
+                  const Count: Longint): Boolean; virtual; (inherited from TUtilsCustomInputStream)</h6>
+
+<p>Attempts to read up to Count bytes from the associated stream into Buf.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Buf<br />The target buffer for the bytes to be read.</li>
+<li>Count<br />The number of bytes to be read.</li>
+</ul>
+
+<p>Return Value:</p>
+<ul>
+<li>Returns False if Count bytes cannot be read from the associated stream, otherwise True is returned.</li>
+</ul>
+
+<h6>procedure SetPosition(Value: Int64); override; (inherited from TUtilsCustomAutodetectInputStream)</h6>
+
+<p>This procedure is called by the Position property to specify the InputStream's position, relative to (InitialStreamPosition + ByteOrderMarkSize), within the associated stream.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Value<br />The InputStream's new position, relative to (InitialStreamPosition + ByteOrderMarkSize), within the associated stream.</li>
+</ul>
+
+
+<h5>Public Methods</h5>
+
+<h6>constructor Create(const Stream: TStream;
+                       const BufSize: Integer;
+                       const ExpectedEncoding,
+                             DefaultEncoding: string);</h6>
+
+<p>Constructs and initializes an instance of TUtilsAutodetectInputStream with the specified Stream. If the specified Stream starts with a UCS-4, UTF-8 or UTF-16 byte order mark, the byte order mark is skipped.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Stream<br />The associated stream.</li>
+<li>BufSize<br />The size of the buffer. The value should be a multiplicity of 1024.</li>
+<li>ExpectedEncoding<br /> The character encoding for the associated stream if known, or an empty string if unkown.<br /> If no encoding had been specified, the effective codec is determined with the help of the associated stream's byte order mark according to the following table (The notation ## is used to denote any byte value except that two consecutive ##s cannot be both 00.):
+	<ul>
+	<li>TUCS4BECodec<br />The input stream has a UCS-4BE byte order mark ($00 $00 $FE $FF). The octet order is 1234.</li>
+	<li>TUCS4LECodec<br />The input stream has a UCS-4LE byte order mark ($FE $FF $00 $00). The octet order is 4321.</li>
+	<li>TUCS4_2143Codec<br />The input stream has a UCS-4 byte order mark with an unusal octet order ($00 $00 $FF $FE). The octet order is 2143.</li>
+	<li>TUCS4_3412Codec<br />The input stream has a UCS-4 byte order mark with an unusal octet order ($FF $FE $00 $00). The octet order is 3412.</li>
+	<li>TUTF16BECodec<br />The input stream has a UTF-16BE byte order mark ($FE $FF ## ##).</li>
+	<li>TUTF16LECodec<br />The input stream has a UTF-16LE byte order mark ($FF $FE ## ##).</li>
+	<li>TUTF8Codec<br />The input stream has a UTF-8 byte order mark ($EF $BB $BF).</li>
+	</ul>
+After creation the stream's position is set directly behind a byte order mark (if any was found that fits to the effective codec class).</li>
+<li>DefaultEncoding<br /> The character encoding for the associated stream if no byte order mark had been found and no expected encoding had been specified.</li>
+</ul>
+
+<p>Exceptions:</p>
+<ul>
+<li>EConvertError<br />Raised if the specified ExpectedEncoding is UTF-16BE but an UTF-16LE byte order mark had been detected, or if the specified ExpectedEncoding is UTF-16LE but an UTF-16BE byte order mark had been detected, or if no byte order mark had been found and no expected encoding and no default encoding had been specified.</li>
+</ul>
+
+<hr />
+
+
+<h4>TUtilsUCS4Reader = class</h4>
+
+<p>TUtilsUCS4Reader encapsulates information about a character stream input source in a single object.</p>
+
+
+<h5>Protected Properties</h5>
+
+<h6>Codec: TUnicodeCodec (readonly)</h6>
+
+<p>Returns a codec of the character encoding scheme of the input stream. The codec type was specified in the contructor or autodetected with the help of the input stream's byte order mark, if any, or set to the default TUTF8Codec class, if neither a codec class had been specified or a byte order mark been found.</p>
+
+<h6>DefaultEncoding: string (readonly)</h6>
+
+<p>Returns the character encoding used by default if no encoding was specified in the constructor and no byte order mark was found. The default encoding for TUtilsUCS4Reader objects is UTF-8. Derived classes may override the protected GetDefaultEncoding function to return a different encoding as default.</p>
+
+<h6>InternalInputStream: TUtilsAutodetectInputStream (readonly)</h6>
+
+<p>The internal TUtilsAutodetectInputStream object used to access the associated stream.</p>
+
+<h6>InitialUCS4CharData: TUtilsUCS4CharData</h6>
+
+<p>InitialUCS4CharData specifies the values used to initialize the character location information. Derived classes may change it to provide offset values.</p>
+
+<h6>Position: Int64 (readonly)</h6>
+
+<p>The internal TCustomInputStream instance's position within the stream.</p>
+
+<h6>ReadLFOption: TCodecReadLFOption (default lrNormalize)</h6>
+
+<p>If 'lrNormalize' (the default), line breaks are adjusted to Linux-style breaks with a single linefeed character, i.e. a sequence of CARRIAGE RETURN ($0D) + LINE FEED ($0A) or a single CARRIAGE RETURN is normalized to a single LINE FEED ($0A). If 'lrPass' no normalization is taking place.</p>
+
+<h6>ResetPosition: Int64</h6>
+
+<p>The reset position for the internal InputStream object.</p>
+
+
+<h5>Public Properties</h5>
+
+<h6>Bof: Boolean (readonly)</h6>
+
+<p>'True' if the input source is at its start position, i.e. the value of the current code point is $98 (START OF STRING); 'False' otherwise.</p>
+
+<h6>BufSize: Integer (readonly)</h6>
+
+<p>Returns the size of the buffer as specified in the constructor.</p>
+
+<h6>CurrentCharInfo: TUtilsUCS4CharData (readonly)</h6>
+
+<p>Returns a record structure that contains the Unicode codepoint and location information of the current character.</p>
+
+<h6>Eof: Boolean (readonly)</h6>
+
+<p>'True' if the end of the input stream was reached, i.e. the value of the code point of the current character is $9C (STRING TERMINATOR); 'False' otherwise.</p>
+
+<h6>HasByteOrderMark: Boolean (readonly)</h6>
+
+<p>Returns True if the stream has a byte order mark that fits to the character encoding scheme, False otherwise.</p>
+
+<h6>NextCharInfo: TUtilsUCS4CharData (readonly)</h6>
+
+<p>Returns a record structure that contains the Unicode codepoint and location information of the next character.</p>
+
+<h6>PreviousCharInfo: TUtilsUCS4CharData (readonly)</h6>
+
+<p>Returns a record structure that contains the Unicode codepoint and location information of the previous character.</p>
+
+
+<h5>Public Methods</h5>
+
+<h6>constructor Create(const Stream: TStream; const ABufSize: Integer;
+      const AEncoding: string; const InitialByteCount,
+      InitialCharCount, InitialCharsInLine, InitialTabsInLine,
+      InitialLine: Int64);</h6>
+
+<p>Constructs and initializes an instance of TUtilsInputSource with the specified Stream.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Stream<br />The TStream object which gives access to the source to be processed.</li>
+<li>ABufSize<br />The size of the buffer. The value should be a multiplicity of 1024.</li>
+<li>AEncoding<br />The encoding for the stream if known, or an empty string if unkown. If no encoding had been specified, the effective encoding is determined with the help of the input stream's byte order mark or set to the default UTF-8 encoding, if no byte order mark was found.</li>
+<li>InitialByteCount<br />The initial value to calculate the ByteCount field of the ...CharInfo properties. For a stream with no offset this value is '0'.</li>
+<li>InitialCharCount<br />The initial value to calculate the CharCount field of the ...CharInfo properties. For a stream with no offset this value is '0'.</li>
+<li>InitialCharsInLine<br />The initial value to calculate the CharsInLine field of the ...CharInfo properties. For a stream with no offset this value is '0'.</li>
+<li>InitialTabsInLine<br />The initial value to calculate the TabsInLine field of the ...CharInfo properties. For a stream with no offset this value is '0'.</li>
+<li>InitialLine<br />The initial value to calculate the Line field of the ...CharInfo properties. For a stream with no offset this value is '1'.</li>
+</ul>
+
+<p>Exceptions:</p>
+
+<ul>
+<li>EConvertError<br />Raised if the specified ACodecClass is TUCS2Codec or TUTF16BECodec but an UTF-16LE byte order mark had been detected or if the specified ACodecClass is TUTF16LECodec but an UTF-16BE byte order mark had been detected, or raised if the source stream's first character (if any) cannot be converted from the specified encoding to a UCS-4 code point.</li>
+</ul>
+
+<h6>function Match(Ucs2Str: WideString): Boolean; virtual;</h6>
+
+<p>Advances the current code point as far as the following content of the input stream matches the specified WideString. After calling Match, if the specified WideString completely matched the following content of the input stream, the position of the current code point is that of the last matched character. If the following content of the input stream did not completely match the specified WideString, the position of the current code point after calling Match is that of the first mismatched character.</p>
+
+<p>Hint: If the input stream contains a character of code point $9C (STRING TERMINATOR) the TUtilsInputSource object cannot advance the current character beyond this character. The Match function may nevertheless test for STRING TERMINATOR which must appear at the end of the specified wideString in order to get a chance for a positive result.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Ucs2Str<br />A UCS-2 encoded WideString to be matched.</li>
+</ul>
+
+<p>Return Value:</p>
+<ul>
+<li>'True' if the specified wideString completely matched the following content of the input stream, 'False' otherwise.</li>
+</ul>
+
+<p>Exceptions:</p>
+<ul>
+<li>EConvertError<br />Raised if the next character(s) of the source stream cannot be converted (according to the current character encoding scheme) to a UCS-4 code point.</li>
+</ul>
+
+<h6>procedure Next; virtual;</h6>
+
+<p>Advances the current character to the next character (if any) of the input stream. If the code point of the current character is $9C (STRING TERMINATOR) calling Next has no effect. If the end of the input stream is reached the code point of the current character is set to $9C (STRING TERMINATOR).</p>
+
+<p>Hint: If the input stream contains a character of code point $9C (STRING TERMINATOR) the TUtilsInputSource object cannot advance the current character beyond this character. Note also that if the value of the current character is $9C the code point returned by the NextChar property is always $9C no matter whether the end of the input stream was reached or not.</p>
+
+<p>Exceptions:</p>
+<ul>
+<li>EConvertError<br />Raised if the next character of the source stream cannot be converted (according to the current character encoding scheme) to a UCS-4 code point.</li>
+</ul>
+
+<h6>procedure Reset; virtual;</h6>
+
+<p>Resets the input source to its initial position and state.</p>
+
+<p>Exceptions:</p>
+
+<ul>
+<li>EConvertError<br />Raised if the source stream's first character (if any) cannot be converted from the specified encoding to a UCS-4 code point.</li>
+</ul>
+
+<h6>function SkipNext(Ucs2Str: WideString): Integer; virtual;</h6>
+
+<p>Advances the current character to the next character (if any) of the input stream while skipping any UCS-2 character contained in Ucs2Str. If the code point of the current character is $9C (STRING TERMINATOR) calling SkipNext has no effect. If the end of the input stream is reached the code point of the current character is set to $9C (STRING TERMINATOR).</p>
+
+<p>Hint: If the input stream contains a character of code point $9C (STRING TERMINATOR) the TUtilsInputSource object cannot advance the current character beyond this character. Including $9C in the Ucs2Str parameter has no effect. Note also that if the value of the current character is $9C the code point returned by the NextChar property is always $9C no matter whether the end of the input stream was reached or not.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Ucs2Str<br />A UCS-2 encoded WideString containing all the characters to be skipped. Repeating a character should be avoided if performance is important. Including STRING TERMINATOR ($9C) in the list of characters to be skipped has no effect, i.e. STRING TERMINATOR appearing in the input stream always terminates SkipNext.</li>
+</ul>
+
+<p>Return Value:</p>
+<ul>
+<li>The number of characters skipped.</li>
+</ul>
+
+<p>Exceptions:</p>
+<ul>
+<li>EConvertError<br />Raised if the next character of the source stream cannot be converted (according to the current character encoding scheme) to a UCS-4 code point.</li>
+</ul>
+
+<hr />
+
+<h4>TUtilsCustomTranscoder = class</h4>
+
+<p>Use TUtilsCustomTranscoder is the abstract base class for transcoder classes.  It provides basic methods to transcode a sequence of characters from one encoding to another.  Do not use instances of TUtilsCustomTranscoder directly in your application. Instead use one of the classes derived from TUtilsCustomTranscoder.</p>
+
+
+<h5>Protected Properties</h5>
+
+<h6>Busy: Boolean (readonly)</h6>
+
+<p>Returns 'True' during a transcoding session, otherwise 'False'.</p>
+
+<h6>InputCodec: TUnicodeCodec (readonly)</h6>
+
+<p>Returns the codec class corresponding to the character encoding scheme of the input events.</p>
+
+<h6>InputEncoding: string</h6>
+
+<p>The name of the character encoding scheme for the input characters.</p>
+
+<p>Exceptions on setting:</p>
+<ul>
+<li>EParserUtilsException<br />Raised if the specified encoding is not supported.</li>
+</ul>
+
+<h6>LineBreakOpt: TUtilsLineBreakOpt</h6>
+
+<p>Defines how line breaks are normalized. Line breaks are either a single LINE FEED ($0A), a single CARRIAGE RETURN ($0D) or a sequence of CARRIAGE RETURN + LINE FEED.  If LineBreakOpt is 'lbCRLF' they are normalized into a sequence of CARRIAGE RETURN + LINE FEED; if LineBreakOpt is 'lbCR' they are normalized into a single CARRIAGE RETURN; if LineBreakOpt is 'lbLF' they are normalized into a single LINE FEED; if LineBreakOpt is 'lbNone' no normalization takes place.</p>
+
+<p>Attention: Attempts to change LineBreakOpt during a transcoding session are ignored.</p>
+
+<h6>OutputCodec: TUnicodeCodec (readonly)</h6>
+
+<p>Returns the codec class corresponding to the character encoding scheme of the output events.</p>
+
+<h6>OutputEncoding: string</h6>
+
+<p>The name of the character encoding scheme for the output characters.</p>
+
+<p>Exceptions on setting:</p>
+<ul>
+<li>EParserUtilsException<br />Raised if the specified encoding is not supported.</li>
+</ul>
+
+
+<h5>Protected Events</h5>
+
+<h6>OnProgress: TNotifyEvent</h6>
+
+<p>TNotifyEvent = procedure(Sender: TObject) of object;</p>
+
+<p>Triggert during a transcoding session after each individual character transcoding.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Sender: TObject<br />The object whose event handler is called.</li>
+</ul>
+
+
+<h5>Protected Methods</h5>
+
+<h6>procedure CodecReadEventHandler(    Sender: TObject;
+                                    var Buf;
+                                        Count: Longint;
+                                    var Ok: Boolean); virtual;</h6>
+
+<p>The event handler for the OnRead event of an internal TUnicodeCodec object. This codec object requests byte values to be transcoded during a transcoding session, similar to the Delphi VCL TStream.read function. By default the CodecReadEventHandler procedure returns 'False' in the Ok parameter and does not write input byte values to the Buf parameter. Derived classes should override this procedure to provide input byte values.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Sender: TObject<br />The object whose event handler is called.</li>
+<li>var Buf<br />The buffer for the next input byte values.</li>
+<li>Count: Longint<br />The number of input byte values requested.</li>
+<li>var Ok: Boolean<br />Indicates whether the request was successfully answered (True) or not (False).</li>
+</ul>
+
+<h6>procedure CodecWriteEventHandler(      Sender: TObject;
+                                     const Buf;
+                                           Count: Longint); virtual;</h6>
+
+<p>The event handler for the OnWrite event of an internal TUnicodeCodec object. This codec object sends byte values of transcoded characters during a transcoding session, similar to the Delphi VCL TStream.write function. By default the CodecWriteEventHandler procedure does nothing. Derived classes should override this procedure to process output byte values.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Sender: TObject<br />The object whose event handler is called.</li>
+<li>const Buf<br />The buffer for the output byte values.</li>
+<li>Count: Longint<br />The number of output byte values.</li>
+</ul>
+
+<h6>procedure DoProgress; virtual;</h6>
+
+<p>DoProgress triggers an OnProgress event.</p>
+
+
+<h5>Public Methods</h5>
+
+<h6>constructor Create;</h6>
+
+<p>Creates a new instance of the TUtilsCustomTranscoder class.</p>
+
+<h6>destructor Destroy; override;</h6>
+
+<p>Destroys the TUtilsCustomTranscoder instance and frees its memory. Do not call Destroy directly in an application. Call Free instead, which checks for a nil reference before calling Destroy.</p>
+
+<h6>procedure Transcode; virtual;</h6>
+
+<p>Performs a transcoding session. Line breaks are normalized according to the value of the LineBreakOpt property. During a transcoding session the TUtilsCustomTranscoder object requests input bytes through its protected CodecReadEventHandler procedure and provides output bytes through its protected CodecWriteEventHandler procedure. After each individual character transcoding an OnProgress event is triggert.</p>
+
+<p>Derived classes should override the CodecReadEventHandler and CodecWriteEventHandler procedures to provide input byte values and to process output byte values.</p>
+
+<p>A transcoding session terminates, if an OnRead event either returns 'False' in its 'Ok' parameter or returns a byte (or byte sequence) representing the equivalent of the Unicode character STRING TERMINATOR (Unicode code point: $9C). To abort a transcoding session raise an EConvert exception in the OnProgress event (which is then further propagated trough the Transcode procedure).</p>
+
+<p>Exceptions:</p>
+<ul>
+<li>EParserUtilsException<br />Raised if no input encoding or no output encoding was specified.</li>
+<li>EConvertError<br />Raised during a transcoding session if a input byte (or byte sequence) cannot be converted into the specified output encoding.</li>
+</ul>
+
+<hr />
+
+<h4>TUtilsStandardTranscoder = class(TUtilsCustomTranscoder)</h4>
+
+<p>TUtilsStandardTranscoder is used to transcode a sequence of characters from one encoding to another by using OnRead and OnWrite events to request input code and provide output code.</p>
+
+
+<h5>Public Properties</h5>
+
+<h6>Busy: Boolean (readonly) (inherited from TUtilsCustomTranscoder)</h6>
+
+<p>Returns 'True' during a transcoding session, otherwise 'False'.</p>
+
+<h6>InputEncoding: string (inherited from TUtilsCustomTranscoder)</h6>
+
+<p>The name of the character encoding scheme for the input characters.</p>
+
+<p>Exceptions on setting:</p>
+<ul>
+<li>EParserUtilsException<br />Raised if the specified encoding is not supported.</li>
+</ul>
+
+<h6>LineBreakOpt: TUtilsLineBreakOpt (inherited from TUtilsCustomTranscoder)</h6>
+
+<p>Defines how line breaks are normalized. Line breaks are either a single LINE FEED ($0A), a single CARRIAGE RETURN ($0D) or a sequence of CARRIAGE RETURN + LINE FEED.  If LineBreakOpt is 'lbCRLF' they are normalized into a sequence of CARRIAGE RETURN + LINE FEED; if LineBreakOpt is 'lbCR' they are normalized into a single CARRIAGE RETURN; if LineBreakOpt is 'lbLF' they are normalized into a single LINE FEED; if LineBreakOpt is 'lbNone' no normalization takes place.</p>
+
+<p>Attention: Attempts to change LineBreakOpt during a transcoding session are ignored.</p>
+
+<h6>OutputEncoding: string</h6>
+
+<p>The name of the character encoding scheme for the output characters.</p>
+
+<p>Exceptions on setting:</p>
+<ul>
+<li>EParserUtilsException<br />Raised if the specified encoding is not supported.</li>
+</ul>
+
+
+<h5>Public Events</h5>
+
+<h6>OnProgress: TNotifyEvent (inherited from TUtilsCustomTranscoder)</h6>
+
+<p>TNotifyEvent = procedure(Sender: TObject) of object;</p>
+
+<p>Triggert during a transcoding session after each individual character transcoding.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Sender: TObject<br />The object whose event handler is called.</li>
+</ul>
+
+<h6>OnRead: TCodecReadEvent</h6>
+
+<p>TCodecReadEvent = procedure(Sender: TObject; var Buf; Count: Longint;
+                              var Ok: Boolean) of object;</p>
+
+<p>Requests byte values to be transcoded during a transcoding session, similar to the Delphi VCL TStream.read function.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Sender: TObject<br />The object whose event handler is called.</li>
+<li>var Buf<br />The buffer for the next input byte values.</li>
+<li>Count: Longint<br />The number of input byte values requested.</li>
+<li>var Ok: Boolean<br />Indicates whether the request was successfully answered (True) or not (False).</li>
+</ul>
+
+<h6>OnWrite: TCodecWriteEvent</h6>
+
+<p>TCodecWriteEvent = procedure(Sender: TObject; const Buf; Count: Longint)
+                              of object;</p>
+
+<p>Sends byte values of transcoded characters during a transcoding session, similar to the Delphi VCL TStream.write function.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Sender: TObject<br />The object whose event handler is called.</li>
+<li>const Buf<br />The buffer for the output byte values.</li>
+<li>Count: Longint<br />The number of output byte values.</li>
+</ul>
+
+
+<h5>Protected Methods</h5>
+
+<h6>procedure CodecReadEventHandler(    Sender: TObject;
+                                    var Buf;
+                                        Count: Longint;
+                                    var Ok: Boolean); virtual;</h6>
+
+<p>The event handler for the OnRead event of an internal TUnicodeCodec object. This codec object requests byte values to be transcoded during a transcoding session, similar to the Delphi VCL TStream.read function. The CodecReadEventHandler procedure triggers an OnRead event to request the required input bytes. If no OnRead event handler was specified it returns 'False' in its Ok parameter.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Sender: TObject<br />The object whose event handler is called.</li>
+<li>var Buf<br />The buffer for the next input byte values.</li>
+<li>Count: Longint<br />The number of input byte values requested.</li>
+<li>var Ok: Boolean<br />Indicates whether the request was successfully answered (True) or not (False).</li>
+</ul>
+
+<h6>procedure CodecWriteEventHandler(      Sender: TObject;
+                                     const Buf;
+                                           Count: Longint); virtual;</h6>
+
+<p>The event handler for the OnWrite event of an internal TUnicodeCodec object. This codec object sends byte values of transcoded characters during a transcoding session, similar to the Delphi VCL TStream.write function. The CodecWriteEventHandler procedure triggers an OnWrite event to send the transcoded characters.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Sender: TObject<br />The object whose event handler is called.</li>
+<li>const Buf<br />The buffer for the output byte values.</li>
+<li>Count: Longint<br />The number of output byte values.</li>
+</ul>
+
+<h6>procedure DoProgress; virtual; (inherited from TUtilsCustomTranscoder)</h6>
+
+<p>DoProgress triggers an OnProgress event.</p>
+
+
+<h5>Public Methods</h5>
+
+<h6>constructor Create; (inherited from TUtilsCustomTranscoder)</h6>
+
+<p>Creates a new instance of the TUtilsStandardTranscoder class.</p>
+
+<h6>destructor Destroy; override; (inherited from TUtilsCustomTranscoder)</h6>
+
+<p>Destroys the TUtilsStandardTranscoder instance and frees its memory. Do not call Destroy directly in an application. Call Free instead, which checks for a nil reference before calling Destroy.</p>
+
+<h6>procedure Transcode; virtual; (inherited from TUtilsCustomTranscoder)</h6>
+
+<p>Performs a transcoding session. Line breaks are normalized according to the value of the LineBreakOpt property. During a transcoding session the TUtilsStandardTranscoder object requests input bytes through its OnRead event and provides output bytes through its OnWrite event. After each individual character transcoding an OnProgress event is triggert.</p>
+
+<p>A transcoding session terminates, if an OnRead event either returns 'False' in its 'Ok' parameter or returns a byte (or byte sequence) representing the equivalent of the Unicode character STRING TERMINATOR (Unicode code point: $9C). To abort a transcoding session raise an EConvert exception in the OnProgress event (which is then further propagated trough the Transcode procedure).</p>
+
+<p>Exceptions:</p>
+<ul>
+<li>EParserUtilsException<br />Raised if no input encoding or no output encoding was specified.</li>
+<li>EConvertError<br />Raised during a transcoding session if a input byte (or byte sequence) cannot be converted into the specified output encoding.</li>
+</ul>
+
+<hr />
+
+<h4>TUtilsStreamTranscoder = class(TUtilsCustomTranscoder)</h4>
+
+<p>Use TUtilsStandardTranscoder to transcode a sequence of characters from one encoding to another by using an input and an output stream.  Reading from and writing to the streams is buffered.</p>
+
+<h5>Public Properties</h5>
+
+<h6>Busy: Boolean (readonly) (inherited from TUtilsCustomTranscoder)</h6>
+
+<p>Returns 'True' during a transcoding session, otherwise 'False'.</p>
+
+<h6>InputEncoding: string (inherited from TUtilsCustomTranscoder)</h6>
+
+<p>The name of the character encoding scheme for the input characters.</p>
+
+<p>Exceptions on setting:</p>
+<ul>
+<li>EParserUtilsException<br />Raised if the specified encoding is not supported.</li>
+</ul>
+
+<h6>LineBreakOpt: TUtilsLineBreakOpt (inherited from TUtilsCustomTranscoder)</h6>
+
+<p>Defines how line breaks are normalized. Line breaks are either a single LINE FEED ($0A), a single CARRIAGE RETURN ($0D) or a sequence of CARRIAGE RETURN + LINE FEED.  If LineBreakOpt is 'lbCRLF' they are normalized into a sequence of CARRIAGE RETURN + LINE FEED; if LineBreakOpt is 'lbCR' they are normalized into a single CARRIAGE RETURN; if LineBreakOpt is 'lbLF' they are normalized into a single LINE FEED; if LineBreakOpt is 'lbNone' no normalization takes place.</p>
+
+<p>Attention: Attempts to change LineBreakOpt during a transcoding session are ignored.</p>
+
+<h6>OutputEncoding: string</h6>
+
+<p>The name of the character encoding scheme for the output characters.</p>
+
+<p>Exceptions on setting:</p>
+<ul>
+<li>EParserUtilsException<br />Raised if the specified encoding is not supported.</li>
+</ul>
+
+
+<h5>Public Events</h5>
+
+<h6>OnProgress: TNotifyEvent (inherited from TUtilsCustomTranscoder)</h6>
+
+<p>TNotifyEvent = procedure(Sender: TObject) of object;</p>
+
+<p>Triggert during a transcoding session after each individual character transcoding.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Sender: TObject<br />The object whose event handler is called.</li>
+</ul>
+
+<h5>Protected Methods</h5>
+
+<h6>procedure CodecReadEventHandler(    Sender: TObject;
+                                    var Buf;
+                                        Count: Longint;
+                                    var Ok: Boolean); virtual;</h6>
+
+<p>The event handler for the OnRead event of an internal TUnicodeCodec object. This codec object requests byte values to be transcoded during a transcoding session, similar to the Delphi VCL TStream.read function. The CodecReadEventHandler procedure reads the requested number of bytes from the associated input stream.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Sender: TObject<br />The object whose event handler is called.</li>
+<li>var Buf<br />The buffer for the next input byte values.</li>
+<li>Count: Longint<br />The number of input byte values requested.</li>
+<li>var Ok: Boolean<br />Indicates whether the request was successfully answered (True) or not (False).</li>
+</ul>
+
+<h6>procedure CodecWriteEventHandler(      Sender: TObject;
+                                     const Buf;
+                                           Count: Longint); virtual;</h6>
+
+<p>The event handler for the OnWrite event of an internal TUnicodeCodec object. This codec object sends byte values of transcoded characters during a transcoding session, similar to the Delphi VCL TStream.write function. The CodecWriteEventHandler procedure writes the transcoded characters to the associated output stream.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Sender: TObject<br />The object whose event handler is called.</li>
+<li>const Buf<br />The buffer for the output byte values.</li>
+<li>Count: Longint<br />The number of output byte values.</li>
+</ul>
+
+<h6>procedure DoProgress; virtual; (inherited from TUtilsCustomTranscoder)</h6>
+
+<p>DoProgress triggers an OnProgress event.</p>
+
+
+<h5>Public Methods</h5>
+
+<h6>constructor Create(const InputStream, OutputStream: TStream;
+      const BufSize: Integer);</h6>
+
+<p>Parameters:</p>
+<ul>
+<li>InputStream<br />The associated input stream.</li>
+<li>OutputStream<br />The associated output stream.</li>
+<li>BufSize<br />The size of the buffer. The value should be a multiplicity of 1024.</li>
+</ul>
+
+<p>Creates a new instance of the TUtilsStreamTranscoder class.</p>
+
+<h6>destructor Destroy; override; (inherited from TUtilsCustomTranscoder)</h6>
+
+<p>Destroys the TUtilsStreamTranscoder instance and frees its memory. Do not call Destroy directly in an application. Call Free instead, which checks for a nil reference before calling Destroy.</p>
+
+<h6>procedure Transcode; virtual; (inherited from TUtilsCustomTranscoder)</h6>
+
+<p>Performs a transcoding session. Line breaks are normalized according to the value of the LineBreakOpt property. During a transcoding session the TUtilsStandardTranscoder object requests input bytes from the associated input stream and writes output bytes to the associated output stream. After each individual character transcoding an OnProgress event is triggert.</p>
+
+<p>A transcoding session terminates, if the input stream returns a byte (or byte sequence) representing the equivalent of the Unicode character STRING TERMINATOR (Unicode code point: $9C). To abort a transcoding session raise an EConvert exception in the OnProgress event (which is then further propagated trough the Transcode procedure).</p>
+
+<p>Exceptions:</p>
+<ul>
+<li>EParserUtilsException<br />Raised if no input encoding or no output encoding was specified.</li>
+<li>EConvertError<br />Raised during a transcoding session if a input byte (or byte sequence) cannot be converted into the specified output encoding.</li>
+</ul>
+
+</body>
+</html>

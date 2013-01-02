@@ -1,0 +1,49 @@
+==================================================
+= HOW TO UPGRADE FROM OLDER VERSIONS TO ADOM 4.3 =
+==================================================
+
+
+How to update your old Delphi code
+----------------------------------
+
+You can use other ADOM major versions (such as 5.1) 
+together with version 4.3, but only one of 
+these packages can be an active design package.  In
+other words: you cannot mix visual components from 
+different ADOM versions in the same project.  
+However, you can use multiple ADOM versions in the 
+same unit at runtime.  To do so, add the ADOM units 
+you want to use to the uses clause of your unit.  
+Now, you can use the name of the ADOM units as a 
+prefix to refer to the correct class unambiguously, 
+e.g. AdomCore_4_3.TdomDocument vs. 
+AdomCore_5_1.TdomDocument.
+
+In case you want to completely update all your 
+Delphi projects to ADOM 4.3 proceed as follows:
+
+1. First you must uninstall the old components as 
+   described below.
+2. Install ADOM 4.3 as described in the README.txt 
+   file.
+3. Reload your projects and remove each reference
+   to an earlier ADOM version in the uses clauses 
+   of a unit and replace it by a reference to 
+   AdomCore_4_3, if that is not done automatically 
+   by the Delphi shell.
+4. Adjust your source code. For a detailed 
+   documentation of all classes see the 'manual.xml'
+   file in the 'manual' folder.
+   
+
+How to completely uninstall old ADOM components
+-----------------------------------------------
+
+1. Choose "Component | Install Packages". 
+   A new dialog is launched.
+2. Uninstall the old ADOM package by using the 
+   Remove button.
+3. Close the package window, and next confirm
+   that the modifications should be saved. 
+4. Delete all old ADOM files (make a backup 
+   before, if required). 

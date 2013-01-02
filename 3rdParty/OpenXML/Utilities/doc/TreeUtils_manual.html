@@ -1,0 +1,664 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>Tree Utilities Library</title>
+<style type="text/css">											body {
+												font-family : Arial, Helvetica, sans-serif;
+												font-size : small;
+												font-style : normal;
+												font-weight : normal;
+											}
+
+											div.legalnotice {
+												font-family : "Courier New", Courier, monospace;
+											}
+
+											h1 {
+												font-weight : bold;
+												font-size : xx-large;
+												font-style : normal;
+											}
+
+											h2 {
+												font-weight : bold;
+												font-size : xx-large;
+												font-style : italic;
+											}
+
+											h3 {
+												font-weight : bold;
+												font-size : x-large;
+												font-style : normal;
+											}
+
+											h4 {
+												font-weight : normal;
+												font-size : x-large;
+												font-style : italic;
+											}
+
+											h5 {
+												font-weight : bold;
+												font-size : large;
+												font-style : italic;
+											}
+
+											h6 {
+												font-weight : bold;
+												font-size : medium;
+												font-style : normal;
+											}
+
+											h7 {
+												font-weight : bold;
+												font-size : small;
+												font-style : normal;
+											}
+</style>
+</head>
+
+<body>
+<h1>Tree Utilities Library 1.0.6</h1>
+<h2>Delphi 4 to 2009 and Kylix 3 Implementation</h2>
+<h3>by Dieter K&ouml;hler</h3>
+<hr />
+<div class="legalnotice">
+
+<p>LICENSE</p>
+
+<p>The contents of this file are subject to the Mozilla Public License Version
+1.1 (the "License"); you may not use this file except in compliance with
+the License. You may obtain a copy of the License at
+"http://www.mozilla.org/MPL/"</p>
+
+<p>Software distributed under the License is distributed on an "AS IS" basis,
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+the specific language governing rights and limitations under the License.</p>
+
+<p>The Original Code is "dkTreeUtils.pas".</p>
+
+<p>The Initial Developer of the Original Code is Dieter Köhler (Heidelberg,
+Germany, "http://www.philo.de/"). Portions created by the Initial Developer
+are Copyright (C) 2003-2007 Dieter Köhler. All Rights Reserved.</p>
+
+<p>Alternatively, the contents of this file may be used under the terms of the
+GNU General Public License Version 2 or later (the "GPL"), in which case the
+provisions of the GPL are applicable instead of those above. If you wish to
+allow use of your version of this file only under the terms of the GPL, and
+not to allow others to use your version of this file under the terms of the
+MPL, indicate your decision by deleting the provisions above and replace them
+with the notice and other provisions required by the GPL. If you do not delete
+the provisions above, a recipient may use your version of this file under the
+terms of any one of the MPL or the GPL.</p>
+</div>
+
+<hr />
+
+<h4>Introduction</h4>
+
+<p>The Tree Utilities Library contains general classes to build a hierarchical list of items, a so-called object tree. The original Delphi VCL classes TTreeNodes and TTreeNode were often too specific for my tasks. When I realized that I was repeatedly implementing special purpose trees which more or less do the same job, it was time to look for a more general approach and to implement basic tree-structure classes, which make it easy to derive new specialized ones. The result of this project is the Tree Utilities Library. The latest version of this software is available at &lt;<a href="http://www.philo.de/xml/">http://www.philo.de/xml/</a>&gt;.</p>
+
+<hr />
+
+<h4>Using the unit</h4>
+
+<p>The Tree Utilities Library does not contain any components to be registered. So using it from inside your own projects is very simple: Add "dkTreeUtils" to the uses clause of your unit and make sure that the path to the location of the dkTreeUtils.pas file is included in Delphi's list of library paths. To include it go to the Library section of Delphi's Environment Options dialog (see the menu item: "Tools/Environment Options ...").</p>
+
+<hr />
+
+<h4>Exceptions</h4>
+
+<p>All exceptions raised inside the TreeUtils Library are derived from Delphi's EListError exception.</p>
+
+<ul>
+<li>EHierarchyRequestError = class(EListError);</li>
+<li>ENoModificationAllowedError = class(EListError);</li>
+<li>ENotAssignedError = class(EListError);</li>
+<li>ENotFoundError = class(EListError);</li>
+<li>EWrongOwnerError = class(EListError);</li>
+</ul>
+
+<hr />
+
+<h4>Defined Resourcestrings</h4>
+
+<p>These strings are used for the error messages of the corresponding exceptions.</p>
+
+<ul>
+<li>SHierarchyRequestError = 'Hierarchy Request Error';</li>
+<li>SListIndexError = 'List index out of bounds (%d)';</li>
+<li>SNoModificationAllowedError = 'No Modification Allowed Error';</li>
+<li>SNotAssignedError = 'Parameter Node Not Assigned Error';</li>
+<li>SNotFoundError = 'Node Not Found Error.';</li>
+<li>SWrongOwnerError = 'Wrong Owner Error';</li>
+</ul>
+
+<hr />
+
+<h4>TCustomOwnedObject = class(TPersistent)</h4>
+
+<p>TCustomOwnedObject is a simple extension of the TPersistent class for maintaining a set of owned objects. The owner of a newly created TCustomOwnedObject object (if any) is specified in the new object's constructor and is then automatically added to the specified TCustomOwnedObject object's list of owned objects. When a TCustomOwnedObject object is freed, all of its owned objects are (recursively) freed too and it is automatically removed from is owner object's list of owned objects. It is also possible to specify nil as the owner parameter of a node's constructor. In this case the node has no owner node and the application is responsibly of correctly freeing it.</p>
+
+<p>Do not create instances of TCustomOwnedObject. Instead use it to define your own descendant classes. Most of the properties and methods defined in TCustomOwnedObject are protected so that you can choose whether to hide or publish them in your own classes.</p>
+
+<h5>Protected Properties</h5>
+
+<h6>OwnedObject[Index: Integer]: TCustomOwnedObject (readonly)</h6>
+
+<p>Lists all owned object. The first item has an index of 0, the second an index of 1, and so on.</p>
+
+<h6>OwnedObjectsCount: Integer (readonly)</h6>
+
+<p>The number of owned objects.</p>
+
+
+<h5>Public Methods</h5>
+
+<h6>constructor Create(const AOwner: TCustomOwnedObject);</h6>
+
+<p>Constructs and initializes an instance of TCustomOwnedObject. If an owner node was specified, the new object is added to the specified owner's list of owned objects.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>AOwner<br />The object that owns the new instance of TCustomOwnedObject or nil if the new instance has no owner.</li>
+</ul>
+
+<h6>destructor Destroy; override;</h6>
+
+<p>Destroys an instance of TCustomOwnedObject and removes it from its owner's list of owned objects. Do not call Destroy directly in an application. Instead, call Free. Free verifies that the TCustomOwnedObject reference is not nil, and only then calls Destroy.</p>
+
+
+<h5>Protected Methods</h5>
+
+<h6>procedure Adopt(const Obj: TCustomOwnedObject); virtual;</h6>
+
+<p>Adopts an owned object from another owned object to this owned object, i.e. it changes
+the owner of the specified owned object.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Obj<br />The owned object to adopt.</li>
+</ul>
+
+<h6>procedure Clear; virtual;</h6>
+
+<p>This procedure (recursively) frees all owned objects and removes them from the list of owned objects.</p>
+
+<h6>procedure DoBeforeAttach(const Obj: TCustomOwnedObject); virtual;</h6>
+
+<p>This procedure is called before a new TCustomOwnedObject is attached as an owned object. By default this method does nothing. Descendant classes can override it to implement specific reactions, for example triggering an event or raising an exception.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Obj<br />The object that is about to be attached as an owned object.</li>
+</ul>
+
+<h6>function GetOwner: TPersistent; override;</h6>
+
+<p>This function returns the owner of the given object. If the given node has no owner, nil is returned.</p>
+
+<p>Return Value:</p>
+<ul>
+<li>The owner of the given object or nil if the given object has no owner.</li>
+</ul>
+
+<hr />
+
+<h4>TCustomOwnedNode = class(TCustomOwnedObject)</h4>
+
+<p>TCustomOwnedNode represents a single node in a tree structure which also maintains a list of sub-nodes. Do not create instances of TCustomOwnedNode. Instead use it to define your own descendant classes. Most of the properties and methods defined in TCustomOwnedNode are protected so that you can choose whether to hide or publish them in your own classes.</p>
+
+<p>The design principle behind the memory management of TCustomOwnedNode is to distinguish between owned nodes and child nodes. Each node can be associated with an owner node in its constructor and contains an ordered list of a (virtually) infinite number of direct child nodes. Each node can only be the child of at most one other node. If a node is the direct child of another node the other node is called "the parent node" of the given node. All direct or indirect parent nodes of a given node are called "its ancestors". This list of child nodes is maintained by the Append(), Insert(), and Remove() methods of the given nodes. Each child node must either have the same owner node as its parent node or the parent node must be identical with the owner node, and an attempt to add a node directly or indirectly as a child node is forbidden.</p>
+
+<p>Each node contains a readonly list of owned nodes which is automatically updated when a node is created with the given node as its owner or if an owned node is freed. When a node is freed, it is removed from its parent node (no matter whether the parent node is readonly or not) and all its child nodes and owned nodes are recursively freed, too. Calling the Clear method of a node recursively frees all of its child nodes (but not the given node itself). It is also possible to specify nil as the owner parameter of a node's constructor. In this case the node has no owner node and the application is responsibly of correctly freeing it.</p>
+
+<h5>Protected Properties</h5>
+
+<h6>Count: Integer (readonly)</h6>
+
+<p>Indicates the number of nodes maintained by the given node.</p>
+
+<h6>FirstChild: TCustomOwnedNode (readonly)</h6>
+
+<p>The first node maintained by the given node or nil if there is no such node.</p>
+
+<h6>Item[Index: Integer]: TCustomOwnedNode (readonly) (default)</h6>
+
+<p>Lists all nodes maintained by the given node. The first node has an index of 0, the second an index of 1, and so on. Item is the default property for TCustomOwnedNode. So the name of the Item property can be omitted when indexing into the set of nodes.</p>
+
+<h6>Items: TList (readonly)</h6>
+
+<p>Provides access to the list of nodes maintained by the given node.</p>
+
+<h6>LastChild: TCustomOwnedNode (readonly)</h6>
+
+<p>The last node maintained by the given node or nil if there is no such node.</p>
+
+<h6>NextSibling: TCustomOwnedNode (readonly)</h6>
+
+<p>The node immediately following the given node. If there is no such node, nil is returned.</p>
+
+<h6>OwnedObject[Index: Integer]: TCustomOwnedObject (readonly) (inherited from TCustomOwnedObject)</h6>
+
+<p>Lists all owned object. The first item has an index of 0, the second an index of 1, and so on.</p>
+
+<h6>OwnedObjectsCount: Integer (readonly) (inherited from TCustomOwnedObject)</h6>
+
+<p>The number of owned objects.</p>
+
+<h6>Parent: TCustomOwnedNode (readonly)</h6>
+
+<p>The parent of the given node or nil if the given node has no parent.</p>
+
+<h6>PreviousSibling: TCustomOwnedNode (readonly)</h6>
+
+<p>The node immediately preceding the given node. If there is no such node, nil is returned.</p>
+
+<h6>ReadOnly: Boolean</h6>
+
+<p>Determines whether the given node is readonly. If the node is readonly any attempt to modify the list of child nodes raises an exception.</p>
+
+
+
+<h5>Public Methods</h5>
+
+<h6>constructor Create(const AOwner: TCustomOwnedNode);</h6>
+
+<p>Constructs and initializes an instance of TCustomOwnedNode. If an owner node was specified, Create internally calls the AttachNode() procedure of the specified owner node. During creation the Initializing property of the given node is 'true'.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>AOwner<br />The node that owns the new node or nil if the new node has no owner.</li>
+</ul>
+
+<h6>destructor Destroy; override;</h6>
+
+<p>Destroys an instance of TCustomOwnedNode. Before a node is destroyed it is removed from its parent node, then it is cleared, and finally the DetachNode() procedure its owner node (if any) is called. Do not call Destroy directly in an application. Instead, call Free. Free verifies that the TCustomOwnedNode reference is not nil, and only then calls Destroy.</p>
+
+
+<h5>Protected Methods</h5>
+
+<h6>procedure Adopt(const Node: TCustomOwnedNode); reintroduce; virtual;</h6>
+
+<p>Adopts a node from another owned object to this node, i.e. it changes the owner of the specified node and all of its children to this node. If the source node has a parent it is first removed from the child list of its parent.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Node<br />The node to adopt.</li>
+</ul>
+
+<p>Exceptions:</p>
+<ul>
+<li>ENotAssignedError<br />Raised via the RaiseException() method if Node is nil.</li>
+</ul>
+
+<h6>function Append(const NewChild: TCustomOwnedNode): TCustomOwnedNode; virtual;</h6>
+
+<p>Appends a child node to the end of the list of children for this node. If the new child is already in the tree, it is first removed.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>NewChild<br />The node to append.</li>
+</ul>
+
+<p>Return Value:</p>
+<ul>
+<li>The node appended.</li>
+</ul>
+
+<p>Exceptions:</p>
+<ul>
+<li>ENotAssignedError<br />Raised if NewChild is nil.</li>
+<li>EWrongOwnerError<br />Raised if the given node is neither the owner of NewChild nor has the same owner than NewChild.</li>
+<li>EHierarchyRequestError<br />Raised if NewChild is one of the given node's ancestors or the given node itself.</li>
+<li>ENoModificationAllowedError<br />Raised if the given node is readonly or if the previous parent of the node being appended is readonly.</li>
+</ul>
+
+<h6>procedure CheckAssigned(const Node: TCustomOwnedNode);</h6>
+
+<p>This procedure is called by other methods of TCustomOwnedNode to check whether the specified node is assigned.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Node<br />The node to check.</li>
+</ul>
+
+<p>Exceptions:</p>
+<ul>
+<li>ENotAssignedError<br />Raised via the RaiseException() method if Node is nil.</li>
+</ul>
+
+<h6>procedure CheckDissimilarity(const Node_1, Node_2: TCustomOwnedNode);</h6>
+
+<p>This procedure is called by other methods of TCustomOwnedNode to check whether the specified nodes are different.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Node_1<br />The first node to check.</li>
+<li>Node_2<br />The second node to check.</li>
+</ul>
+
+<p>Exceptions:</p>
+<ul>
+<li>EHierarchyRequestError<br />Raised via the RaiseException() method if Node_1 is the same object as Node_2.</li>
+</ul>
+
+<h6>procedure CheckHasChild(const Node: TCustomOwnedNode);</h6>
+
+<p>This procedure is called by other methods of TCustomOwnedNode to check whether the specified node is a child of the given node.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Node<br />The child node to check.</li>
+</ul>
+
+<p>Exceptions:</p>
+<ul>
+<li>ENotFoundError<br />Raised via the RaiseException() method if the specified node is not a child of the given node.</li>
+</ul>
+
+<h6>procedure CheckNotAncestorOrSelf(const Node: TCustomOwnedNode);</h6>
+
+<p>This procedure is called by other methods of TCustomOwnedNode to check whether the specified node is neither an ancestor of the given node nor the given node itself.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Node<br />The node to check.</li>
+</ul>
+
+<p>Exceptions:</p>
+<ul>
+<li>EHierarchyRequestError<br />Raised via the RaiseException() method if the specified node is an ancestor of the given node or the given node itself.</li>
+</ul>
+
+<h6>procedure CheckNotReadOnly;</h6>
+
+<p>This procedure is called by other methods of TCustomOwnedNode to check whether the given node is not readonly.</p>
+
+<p>Exceptions:</p>
+<ul>
+<li>ENoModificationAllowedError<br />Raised via the RaiseException() method if the given is readonly.</li>
+</ul>
+
+<h6>procedure CheckParentNotReadOnly(const Node: TCustomOwnedNode);</h6>
+
+<p>This procedure is called by other methods of TCustomOwnedNode to check whether the parent node of the specified node is not readonly.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Node<br />The node to check.</li>
+</ul>
+
+<p>Exceptions:</p>
+<ul>
+<li>ENoModificationAllowedError<br />Raised via the RaiseException() method if the specified node has a parent node and this parent node is readonly.</li>
+</ul>
+
+<h6>procedure CheckSameOwner(const Node: TCustomOwnedNode);</h6>
+
+<p>This procedure is called by other methods of TCustomOwnedNode to check whether the specified node has the same owner as the given node or the given node is the owner of the specified node.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Node<br />The node to check.</li>
+</ul>
+
+<p>Exceptions:</p>
+<ul>
+<li>EWrongOwnerError<br />Raised via the RaiseException() method if the given node is neither the owner of the specified node nor has the same owner than the specified node.</li>
+</ul>
+
+<h6>procedure Clear; virtual;</h6>
+
+<p>This procedure (recursively) frees all child nodes and all owned objects.</p>
+
+<p>Exceptions:</p>
+<ul>
+<li>ENoModificationAllowedError<br />Raised if the given node is readonly.</li>
+</ul>
+
+<h6>procedure DoAfterAddition(const Node: TCustomOwnedNode); virtual;</h6>
+
+<p>This procedure is called by other methods of TCustomOwnedNode after a child node was appended or inserted. By default this method does nothing. Descendant classes can override it to implement specific reactions, for example triggering an event.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Node<br />The node that was added as a child node.</li>
+</ul>
+
+<h6>procedure DoAfterClear; virtual;</h6>
+
+<p>This procedure is called by other methods of TCustomOwnedNode after the given node was cleared. By default this method does nothing. Descendant classes can override it to implement specific reactions, for example triggering an event.</p>
+
+<h6>procedure DoAfterRemoval(const Node: TCustomOwnedNode); virtual;</h6>
+
+<p>This procedure is called by other methods of TCustomOwnedNode after a child node was removed. By default this method does nothing. Descendant classes can override it to implement specific reactions, for example triggering an event.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Node<br />The child node that was removed.</li>
+</ul>
+
+<h6>procedure DoBeforeAddition(const Node: TCustomOwnedNode); virtual;</h6>
+
+<p>This procedure is called by other methods of TCustomOwnedNode before a child node is appended or inserted. By default this method does nothing. Descendant classes can override it to implement specific reactions, for example triggering an event.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Node<br />The node that is about to be added as a child node.</li>
+</ul>
+
+<h6>procedure DoBeforeClear; virtual;</h6>
+
+<p>This procedure is called by other methods of TCustomOwnedNode before the given node is cleared. By default this method does nothing. Descendant classes can override it to implement specific reactions, for example triggering an event.</p>
+
+<h6>procedure DoBeforeRemoval(const Node: TCustomOwnedNode); virtual;</h6>
+
+<p>This procedure is called by other methods of TCustomOwnedNode before a child node is removed. By default this method does nothing. Descendant classes can override it to implement specific reactions, for example triggering an event.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Node<br />The child node that is about to be removed.</li>
+</ul>
+
+<h6>function GetCount: Integer; virtual;</h6>
+
+<p>This function is called by the Count property to get the number of child nodes maintained by the given node.</p>
+
+<p>Return Value:</p>
+<ul>
+<li>The number of nodes maintained by the given node.</li>
+</ul>
+
+<h6>function GetFirstChild: TCustomOwnedNode; virtual;</h6>
+
+<p>This function is called by the FirstChild property to get the first node maintained by the given node or nil if there is no such node.</p>
+
+<p>Return Value:</p>
+<ul>
+<li>The first node maintained by the given node or nil if there is no such node.</li>
+</ul>
+
+<h6>function GetLastChild: TCustomOwnedNode; virtual;</h6>
+
+<p>This function is called by the LastChild property to get the last node maintained by the given node or nil if there is no such node.</p>
+
+<p>Return Value:</p>
+<ul>
+<li>The last node maintained by the given node or nil if there is no such node.</li>
+</ul>
+
+<h6>function GetNextSibling: TCustomOwnedNode; virtual;</h6>
+
+<p>This function is called by the NextSibling property to get the node immediately following the given node. If there is no such node, nil is returned.</p>
+
+<p>Return Value:</p>
+<ul>
+<li>The node immediately following the given node or nil if there is no such node.</li>
+</ul>
+
+<h6>function GetOwner: TPersistent; override; (inherited from TCustomOwnedObject)</h6>
+
+<p>This function returns the owner of the given node. If the given node has no owner, nil is returned.</p>
+
+<p>Return Value:</p>
+<ul>
+<li>The owner of the given node or nil if the given node has no owner.</li>
+</ul>
+
+<h6>function GetParent: TCustomOwnedNode; virtual;</h6>
+
+<p>This function is called by the Parent property to get the parent of the given node. If the given node has no parent, nil is returned.</p>
+
+<p>Return Value:</p>
+<ul>
+<li>The parent node of the given node or nil if the given node has no parent.</li>
+</ul>
+
+<h6>function GetPreviousSibling: TCustomOwnedNode; virtual;</h6>
+
+<p>This function is called by the PreviousSibling property to get the node immediately preceding the given node. If there is no such node, nil is returned.</p>
+
+<p>Return Value:</p>
+<ul>
+<li>The node immediately preceding the given node or nil if there is no such node.</li>
+</ul>
+
+<h6>function GetReadOnly: Boolean; virtual;</h6>
+
+<p>This function is called by the ReadOnly property to determine whether the given node is readonly.</p>
+
+<p>Return Value:</p>
+<ul>
+<li>'True' if the given node is readonly, 'False' otherwise.</li>
+</ul>
+
+<h6>function HasAsAncestor(Node: TCustomOwnedNode): Boolean; virtual;</h6>
+
+<p>This is a convenience method to allow easy determination of whether a node is an ancestor of this node.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Node<br />The node to test whether it is an ancestor of the given node.</li>
+</ul>
+
+<p>Return Value:</p>
+<ul>
+<li>'True' if the specified node is an ancestor of the given node, 'False' otherwise.</li>
+</ul>
+
+<h6>function HasChildren: Boolean; virtual;</h6>
+
+<p>This is a convenience method to allow easy determination of whether the given node has any child nodes.</p>
+
+<p>Return Value:</p>
+<ul>
+<li>'True' if the specified node has one or more child nodes, 'False' otherwise.</li>
+</ul>
+
+<h6>function IndexOf(Node: TCustomOwnedNode): Integer; virtual;</h6>
+
+<p>Returns the index of the specified node in the Items list.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Node<br />The node whose index is being retrieved.</li>
+</ul>
+
+<p>Return Value:</p>
+<ul>
+<li>The index position of the node in the Items list. The first node in the list has index 0, the second node has index 1, and so on. If a node is not in the list, IndexOf returns -1.</li>
+</ul>
+
+<h6>function InsertBefore(const NewChild,
+                                RefChild: TCustomOwnedNode): TCustomOwnedNode; virtual;</h6>
+
+<p>Inserts the node NewChild before the existing child node RefChild. If RefChild is nil, NewChild is inserted at the end of the list of children.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>NewChild<br />The node to insert.</li>
+<li>RefChild<br />The reference node, i.e., the node before which the new node must be inserted.</li>
+</ul>
+
+<p>Return Value:</p>
+<ul>
+<li>The node being inserted.</li>
+</ul>
+
+<p>Exceptions:</p>
+<ul>
+<li>ENotAssignedError<br />Raised if NewChild is nil.</li>
+<li>EWrongOwnerError<br />Raised if the given node is neither the owner of NewChild nor has the same owner than NewChild.</li>
+<li>EHierarchyRequestError<br />Raised if NewChild is one of the given node's ancestors or the given node itself, or if NewChild and RefChild are identical.</li>
+<li>ENoModificationAllowedError<br />Raised if the given node is readonly or if the previous parent of the node being appended is readonly.</li>
+</ul>
+
+<h6>procedure RaiseException(const E: ExceptClass); virtual;</h6>
+
+<p>Raises an exception of the specified class.  Descendants may override this procedure to implement specific exception handling, for example to raise a different exception than the specified.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>E<br />The class of the exception to be raised.</li>
+</ul>
+
+<h6>function Remove(const OldChild: TCustomOwnedNode): TCustomOwnedNode; virtual;</h6>
+
+<p>Removes the child node indicated by OldChild from the list of children and returns it.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>OldChild<br />The node being removed.</li>
+</ul>
+
+<p>Return Value:</p>
+<ul>
+<li>The node removed.</li>
+</ul>
+
+<p>Exceptions:</p>
+<ul>
+<li>ENotAssignedError<br />Raised if OldChild is nil.</li>
+<li>ENoModificationAllowedError<br />Raised if the given node is readonly.</li>
+<li>ENotFoundError<br />Raised if RefChild is not a child of the given node.</li>
+</ul>
+
+<h6>function Replace(const NewChild,
+                           OldChild: TCustomOwnedNode): TCustomOwnedNode; virtual;</h6>
+
+<p>Replaces the child node OldChild with NewChild in the set of children of the given node, and returns the OldChild node. If NewChild is already in the tree, it is first removed.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>NewChild<br />The node to put in the child list.</li>
+<li>OldChild<br />The node to being replaced in the child list.</li>
+</ul>
+
+<p>Return Value:</p>
+<ul>
+<li>The node replaced.</li>
+</ul>
+
+<p>Exceptions:</p>
+<ul>
+<li>ENotAssignedError<br />Raised if NewChild or OldChild is nil.</li>
+<li>EWrongOwnerError<br />Raised if NewChild has a different owner than the given node.</li>
+<li>EHierarchyRequestError<br />Raised if NewChild is one of the given node's ancestors or the given node itself.</li>
+<li>ENoModificationAllowedError<br />Raised if the given node is readonly or if the previous parent of NewChild is readonly.</li>
+<li>ENotFoundError<br />Raised if RefChild is not a child of the given node.</li>
+</ul>
+
+<h6>procedure SetReadonly(const Value: Boolean); virtual;</h6>
+
+<p>This procedure is called by the ReadOnly property to specify whether the given node is readonly.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Value<br />'True' if the given node should be readonly, 'False' otherwise.</li>
+</ul>
+
+</body>
+</html>

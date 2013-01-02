@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>URI Utilities Library</title>
+<style type="text/css">											body {
+												font-family : Arial, Helvetica, sans-serif;
+												font-size : small;
+												font-style : normal;
+												font-weight : normal;
+											}
+
+											div.legalnotice {
+												font-family : "Courier New", Courier, monospace;
+											}
+
+											h1 {
+												font-weight : bold;
+												font-size : xx-large;
+												font-style : normal;
+											}
+
+											h2 {
+												font-weight : bold;
+												font-size : xx-large;
+												font-style : italic;
+											}
+
+											h3 {
+												font-weight : bold;
+												font-size : x-large;
+												font-style : normal;
+											}
+
+											h4 {
+												font-weight : normal;
+												font-size : x-large;
+												font-style : italic;
+											}
+
+											h5 {
+												font-weight : bold;
+												font-size : large;
+												font-style : italic;
+											}
+
+											h6 {
+												font-weight : bold;
+												font-size : medium;
+												font-style : normal;
+											}
+
+											h7 {
+												font-weight : bold;
+												font-size : small;
+												font-style : normal;
+											}
+</style>
+</head>
+
+<body>
+<h1>URI Utilities Library 1.0.3</h1>
+<h2>Delphi 4 to 2009 and Kylix 3 Implementation</h2>
+<h3>by Dieter K&ouml;hler</h3>
+<hr />
+<div class="legalnotice">
+
+<p>LICENSE</p>
+
+<p>The contents of this file are subject to the Mozilla Public License Version
+1.1 (the "License"); you may not use this file except in compliance with
+the License. You may obtain a copy of the License at
+"http://www.mozilla.org/MPL/"</p>
+
+<p>Software distributed under the License is distributed on an "AS IS" basis,
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+the specific language governing rights and limitations under the License.</p>
+
+<p>The Original Code is "dkUriUtils.pas".</p>
+
+<p>The Initial Developer of the Original Code is Dieter Köhler (Heidelberg,
+Germany, "http://www.philo.de/"). Portions created by the Initial Developer
+are Copyright (C) 2003-2008 Dieter Köhler. All Rights Reserved.</p>
+
+<p>Alternatively, the contents of this file may be used under the terms of the
+GNU General Public License Version 2 or later (the "GPL"), in which case the
+provisions of the GPL are applicable instead of those above. If you wish to
+allow use of your version of this file only under the terms of the GPL, and
+not to allow others to use your version of this file under the terms of the
+MPL, indicate your decision by deleting the provisions above and replace them
+with the notice and other provisions required by the GPL. If you do not delete
+the provisions above, a recipient may use your version of this file under the
+terms of any one of the MPL or the GPL.</p>
+</div>
+
+<hr />
+
+<h4>Introduction</h4>
+
+<p>The URI Utilities Library contains helper functions for Universal Resource Identifier (URI) processing. For more information about URIs see the relevant specifications:</p>
+<ul>
+<li>[RFC 2396] Berners-Lee, T., R. Fielding, U.C. Irvine, L. Masinter: "Uniform Resource Identifiers (URI): Generic Syntax", RFC 2396, August 1998, see &lt;<a href="http://www.ietf.org/rfc/rfc2396.txt">http://www.ietf.org/rfc/rfc2396.txt</a>&gt;.</li>
+</ul>
+<p>The latest version of this software is available at &lt;<a href="http://www.philo.de/xml/">http://www.philo.de/xml/</a>&gt;.</p>
+
+<hr />
+
+<h4>Using the unit</h4>
+
+<p>The URI Utilities Library does not contain any components to be registered. So using it from inside your own projects is very simple: Add "dkUriUtils" to the uses clause of your unit and make sure that the path to the location of the dkUriUtils.pas file is included in Delphi's list of library paths. To include it go to the Library section of Delphi's Environment Options dialog (see the menu item: "Tools/Environment Options ...").</p>
+
+<hr />
+
+<h4>Routines for Testing URI Rules</h4>
+
+<h5>String and Character Test Functions</h5>
+
+<p>The following functions serve to test whether a string S or character C conforms to the respective Universal Resource Identifier (URI) rule (see [RFC 2396], App. A).  All functions return 'true' if S or  C conforms to the rule, otherwise 'false' is returned.</p>
+
+<h6>function IsUriURI_referenceStr(S: string): Boolean;</h6>
+<h6>function IsUriAbsoluteURIStr(S: string): Boolean;</h6>
+<h6>function IsUriRelativeURIStr(S: string): Boolean;</h6>
+<h6>function IsUriHier_partStr(S: string): Boolean;</h6>
+<h6>function IsUriOpaque_partStr(S: string): Boolean;</h6>
+<h6>function IsUriNet_pathStr(S: string): Boolean;</h6>
+<h6>function IsUriAbs_pathStr(S: string): Boolean;</h6>
+<h6>function IsUriRel_pathStr(S: string): Boolean;</h6>
+<h6>function IsUriRel_segmentStr(S: string): Boolean;</h6>
+<h6>function IsUriSchemeStr(S: string): Boolean;</h6>
+<h6>function IsUriAuthorityStr(S: string): Boolean;</h6>
+<h6>function IsUriReg_nameStr(S: string): Boolean;</h6>
+<h6>function IsUriServerStr(S: string): Boolean;</h6>
+<h6>function IsUriUserinfoStr(S: string): Boolean;</h6>
+<h6>function IsUriHostPortStr(S: string): Boolean;</h6>
+<h6>function IsUriHostStr(S: string): Boolean;</h6>
+<h6>function IsUriHostnameStr(S: string): Boolean;</h6>
+<h6>function IsUriDomainlabelStr(S: string): Boolean;</h6>
+<h6>function IsUriToplabelStr(S: string): Boolean;</h6>
+<h6>function IsUriIPv4addressStr(S: string): Boolean;</h6>
+<h6>function IsUriPortStr(S: string): Boolean;</h6>
+<h6>function IsUriPathStr(S: string): Boolean;</h6>
+<h6>function IsUriPath_segmentsStr(S: string): Boolean;</h6>
+<h6>function IsUriSegmentStr(S: string): Boolean;</h6>
+<h6>function IsUriParamStr(S: string): Boolean;</h6>
+<h6>function IsUriQueryStr(S: string): Boolean;</h6>
+<h6>function IsUriFragmentStr(S: string): Boolean;</h6>
+<h6>function IsUriUricStr(S: string): Boolean;</h6>
+<h6>function IsUriReservedChar(C: Char): Boolean;</h6>
+<h6>function IsUriUnreservedChar(C: Char): Boolean;</h6>
+<h6>function IsUriMarkChar(C: Char): Boolean;</h6>
+<h6>function IsUriHexChar(C: Char): Boolean;</h6>
+<h6>function IsUriAlphanumChar(C: Char): Boolean;</h6>
+<h6>function IsUriAlphaChar(C: Char): Boolean;</h6>
+<h6>function IsUriDigitChar(C: Char): Boolean;</h6>
+
+<hr />
+
+<h5>Wide String and Wide Character Test Functions</h5>
+
+<p>The following functions serve to test whether a WideString S or WideChar C conforms to the respective Universal Resource Identifier (URI) rule (see [RFC 2396], App. A).  All functions return 'True' if S or  C conforms to the rule, otherwise 'False' is returned.</p>
+
+<h6>function IsUriURI_referenceWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriAbsoluteURIWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriRelativeURIWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriHier_partWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriOpaque_partWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriNet_pathWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriAbs_pathWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriRel_pathWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriRel_segmentWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriSchemeWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriAuthorityWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriReg_nameWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriServerWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriUserinfoWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriHostPortWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriHostWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriHostnameWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriDomainlabelWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriToplabelWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriIPv4addressWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriPortWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriPathWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriPath_segmentsWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriSegmentWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriParamWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriQueryWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriFragmentWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriUricWideStr(S: WideString): Boolean;</h6>
+<h6>function IsUriReservedWideChar(C: WideChar): Boolean;</h6>
+<h6>function IsUriUnreservedWideChar(C: WideChar): Boolean;</h6>
+<h6>function IsUriMarkWideChar(C: WideChar): Boolean;</h6>
+<h6>function IsUriHexWideChar(C: WideChar): Boolean;</h6>
+<h6>function IsUriAlphanumWideChar(C: WideChar): Boolean;</h6>
+<h6>function IsUriAlphaWideChar(C: WideChar): Boolean;</h6>
+<h6>function IsUriDigitWideChar(C: WideChar): Boolean;</h6>
+
+<hr />
+
+<h4>URI Processing</h4>
+
+<p>The following functions and classes provide means for some general operations on Universal Resource Identifiers.</p>
+
+<h5>TdomFilenameToUriOptions = set of (fuSetLocalhost, fuPlainColon);</h5>
+
+<p>TdomFilenameToUriOptions defines a set of constants which determine filename to URI transformations.</p>
+
+<hr />
+
+<h5>function FilenameToUriStr(const Path: TFilename;
+                          const Opt: TUtilsFilenameToUriOptions): string;</h5>
+
+<p>Generates a &quot;file&quot; scheme URI reference from a string that represents a file name, and returns it as a string.  Unreserved characters are escaped according to [RFC 2396], § 2.4.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Path<br />A string that represents a file name.</li>
+<li>Opt<br />A set of option parameters to customize the behavior of the transformation. If the 'fuSetLocalhost' option is set, the host field of the URI is set to 'localhost', i.e. the URI begins with 'file://localhost/', otherwise the host field of the URI is void, i.e. the URI begins with 'file:///'.  Note that according to [RFC 1630] a void host field is equivalent to "localhost". <br />If the 'fuPlainColon' option is set, colon charcaters (':') in the path are not escaped, otherwise colons are escaped correctly.  Use the 'fuPlainColon' option as a workaround for a bug in the TWebBrowser.Navigate() and the equivalent SHDOCVW.DLL method, which requires a colon after the drive label.</li>
+</ul>
+
+<p>Return Value:</p>
+<ul>
+<li>The generated &quot;file&quot; scheme URI reference as a string.  If the specified path is empty, 'file://localhost' or 'file://' respectively is returned.</li>
+</ul>
+
+<hr />
+
+<h5>function FilenameToUriWideStr(const Path: TFilename;
+                              const Opt: TUtilsFilenameToUriOptions): WideString;</h5>
+
+<p>Generates a &quot;file&quot; scheme URI reference from a string that represents a file name, and returns it as a WideString.  Unreserved characters are escaped according to [RFC 2396], § 2.4.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Path<br />A string that represents a file name.</li>
+<li>Opt<br />A set of option parameters to customize the behavior of the transformation. If the 'fuSetLocalhost' option is set, the host field of the URI is set to 'localhost', i.e. the URI begins with 'file://localhost/', otherwise the host field of the URI is void, i.e. the URI begins with 'file:///'.  Note that according to [RFC 1630] a void host field is equivalent to "localhost". <br />If the 'fuPlainColon' option is set, colon charcaters (':') in the path are not escaped, otherwise colons are escaped correctly.  Use the 'fuPlainColon' option as a workaround for a bug in the TWebBrowser.Navigate() and the equivalent SHDOCVW.DLL method, which requires a colon after the drive label.</li>
+</ul>
+
+<p>Return Value:</p>
+<ul>
+<li>The generated &quot;file&quot; scheme URI reference as a WideString.  If the specified path is empty, 'file://localhost' or 'file://' respectively is returned.</li>
+</ul>
+
+<hr />
+
+<h5>function ResolveRelativeUriStr(const BaseUri,
+                                     RelUri: string;
+                                 var ResultUri: string): Boolean;</h5>
+
+<p>Resolves an URI reference relative to a given base URI. For details on URI resolvement see [RFC 2396], § 5.2 and App. C.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>BaseUri<br />A US-ASCII string containing the base URI.</li>
+<li>RelUri<br />A US-ASCII string containing the URI to be resolved.</li>
+</ul>
+
+<p>Return Parameter:</p>
+<ul>
+<li>ResultUri<br />A US-ASCII string containing the resolved URI or an empty string, if the URI cannot be resolved.</li>
+</ul>
+
+<p>Return Value:</p>
+<ul>
+<li>Returns 'True' if the URI was succesfully resolved, otherwise 'False' is return.  This functions fails to resolve an URI, if the provided baseUri or relUri is malformed, or if baseUri is not an absolute URI reference, or if relUri is a relative-path reference which contains some unresolvable '..' segment.</li>
+</ul>
+
+<hr />
+
+<h5>function ResolveRelativeUriWideStr(const BaseUri,
+                                         RelUri: WideString;
+                                     var ResultUri: WideString): Boolean;</h5>
+
+<p>Resolves an URI reference relative to a given base URI. For details on URI resolvement see [RFC 2396], § 5.2 and App. C.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>BaseUri<br />A UTF-16LE WideString containing the base URI.</li>
+<li>RelUri<br />A UTF-16LE WideString containing the URI to be resolved.</li>
+</ul>
+
+<p>Return Parameter:</p>
+<ul>
+<li>ResultUri<br />A (UTF-16LE WideString containing the resolved URI or an empty WideString, if the URI cannot be resolved.</li>
+</ul>
+
+<p>Return Value:</p>
+<ul>
+<li>Returns 'True' if the URI was succesfully resolved, otherwise 'False' is return.  This functions fails to resolve an URI, if the provided baseUri or relUri is malformed, or if baseUri is not an absolute URI reference, or if relUri is a relative-path reference which contains some unresolvable '..' segment.</li>
+</ul>
+
+<hr />
+
+<h5>function UriStrToFilename(const Uri: string;
+                            var Path: TFilename;
+                            var Authority,
+                                Query,
+                                Fragment: string): Boolean;</h5>
+
+
+<p>Extracts the relevant information from a &quot;file&quot; scheme URI reference.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Uri<br />A US-ASCII string containing the &quot;file&quot; scheme URI.</li>
+</ul>
+
+<p>Return Parameter:</p>
+<ul>
+<li>Path<br />The path part of the URI converted to a file path, i.e. the leading '/' is removed, any other '/' is replaced by '\', and every escape sequence is resolved.</li>
+<li>Authority<br />The authority part of the URI or an empty string if none was provided.</li>
+<li>Query<br />The query part of the URI starting with '?' or an empty string if none was provided.</li>
+<li>Fragment<br />The fragment part of the URI starting with '#' or an empty string if none was provided.</li>
+</ul>
+
+<p>Return Value:</p>
+<ul>
+<li>Returns 'True' if the file scheme URI was succesfully analyzed, otherwise 'False' is return. This functions fails to analyze an URI if the provided URI is malformed or is not assigned to the &quot;file&quot; scheme. In this case 'Path', 'Authority', 'Query' and 'Fragment' return an empty string.</li>
+</ul>
+
+<hr />
+
+<h5>function UriWideStrToFilename(const Uri: WideString;
+                                var Path: TFilename;
+                                var Authority,
+                                    Query,
+                                    Fragment: string): Boolean;</h5>
+
+<p>Extracts the relevant information from a &quot;file&quot; scheme URI reference.</p>
+
+<p>Parameters:</p>
+<ul>
+<li>Uri<br />A UTF-16LE WideString containing the &quot;file&quot; scheme URI.</li>
+</ul>
+
+<p>Return Parameter:</p>
+<ul>
+<li>Path<br />The path part of the URI converted to a file path, i.e. the leading '/' is removed, any other '/' is replaced by '\', and every escape sequence is resolved.</li>
+<li>Authority<br />The authority part of the URI or an empty WideString if none was provided.</li>
+<li>Query<br />The query part of the URI starting with '?' or an empty WideString if none was provided.</li>
+<li>Fragment<br />The fragment part of the URI starting with '#' or an empty WideString if none was provided.</li>
+</ul>
+
+<p>Return Value:</p>
+<ul>
+<li>Returns 'True' if the file scheme URI was succesfully analyzed, otherwise 'False' is return. This functions fails to analyze an URI if the provided URI is malformed or is not assigned to the &quot;file&quot; scheme. In this case 'Path', 'Authority', 'Query' and 'Fragment' return an empty WideString.</li>
+</ul>
+
+<hr />
+
+<h5>TUriStrAnalyzer = class</h5>
+
+<p>This class can be used to analyze an URI reference or to construct an URI reference from its parts by using strings (see TUriWideStrAnalyzer for an equivalent class designed for WideStrings). The relevant parts are the URI reference's scheme (omitting the final ':'), authority (omitting the leading '//'), path (including the leading '/' if any), query (omitting the leading '?'), and fragment identifier (omitting the leading '#').  The following properties can be used to extract the URI information as a string:</p>
+
+<ul>
+<li>property UriAuthority: string (readonly)</li>
+<li>property UriFragment: string (readonly)</li>
+<li>property UriPath: string (readonly)</li>
+<li>property UriQuery: string (readonly) </li>
+<li>property UriReference: string (readonly)</li>
+<li>property UriScheme: string (readonly)</li>
+</ul>
+
+<p>Since an URI's authority, fragment, query or scheme part can be undefined as well as be empty, it is not sufficient to check only the string information, which also returns an empty string if the respective part is undefined.  The following properties can be used to check whether a specific part was defined or not:</p>
+
+<ul>
+<li>property HasUriAuthority: boolean (readonly)</li>
+<li>property HasUriFragment: boolean (readonly)</li>
+<li>property HasUriQuery: boolean (readonly)</li>
+<li>property HasUriScheme: boolean (readonly)</li>
+</ul>
+
+<p>To specify the value of an URI reference or of one of its parts the following functions can be used. The 'Value' parameter contains the value to be set and the 'IsDefined' parameter when required must be set to 'True' to define the respective URI part and set to 'False' to undefine it (in this case the 'Value' parameter is not evaluated and the respective string information property will return an empty string). Setting the value of one of the URI parts will also effect the value of the 'UriReference' property as well as setting the value of the 'UriReference' property will effect the URI parts. If a set operation was successful the function returns 'True'; otherwise -- i.e. if 'IsDefined' when required was set to 'True' and the provided 'Value' was malformed -- 'False' is returned and the result of the function is the same as if it was called with the property 'Value' containing an empty string and 'IsDefined' when required set to 'False'.</p>
+
+<ul>
+<li>function SetUriAuthority(const Value: string;
+                         const IsDefined: Boolean): Boolean; virtual;</li>
+<li>function SetUriFragment(const Value: string;
+                        const IsDefined: Boolean): Boolean; virtual;</li>
+<li>function SetUriPath(const Value: string): Boolean; virtual;</li>
+<li>function SetUriQuery(const Value: string;
+                     const IsDefined: Boolean): Boolean; virtual;</li>
+<li>function SetUriReference(const Value: string): Boolean; virtual;</li>
+<li>function SetUriScheme(const Value: string;
+                      const IsDefined: Boolean): Boolean; virtual;</li>
+</ul>
+
+<hr />
+
+<h5>TUriWideStrAnalyzer = class</h5>
+
+<p>This class can be used to analyze an URI reference or to construct an URI reference from its parts by using WideStrings (see TUriStrAnalyzer for an equivalent class designed for dtrings). The relevant parts are the URI reference's scheme (omitting the final ':'), authority (omitting the leading '//'), path (including the leading '/' if any), query (omitting the leading '?'), and fragment identifier (omitting the leading '#').  The following properties can be used to extract the URI information as a WideString:</p>
+
+<ul>
+<li>property UriAuthority: WideString (readonly)</li>
+<li>property UriFragment: WideString (readonly)</li>
+<li>property UriPath: WideString (readonly)</li>
+<li>property UriQuery: WideString (readonly) </li>
+<li>property UriReference: WideString (readonly)</li>
+<li>property UriScheme: WideString (readonly)</li>
+</ul>
+
+<p>Since an URI's authority, fragment, query or scheme part can be undefined as well as be empty, it is not sufficient to check only the string information, which also returns an empty WideString if the respective part is undefined.  The following properties can be used to check whether a specific part was defined or not:</p>
+
+<ul>
+<li>property HasUriAuthority: boolean (readonly)</li>
+<li>property HasUriFragment: boolean (readonly)</li>
+<li>property HasUriQuery: boolean (readonly)</li>
+<li>property HasUriScheme: boolean (readonly)</li>
+</ul>
+
+<p>To specify the value of an URI reference or of one of its parts the following functions can be used. The 'Value' parameter contains the value to be set and the 'IsDefined' parameter when required must be set to 'True' to define the respective URI part and set to 'False' to undefine it (in this case the 'Value' parameter is not evaluated and the respective string information property will return an empty WideString). Setting the value of one of the URI parts will also effect the value of the 'UriReference' property as well as setting the value of the 'UriReference' property will effect the URI parts. If a set operation was successful the function returns 'True'; otherwise -- i.e. if 'IsDefined' when required was set to 'True' and the provided 'Value' was malformed -- 'False' is returned and the result of the function is the same as if it was called with the property 'Value' containing an empty string and 'IsDefined' when required set to 'False'.</p>
+
+<ul>
+<li>function SetUriAuthority(const Value: WideString;
+                         const IsDefined: Boolean): Boolean; virtual;</li>
+<li>function SetUriFragment(const Value: WideString;
+                        const IsDefined: Boolean): Boolean; virtual;</li>
+<li>function SetUriPath(const Value: WideString): Boolean; virtual;</li>
+<li>function SetUriQuery(const Value: WideString;
+                     const IsDefined: Boolean): Boolean; virtual;</li>
+<li>function SetUriReference(const Value: WideString): Boolean; virtual;</li>
+<li>function SetUriScheme(const Value: WideString;
+                      const IsDefined: Boolean): Boolean; virtual;</li>
+</ul>
+
+</body>
+</html>

@@ -1,0 +1,63 @@
+==============================================================
+
+= ALTERNATIVE DOCUMENT OBJECT MODEL INSTALLATION INSTRUCTION =
+==============================================================
+
+ADOM was tested with Delphi 5, 7, 2005, 2006, 2007, 2009, 2010.  Packages for Delphi 4, 6, and Kylix 3 have also been provided, but are untested.  Users of Delphi 8 must create their own package.  If you detect any installation problem, please write me an email.  In this case it would be excellent, if you could also provide me with a fix for the problem.  Whether ADOM runs also under Kylix 1 or 2, or BCB is unknown.  Reports about that matter are also very welcome.  Please mail to <d.k@philo.de>.  
+
+
+Installation Procedure up to Delphi 7
+-------------------------------------
+
+1. Install the Open XML Utilities Library, which is also available at the Open XML website. (You need a version which is compatible with the ADOM version you are about to install.)
+2. Extract the zip-archive.
+3. Open the package file appropriate to your Delphi/Kylix version (ending with ".dpk") in the Delphi IDE.
+4. The loaded package is displayed by the Package editor.
+5. Modify the package options if necessary, e.g. to specify other than the standard output or search pathes.
+6. Click the Compile package speed button to compile the package.
+7. Click the Install package speed button to install the package.
+8. Close the package window, and next confirm that the modifications should be saved.
+9. When the components have been successfully installed, a new page titled "ADOM 4.3" should appear in the component's palette. There you can find the new components. 
+
+   
+Installation Procedure for Win32 Development in Delphi 2005 or Later
+--------------------------------------------------------------------
+
+Remark: Delphi 2010 users, please read the README file in the "packages/Win32/Delphi2010" folder first!
+ 
+1. Install the Open XML Utilities Library, which is also available at the Open XML website. (You need a version which is compatible with the ADOM version you are about to install.)
+2. Extract the zip-archive.
+3. Open the package file appropriate to your Delphi version (ending with ".dpk") in the Delphi IDE.
+4. If you are asked to upgrade the package choose "Delphi for Win32" and click the "OK" button.
+5. The loaded package is displayed by the Project Manager.
+6. Modify the package options if necessary, e.g. to specify other than the standard output or search pathes.
+7. Compile and build the package.  This will generate a .bpl file of the package in the BPL output directory.
+8. From the "Component" menu choose the "Install Packages..." entry.  The "Install packages" dialog opens.
+9. In the "Install packages" dialog click on the "Add" button, and locate and choose the .bpl file created in step 7.
+10. Confirm all dialogs.
+
+   
+Installation Procedure for .NET Development in Delphi 2005 or Later
+-------------------------------------------------------------------
+ 
+1. Install the Open XML Utilities Library, which is also available at the Open XML website. (You need a version which is compatible with the ADOM version you are about to install.)
+2. Extract the zip-archive.
+3. Open the package file appropriate to your Delphi version (ending with ".dpk") in the Delphi IDE.
+4. If you are asked to upgrade the package choose "Delphi for .NET" and click the "OK" button.
+5. The loaded package is displayed by the Project Manager.
+6. Modify the package options if necessary, e.g. to specify other than the standard output or search pathes.
+7. Compile and build the package.  This will generate a DK.Adom_4_3.dll file of the package in the BPL output directory.
+8. From the "Component" menu choose the "Installed .NET components..." entry.  The "Installed .NET components" dialog opens.
+9. In the "Installed .NET components" dialog click on the ".NET VCL components" tab.  Here choose "Add", and locate and choose the DK.Adom_4_3.dll file created in step 7.
+9. Confirm all dialogs.
+
+Under all versions of Delphi for .NET, the special component icons from the .dcr files are ignored and instead the default component icon is used.  My operating system is Windows Vista.  I do not know whether this is a bug in Delphi or whether I just was not able to find out how to acomplish the register component icons correctly.  In the later case I would be very glad if somebody could advise me what to do.  Please mail to <d.k@philo.de>.  Thanks.
+
+
+Trouble Shooting
+----------------
+
+* The most frequent cause for troubles is that the .dcp and .dcu files created during compilation are not in the Delphi Library Path. Use Delphi's Environment options dialog to add the required directories to the Delphi Library Path.
+* If you were asked for a .bpl file when trying to install a package you will usually (i.e. unless you changed the output directory in the package options) find it in the bpl standard output directory which can be specified in Delphi's Environment options dialog.  
+* If Delphi 2005 stalls when loading the package, you need to apply the Delphi 2005 updates from the Code Gear Web-site.
+* If you encounter the error message "Required package 'DK.Utils' not found" during an installation under Delphi for .NET, this means that the 'DK.Utils.dll' file (generated during the installation of the Open XML Utilities package) is not on the Delphi search path.  To add it to the search path, in the porject manager you need to right-click on 'DK.Adom_4_3.dll' and choose 'Options...'.  In the dialog that opens active 'Directories/Conditionals'.  Here under 'search path' you must add the path to the folder that contains the 'DK.Utils.dll' file.

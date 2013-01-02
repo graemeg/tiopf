@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>ABNF Utilities Library</title>
+<style type="text/css">											body {
+												font-family : Arial, Helvetica, sans-serif;
+												font-size : small;
+												font-style : normal;
+												font-weight : normal;
+											}
+
+											div.legalnotice {
+												font-family : "Courier New", Courier, monospace;
+											}
+
+											h1 {
+												font-weight : bold;
+												font-size : xx-large;
+												font-style : normal;
+											}
+
+											h2 {
+												font-weight : bold;
+												font-size : xx-large;
+												font-style : italic;
+											}
+
+											h3 {
+												font-weight : bold;
+												font-size : x-large;
+												font-style : normal;
+											}
+
+											h4 {
+												font-weight : normal;
+												font-size : x-large;
+												font-style : italic;
+											}
+
+											h5 {
+												font-weight : bold;
+												font-size : large;
+												font-style : italic;
+											}
+
+											h6 {
+												font-weight : bold;
+												font-size : medium;
+												font-style : normal;
+											}
+
+											h7 {
+												font-weight : bold;
+												font-size : small;
+												font-style : normal;
+											}
+</style>
+</head>
+
+<body>
+<h1>ABNF Utilities Library 1.0.1</h1>
+<h2>Delphi 4 to 2009 and Kylix 3 Implementation</h2>
+<h3>by Dieter K&ouml;hler</h3>
+<hr />
+<div class="legalnotice">
+
+<p>LICENSE</p>
+
+<p>The contents of this file are subject to the Mozilla Public License Version
+1.1 (the "License"); you may not use this file except in compliance with
+the License. You may obtain a copy of the License at
+"http://www.mozilla.org/MPL/"</p>
+
+<p>Software distributed under the License is distributed on an "AS IS" basis,
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+the specific language governing rights and limitations under the License.</p>
+
+<p>The Original Code is "dkAbnfUtils.pas".</p>
+
+<p>The Initial Developer of the Original Code is Dieter Köhler (Heidelberg,
+Germany, "http://www.philo.de/"). Portions created by the Initial Developer
+are Copyright (C) 2003-2008 Dieter Köhler. All Rights Reserved.</p>
+
+<p>Alternatively, the contents of this file may be used under the terms of the
+GNU General Public License Version 2 or later (the "GPL"), in which case the
+provisions of the GPL are applicable instead of those above. If you wish to
+allow use of your version of this file only under the terms of the GPL, and
+not to allow others to use your version of this file under the terms of the
+MPL, indicate your decision by deleting the provisions above and replace them
+with the notice and other provisions required by the GPL. If you do not delete
+the provisions above, a recipient may use your version of this file under the
+terms of any one of the MPL or the GPL.</p>
+</div>
+
+<hr />
+
+<h4>Introduction</h4>
+
+<p>The ABNF Utilities Library contains helper functions to check whether a given character, string, wide character or wide string conforms to the Augmented Backus-Naur Form (ABNF) Core Rules. ABNF is specified in: Crocker, D. and P. Overell: "Augmented BNF for Syntax Specifications: ABNF", RFC 2234, November 1997, see &lt;<a href="http://www.ietf.org/rfc/rfc2234.txt">http://www.ietf.org/rfc/rfc2234.txt</a>&gt;. The latest version of this software is available at &lt;<a href="http://www.philo.de/xml/">http://www.philo.de/xml/</a>&gt;.</p>
+
+<hr />
+
+<h4>Using the unit</h4>
+
+<p>The ABNF Utilities Library does not contain any components to be registered. So using it from inside your own projects is very simple: Add "dkAbnfUtils" to the uses clause of your unit and make sure that the path to the location of the dkAbnfUtils.pas file is included in Delphi's list of library paths. To include it go to the Library section of Delphi's Environment Options dialog (see the menu item: "Tools/Environment Options ...").</p>
+
+<hr />
+
+<h4>Routines for Testing ABNF Core Rules</h4>
+
+<h5>String and Character Test Functions</h5>
+
+<p>The following functions serve to check whether a string S or char C conforms to the respective Augmented Backus-Naur Form (ABNF) core rule (see [RFC 2234], § 6.1).  All functions return 'true' if S or C conforms to the rule, otherwise 'false' is returned.</>
+
+<h6>function IsAbnfALPHAChar(C: Char): Boolean;</h6>
+<h6>function IsAbnfBITChar(C: Char): Boolean;</h6>
+<h6>function IsAbnfCHARChar(C: Char): Boolean;</h6>
+<h6>function IsAbnfCRChar(C: Char): Boolean;</h6>
+<h6>function IsAbnfCRLFStr(S: String): Boolean;</h6>
+<h6>function IsAbnfCTLChar(C: Char): Boolean;</h6>
+<h6>function IsAbnfDIGITChar(C: Char): Boolean;</h6>
+<h6>function IsAbnfDQUOTEChar(C: Char): Boolean;</h6>
+<h6>function IsAbnfHEXDIGChar(C: Char): Boolean;</h6>
+<h6>function IsAbnfHTABChar(C: Char): Boolean;</h6>
+<h6>function IsAbnfLFChar(C: Char): Boolean;</h6>
+<h6>function IsAbnfLWSPStr(S: String): Boolean;</h6>
+<h6>function IsAbnfOCTETChar(C: Char): Boolean;</h6>
+<h6>function IsAbnfSPChar(C: Char): Boolean;</h6>
+<h6>function IsAbnfVCHARChar(C: Char): Boolean;</h6>
+<h6>function IsAbnfWSPChar(C: Char): Boolean;</h6>
+
+<hr />
+
+<h5>Wide String and Wide Character Test Functions</h5>
+
+<p>The following functions serve to check whether a WideString S or WideChar C conforms to the respective Augmented Backus-Naur Form (ABNF) core rule (see [RFC 2234], § 6.1).  All functions return 'true' if S or C conforms to the rule, otherwise 'false' is returned.</>
+
+<h6>function IsAbnfALPHAWideChar(C: WideChar): Boolean;</h6>
+<h6>function IsAbnfBITWideChar(C: WideChar): Boolean;</h6>
+<h6>function IsAbnfCHARWideChar(C: WideChar): Boolean;</h6>
+<h6>function IsAbnfCRWideChar(C: WideChar): Boolean;</h6>
+<h6>function IsAbnfCRLFWideStr(S: WideString): Boolean;</h6>
+<h6>function IsAbnfCTLWideChar(C: WideChar): Boolean;</h6>
+<h6>function IsAbnfDIGITWideChar(C: WideChar): Boolean;</h6>
+<h6>function IsAbnfDQUOTEWideChar(C: WideChar): Boolean;</h6>
+<h6>function IsAbnfHEXDIGWideChar(C: WideChar): Boolean;</h6>
+<h6>function IsAbnfHTABWideChar(C: WideChar): Boolean;</h6>
+<h6>function IsAbnfLFWideChar(C: WideChar): Boolean;</h6>
+<h6>function IsAbnfLWSPWideStr(S: WideString): Boolean;</h6>
+<h6>function IsAbnfOCTETWideChar(C: WideChar): Boolean;</h6>
+<h6>function IsAbnfSPWideChar(C: WideChar): Boolean;</h6>
+<h6>function IsAbnfVCHARWideChar(C: WideChar): Boolean;</h6>
+<h6>function IsAbnfWSPWideChar(C: WideChar): Boolean;</h6>
+
+</body>
+</html>

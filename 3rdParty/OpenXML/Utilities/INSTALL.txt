@@ -1,0 +1,54 @@
+************************************************************
+Installation Instructions for the Open XML Utilities Package
+************************************************************
+
+The Open XML Utilities library was tested with Delphi 5, 6, 7, 2005, 2006, 2007, 2009, 2010 and XE 1.  Packages for Delphi 4 and Kylix 3 have also been provided, but are untested.  The Utilities library should also operate with Delphi Prism (untested too): just add the .PAS files you need to your solution.  If you detect any installation problem, please write me an email.  In this case it would be excellent, if you could also provide me with a fix for the problem.  Whether the Open XML Utilities Package runs also under Kylix 1 or 2, or BCB is unknown.  Reports about that matter are also very welcome.  Please mail to <d.k@philo.de>.  
+
+
+Installation Procedure up to Delphi 7
+-------------------------------------
+
+1. Extract the zip-archive.
+2. Open the package file appropriate to your Delphi/Kylix version (ending with ".dpk") in the Delphi IDE.
+3. The loaded package is displayed by the Package editor.
+4. Modify the package options if necessary, e.g. to specify other than the standard output or search pathes.
+5. Depending on you Delphi version either click the Compile package speed button or choose Compile from the menu to compile the package.
+6. Click the Install package speed button to install the package.
+7. Close the package window, and next confirm that the modifications should be saved.
+
+
+Installation Procedure for Win32 development in Delphi 2005 or later
+--------------------------------------------------------------------
+ 
+1. Extract the zip-archive.
+2. Open the package file appropriate to your Delphi version (ending with ".dpk") in the Delphi IDE.
+3. If you are asked to upgrade the package choose "Delphi for Win32" and click the "OK" button.
+4. The loaded package is displayed by the Project Manager.
+5. Modify the package options if necessary, e.g. to specify other than the standard output or search pathes.
+6. Compile and build the package.  This will generate a .bpl file of the package in the BPL output directory.
+7. From the "Component" menu choose the "Install Packages..." entry.  The "Install packages" dialog opens.
+8. In the "Install packages" dialog click on the "Add" button, and locate and choose the .bpl file created in step 6.
+9. Confirm all dialogs.
+
+
+Installation Procedure for .NET development in Delphi 2005, 2006 or 2007
+------------------------------------------------------------------------
+ 
+1. Extract the zip-archive.
+2. Open the package file appropriate to your Delphi version (ending with ".dpk") in the Delphi IDE.
+3. If you are asked to upgrade the package choose "Delphi for .NET" and click the "OK" button.
+4. The loaded package is displayed by the Project Manager.
+5. Modify the package options if necessary, e.g. to specify other than the standard output or search pathes.
+6. Compile and build the package.  This will generate a DK.Utilities.dll file of the package in the BPL output directory.
+7. From the "Component" menu choose the "Installed .NET components..." entry.  The "Installed .NET components" dialog opens.
+8. In the "Installed .NET components" dialog click on the ".NET VCL components" tab.  Here choose "Add", and locate and choose the DK.Utilities.dll file created in step 6.
+9. Confirm all dialogs.
+
+
+====================
+= Trouble Shooting =
+====================
+
+* The most frequent cause for troubles is that the .DCP and .DCU files created during compilation are not in the Delphi Library Path. Use Delphi's Environment options dialog to add the required directories to the Delphi Library Path.
+* If you were asked for a .BPL file when trying to install a package you will usually (i.e. unless you changed the output directory in the package options) find it in the BPL standard output directory which can be specified in Delphi's Environment options dialog.
+* If Delphi 2005 stalls when loading the package, you need to apply the Delphi 2005 updates from the Code Gear Web-site.

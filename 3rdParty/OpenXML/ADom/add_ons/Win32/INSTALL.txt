@@ -1,0 +1,11 @@
+Installation Procedure for Win32 Development in Delphi 4 or Later
+-----------------------------------------------------------------
+
+Prerequisites: You must first install ADOM.  AdomNetwork needs Internet Direct 10 (Indy 10) to be installed on you Delphi system.  Indy 10 is included in recent Delphi disributions or you can download it seperately from "http://www.nevrona.com/indy/".
+
+For each individual add on in the 'sources' folder that you want to install repeat the following steps:
+
+  1. Select the Option "Install Component" from the "Component" menu.
+  2. Add the file ending with ".pas" to a new or to an already existing package.
+  3. Click on OK, and next confirm that the components should be compiled and installed.
+  4. Close the package window, and next confirm that the modifications should be saved.

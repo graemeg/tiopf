@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{adc6c642-9b22-4a1a-8865-dec1cda5105a}</ProjectGuid>
+    <MainSource>DK.Utilities.dpk</MainSource>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release - all OS</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <DCC_DCCCompiler>DCCIL</DCC_DCCCompiler>
+    <DCC_DependencyCheckOutputName>C:\Users\Public\Documents\RAD Studio\5.0\Bpl\DK.Utilities.dll</DCC_DependencyCheckOutputName>
+    <DCC_UsePackage>Borland.Vcl</DCC_UsePackage>
+    <DCC_EnabledPackages>true</DCC_EnabledPackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_DebugInformation>False</DCC_DebugInformation>
+    <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
+    <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+    <DCC_Define>RELEASE</DCC_Define>
+    <DCC_UnitSearchPath>C:\Windows\assembly\GAC_MSIL\Borland.Vcl\11.0.5000.9245__91d62ebb5b0d1b1b</DCC_UnitSearchPath>
+    <DCC_ResourcePath>C:\Windows\assembly\GAC_MSIL\Borland.Vcl\11.0.5000.9245__91d62ebb5b0d1b1b</DCC_ResourcePath>
+    <DCC_IncludePath>C:\Windows\assembly\GAC_MSIL\Borland.Vcl\11.0.5000.9245__91d62ebb5b0d1b1b</DCC_IncludePath>
+    <DCC_NameSpace>Borland.Vcl</DCC_NameSpace>
+    <DCC_DefaultNamespace>DK.Utilities</DCC_DefaultNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_Alignment>8</DCC_Alignment>
+    <DCC_DebugInfoInExe>True</DCC_DebugInfoInExe>
+    <DCC_DebugVN>True</DCC_DebugVN>
+    <DCC_Platform>x86</DCC_Platform>
+    <DCC_NameSpace>Borland.Vcl</DCC_NameSpace>
+    <DCC_UnitSearchPath>C:\Windows\Microsoft.NET\Framework\v2.0.50727;C:\Windows\assembly\GAC_MSIL\Borland.VclRtl\11.0.5000.9245__91d62ebb5b0d1b1b;C:\Program Files\Common Files\CodeGear Shared\Rad Studio\Shared Assemblies\5.0;C:\Windows\assembly\GAC_32\Utilities_D2007_RTL\2.0.11.0__e9b1cb45f1d0b76b;C:\Users\Public\Documents\RAD Studio\5.0\Bpl;C:\Windows\assembly\GAC_MSIL\Borland.Vcl\11.0.5000.9245__91d62ebb5b0d1b1b</DCC_UnitSearchPath>
+    <DCC_ResourcePath>C:\Windows\Microsoft.NET\Framework\v2.0.50727;C:\Windows\assembly\GAC_MSIL\Borland.VclRtl\11.0.5000.9245__91d62ebb5b0d1b1b;C:\Program Files\Common Files\CodeGear Shared\Rad Studio\Shared Assemblies\5.0;C:\Windows\assembly\GAC_32\Utilities_D2007_RTL\2.0.11.0__e9b1cb45f1d0b76b;C:\Users\Public\Documents\RAD Studio\5.0\Bpl;C:\Windows\assembly\GAC_MSIL\Borland.Vcl\11.0.5000.9245__91d62ebb5b0d1b1b</DCC_ResourcePath>
+    <DCC_IncludePath>C:\Windows\Microsoft.NET\Framework\v2.0.50727;C:\Windows\assembly\GAC_MSIL\Borland.VclRtl\11.0.5000.9245__91d62ebb5b0d1b1b;C:\Program Files\Common Files\CodeGear Shared\Rad Studio\Shared Assemblies\5.0;C:\Windows\assembly\GAC_32\Utilities_D2007_RTL\2.0.11.0__e9b1cb45f1d0b76b;C:\Users\Public\Documents\RAD Studio\5.0\Bpl;C:\Windows\assembly\GAC_MSIL\Borland.Vcl\11.0.5000.9245__91d62ebb5b0d1b1b</DCC_IncludePath>
+    <DCC_Define>DEBUG</DCC_Define>
+    <DCC_DefaultNamespace>DK.Utilities</DCC_DefaultNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release - all OS|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_DebugInformation>False</DCC_DebugInformation>
+    <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
+    <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+    <DCC_UnitSearchPath>C:\Windows\assembly\GAC_MSIL\Borland.Vcl\11.0.5000.9245__91d62ebb5b0d1b1b</DCC_UnitSearchPath>
+    <DCC_ResourcePath>C:\Windows\assembly\GAC_MSIL\Borland.Vcl\11.0.5000.9245__91d62ebb5b0d1b1b</DCC_ResourcePath>
+    <DCC_IncludePath>C:\Windows\assembly\GAC_MSIL\Borland.Vcl\11.0.5000.9245__91d62ebb5b0d1b1b</DCC_IncludePath>
+    <DCC_Define>RELEASE;ALL_OS</DCC_Define>
+    <DCC_NameSpace>Borland.Vcl</DCC_NameSpace>
+    <DCC_DefaultNamespace>DK.Utilities</DCC_DefaultNamespace>
+  </PropertyGroup>
+  <ProjectExtensions>
+    <Borland.Personality>DelphiDotNet.Personality</Borland.Personality>
+    <Borland.ProjectType>Package</Borland.ProjectType>
+    <BorlandProject>
+<BorlandProject><DelphiDotNet.Personality><Parameters><Parameters Name="UseLauncher">False</Parameters><Parameters Name="LoadAllSymbols">True</Parameters><Parameters Name="LoadUnspecifiedSymbols">False</Parameters></Parameters><Package_Options><Package_Options Name="ImplicitBuild">False</Package_Options><Package_Options Name="DesigntimeOnly">True</Package_Options><Package_Options Name="RuntimeOnly">False</Package_Options><Package_Options Name="PackageDescription">Open XML Utilities Library 2.0</Package_Options></Package_Options><VersionInfo><VersionInfo Name="IncludeVerInfo">True</VersionInfo><VersionInfo Name="AutoIncBuild">False</VersionInfo><VersionInfo Name="MajorVer">1</VersionInfo><VersionInfo Name="MinorVer">0</VersionInfo><VersionInfo Name="Release">0</VersionInfo><VersionInfo Name="Build">0</VersionInfo><VersionInfo Name="Debug">False</VersionInfo><VersionInfo Name="PreRelease">False</VersionInfo><VersionInfo Name="Special">False</VersionInfo><VersionInfo Name="Private">False</VersionInfo><VersionInfo Name="DLL">False</VersionInfo><VersionInfo Name="Locale">1031</VersionInfo><VersionInfo Name="CodePage">1252</VersionInfo></VersionInfo><VersionInfoKeys><VersionInfoKeys Name="CompanyName"></VersionInfoKeys><VersionInfoKeys Name="FileDescription"></VersionInfoKeys><VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="InternalName"></VersionInfoKeys><VersionInfoKeys Name="LegalCopyright"></VersionInfoKeys><VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys><VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys><VersionInfoKeys Name="ProductName"></VersionInfoKeys><VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="Comments"></VersionInfoKeys></VersionInfoKeys><Source><Source Name="MainSource">DK.Utilities.dpk</Source></Source></DelphiDotNet.Personality><ModelSupport>False</ModelSupport></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets" />
+  <ItemGroup>
+    <Reference Include="$(SystemRoot)\assembly\GAC_MSIL\Borland.Vcl\11.0.5000.9245__91d62ebb5b0d1b1b\Borland.Vcl.dll">
+      <AssemblyName>Borland.Vcl</AssemblyName>
+      <Version>11.0.5000.9245</Version>
+      <HintPath>$(SystemRoot)\assembly\GAC_MSIL\Borland.Vcl\11.0.5000.9245__91d62ebb5b0d1b1b\Borland.Vcl.dll</HintPath>
+      <AssemblyTag>$(SystemRoot)\assembly\GAC_MSIL\Borland.Vcl\11.0.5000.9245__91d62ebb5b0d1b1b\Borland.Vcl.dll</AssemblyTag>
+      <LinkUnits>False</LinkUnits>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <DelphiCompile Include="DK.Utilities.dpk">
+      <MainSource>MainSource</MainSource>
+    </DelphiCompile>
+    <DCCReference Include="..\..\..\sources\dkAbnfUtils.pas" />
+    <DCCReference Include="..\..\..\sources\dkCodecUtilsRTL.pas" />
+    <DCCReference Include="..\..\..\sources\dkEncodingUtils.pas" />
+    <DCCReference Include="..\..\..\sources\dkLangUtils.pas" />
+    <DCCReference Include="..\..\..\sources\dkParserUtilsRTL.pas" />
+    <DCCReference Include="..\..\..\sources\dkTreeUtils.pas" />
+    <DCCReference Include="..\..\..\sources\dkUriUtils.pas" />
+    <DCCReference Include="..\..\..\sources\dkWideStringUtils.pas" />
+    <DCCReference Include="..\..\..\sources\dkXmlRulesUtils.pas" />
+  </ItemGroup>
+</Project>

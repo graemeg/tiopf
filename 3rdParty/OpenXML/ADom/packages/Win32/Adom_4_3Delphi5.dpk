@@ -1,0 +1,38 @@
+package Adom_4_3Delphi5;
+
+{$R '..\..\sources\AdomCore_4_3.dcr'}
+{$ALIGN ON}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST ON}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'Open XML Alternative Document Object Model (ADOM 4.3)'}
+{$DESIGNONLY}
+{$IMPLICITBUILD OFF}
+
+requires
+  Utilities_D5,
+  vcl50;
+
+contains
+  AdomPropertyEditor_4_3 in '..\..\sources\AdomPropertyEditor_4_3.pas',
+  AdomReg_4_3 in '..\..\sources\AdomReg_4_3.pas',
+  AdomCore_4_3 in '..\..\sources\AdomCore_4_3.pas';
+
+end.

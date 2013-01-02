@@ -1,0 +1,12 @@
+Installation Procedure for .NET Development in Delphi 2005 or Later
+-------------------------------------------------------------------
+
+Prerequisites: You must first install ADOM.  AdomNetwork needs Internet Direct 10 (Indy 10) to be installed on you Delphi system.  Indy 10 is included in recent Delphi disributions or you can download it seperately from "http://www.nevrona.com/indy/".
+
+Packages for Delphi 2005, 2006 and 2007 for .NET have been provided in the 'packages' folder.  Users of Delphi 8 must create their own package.  For details how to install .NET packages see the INSTALL.txt file for ADOM itself that can be found in the top level folder of the ADOM distribution.
+
+
+== Trouble Shooting ==
+
+* If you encounter the error message "Required package 'DK.AdomCore_4_3' not found", this means that the 'DK.AdomCore_4_3.dll' file (generated during ADOM's installation) is not on the Delphi search path.  To add it to the search path, in the porject manager you need to right-click on 'AdomAddOns_4_3.dll' and choose 'Options...'.  In the dialog that opens active 'Directories/Conditionals'.  Here under 'search path' you must add the path to the folder that contains the 'DK.Adom_4_3.dll' file.
+* If you encounter the error message "Required package 'DK.Utils' not found", this means that the 'DK.Utils.dll' file (generated during the installation of the Open XML Utilities package) is not on the Delphi search path.  To add it to the search path, in the porject manager you need to right-click on 'AdomAddOns_4_3.dll' and choose 'Options...'.  In the dialog that opens active 'Directories/Conditionals'.  Here under 'search path' you must add the path to the folder that contains the 'DK.Utils.dll' file.

@@ -1,0 +1,1061 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>WideString Utilities Library</title>
+<style type="text/css">
+	body {
+		Font-Family : Arial, Helvetica, Sans-Serif;
+		Font-Size : Small;
+		Font-Style : Normal;
+		Font-Weight : Normal;
+	}
+
+	Div.Legalnotice {
+		Font-Family : "Courier New", Courier, Monospace;
+	}
+
+	H1 {
+		Font-Weight : Bold;
+		Font-Size : Xx-Large;
+		Font-Style : Normal;
+	}
+
+	H2 {
+		Font-Weight : Bold;
+		Font-Size : Xx-Large;
+		Font-Style : Italic;
+	}
+
+	H3 {
+		Font-Weight : Bold;
+		Font-Size : X-Large;
+		Font-Style : Normal;
+	}
+
+	H4 {
+		Font-Weight : Normal;
+		Font-Size : X-Large;
+		Font-Style : Italic;
+	}
+
+	H5 {
+		Font-Weight : Bold;
+		Font-Size : Large;
+		Font-Style : Italic;
+	}
+
+	H6 {
+		Font-Weight : Bold;
+		Font-Size : Medium;
+		Font-Style : Normal;
+	}
+
+	H7 {
+		Font-Weight : Bold;
+		Font-Size : Small;
+		Font-Style : Normal;
+	}
+</style>
+</head>
+
+<body>
+<h1>WideString Utilities Library 1.0.8</h1>
+<h2>Delphi 4 to 2009 and Kylix 3 Implementation</h2>
+<h3>by Dieter K&ouml;hler</h3>
+<hr />
+<div class="legalnotice">
+
+<p>LICENSE</p>
+
+<p>The contents of this file are subject to the Mozilla Public License Version
+1.1 (the "License"); you may not use this file except in compliance with
+the License. You may obtain a copy of the License at
+"http://www.mozilla.org/MPL/"</p>
+
+<p>Software distributed under the License is distributed on an "AS IS" basis,
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+the specific language governing rights and limitations under the License.</p>
+
+<p>The Original Code is "dkWideStringUtils.pas".</p>
+
+<p>The Initial Developer of the Original Code is Dieter Köhler (Heidelberg,
+Germany, "http://www.philo.de/"). Portions created by the Initial Developer
+are Copyright (C) 2003-2007 Dieter Köhler. All Rights Reserved.</p>
+
+<p>Alternatively, the contents of this file may be used under the terms of the
+GNU General Public License Version 2 or later (the "GPL"), in which case the
+provisions of the GPL are applicable instead of those above. If you wish to
+allow use of your version of this file only under the terms of the GPL, and
+not to allow others to use your version of this file under the terms of the
+MPL, indicate your decision by deleting the provisions above and replace them
+with the notice and other provisions required by the GPL. If you do not delete
+the provisions above, a recipient may use your version of this file under the
+terms of any one of the MPL or the GPL.</p>
+</div>
+
+<hr />
+<h4>Acknowledgment</h4>
+
+<p>Thanks to Karl Waclawek for providing the TUtilsWideStringStream class.</p>
+
+<hr />
+
+<h4>Introduction</h4>
+
+<p>The WideString Utilities Library contains helper functions for WideString. The latest version of this software is available at &lt;<a href="http://www.philo.de/xml/">http://www.philo.de/xml/</a>&gt;.</p>
+
+<hr />
+
+<h4>Using the unit</h4>
+
+<p>The WideString Utilities Library does not contain any components to be registered. So using it from inside your own projects is very simple: Add "dkWideStringUtils" to the uses clause of your unit and make sure that the path to the location of the dkWideStringUtils.pas file is included in Delphi's list of library paths. To include it go to the Library section of Delphi's Environment Options dialog (see the menu item: "Tools/Environment Options ...").</p>
+
+<hr />
+
+<h4>WideString Handling Routines and Classes</h4>
+
+<h5>function CompareWideStr(const S1, S2: WideString): Integer;</h5>
+
+<p>CompareWideStr compares S1 to S2, with case-sensitivity. The return value is less than 0 if S1 is less than S2, 0 if S1 equals S2, or greater than 0 if S1 is greater than S2. The compare operation is based on the 16-bit ordinal value of each character and is not affected by the current locale. Also UTF-16 surrogates are not recognized as such, but treated according to the 16-bit ordinal value of their constituents ($D800..$DFFF), i.e. they are arranged before $E000.</p>
+
+<h5>function EndsWideStr(const SubString, S: WideString): Boolean;</h5>
+
+<p>Indicates whether one wideString is a (case-sensitive) suffix of another. The return value is True if S ends with SubString, otherwise False is returned. The comparison is based on the 16-bit ordinal value of each character and is not affected by the current locale.</p>
+
+<h5>function StartsWideStr(const SubString, S: WideString): Boolean;</h5>
+
+<p>Indicates whether one wideString is a (case-sensitive) prefix of another. The return value is True if S starts with SubString, otherwise False is returned. The comparison is based on the 16-bit ordinal value of each character and is not affected by the current locale.</p>
+
+<h5>function TranslateWideString(const S, Pattern_1, Pattern_2: WideString): WideString;</h5>
+
+<p>Returns S with occurrences of characters in Pattern_1 replaced by the character at the corresponding position in Pattern_2. For example translateWideString('bar', 'abc', 'ABC') returns the wideString 'BAr'. If there is a character in Pattern_1 with no character at a corresponding position in Pattern_2 (because Pattern_1 is longer than Pattern_2), then occurrences of that character in S are removed. For example translateWideString('--aaa--', 'abc-', "ABC") returns 'AAA'. If a character occurs more than once in Pattern_1, then the first occurrence determines the replacement character. If Pattern_2 is longer than Pattern_1, then excess characters are ignored.</p>
+
+<h5>function TrimSpace(const S: WideString): WideString;</h5>
+
+<p>Returns the specified WideString S with leading and trailing space characters (#$20) removed.</p>
+
+<h5>TUtilsCustomWideStr = class</h5>
+
+<p>TUtilsCustomWideStr can be used to improve the performance of concating WideStrings. In Delphi, concating WideStrings may lead to performance critical memory allocation ans string copying. Consider the following example:</p>
+
+<pre>
+var
+  S: WideString;
+  I: Intger;
+begin
+  for I := 0 to 99 do
+    S := S + '.';
+end;
+</pre>
+
+<p>Each time a new point is added to S, new memory sufficient for the expanted WideString is allocated, the bytes from the previous memory area are copied to the freshly allocated memory, the point character is added, and finally the previous memory used for S is deallocated. So the above loop triggers 100 of these allocation, copying and deallocation processes.</p>
+
+<p>TUtilsCustomWideStr is a class that allows an easy to handle solution to this problem: The object uses an internal buffer that requires only occasionally to allocated new memory: It starts with a memory buffer of 64 byte; each time the memory buffer is full, it is automatically expanded by 25 %.</p>
+
+<h6>Public Properties</h6>
+<ul>
+<li>Length: Integer (readonly)<br />The length of the custom wide string.</li>
+<li>WideChars[Index: Integer]: WideChar<br />Gives access to the WideChar on the indexth position in the custom wide string.</li>
+</ul>
+
+
+<h6>Public Methods</h6>
+
+<ul>
+<li>constructor Create;<br />Creates a new TUtilsCustomWideStr object</li>
+<li>destructor Destroy; override;<br />Destroys a TUtilsCustomWideStr object.  Do not call 'Destroy' directly, but use 'Free', inherited from TObject, instead.  Free tests whether the TUtilsCustomWideStr has not already been freed, and only then calls 'Destroy'.</li>
+<li>procedure AddUCS4Char(const CodePoint: UCS4Char); virtual;<br />Adds an UCS-4 character of the specified code point to the end of the custom wide string.
+<pre>
+      Parameters:
+      - CodePoint
+         The code point (Unicode scalar value) of the character to be added.
+</pre>
+</li>
+<li>procedure AddWideChar(const C: WideChar) virtual;<br />Adds the specified WideChar to the end of the custom wide string.
+<pre>
+      Parameters:
+      - C
+         The WideChar to be added.
+</pre>
+</li>
+<li>procedure AddWideString(const S: WideString); virtual;<br />Adds the specified WideString to the end of the custom wide string.
+<pre>
+      Parameters:
+      - S
+         The WideString to be added.
+</pre>
+</li>
+<li>function EndsWith(const S: WideString): Boolean; virtual;<br />Tests whether the custom wide string ends with the specified WideString.
+<pre>
+      Parameters:
+      - S
+         The WideString to be tested.
+
+      Return value:
+         'True' if the custom wide string end with
+         the specified WideString, 'false' if not.
+</pre>
+</li>
+<li>function IsEqual(const S: WideString): Boolean; virtual;<br />Tests whether the content of the custom wide string is byte by byte equivalent to the specified WideString.
+<pre>
+      Parameters:
+      - S
+         The WideString to be tested for equivalence.
+
+      Return value:
+         'True' if the custom wide string is equivalent
+         to the specified WideString, 'false' if not.
+</pre>
+</li>
+<li>procedure Clear; virtual;<br />Clears the custom wide string.
+<pre>
+</pre>
+</li>
+<li>function StartsWith(const S: WideString): Boolean; virtual;<br />Tests whether the custom wide string starts with the specified WideString.
+<pre>
+      Parameters:
+      - S
+         The WideString to be tested.
+
+      Return value:
+         'True' if the custom wide string startswith
+         the specified WideString, 'false' if not.
+</pre>
+</li>
+<li>function Value: WideString; virtual;<br />Returns the content of the custom wide string as a UTF-16 encoded WideString.<br />Since calling the Value function involves time consuming string copying, always use one of the other TUtilsCustomWideStr access functions, if possible, e.g. WideChars[Index] instead of Value[Index], IsEqual[S] instead of (Value = S), or Length instead of Length(Value).
+<pre>
+      Return value:
+         The content of the custom wide string as
+         a UTF-16 encoded WideString
+</pre>
+</li>
+</ul>
+
+<hr />
+
+<h4>WideString Lists and Trees</h4>
+
+<h5>Auxilliary Types</h5>
+
+<h6>TUtilsWideStringItem</h6>
+
+<pre>
+  TUtilsWideStringItem = record
+    FString: WideString;
+    FObject: TObject;
+  end;
+</pre>
+
+<p>TUtilsWideStringItem is a record internally used in the TUtilsWideStringList class to store WideString-Object pairs.</p>
+
+<h6>TUtilsWideStringItemList = array[0..MaxListSize]  of TUtilsWideStringItem;</h6>
+
+<p>TUtilsWideStringItemList defines a list of TUtilsWideStringItem records.</p>
+
+<h6>PUtilsWideStringItemList = ^TUtilsWideStringItemList;</h6>
+
+<p>PUtilsWideStringItemList defines a pointer to a TUtilsWideStringItemList array. It is internally used in TUtilsWideStringList.</p>
+
+
+<hr />
+
+<h5>TUtilsWideStringList = class (TPersistent)</h5>
+
+<p>Under Delphi for Win32 TUtilsWideStringList is a WideString equivalent for the Delphi VCL TStringList class. In particular TUtilsWideStringList defines the following public methods and properties equivalent to TStringList (not all TStringList methods have an equivalent in TUtilsWideStringList):</p>
+
+<pre>
+    destructor Destroy; override;
+    function Add(S: WideString): Integer; virtual;
+    function AddObject(S: WideString; AObject: TObject): Integer; virtual;
+    procedure AddWideStrings(Strings: TUtilsWideStringList); virtual;
+    procedure Append(S: WideString); virtual;
+    procedure Assign(Source: TPersistent); override;
+    procedure BeginUpdate; virtual;
+    procedure Clear; virtual;
+    procedure Delete(Index: Integer); virtual;
+    procedure EndUpdate; virtual;
+    procedure Exchange(Index1, Index2: Integer); virtual;
+    function Find(const S: WideString;
+                    var Index: Integer): Boolean; virtual;
+    function IndexOf(const S: WideString): Integer; virtual;
+    procedure Insert(Index: Integer; const S: WideString); virtual;
+    procedure InsertObject(Index: Integer; const S: WideString; AObject: TObject); virtual;
+    procedure Sort; virtual;
+
+    property Capacity: Integer read GetCapacity write SetCapacity;
+    property Count: Integer read GetCount;
+    property Duplicates: TDuplicates read FDuplicates write FDuplicates default dupIgnore;
+    property Objects[Index: Integer]: TObject read GetObject write PutObject;
+    property Sorted: Boolean read FSorted write SetSorted default False;
+    property WideStrings[Index: Integer]: WideString read Get write Put; default;
+
+    property OnChange: TNotifyEvent read FOnChange write FOnChange;
+    property OnChanging: TNotifyEvent read FOnChanging write FOnChanging;
+</pre>
+
+<p>The following public methods of TUtilsWideStringList have no equivalent in TStringList:</p>
+
+<ul>
+<li>function IndexOfLast(const S: WideString): Integer; virtual;<br />Returns the position of the last occurence of a WideString in the list.
+<pre>
+      Parameters:
+      - S
+         The WideString whose position is to be determined.
+
+      Return value:
+         The zero-based index of the last occurence of S in the
+         list, or -1 if S does not occure in the list.
+</pre>
+</li>
+</ul>
+
+<p>Under Delphi for .NET the string type maps to the WideString class.  Thus TUtilsWideStringList is inherited from the TStringList which it extents with the following methods and properties:</p>
+
+<pre>
+    procedure AddWideStrings(Strings: TUtilsWideStringList); virtual;
+    function IndexOfLast(const S: WideString): Integer; virtual;
+    property WideStrings[Index: Integer]: WideString read Get write Put; default;
+</pre>
+
+<hr />
+
+<h5>TUtilsNameValueList = class (TPersistent)</h5>
+
+<p>A TUtilsNameValueList is used to store name-value pairs of WideStrings.</para>
+
+<h6>Public Properties</h6>
+<ul>
+<li>Capacity: Integer<br />The number of WideString pairs for which memory is reserved. This is equivalent to the Delphi VCL property 'TStringList.Capacity'.</li>
+<li>Duplicates: TDuplicates<br />Specifies whether duplicate wideStrings can be added to sorted lists.  The value of Duplicates should be one of the following:
+	<ul>
+	<li>dupIgnore<br />Ignore attempts to add duplicate WideStrings to the list (the default).</li>
+  <li>dupError<br />Raise an EStringListError exception when an attempt is made to add duplicate wideStrings to the sorted list.</li>
+  <li>dupAccept<br />Permit duplicate wideStrings in the sorted list.</li>
+  </ul>
+Set Duplicates before adding any WideStrings to the list. Setting Duplicates to dupIgnore or dupError does nothing about duplicate WideStrings that are already in the list.<br />Note:  Duplicates does nothing if the list is not sorted.</li>
+<li>Length: Integer (readonly)<br />The number of WideStrings pairs in the list. This is equivalent to the Delphi VCL property 'TStringList.Count'.</li>
+<li>Names[Index: Integer]: WideString (readonly)<br />The name part of the name-object pair on the indexth position in the list.</li>
+<li>Objects[Index: Integer]: TObject<br />An objects that is associated with the name-value pair on the indexth position in the list.<br />Note: The list does not own the objects in the Objects array.  Objects added to the Objects array still exist even if the list is destroyed.  They must be explicitly destroyed by the application.</li>
+<li>Sorted: Boolean<br />Specifies whether the wideStrings in the list should be automatically sorted.<br />Set Sorted to 'True' to cause the wideStrings in the list to be automatically sorted in ascending order. Set Sorted to 'False' (the default) to allow strings to remain where they are inserted. When Sorted is 'False', the wideStrings in the list can be put in ascending order at any time by calling the Sort() method.<br />When Sorted is 'True', do not use Insert() to add wideStrings to the list. Instead, use Add(), which will insert the new wideStrings in the appropriate position. When Sorted is 'False', use Insert() to add wideStrings to an arbitrary position in the list, or Add() to add wideStrings to the end of the list.</li>
+<li>Values[Index: Integer]: WideString (readonly)<br />The value part of the name-object pair on the indexth position in the list.</li>
+</ul>
+
+<h6>Public Methods</h6>
+
+<ul>
+<li>constructor Create;<br />Creates a new TUtilsNameValueList object</li>
+<li>destructor Destroy; override;<br />Destroys a TUtilsNameValueList object.  Do not call 'Destroy' directly, but use 'Free', inherited from TObject, instead.  Free tests whether the TUtilsNameValueList has not already been freed, and only then calls 'Destroy'.</li>
+<li>function Add(const Name, Value: WideString): Integer; virtual;<br />Adds a name-value pair to the list.
+<pre>
+      Parameters:
+      - Name
+         The 'name' part of the name-value pair to be added.
+      - Value
+         The 'value' part of the name-value pair to be added.
+
+      Return value:
+         The index of the newly added name-value pair in the
+         list.
+</pre>
+</li>
+<li>function AddObject(const Name, Value: WideString; AObject: TObject): Integer; virtual;<br />Adds a name-value pair and an associated object to the list.
+<pre>
+      Parameters:
+      - Name
+         The 'name' part of the name-value pair to be added.
+      - Value
+         The 'value' part of the name-value pair to be added.
+      - AObject
+         The object to be associated.
+
+      Return value:
+         The index of the newly added name-value pair in the
+         list.
+</pre>
+</li>
+<li>procedure AddNameValueList(const Nvl: TUtilsNameValueList); virtual;<br />Adds a group of name-value pairs to the list.<br />Call AddNameValueList() to add the name-value pairs from another TUtilsNameValueList object to the list. If there are objects associated with the name-value pairs, references to the associated objects will be added as well.
+<pre>
+      Parameters:
+      - Nvl
+         The TUtilsNameValueList object that contains the group
+         of name-value pairs to be added.
+</pre>
+</li>
+<li>procedure Assign(Source: TPersistent); override;<br />Sets the name-value pairs in the list, and possibly associated objects, from a source object.<br />Use Assign() to set the value of the TUtilsNameValueList object from another object.  If Source is of type TUtilsNameValueList, the list is set to the list of the source TUtilsNameValueList object, and if there are objects associated with the name-value pairs, references to the associated objects will be copied as well.  If Source is any other type of object, Assign() calls the inherited method, which will copy the list from any object that specifies how to copy to a TUtilsNameValueList object in its AssignTo() method.
+<pre>
+      Parameters:
+      - Source
+         The object whose values shall be assigned.
+</pre>
+</li>
+<li>procedure Clear; virtual;<br />Deletes all name-value pairs from the list.
+<pre>
+</pre>
+</li>
+<li>procedure Delete(const Index: Integer); virtual;<br />Deletes a name-value pair from a specific position in the list.
+<pre>
+      Parameters:
+      - Item
+         The list index of the name-value pair to be
+         deleted.
+</pre>
+</li>
+<li>procedure Exchange(const Index1, Index2: Integer); virtual;<br />Exchanges the position of the two specified name-value pairs in the list.
+<pre>
+      Parameters:
+      - Index1
+         The list index of the first name-value pair.
+      - Index2
+         The list index of the second name-value pair.
+</pre>
+</li>
+<li>function IndexOf(const Name, Value: WideString): Integer; virtual;<br />Returns the position of the first name-value pair in the list with the specified name and value.
+<pre>
+      Parameters:
+      - Name
+         The name part of the name-value pair.
+      - Value
+         The value part of the name-value pair.
+
+      Return value:
+         The zero-based index of the specified name-value pair in the
+         list, or -1 if no such pair exists.
+</pre>
+</li>
+<li>function IndexOfLast(const Name, Value: WideString): Integer; virtual;<br />Returns the position of the last name-value pair in the list with the specified name and value.
+<pre>
+      Parameters:
+      - Name
+         The name part of the name-value pair.
+      - Value
+         The value part of the name-value pair.
+
+      Return value:
+         The zero-based index of the last occurrence of the
+         specified name-value pair in the list, or -1 if no
+         such pair exists.
+</pre>
+</li>
+<li>function IndexOfLastName(const Name: WideString): Integer; virtual;<br />Returns the position of the last name-value pair in the list with the specified name part.
+<pre>
+      Parameters:
+      - Name
+         The name part of the name-value pair.
+
+      Return value:
+         The zero-based index of the last occurrence of the
+         name-value pair in the list with the specified name,
+         or -1 if no such pair exists.
+</pre>
+</li>
+<li>function IndexOfName(const Name: WideString): Integer; virtual;<br />Returns the position of the first name-value pair in the list with the specified name part.
+<pre>
+      Parameters:
+      - Name
+         The name part of the name-value pair.
+
+      Return value:
+         The index of the first name-value pair in the
+         list with the specified name, or -1 if no such
+         pair exists.
+</pre>
+</li>
+<li>procedure Insert(const Index: Integer; const Name, Value: WideString); virtual;<br />Inserts a name-value pair at the specified position in the list.
+<pre>
+      Parameters:
+      - Index
+         The position where the name-value pair is to
+         be inserted.
+      - Name
+         The name part of the name-value pair to be
+         inserted.
+      - Value
+         The value part of the name-value pair to be
+         inserted.
+</pre>
+</li>
+<li>function Find(const Name, Value: WideString; var Index: Integer): Boolean; virtual;<br />Returns the position of the first name-value pair in a sorted list with the specified name and value. Do not use this function on unsorted lists.
+<pre>
+      Parameters:
+      - Name
+         The name part of the name-value pair.
+      - Value
+         The value part of the name-value pair.
+
+      Return Parameter:
+      - Index
+         The index of the specified name-value pair in the
+         list, or -1 if no such pair exists.
+
+      Return value:
+         'True' if the specified name-value pair exists in
+         the list, 'False' otherwise.
+</pre>
+</li>
+<li>function FindOfName(const Name: WideString; var Index: Integer): Boolean; virtual;<br />Returns the position of the first name-value pair in a sorted list with the specified name part. Do not use this function on unsorted lists.
+<pre>
+      Parameters:
+      - Name
+         The name part of the name-value pair.
+
+      Return Parameter:
+      - Index
+         The index of the first name-value pair in the
+         list with the specified name, or -1 if no such
+         pair exists.
+
+      Return value:
+         'True' if a name-value with the specified name
+         was fount in the list, 'False' otherwise.
+</pre>
+</li>
+<li>procedure Sort; virtual;<br />Sorts the wideStrings in the list in ascending order.<br />Call Sort() to sort the wideStrings in a list that has the Sorted property set to 'False'. WideString lists with the Sorted property set to 'True' are automatically sorted.
+</li>
+</ul>
+
+<hr />
+
+<h5>TUtilsNameValueTree = class(TUtilsNameValueList)</h5>
+
+<p>A TUtilsNameValueTree object is used to store name-value pairs of WideStrings together with an optional reference to a subtree which must also be of type TUtilsNameValueTree.</para>
+
+<p>The TUtilsNameValueTree object owns the TUtilsNameValueTree subtrees added to it.  When the TUtilsNameValueTree is cleared or destroyed, all subtrees are recursively destroyed, too.</p>
+
+<h6><emphasis>Properties</emphasis></h6>
+<ul>
+    <li>
+    property Capacity: Integer
+    <pre>
+      The number of wideString pairs for which memory is
+      reserved. This is equivalent to the Delphi VCL
+      property 'TStringList.Capacity'.
+    </pre>
+    </li>
+
+    <li>
+    property Children[Index: Integer]: TUtilsNameValueTree (readonly)
+    <pre>
+      The TUtilsNameValueTree associated with the
+      wideString pair on the indexth position in
+      the list.
+    </pre>
+    </li>
+
+    <li>
+    property Duplicates: TDuplicates
+    <pre>
+      Specifies whether name-value pairs with duplicate
+      names can be added to sorted lists.  The value of
+      Duplicates should be one of the following:
+
+      dupIgnore	  Ignore attempts to add duplicate
+                  names to the list.
+      dupError	  Raise an EStringListError exception
+                  when an attempt is made to add
+                  duplicate names to the sorted list.
+      dupAccept	  Permit duplicate wideStrings in the
+                  sorted list.
+
+      Set Duplicates before adding any name-value pairs
+      to the list. Setting Duplicates to dupIgnore or
+      dupError does nothing about duplicate
+      name-value pairs that are already in the list.
+
+      Note:  Duplicates does nothing if the list is
+      not sorted.
+    </pre>
+    </li>
+
+    <li>
+    property Length: Integer (readonly)
+    <pre>
+      The number of wideStrings pairs in the list.
+      This is equivalent to the Delphi VCL property
+      'TStringList.count'.
+    </pre>
+    </li>
+
+    <li>
+    property Names[Index: Integer]: WideString (readonly)
+    <pre>
+      The 'name' part of the wideString pair on the indexth
+      position in the list.
+    </pre>
+    </li>
+
+    <li>
+    property Objects[Index: Integer]: WideString
+    <pre>
+      An objects that is associated with the name-value pair
+      on the indexth position in the list.
+
+      Note: The list does not own the objects in the Objects
+      array.  Objects added to the Objects array still exist
+      even if the list is destroyed.  They must be explicitly
+      destroyed by the application.
+    </pre>
+    </li>
+
+    <li>
+    property ParentTree: TUtilsNameValueTree
+    <pre>
+      The parent tree if this TUtilsNameValueTree is
+      the subtree of another TUtilsNameValueTree, or
+      nil otherwise.
+    </pre>
+    </li>
+
+    <li>
+    property Sorted: Boolean
+    <pre>
+      Specifies whether the name-value pairs in the list
+      should be automatically sorted by name.
+
+      Set Sorted to 'True' to cause the name-value pairs
+      in the list to be automatically sorted by name in
+      ascending order.  Set Sorted to 'False' to allow
+      name-value pairs to remain where they are inserted.
+      When Sorted is 'False', the name-value pairs in the
+      list can be put in ascending order at any time by
+      calling the Sort() method.
+
+      When Sorted is 'True', do not use Insert() to add
+      name-value pairs to the list.  Instead, use Add(),
+      which will insert the new name-value pairs in the
+      appropriate position.  When Sorted is 'False', use
+      Insert() to add wideStrings to an arbitrary position
+      in the list, or Add() to add name-value pairs to the
+      end of the list.
+    </pre>
+    </li>
+
+    <li>
+    property Values[Index: Integer]: WideString (readonly)
+    <pre>
+      The 'value' part of the wideString pair on the indexth
+      position in the list.
+    </pre>
+    </li>
+
+</ul>
+
+<h6>Public methods</h6>
+<ul>
+    <li>
+    constructor Create;
+    <pre>
+      Creates a new TUtilsNameValueTree object.
+    </pre>
+    </li>
+
+    <li>
+    destructor Destroy; override;
+    <pre>
+      Destroys a TUtilsNameValueTree object and all its
+      subtrees recursively.  Do not call 'destroy'
+      directly, but use 'free', inherited from TObject,
+      instead.  Free tests whether the TUtilsNameValueTree
+      has not already been freed, and only then calls
+      'destroy'.
+
+      When the TUtilsNameValueTree object is a subtree
+      in another TUtilsNameValueTree object it is
+      automatically removed from its parent tree
+      before it is destroyed.  Hint: Since this involves
+      a list lookup for the index of the subtree in the
+      context of its parent tree, it is usually faster
+      to remove it from the its parent tree before
+      destroying it if its index is known.  For example
+
+        MyNameValueTree.Children[5].Free;
+
+      should be replaced by
+
+        MySubTree:= MyNameValueTree.ReplaceChild[5,nil];
+        if Assigned(MySubTree) then MySubTree.Free;
+
+    </pre>
+    </li>
+
+    <li>
+    function Add(const Name,
+                       Value: WideString): Integer; virtual;
+    <pre>
+      Adds a name-value pair to the list.
+
+      Parameters:
+      - Name
+         The 'name' part of the name-value pair to be added.
+      - Value
+         The 'value' part of the name-value pair to be added.
+
+      Return value:
+         The index of the newly added name-value pair in the
+         list.
+    </pre>
+    </li>
+
+    <li>
+    function AddChild(const Name,
+                            Value: WideString;
+                      const Child: TUtilsNameValueTree): Integer; virtual;
+    <pre>
+      Adds a name-value pair to the list, and attaches a
+      TUtilsNameValueTree object to the pair.
+
+      Parameters:
+      - Name
+         The 'name' part of the name-value pair to be added.
+      - Value
+         The 'value' part of the name-value pair to be added.
+      - Child
+         The TUtilsNameValueTree object to attach to this
+         name-value pair.
+
+      Return value:
+         The index of the newly added name-value pair and
+         child TUtilsNameValueTree object in the list.
+
+      Exceptions:
+      - EStringListError
+          This Delphi VCL exception is raised if this
+          TUtilsNameValueTree object is a descendant of the
+          specified TUtilsNameValueTree object or the specified
+          TUtilsNameValueTree object is in use elsewhere.
+    </pre>
+    </li>
+
+    <li>
+    function AddChildObject(const Name,
+                                  Value: wideString;
+                            const Child: TUtilsNameValueTree;
+                            const AObject: TObject): Integer; virtual;
+    <pre>
+      Adds a name-value pair to the list, attaches a
+      TUtilsNameValueTree object to the pair, and associates
+      an object with the pair.
+
+      Parameters:
+      - Name
+         The 'name' part of the name-value pair to be added.
+      - Value
+         The 'value' part of the name-value pair to be added.
+      - Child
+         The TUtilsNameValueTree object to attach to this
+         name-value pair.
+      - AObject
+         The object to associate with this name-value pair.
+
+      Return value:
+         The index of the newly added name-value pair and
+         child TUtilsNameValueTree object and attached object
+         in the list.
+
+      Exceptions:
+      - EStringListError
+          This Delphi VCL exception is raised if this
+          TUtilsNameValueTree object is a descendant of the
+          specified TUtilsNameValueTree object or the specified
+          TUtilsNameValueTree object is in use elsewhere.
+    </pre>
+    </li>
+
+    <li>
+    function AddObject(const Name,
+                       Value: wideString;
+                       AObject: TObject): Integer; virtual;
+    <pre>
+      Adds a name-value pair and an associated object to the
+      list.
+
+      Parameters:
+      - Name
+         The 'name' part of the name-value pair to be added.
+      - Value
+         The 'value' part of the name-value pair to be added.
+      - AObject
+         The object to be associated.
+
+      Return value:
+         The index of the newly added name-value pair in the
+         list.
+    </pre>
+    </li>
+
+    <li>
+    procedure AddNameValueList(const Nvl: TUtilsNameValueList); virtual;
+    <pre>
+      Adds a group of name-value pairs to the list.
+
+      Call AddNameValueList() to add the name-value pairs
+      from a TUtilsNameValueList object to the list. If
+      there are objects associated with the name-value pairs,
+      references to the associated objects will be added as
+      well.
+
+      Parameters:
+      - Nvl
+         The TUtilsNameValueList object that contains the group
+         of name-value pairs to be added.
+    </pre>
+    </li>
+
+    <li>
+    procedure Assign(Source: TPersistent); override;
+    <pre>
+      Sets the name-value pairs in the list, and possibly
+      associated objects, from a source object.
+
+      Use Assign() to set the value of the TUtilsNameValueTree
+      object from another object.  If Source is of type
+      TUtilsNameValueTree, the list is set to the list of the
+      source TUtilsNameValueTree object and child
+      TUtilsNameValueTree objects are recursively copyed too,
+      and if there are objects associated with the
+      name-value pairs, references to the associated objects
+      will be copied as well.  If Source is any other type
+      of object, Assign() calls the inherited method, which
+      will copy the list from any object that specifies how
+      to copy to a TUtilsNameValueTree object in its AssignTo()
+      method.
+
+      Parameters:
+      - Source
+         The object whose values shall be assigned.
+    </pre>
+    </li>
+
+    <li>
+    procedure Clear; override;
+    <pre>
+      Deletes all name-value pair from the list, and destroys
+      any child TUtilsNameValueTree objects.
+    </pre>
+    </li>
+
+    <li>
+    procedure Delete(const Item: integer); override;
+    <pre>
+      Deletes a name-value pair from the list.  If a child
+      TUtilsNameValueTree object is associated with this pair
+      it is destroyed.
+
+      Parameters:
+      - Item
+         The list index of the name-value pair to be deleted.
+    </pre>
+    </li>
+
+    <li>
+    procedure Exchange(const Index1,
+                             Index2: integer); virtual;
+    <pre>
+      Exchanges the position of the two specified
+      name-value pair in the list.
+
+      Parameters:
+      - Index1
+         The list index of the first name-value pair.
+      - Index2
+         The list index of the second name-value pair.
+    </pre>
+    </li>
+
+    <li>
+    function IndexOf(const Name,
+                           Value: wideString): Integer; virtual;
+    <pre>
+      Returns the position of the first name-value pair
+      in the list with the specified name and value.
+
+      Parameters:
+      - Name
+         The 'name' part of the name-value pair.
+      - Value
+         The 'value' part of the name-value pair.
+
+      Return value:
+         The index of the specified name-value pair in the
+         list, or -1 if non such pair exists.
+    </pre>
+    </li>
+
+    <li>
+    function IndexOfChild(const Child: TUtilsNameValueTree): Integer; virtual;
+    <pre>
+      Returns the position of the first name-value pair
+      in the list with the specified TUtilsNameValueTree
+      object associated.
+
+      Parameters:
+      - Child
+         The associated TUtilsNameValueTree object.
+
+      Return value:
+         The index of the specified name-value pair in the
+         list, or -1 if non such pair exists.
+    </pre>
+    </li>
+
+    <li>
+    function IndexOfName(const Name: WideString): Integer; virtual;
+    <pre>
+      Returns the position of the first name-value pair
+      in the list with the specified 'name' part.
+
+      Parameters:
+      - Name
+         The 'name' part of the name-value pair.
+
+      Return value:
+         The index of the first name-value pair in the
+         list with the specified name, or -1 if non such
+         pair exists.
+    </pre>
+    </li>
+
+    <li>
+    procedure Insert(const Index: integer;
+                     const Name,
+                           Value: wideString); virtual;
+    <pre>
+      Inserts a name-value pair at the specified position
+      in the list.
+
+      Parameters:
+      - Index
+         The position where the name-value pair is to
+         be inserted.
+      - Name
+         The 'name' part of the name-value pair to be
+         inserted.
+      - Value
+         The 'value' part of the name-value pair to be
+         inserted.
+    </pre>
+    </li>
+
+    <li>
+    procedure InsertChild(const Index: Integer;
+                          const Name,
+                                Value: WideString;
+                          const Child: TUtilsNameValueTree); virtual;
+    <pre>
+      Inserts a name-value pair at the specified position
+      in the list, and associates a TUtilsNameValueTree
+      object with the pair.
+
+      Parameters:
+      - Index
+         The position where the name-value pair is to
+         be inserted.
+      - Name
+         The 'name' part of the name-value pair to be
+         inserted.
+      - Value
+         The 'value' part of the name-value pair to be
+         inserted.
+      - Child
+         The TUtilsNameValueTree object to associate with
+         the name-value pair.
+
+      Exceptions:
+      - EStringListError
+          This Delphi VCL exception is raised if this
+          TUtilsNameValueTree object is a descendant of the
+          specified TUtilsNameValueTree object or the specified
+          TUtilsNameValueTree object is in use elsewhere.
+    </pre>
+    </li>
+
+    <li>
+    function IsDescendantOf(const Nvtree: TUtilsNameValueTree): Boolean; virtual;
+    <pre>
+      Tests whether this TUtilsNameValueTree object is
+      a descendant of the specified TUtilsNameValueTree
+      object.
+
+      Parameters:
+      - Nvtree
+         The TUtilsNameValueTree object to be tested for
+         being a direct or indirect parent object.
+
+      Return value:
+         'True' if this TUtilsNameValueTree object is a
+         descendant of the specified TUtilsNameValueTree
+         object, 'false' otherwise.
+    </pre>
+    </li>
+
+    <li>
+    function ReplaceChild(const Index: integer;
+                          const NewChild: TUtilsNameValueTree): TUtilsNameValueTree; virtual;
+    <pre>
+      Replaces the associated TUtilsNameValueTree object
+      at the specified position in the list with a
+      new TUtilsNameValueTree object.
+
+      Parameters:
+      - Index
+         The position where the associated TUtilsNameValueTree
+         object is to be replaced.
+      - NewChild
+         The new TUtilsNameValueTree object to associate with
+         the name-value pair, or nil if it should be
+         associated with no TUtilsNameValueTree object.
+
+      Return value:
+         The previously associated TUtilsNameValueTree object,
+         or nil if there was no such object.
+
+      Exceptions:
+      - EStringListError
+          This Delphi VCL exception is raised if this
+          TUtilsNameValueTree object is a descendant of the
+          specified TUtilsNameValueTree object or the specified
+          TUtilsNameValueTree object is in use elsewhere.
+    </pre>
+    </li>
+
+    <li>
+    procedure Sort; virtual;
+    <pre>
+      Sorts the name-value pairs in the list in
+      ascending name order.
+
+      Call Sort() to sort a list that has the Sorted
+      property set to 'False'.  Lists with the Sorted
+      property set to 'True' are automatically sorted.
+    </pre>
+    </li>
+
+</ul>
+
+<hr />
+
+<h4>WideString Streaming</h4>
+
+<h5>TUtilsWideStringStream = class (TStream)</h5>
+
+<p>TdomWideStringStream is a stream interface for WideStrings.  Its purpose is to avoid excessive memory re-allocations that occur with WideStrings because they are not reference counted.  Note that when the DataString property is accesses, the complete WideString will be copied out. Under Delphi for Win32 it inherits from the TStream class, under Delphi for .NET from the TMemoryStream class.</p>
+
+<h6>Public Properties</h6>
+<ul>
+<li>Capacity: Integer<br />The currently allocated size of the stream.</li>
+<li>StringLength: Integer<br />The length of the stream in terms of WideChars.</li>
+<li>StringPosition: Integer<br />The stream position in terms of WideChars.</li>
+<li>DataString: WideString (readonly)<br />The content of the stream as a WideString.</li>
+</ul>
+
+<h6>Public Methods</h6>
+<ul>
+<li>constructor Create(const AString: WideString);<br />Creates a new TUtilsWideStringStream object and initializes it with the specified WideString.</li>
+<li>destructor Destroy; override;<br />Destroys a TUtilsWideStringStream object.  Do not call 'Destroy' directly, but use 'Free', inherited from TObject, instead.  Free tests whether the TUtilsWideStringStream has not already been freed, and only then calls 'Destroy'.</li>
+<li>function ReadString(Count: Longint): WideString;<br />Reads a WideString of the specified length from the stream.</li>
+<li>procedure WriteString(const AString: WideString);<br />Writes the specified WideString to the Stream.</li>
+</ul>
+
+</body>
+</html>

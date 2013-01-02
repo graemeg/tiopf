@@ -1,0 +1,40 @@
+========================================================
+= ALTERNATIVE DOCUMENT OBJECT MODEL BUG AND TO-DO LIST =
+========================================================
+
+1. KNOWN BUGS AND OPEN ISSUES
+=============================
+* Open issues are indicated in the source code as 
+  'TODO' notes.
+
+
+2. RARELY TESTED FEATURES
+=========================
+The following ADOM features need more testing.  Use
+them with care:
+* TXmlToDomParser.ParseWithContext.
+* Document mutation events.
+* Repositioning of a TdomNodeIterator object after
+  document mutation.
+
+
+3. TO DO LIST
+=============
+* Write some more sample applications.
+* Support for XML 1.1.
+* Add a Suspend flag to the TXmlDocBuilder class.
+* TXmlNamespaceSignalGenerator: Add namespace 
+  validation.
+* Implement an optional test for non-deterministic 
+  content models (cf. XML 1.0, App. E).
+* TXmlToDomParser: Implement special parsing options,
+  such as directly building a namespace aware object
+  model or automatic stripping of whitespace in 
+  element content, etc.
+* Implement asynchronous parsing.
+* Add schema validation.
+* Improve formatted output.
+* Optimize XPath evaluation speed.
+* Improve ISO-639 / RFC 3066 support.
+* Review the code for private methods to be moved
+  to protected.
