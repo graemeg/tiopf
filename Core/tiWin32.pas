@@ -463,15 +463,18 @@ end;
 //       Fix.
 procedure tiWin32CoUnInitialize;
 begin
-  Assert(UTICoInitializeManager.TestValid, CTIErrorInvalidObject);
-  UTICoInitializeManager.CoUnInitialize;
+  // Due to finalization order the manager may have already been freed.
+  //Assert(UTICoInitializeManager.TestValid, CTIErrorInvalidObject);
+  if Assigned(UTICoInitializeManager) then
+    UTICoInitializeManager.CoUnInitialize;
 end;
 
 
 function  tiWin32HasCoInitializeBeenCalled: Boolean;
 begin
-  Assert(UTICoInitializeManager.TestValid, CTIErrorInvalidObject);
-  Result:= UTICoInitializeManager.HasBeenCalled;
+  // Due to finalization order the manager may have already been freed.
+  //Assert(UTICoInitializeManager.TestValid, CTIErrorInvalidObject);
+  Result := Assigned(UTICoInitializeManager) and UTICoInitializeManager.HasBeenCalled;
 end;
 
 
