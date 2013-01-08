@@ -11,6 +11,8 @@ uses
   ,IdTCPConnection
   ,IdTCPClient
   ,IdHTTP
+  ,IdSSL
+  ,IdSSLOpenSSL
  ;
 
 type
@@ -19,6 +21,7 @@ type
   TtiHTTPIndy = class(TtiHTTPAbs)
   private
     FHTTP : TidHTTP;
+    FSSLHandler: TIdSSLIOHandlerSocketOpenSSL;
     FProxyPort: integer;
     FProxyServer: string;
     procedure CreateHTTP;
@@ -47,6 +50,7 @@ uses
 
 procedure TtiHTTPIndy.CreateHTTP;
 begin
+  FreeAndNil(FSSLHandler);
   FreeAndNil(FHTTP);
   FHTTP := TidHTTP.Create(nil);
   FHTTP.ProtocolVersion := pv1_0;
@@ -54,10 +58,16 @@ begin
   FHTTP.ProxyParams.ProxyServer:= FProxyServer;
   FHTTP.ConnectTimeout := ConnectTimeout;
   FHTTP.ReadTimeout := ReceiveTimeout;
+
+  // HTTPS/SSL support
+  FSSLHandler := TIdSSLIOHandlerSocketOpenSSL.Create;
+  FSSLHandler.SSLOptions.SSLVersions := [sslvSSLv23];
+  FHTTP.IOHandler := FSSLHandler;
 end;
 
 destructor TtiHTTPIndy.Destroy;
 begin
+  FreeAndNil(FSSLHandler);
   FreeAndNil(FHTTP);
   inherited;
 end;

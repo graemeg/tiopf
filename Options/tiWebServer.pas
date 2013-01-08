@@ -12,6 +12,8 @@ uses
   IdHTTPServer,
   IdCustomHTTPServer,
   IdContext,
+  // HTTPS/SSL Support:
+  //IdSSLOpenSSL,
   Contnrs,
   Classes;
 
@@ -218,6 +220,8 @@ type
   TtiWebServer = class(TtiBaseObject)
   private
     FIdHTTPServer: TIdHTTPServer;
+    // HTTPS/SSL Support:
+    //FServerIOHandler: TIdServerIOHandlerSSLOpenSSL;
     FServerActions: TObjectList;
     FStaticPageLocation: string;
     FCGIBinLocation: string;
@@ -323,6 +327,16 @@ begin
   FIdHTTPServer.OnCommandGet := DoIDHTTPServerCommandGet;
   FIdHTTPServer.KeepAlive := False;
   Port:= APort;
+  // HTTPS/SSL Support:
+  //FServerIOHandler := TIdServerIOHandlerSSLOpenSSL.Create(nil);
+  //FServerIOHandler.SSLOptions.CertFile := ASSLCertFile; // e.g. 'C:\domain.name.cer';
+  //FServerIOHandler.SSLOptions.KeyFile := ASSLKeyFile; // e.g. 'C:\domain.name.key';
+  //FServerIOHandler.SSLOptions.RootCertFile := ASSLRootCertFile; // e.g. 'C:\domain.name.cer';
+  //FServerIOHandler.SSLOptions.Method := sslvSSLv23;
+  //FServerIOHandler.SSLOptions.Mode := sslmServer;
+  ////FServerIOHandler.SSLOptions.VerifyDepth := 1;
+  ////FServerIOHandler.SSLOptions.VerifyMode := [sslvrfPeer,sslvrfFailIfNoPeerCert,sslvrfClientOnce];
+  //FIdHTTPServer.IOHandler := FServerIOHandler;
 
   FBlockStreamCache:= TtiBlockStreamCache.Create;
 end;
@@ -356,6 +370,8 @@ end;
 
 destructor TtiWebServer.Destroy;
 begin
+  // HTTPS/SSL Support:
+  //FServerIOHandler.Free;
   FIdHTTPServer.Free;
   FServerActions.Free;
   FBlockStreamCache.Free;
@@ -628,6 +644,15 @@ end;
 procedure TtiWebServer.SetPort(const AValue: Integer);
 begin
   FidHTTPServer.DefaultPort:= AValue;
+  // HTTPS/SSL Support:
+  // Replace DefaultPort assignment with:
+  //FIdHTTPServer.Bindings.Add.Port := AValue;
+  //FIdHTTPServer.Bindings.Add.Port := 443; // Move to SetSSLPort
+  // Should add SSLPort to TtiWebServerConfig as well as key and cert filenames
+  // with setters for the latter.
+  // NOTE: To facilitate re-assignment of the ports we would need to store both
+  // port numbers in private fields and remove the previous port from the
+  // bindings list before adding the new one
 end;
 
 procedure TtiWebServer.SetStaticPageLocation(const AValue: string);

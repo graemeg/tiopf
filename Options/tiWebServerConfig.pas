@@ -101,6 +101,9 @@ const
 
   cINIService_IdentPort = 'Port';
   cINIService_DefaultPort = 80;
+  // HTTPS/SSL Support:
+  //cINIService_IdentSSLPort = 'SSLPort';
+  //cINIService_DefaultSSLPort = 443;
 
 { TtiWebServerConfig }
 
