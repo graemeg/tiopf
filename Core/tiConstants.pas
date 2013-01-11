@@ -31,7 +31,7 @@ const
   cTIPersistTAB           = 'TAB';
   cTIPersistXML           = 'XML';          // ToDo: Rename this MSXML
   cTIPersistXMLLight      = 'XMLLight';
-  cTIPersistZeosFB15      = 'Zeos_FB15';
+  cTIPersistZeosFB        = 'Zeos_FB';
   cTIPersistZeosMySQL41   = 'Zeos_MySQL41';
   cTIPersistZeosMySQL50   = 'Zeos_MySQL50';
   cTIPersistDBISAM4       = 'DBISAM4';
