@@ -69,10 +69,8 @@ contains
   tiRegistry in '..\..\Options\tiRegistry.pas',
   tiQueryDataset in '..\..\Options\tiQueryDataset.pas',
   tiDataset in '..\..\Options\tiDataset.pas',
-  tiGenericBase in '..\..\Options\tiGenericBase.pas',
   tiGenericFilteredObjectList in '..\..\Options\tiGenericFilteredObjectList.pas',
   tiGenericFilteredThreadList in '..\..\Options\tiGenericFilteredThreadList.pas',
-  tiGenericList in '..\..\Options\tiGenericList.pas',
   tiGenericThreadList in '..\..\Options\tiGenericThreadList.pas',
   tiLogToEventHandler in '..\..\Options\tiLogToEventHandler.pas',
   tiMIMEMultipartFormDataDecoder in '..\..\Options\tiMIMEMultipartFormDataDecoder.pas';

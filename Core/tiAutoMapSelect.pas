@@ -14,6 +14,9 @@ uses
   ;
 
 type
+  {$IFDEF DELPHI2010ORABOVE}
+  TArrayOfString= array of string;
+  {$ENDIF}
   {: Record wrapper around TtiCriteria with logical operator overloads to
      provide a more natural syntax "criteria and criteria and ..." }
   TtiAutoCriteria = record
@@ -66,7 +69,7 @@ type
     //function GroupBy(AField: string): ItiAutoMapSelect<T>; overload;
     //function GroupBy(AFields: array of string): ItiAutoMapSelect<T>; overload;
     function OrderBy(AField: string; AAscending: Boolean = true): ItiAutoMapSelect<T>; overload;
-    function OrderBy(AFields: array of string; AAscending: Boolean = true): ItiAutoMapSelect<T>; overload;
+    function OrderBy(AFields: TArrayOfString; AAscending: Boolean = true): ItiAutoMapSelect<T>; overload;
     function List: TtiObjectList<T>;
   end;
 {$ENDIF}
@@ -84,7 +87,7 @@ type
     //function GroupBy(AField: string): ItiAutoMapSelect<T>; overload;
     //function GroupBy(AFields: array of string): ItiAutoMapSelect<T>; overload;
     function OrderBy(AField: string; AAscending: Boolean = true): ItiAutoMapSelect<T>; overload;
-    function OrderBy(AFields: array of string; AAscending: Boolean = true): ItiAutoMapSelect<T>; overload;
+    function OrderBy(AFields: TArrayOfString; AAscending: Boolean = true): ItiAutoMapSelect<T>; overload;
     function List: TtiObjectList<T>;
   end;
 {$ENDIF}
@@ -99,7 +102,7 @@ type
     //function GroupBy(AField: string): ItiAutoMapSelectExt<T>; overload;
     //function GroupBy(AFields: array of string): ItiAutoMapSelectExt<T>; overload;
     function OrderBy(AField: string; AAscending: Boolean = true): ItiAutoMapSelect<T>; overload;
-    function OrderBy(AFields: array of string; AAscending: Boolean = true): ItiAutoMapSelect<T>; overload;
+    function OrderBy(AFields: TArrayOfString; AAscending: Boolean = true): ItiAutoMapSelect<T>; overload;
     {: This returns a new list instance that the caller must free }
     function List: TtiObjectList<T>;
   end;
@@ -265,7 +268,7 @@ begin
   Result := Self;
 end;
 
-function TtiAutoMapSelectInt<T>.OrderBy(AFields: array of string;
+function TtiAutoMapSelectInt<T>.OrderBy(AFields: TArrayOfString;
   AAscending: Boolean): ItiAutoMapSelect<T>;
 begin
   FCriteria.Criteria.AddOrderBy(AFields, AAscending);
@@ -307,7 +310,7 @@ begin
   Result := Self;
 end;
 
-function TtiAutoMapSelectExt<T>.OrderBy(AFields: array of string;
+function TtiAutoMapSelectExt<T>.OrderBy(AFields: TArrayOfString;
   AAscending: Boolean): ItiAutoMapSelect<T>;
 begin
   FCriteria.Criteria.AddOrderBy(AFields, AAscending);
