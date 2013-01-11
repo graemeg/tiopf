@@ -45,6 +45,9 @@ implementation
 uses
   tiConstants
   ,SysUtils
+{$IFDEF MSWINDOWS}
+  ,Windows
+{$ENDIF}
   ,tiExcept
  ;
 
@@ -63,6 +66,14 @@ begin
   FSSLHandler := TIdSSLIOHandlerSocketOpenSSL.Create;
   FSSLHandler.SSLOptions.SSLVersions := [sslvSSLv23];
   FHTTP.IOHandler := FSSLHandler;
+  // Allow for the libraries to be located outside the application path and
+  // OS PATH directories. It would be better to use the
+  // IdSSLOpenSSLHeaders.IdOpenSSLSetLibPath() added to Indy 10 in May 2012
+  // because SetDllDirectory overwrites the previous setting.
+{$IFDEF MSWINDOWS}
+  if SSLLibraryPath <> '' then
+    SetDllDirectory(PWideChar(SSLLibraryPath));
+{$ENDIF}
 end;
 
 destructor TtiHTTPIndy.Destroy;
@@ -71,6 +82,12 @@ begin
   FreeAndNil(FHTTP);
   inherited;
 end;
+
+//procedure TtiHTTPIndy.SetSSLLibraryPath;
+//begin
+//  if not FSSLLibraryPathSet then
+//    SetSSLLibraryPath;
+//end;
 
 procedure TtiHTTPIndy.DoGet(const AURL : string; AInput, AOutput: TStringStream);
 var

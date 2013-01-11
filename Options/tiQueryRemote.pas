@@ -860,6 +860,8 @@ begin
     FHTTP.ConnectTimeout:= StrToIntDef(Params.Values[CHTTPConnectTimeout], 0);
     FHTTP.SendTimeout:= StrToIntDef(Params.Values[CHTTPSendTimeout], 0);
     FHTTP.ReceiveTimeout:= StrToIntDef(Params.Values[CHTTPReceiveTimeout], 0);
+    FHTTP.SSLLibraryPath:= Params.Values[CHTTPSSLLibraryPath];
+
 
     if not SameText(cHTTPMSXML, FHTTP.MappingName) then
     begin

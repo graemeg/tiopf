@@ -61,6 +61,7 @@ type
     FConnectTimeout: Longword;
     FSendTimeout: Longword;
     FReceiveTimeout: Longword;
+    FSSLLibraryPath: string;
     function    GetResponseHeader(const AName: string): string;
     procedure   SetResponseHeader(const AName, AValue: string);
     function    GetResponseTIOPFBlockHeader: string;
@@ -127,6 +128,7 @@ type
     property    ConnectTimeout: Longword read FConnectTimeout write FConnectTimeout;
     property    SendTimeout: Longword read FSendTimeout write FSendTimeout;
     property    ReceiveTimeout: Longword read FReceiveTimeout write FReceiveTimeout;
+    property    SSLLibraryPath: string read FSSLLibraryPath write FSSLLibraryPath;
 
     property    ResponseHeaders: TStringList Read GetResponseHeaders;
     property    ResponseHeader[const AName: string]: string Read GetResponseHeader Write SetResponseHeader;
@@ -347,6 +349,7 @@ begin
   result.ConnectTimeout:= AConnectionDetails.ConnectTimeout;
   result.SendTimeout:= AConnectionDetails.SendTimeout;
   result.ReceiveTimeout:= AConnectionDetails.ReceiveTimeout;
+  result.SSLLibraryPath:= AConnectionDetails.SSLLibraryPath;
   if AConnectionDetails.ProxyServerActive then
   begin
     result.ProxyServer := AConnectionDetails.ProxyServerName;

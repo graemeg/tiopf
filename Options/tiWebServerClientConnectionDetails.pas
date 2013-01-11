@@ -20,6 +20,7 @@ type
     FConnectTimeout: Longword;
     FSendTimeout: Longword;
     FReceiveTimeout: Longword;
+    FSSLLibraryPath: string;
   public
     constructor Create;
     property AppServerURL: string read FAppServerURL write FAppServerURL;
@@ -33,10 +34,10 @@ type
     property ConnectTimeout: Longword read FConnectTimeout write FConnectTimeout;
     property SendTimeout: Longword read FSendTimeout write FSendTimeout;
     property ReceiveTimeout: Longword read FReceiveTimeout write FReceiveTimeout;
+    property SSLLibraryPath: string read FSSLLibraryPath write FSSLLibraryPath;
 
     procedure Assign(const ASource: TtiWebServerClientConnectionDetails);
     function  Equals(const ACompareWith: TtiWebServerClientConnectionDetails): boolean; reintroduce;
-
   end;
 
 implementation
@@ -61,6 +62,7 @@ begin
   ConnectTimeout:=    ASource.ConnectTimeout;
   SendTimeout:=       ASource.SendTimeout;
   ReceiveTimeout:=    ASource.ReceiveTimeout;
+  SSLLibraryPath:=    ASource.SSLLibraryPath;
 end;
 
 constructor TtiWebServerClientConnectionDetails.Create;
@@ -83,7 +85,8 @@ begin
     (ResolveTimeout = ACompareWith.ResolveTimeout) and
     (ConnectTimeout = ACompareWith.ConnectTimeout) and
     (SendTimeout = ACompareWith.SendTimeout) and
-    (ReceiveTimeout = ACompareWith.ReceiveTimeout);
+    (ReceiveTimeout = ACompareWith.ReceiveTimeout) and
+    (SSLLibraryPath = ACompareWith.SSLLibraryPath);
 end;
 
 end.

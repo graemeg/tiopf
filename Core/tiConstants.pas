@@ -142,6 +142,7 @@ const
   CHTTPConnectTimeout     = 'connecttimeout';
   CHTTPSendTimeout        = 'sendtimeout';
   CHTTPReceiveTimeout     = 'receivetimeout';
+  CHTTPSSLLibraryPath     = 'ssllibrarypath';
 
   CPathToCachedDataRoot       = 'CachedData';
 
