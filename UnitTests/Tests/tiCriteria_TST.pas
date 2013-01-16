@@ -60,7 +60,7 @@ type
     procedure TestPerSQLCriteria_SQL_WithParams;
     procedure TestPerSQLCriteria_SQL_IgnoreEmptyCritera_WithParams;
 
-
+    procedure TestCriteriaAssign;
     // Testing XPath generation
     // The SQL tests will need to be clone for XPath at some point
   end;
@@ -1749,6 +1749,59 @@ begin
   end;
 
 end;
+
+procedure TTestTICriteria.TestCriteriaAssign;
+var
+  lCriteria1, lCriteria2: TtiCriteria;
+  lSQL: string;
+begin
+  lCriteria1 := TtiCriteria.Create('test');
+  try
+    lCriteria1.AddEqualTo('OID', '1');
+    lCriteria2 := TtiCriteria.Create;
+    lCriteria2.Assign(lCriteria1);
+    CheckEquals(lCriteria1.AsDebugString, lCriteria2.AsDebugString, 'Failed on 1');
+  finally
+    lCriteria1.Free;
+    lCriteria2.Free;
+  end;
+
+  lCriteria1 := TtiCriteria.Create('test');
+  try
+    lCriteria1.AddExists('Select * from Order where Client_ID = 1');
+    lCriteria2 := TtiCriteria.Create;
+    lCriteria2.Assign(lCriteria1);
+    CheckEquals(lCriteria1.AsDebugString, lCriteria2.AsDebugString, 'Failed on 2');
+  finally
+    lCriteria1.Free;
+    lCriteria2.Free;
+  end;
+
+  lCriteria1 := TtiCriteria.Create('test');
+  try
+    lCriteria1.AddGreaterThan('FIELD_1', 1);
+    lCriteria2 := TtiCriteria.Create;
+    lCriteria2.Assign(lCriteria1);
+    CheckEquals(lCriteria1.AsDebugString, lCriteria2.AsDebugString, 'Failed on 3');
+  finally
+    lCriteria1.Free;
+    lCriteria2.Free;
+  end;
+
+  lCriteria1 := TtiCriteria.Create('test');
+  try
+    lCriteria1.AddGreaterOrEqualThan('FIELD_1', '1');
+    lCriteria2 := TtiCriteria.Create;
+    lCriteria2.Assign(lCriteria1);
+    CheckEquals(lCriteria1.AsDebugString, lCriteria2.AsDebugString, 'Failed on 4');
+  finally
+    lCriteria1.Free;
+    lCriteria2.Free;
+  end;
+
+  // TODO: more indepth tests to come
+end;
+
 
 end.
 
