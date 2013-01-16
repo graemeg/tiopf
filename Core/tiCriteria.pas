@@ -74,12 +74,13 @@ type
     function    GetCriterias: TtiCriteriaList;
     function    GetSelectionCriterias: TtiSelectionCriteriaList;
   protected
-    procedure   AssignClassProps(ASource: TtiObject); override;
     function    GetOwner: TtiCriteria; reintroduce; virtual;
     procedure   SetOwner(const Value: TtiCriteria); reintroduce; virtual;
+    procedure   AssignClassProps(ASource: TtiObject); override;
+    procedure   AssignPublicProps(ASource: TtiObject); override;
   public
     constructor Create; overload; override;
-    constructor Create(pName: string); overload;
+    constructor Create(pName: string); reintroduce; overload; virtual;
     destructor  Destroy; override;
     procedure   MapFieldNames(AClass: TtiClass);
     procedure   AddAndCriteria(ACriteria: TtiCriteria);
@@ -108,7 +109,7 @@ type
     procedure   AddNull(AAttribute: string);
     procedure   AddOrCriteria(ACriteria: TtiCriteria);
     procedure   AddOrderBy(AField: string; ASorterAscending: boolean = True); overload;
-    procedure   AddOrderBy(AFields: array of string); overload;
+    procedure   AddOrderBy(AFields: array of string; ASorterAscending: boolean = True); overload;
     procedure   AddOrderByAscending(AField: string); overload;
     procedure   AddOrderByAscending(AFields: array of string); overload;
     procedure   AddOrderByDescending(AField: string); overload;
@@ -125,7 +126,7 @@ type
     property    Owner: TtiCriteria read GetOwner write SetOwner;
   published
     property    Criterias: TtiCriteriaList read GetCriterias;
-    property    Name: string read FName write FName;
+    property    Name: string read FName;
     property    SelectionCriterias: TtiSelectionCriteriaList read GetSelectionCriterias;
   end;
 
@@ -152,9 +153,9 @@ type
     FValue: Variant;
     function    GetFieldName: string;
   protected
-    procedure   AssignClassProps(ASource: TtiObject); override;
     function    GetOwner: TtiCriteria; reintroduce; virtual;
     procedure   SetOwner(const Value: TtiCriteria); reintroduce; virtual;
+    procedure   AssignPublicProps(ASource: TtiObject); override;
   public
     constructor Create(AAttribute: string; AValue: Variant; ANegative: boolean = False; AFieldName: string = ''); reintroduce; virtual;
     destructor  Destroy; override;
@@ -162,8 +163,8 @@ type
     function    isNegative: Boolean;
     property    Owner: TtiCriteria read GetOwner write SetOwner;
   published
-    property    Attribute: string read FAttribute write FAttribute;
-    property    Value: Variant read FValue write FValue;
+    property    Attribute: string read FAttribute;
+    property    Value: Variant read FValue;
     property    FieldName: string read GetFieldName write FFieldName;
   end;
 
@@ -225,13 +226,11 @@ type
   TtiInCriteria = class(TtiValueCriteriaAbs)
   private
     FValueArray: TValueArray;
-  protected
-    procedure   AssignClassProps(ASource: TtiObject); override;
   public
     function    GetClause: string; override;
     procedure   SetValueArrayLength(pLength: integer);
   published
-    property ValueArray: TValueArray read FValueArray write FValueArray;
+    property    ValueArray: TValueArray read FValueArray write FValueArray;
   end;
 
 
@@ -263,8 +262,6 @@ type
   TtiBetweenCriteria = class(TtiValueCriteriaAbs)
   private
     FValue_2: variant;
-  protected
-    procedure   AssignClassProps(ASource: TtiObject); override;
   public
     constructor Create(AAttribute: string; AArg_1, AArg_2: variant; ANegative: boolean = false; AFieldName: string = ''); reintroduce; virtual;
     function    GetClause: string; override;
@@ -286,6 +283,7 @@ uses
   SysUtils
   ,tiAutoMap
   ,tiOPFManager
+  ,tiConstants
   ;
 
   
@@ -538,7 +536,6 @@ begin
   if AObjectList.Count = 0 then
     Exit; //==>
 
-
   for i := 0 to AObjectList.Count -1 do
     if AObjectList.Items[i].ObjectState <> posDelete then
       begin
@@ -553,12 +550,10 @@ begin
 
   // copy array values
   lData.SetValueArrayLength(Length(lVarArray));
-
   for i := Low(lVarArray) to High(lVarArray) do
     lData.ValueArray[i] := lVarArray[i];
 
   FSelectionCriterias.Add(lData);
-
 end;
 
 procedure TtiCriteria.AddNotIn(AAttribute: string;
@@ -626,12 +621,12 @@ begin
   FOrderByList.Add(lData);
 end;
 
-procedure TtiCriteria.AddOrderBy(AFields: array of string);
+procedure TtiCriteria.AddOrderBy(AFields: array of string; ASorterAscending: boolean = True);
 var
   i: Integer;
 begin
   for i := Low(AFields) to High(AFields) do
-    AddOrderBy(AFields[i], true);
+    AddOrderBy(AFields[i], ASorterAscending);
 end;
 
 procedure TtiCriteria.AddOrderByAscending(AField: string);
@@ -641,11 +636,8 @@ begin
 end;
 
 procedure TtiCriteria.AddOrderByAscending(AFields: array of string);
-var
-  i: Integer;
 begin
-  for i := Low(AFields) to High(AFields) do
-    AddOrderByAscending(AFields[i]);
+  AddOrderBy(AFields, true);
 end;
 
 procedure TtiCriteria.AddOrderByDescending(AField: string);
@@ -655,11 +647,8 @@ begin
 end;
 
 procedure TtiCriteria.AddOrderByDescending(AFields: array of string);
-var
-  i: Integer;
 begin
-  for i := Low(AFields) to High(AFields) do
-    AddOrderByDescending(AFields[i]);
+  AddOrderBy(AFields, false);
 end;
 
 procedure TtiCriteria.AddSQL(ASQLStm: string);
@@ -671,12 +660,28 @@ begin
 end;
 
 procedure TtiCriteria.AssignClassProps(ASource: TtiObject);
+var
+  LSource: TtiCriteria;
 begin
-  if ASource is TtiCriteria then
-  begin
-    FCriterias.Assign((ASource as TtiCriteria).Criterias);
-    FSelectionCriterias.Assign((ASource as TtiCriteria).SelectionCriterias);
-  end;
+  Assert(ASource.TestValid(TtiCriteria), CTIErrorInvalidObject);
+  LSource := ASource as TtiCriteria;
+  FGroupByList.Assign(LSource.FGroupByList);
+  FOrderByList.Assign(LSource.FOrderByList);
+  FCriteriaAttrColMaps.Assign(LSource.FCriteriaAttrColMaps);
+  FCriterias.Assign(LSource.FCriterias);
+  FSelectionCriterias.Assign(LSource.FSelectionCriterias);
+end;
+
+procedure TtiCriteria.AssignPublicProps(ASource: TtiObject);
+var
+  LSource: TtiCriteria;
+begin
+  Assert(ASource.TestValid(TtiCriteria), CTIErrorInvalidObject);
+  inherited;
+  LSource := ASource as TtiCriteria;
+  FCriteriaType := LSource.FCriteriaType;
+  FisEmbraced := LSource.FisEmbraced;
+  FName := LSource.FName;
 end;
 
 procedure TtiCriteria.ClearAll;
@@ -801,13 +806,17 @@ end;
 
 { TtiSelectionCriteriaAbs }
 
-procedure TtiSelectionCriteriaAbs.AssignClassProps(ASource: TtiObject);
+procedure TtiSelectionCriteriaAbs.AssignPublicProps(ASource: TtiObject);
+var
+  LSource: TtiSelectionCriteriaAbs;
 begin
-  inherited AssignClassProps(ASource);
-  if ASource is TtiSelectionCriteriaAbs then
-  begin
-    FisNegative := (ASource as TtiSelectionCriteriaAbs).isNegative;
-  end;
+  Assert(ASource.TestValid(TtiSelectionCriteriaAbs), CTIErrorInvalidObject);
+  inherited AssignPublicProps(ASource);
+  LSource := ASource as TtiSelectionCriteriaAbs;
+  FFieldName := LSource.FFieldName;
+  FAttribute := LSource.FAttribute;
+  FisNegative := LSource.FisNegative;
+  FValue := LSource.FValue;
 end;
 
 constructor TtiSelectionCriteriaAbs.Create(AAttribute: string; AValue: variant;
@@ -957,15 +966,6 @@ end;
 
 { TtiInCriteria }
 
-procedure TtiInCriteria.AssignClassProps(ASource: TtiObject);
-begin
-  inherited AssignClassProps(ASource);
-  if ASource is TtiInCriteria then
-  begin
-    ValueArray := (ASource as TtiInCriteria).ValueArray;
-  end;
-end;
-
 function TtiInCriteria.GetClause: string;
 begin
   if isNegative then
@@ -1030,15 +1030,6 @@ end;
 
 
 { TtiBetweenCriteria }
-
-procedure TtiBetweenCriteria.AssignClassProps(ASource: TtiObject);
-begin
-  inherited AssignClassProps(ASource);
-  if ASource is TtiBetweenCriteria then
-  begin
-    FValue_2 := (ASource as TtiBetweenCriteria).Value_2;
-  end;
-end;
 
 constructor TtiBetweenCriteria.Create(AAttribute: string; AArg_1, AArg_2: variant;
     ANegative: boolean = False; AFieldName: string = '');
