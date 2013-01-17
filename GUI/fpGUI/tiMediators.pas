@@ -741,7 +741,6 @@ begin
   if UseInternalOnChange then
     View.OnChange := @DoOnChange; // default OnChange event handler
 
-  {$Note As far as I can see, ValueList is always going to be nil here! - Graeme }
   if ValueList <> nil then
     View.Enabled := (ValueList.Count > 0);
 end;
@@ -1110,7 +1109,6 @@ begin
   if UseInternalOnChange then
     View.OnChange := @DoOnChange; // default OnChange event handler
 
-  {$Note As far as I can see, ValueList is always going to be nil here! - Graeme }
   if ValueList <> nil then
     View.Enabled := (ValueList.Count > 0);
 end;
