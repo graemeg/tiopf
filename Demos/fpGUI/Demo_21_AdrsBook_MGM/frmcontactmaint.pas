@@ -116,11 +116,8 @@ var
   obj: TAddress;
 begin
   obj := TAddress(TtiListViewMediatorView(FAdrsMediator.FindByComponent(lvAddresses).Mediator).SelectedObject);
-  tiShowString(obj.AsDebugString);
-
   if not Assigned(obj) then
     Exit; //==>
-
   if EditAddress(obj) then
   begin
     // do nothing
