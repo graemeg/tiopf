@@ -264,6 +264,7 @@ type
     procedure   DoObjectToGui; override;
   public
     procedure   RefreshList; virtual;
+    procedure   Update(ASubject: TtiObject; AOperation: TNotifyOperation); override;
     property    DisplayFieldName: string read GetDisplayFieldName write FDisplayFieldName;
   end;
 
@@ -807,9 +808,16 @@ begin
 end;
 
 procedure TtiDynamicComboBoxMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
+var
+  EditOperation: boolean;
 begin
-  if Assigned(ValueList) and Active and (ASubject = ValueList) then
-    RefreshList
+  EditOperation := AOperation <> noFree;
+  if Assigned(ValueList) and Active and (ASubject = ValueList) and
+      EditOperation then
+  begin
+    RefreshList;
+    TestIfValid;
+  end
   else
     inherited Update(ASubject, AOperation);
 end;
@@ -1156,18 +1164,34 @@ begin
     RaiseMediatorError(cErrorPropertyNotClass);
 
   for i := 0 to ValueList.Count - 1 do
+  begin
     if ValueList.Items[i] = lValue then
     begin
       View.FocusItem := i;
       Break; //==>
     end;
-
+  end;
   SetOnChangeActive(true);
 end;
 
 procedure TtiDynamicListBoxMediatorView.RefreshList;
 begin
   InternalListRefresh;
+end;
+
+procedure TtiDynamicListBoxMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
+var
+  EditOperation: boolean;
+begin
+  EditOperation := AOperation <> noFree;
+  if Assigned(ValueList) and Active and (ASubject = ValueList) and
+    EditOperation then
+  begin
+    RefreshList;
+    TestIfValid;
+  end
+  else
+    inherited Update(ASubject, AOperation);
 end;
 
 { TtiItemListBoxMediatorView }
