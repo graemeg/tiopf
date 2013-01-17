@@ -174,6 +174,9 @@ type
 {$IFDEF DELPHI9ORABOVE}
     procedure   ForIn;
 {$ENDIF}
+    procedure   Add_NotifyObservers_Subject;
+    procedure   Remove_NotifyObservers_Subject;
+    procedure   BeginEnd_NotifyObservers_Subject;
   end;
 
 
@@ -280,12 +283,14 @@ type
   // Used in NotifyObserver test.
   TtstObserver2 = class(TtiObject)
   private
+    FLastUpdateSubject: TtiObject;
     FLastNotifyOperation: TNotifyOperation;
     FUpdateCount: integer;
   public
     constructor Create; override;
     procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation); override;
     property LastNotifyOperation: TNotifyOperation read FLastNotifyOperation write FLastNotifyOperation;
+    property LastUpdateSubject: TtiObject read FLastUpdateSubject write FLastUpdateSubject;
     property UpdateCount: integer read FUpdateCount write FUpdateCount;
   end;
 
@@ -3731,6 +3736,93 @@ begin
   end;
 end;
 
+procedure TtiObjectListTestCase.Add_NotifyObservers_Subject;
+var
+  lList: TtiObjectList;
+  lItem: TtiObject;
+  lObserver: TtstObserver2;
+begin
+  lList := TtiObjectList.Create;
+  lItem := TtiObject.Create;
+  lObserver := TtstObserver2.Create;
+
+  lList.AttachObserver(lObserver);
+  { simply testing the default value - first item in TNotifyOperation enum }
+  CheckNotifyOperation(noCustom, lObserver.LastNotifyOperation, 'Failed on 1');
+  CheckEquals(0, lObserver.UpdateCount, 'Failed on 2');
+  CheckTrue(lObserver.LastUpdateSubject = nil, 'Failed on 3');
+
+  lList.Add(lItem);
+  CheckEquals(1, lObserver.UpdateCount, 'Failed on 4');
+  CheckNotifyOperation(noAddItem, lObserver.LastNotifyOperation, 'Failed on 5');
+  { The Subject in Update() should be the list, not the item added }
+  CheckTrue(lObserver.LastUpdateSubject = lList, 'Failed on 6');
+
+  lList.Remove(lItem);
+  lList.Free;
+  lObserver.Free;
+end;
+
+procedure TtiObjectListTestCase.Remove_NotifyObservers_Subject;
+var
+  lList: TtiObjectList;
+  lItem: TtiObject;
+  lObserver: TtstObserver2;
+begin
+  lList := TtiObjectList.Create;
+  lItem := TtiObject.Create;
+  lObserver := TtstObserver2.Create;
+
+  lList.AttachObserver(lObserver);
+  { simply testing the default value - first item in TNotifyOperation enum }
+  CheckNotifyOperation(noCustom, lObserver.LastNotifyOperation, 'Failed on 1');
+  CheckEquals(0, lObserver.UpdateCount, 'Failed on 2');
+  CheckTrue(lObserver.LastUpdateSubject = nil, 'Failed on 3');
+
+  lList.Add(lItem);
+  { Reset last values }
+  lObserver.UpdateCount := 0;
+  lObserver.LastUpdateSubject := nil;
+
+  lList.Remove(lItem);
+  CheckEquals(1, lObserver.UpdateCount, 'Failed on 4');
+  CheckNotifyOperation(noDeleteItem, lObserver.LastNotifyOperation, 'Failed on 5');
+  { The Subject in Update() should be the list, not the item added }
+  CheckTrue(lObserver.LastUpdateSubject = lList, 'Failed on 6');
+
+  lList.Free;
+  lObserver.Free;
+end;
+
+procedure TtiObjectListTestCase.BeginEnd_NotifyObservers_Subject;
+var
+  lList: TtiObjectList;
+  lItem: TtiObject;
+  lObserver: TtstObserver2;
+begin
+  lList := TtiObjectList.Create;
+  lItem := TtiObject.Create;
+  lObserver := TtstObserver2.Create;
+
+  lList.AttachObserver(lObserver);
+  { simply testing the default value - first item in TNotifyOperation enum }
+  CheckNotifyOperation(noCustom, lObserver.LastNotifyOperation, 'Failed on 1');
+  CheckEquals(0, lObserver.UpdateCount, 'Failed on 2');
+  CheckTrue(lObserver.LastUpdateSubject = nil, 'Failed on 3');
+
+  lList.BeginUpdate;
+  lList.Add(lItem);
+  lList.EndUpdate;
+  CheckEquals(2, lObserver.UpdateCount, 'Failed on 4');
+  CheckNotifyOperation(noChanged, lObserver.LastNotifyOperation, 'Failed on 5');
+  { The Subject in Update() should be the list, not the item added }
+  CheckTrue(lObserver.LastUpdateSubject = lList, 'Failed on 6');
+
+  lList.Remove(lItem);
+  lList.Free;
+  lObserver.Free;
+end;
+
 procedure TtiObjectListTestCase.tiListToStreamDefault;
 var
   lStream : TStringStream;
@@ -4816,6 +4908,7 @@ end;
 procedure TtstObserver2.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
 begin
   Inc(FUpdateCount);
+  FLastUpdateSubject := ASubject;
   FLastNotifyOperation := AOperation;
   inherited Update(ASubject, AOperation);
 end;

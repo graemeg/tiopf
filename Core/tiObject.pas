@@ -1436,7 +1436,7 @@ begin
   if FbAutoSetItemOwner then
     AObject.Owner := FItemOwner;
   result := FList.Add(AObject);
-  NotifyObservers(AObject,noAddItem);
+  NotifyObservers(self, noAddItem);
 end;
 
 procedure TtiObjectList.Clear;
@@ -1463,7 +1463,7 @@ end;
   Extract. }
 procedure TtiObjectList.Delete(i: integer);
 begin
-  NotifyObservers(TtiObject(Items[i]),noDeleteItem);
+  NotifyObservers(self, noDeleteItem);
   if AutoSetItemOwner then
     TtiObject(Items[i]).Owner := nil;
   FList.Delete(i);
@@ -1628,7 +1628,7 @@ end;
   without freeing it, call Extract. }
 function TtiObjectList.Remove(const AObject: TtiObject):integer;
 begin
-  NotifyObservers(AObject,noDeleteItem);
+  NotifyObservers(self, noDeleteItem);
   if AutoSetItemOwner then
     AObject.Owner := nil;
   result := FList.Remove(AObject);
@@ -1639,7 +1639,7 @@ end;
   up in index position and Count is decremented.}
 procedure TtiObjectList.Extract(const AObject: TtiObject);
 begin
-  NotifyObservers(AObject,noDeleteItem);
+  NotifyObservers(self, noDeleteItem);
   if AutoSetItemOwner then
     AObject.Owner := nil;
   FList.Extract(AObject);
@@ -1656,7 +1656,7 @@ begin
   FList.Insert(AIndex, AObject);
   if FbAutoSetItemOwner then
     AObject.Owner := FItemOwner;
-  NotifyObservers(AObject,noAddItem);
+  NotifyObservers(self, noAddItem);
 end;
 
 procedure TtiObjectList.Insert(const AInsertBefore: TtiObject; const AObject: TtiObject);
