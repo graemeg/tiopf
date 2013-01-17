@@ -638,7 +638,7 @@ begin
     begin
       ObjectToGUI;
     end
-    else if (AOperation=noFree) and (ASubject=FSubject) then
+    else if (AOperation=noFree) then
       FSubject:=Nil;
   end;
 end;
