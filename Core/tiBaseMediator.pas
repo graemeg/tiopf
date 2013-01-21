@@ -33,7 +33,7 @@ type
   TtiMediatorViewComponentHelper = class;
 
   { Base class to inherit from to make more customised Mediator Views. }
-  TtiMediatorView = class(TtiObject)
+  TtiMediatorView = class(TtiObject, ItiObserverHandlesErrorState)
   private
     FActive: Boolean;
     FObjectUpdateMoment: TtiObjectUpdateMoment;
@@ -50,6 +50,8 @@ type
     FCopyingCount: integer;
     FOnAfterGUIToObject: TtiAfterGUIToObjectEvent;
     procedure ViewNotification(AComponent: TComponent; Operation: TOperation);
+    // ItiObserverHandlesErrorState interface implementation
+    procedure ProcessErrorState(const ASubject: TtiObject; const AOperation: TNotifyOperation; const AErrors: TtiObjectErrors);
   protected
     UseInternalOnChange: Boolean;
     procedure CheckFieldNames;
@@ -576,6 +578,11 @@ begin
     FView := nil;
 end;
 
+procedure TtiMediatorView.ProcessErrorState(const ASubject: TtiObject; const AOperation: TNotifyOperation; const AErrors: TtiObjectErrors);
+begin
+  UpdateGUIValidStatus(AErrors); // always execute this as it also resets the View
+end;
+
 procedure TtiMediatorView.SetListObject(const AValue: TtiObjectList);
 begin
   if FListObject = AValue then
@@ -634,32 +641,10 @@ end;
 procedure TtiMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
 begin
   inherited Update(ASubject, AOperation);
-// A conflict while merging AEMO with tiOPF.
-// Here is the conflict message.
-// Done my best to resolve.
-//<<<<<<< .working
-//  if (AOperation=noChanged) then
-//    UpdateView
-//  else if (AOperation=noFree) and (ASubject=FSubject) then
-//    FSubject:=Nil;
-//=======
-//  { We can be observing FSubject and ValueList, so make sure we handle the
-//    correct one. }
-//  if FSubject = ASubject then
-//  begin
-//    if (AOperation=noChanged) and Active then
-//    begin
-//      ObjectToGUI;
-//      TestIfValid;
-//    end
-//    else if (AOperation=noFree) and (ASubject=FSubject) then
-//      FSubject:=Nil;
-//  end;
-//>>>>>>> .merge-right.r2283
   if FSubject = ASubject then
   begin
-    if (AOperation=noChanged) then
-      UpdateView
+    if (AOperation=noChanged) and Active then
+      ObjectToGUI
     else if (AOperation=noFree) then
       FSubject:=Nil;
   end;
