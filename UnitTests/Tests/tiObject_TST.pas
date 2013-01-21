@@ -106,6 +106,7 @@ type
     // procedure FieldStream_Equals;
     procedure FieldName;
     procedure AttachDetachObserver;
+    procedure NotifyObservers;
   end;
 
 
@@ -272,6 +273,22 @@ type
     property  Name: string read FName write FName;
     procedure Update(ASubject: TtiObject); override;
   end;
+
+
+  // Used in NotifyObserver test.
+  TtstObserver2 = class(TtiObject)
+  private
+    FLastUpdateSubject: TtiObject;
+    FLastNotifyOperation: TNotifyOperation;
+    FUpdateCount: integer;
+  public
+    constructor Create; override;
+    procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation); override;
+    property LastNotifyOperation: TNotifyOperation read FLastNotifyOperation write FLastNotifyOperation;
+    property LastUpdateSubject: TtiObject read FLastUpdateSubject write FLastUpdateSubject;
+    property UpdateCount: integer read FUpdateCount write FUpdateCount;
+  end;
+
 
 
 procedure RegisterTests;
@@ -4737,11 +4754,45 @@ begin
   end;
 end;
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// * TtstSubject
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+procedure TtiObjectTestCase.NotifyObservers;
+var
+  lList: TtiObjectList;
+  lItem: TtiObject;
+  lObserver: TtstObserver2;
+begin
+  lList := TtiObjectList.Create;
+  lItem := TtiObject.Create;
+  lObserver := TtstObserver2.Create;
+
+  lList.AttachObserver(lObserver);
+  { simply testing the default value - first item in TNotifyOperation enum }
+  CheckNotifyOperation(noCustom, lObserver.LastNotifyOperation, 'Failed on 1');
+  CheckEquals(0, lObserver.UpdateCount, 'Failed on 2');
+
+  { BeginUpdate..EndUpdate is added here to show that an extra notification is
+    added for observers, using the generic noChanged state. }
+  lList.BeginUpdate;
+  lList.Add(lItem);
+  CheckEquals(1, lObserver.UpdateCount, 'Failed on 3');
+  CheckNotifyOperation(noAddItem, lObserver.LastNotifyOperation, 'Failed on 4');
+  lList.EndUpdate;
+  CheckEquals(2, lObserver.UpdateCount, 'Failed on 5');
+  CheckNotifyOperation(noChanged, lObserver.LastNotifyOperation, 'Failed on 6');
+
+  lObserver.UpdateCount := 0; // reset the counter
+  lList.Remove(lItem);
+  CheckEquals(1, lObserver.UpdateCount, 'Failed on 7');
+  CheckNotifyOperation(noDeleteItem, lObserver.LastNotifyOperation, 'Failed on 8');
+
+  lObserver.UpdateCount := 0; // reset the counter
+  lList.Free;
+  CheckEquals(1, lObserver.UpdateCount, 'Failed on 9');
+  CheckNotifyOperation(noFree, lObserver.LastNotifyOperation, 'Failed on 10');
+
+  lObserver.Free;
+end;
+
+{ TtstSubject }
 
 procedure TtstSubject.SetName(const AValue: string);
 begin
@@ -4750,16 +4801,29 @@ begin
   EndUpdate;
 end;
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// * TtstObserver
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+{ TtstObserver }
 
 procedure TtstObserver.Update(ASubject: TtiObject);
 begin
   inherited;
   FName := TtstSubject(ASubject).Name;
+end;
+
+{ TtstObserver2 }
+
+constructor TtstObserver2.Create;
+begin
+  inherited Create;
+  FUpdateCount := 0;
+  FLastNotifyOperation := noCustom;
+end;
+
+procedure TtstObserver2.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
+begin
+  Inc(FUpdateCount);
+  FLastUpdateSubject := ASubject;
+  FLastNotifyOperation := AOperation;
+  inherited Update(ASubject, AOperation);
 end;
 
 procedure TtiObjectListTestCase.CompareWithEvent;

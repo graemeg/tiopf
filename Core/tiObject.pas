@@ -1439,15 +1439,10 @@ end;
 
 function TtiObjectList.Add(const AObject : TtiObject): integer;
 begin
-  BeginUpdate;
-  try
-    if FbAutoSetItemOwner then
-      AObject.Owner := FItemOwner;
-    result := FList.Add(AObject);
-    NotifyObservers(AObject,noAddItem);
-  finally
-    EndUpdate;
-  end;
+  if FbAutoSetItemOwner then
+    AObject.Owner := FItemOwner;
+  result := FList.Add(AObject);
+  NotifyObservers(AObject,noAddItem);
 end;
 
 procedure TtiObjectList.Clear;
@@ -1478,15 +1473,10 @@ end;
   Extract. }
 procedure TtiObjectList.Delete(i: integer);
 begin
-  BeginUpdate;
-  try
-    NotifyObservers(TtiObject(Items[i]),noDeleteItem);
-    if AutoSetItemOwner then
-      TtiObject(Items[i]).Owner := nil;
-    FList.Delete(i);
-  finally
-    EndUpdate;
-  end;
+  NotifyObservers(TtiObject(Items[i]),noDeleteItem);
+  if AutoSetItemOwner then
+    TtiObject(Items[i]).Owner := nil;
+  FList.Delete(i);
 end;
 
 
@@ -1648,15 +1638,10 @@ end;
   without freeing it, call Extract. }
 function TtiObjectList.Remove(const AObject: TtiObject):integer;
 begin
-  BeginUpdate;
-  Try
-    NotifyObservers(AObject,noDeleteItem);
-    if AutoSetItemOwner then
-      AObject.Owner := nil;
-    result := FList.Remove(AObject);
-  Finally
-    EndUpdate;
-  end;
+  NotifyObservers(AObject,noDeleteItem);
+  if AutoSetItemOwner then
+    AObject.Owner := nil;
+  result := FList.Remove(AObject);
 end;
 
 {: Call Extract to remove an object from the list without freeing the object
@@ -1664,15 +1649,10 @@ end;
   up in index position and Count is decremented.}
 procedure TtiObjectList.Extract(const AObject: TtiObject);
 begin
-  BeginUpdate;
-  Try
-    NotifyObservers(AObject,noDeleteItem);
-    if AutoSetItemOwner then
-      AObject.Owner := nil;
-    FList.Extract(AObject);
-  Finally
-    EndUpdate;
-  end;
+  NotifyObservers(AObject,noDeleteItem);
+  if AutoSetItemOwner then
+    AObject.Owner := nil;
+  FList.Extract(AObject);
 end;
 
 {: Call Insert to add an object at a specified position in the list, shifting
@@ -1683,15 +1663,10 @@ end;
   without growing the array, set the Items property directly. }
 procedure TtiObjectList.Insert(const AIndex: integer; const AObject: TtiObject);
 begin
-  BeginUpdate;
-  Try
-    FList.Insert(AIndex, AObject);
-    if FbAutoSetItemOwner then
-      AObject.Owner := FItemOwner;
-    NotifyObservers(AObject,noAddItem);
-  Finally
-    EndUpdate;
-  end;
+  FList.Insert(AIndex, AObject);
+  if FbAutoSetItemOwner then
+    AObject.Owner := FItemOwner;
+  NotifyObservers(AObject,noAddItem);
 end;
 
 procedure TtiObjectList.Insert(const AInsertBefore: TtiObject; const AObject: TtiObject);

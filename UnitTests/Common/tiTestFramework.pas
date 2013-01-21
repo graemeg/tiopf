@@ -95,6 +95,7 @@ type
     procedure CheckStreamContentsSame(const pStream1, pStream2 : TStream);
     procedure CheckFormattedMessage(const AFormat: string; const AArgs: array of const; const AActual: string; const AMessage: string = '');
     procedure CheckObjectState(const AObjectState : TPerObjectState; const AData : TtiObject; const AMessage: string = '');
+    procedure CheckNotifyOperation(const AExpected, AActual: TNotifyOperation; const AMessage: string = '');
     procedure CheckNearEnough(AExpected, AActual: Extended; const AMessage: string = ''); overload;
     procedure CheckNearEnough(const AExpected, AActual: Double); overload;
     procedure CheckNearEnough(const AExpected, AActual: Double; const AMessage: string); overload;
@@ -654,6 +655,16 @@ begin
         '> but got <' +
         AData.ObjectStateAsString +
         '> on ' + AData.ClassName + '. ' + AMessage);
+end;
+
+procedure TtiTestCase.CheckNotifyOperation(const AExpected,
+  AActual: TNotifyOperation; const AMessage: string);
+begin
+  Check(AExpected = AActual, 'NotifyOperation: Expected <' +
+      GetEnumName(TypeInfo(TNotifyOperation), Ord(AExpected)) +
+      '> but got <' +
+      GetEnumName(TypeInfo(TNotifyOperation), Ord(AActual)) +
+      '>. ' + AMessage);
 end;
 
 class function TtiTestCase.PathToTestTempDirectory: string;
