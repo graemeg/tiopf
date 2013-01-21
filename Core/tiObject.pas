@@ -1450,11 +1450,7 @@ begin
   BeginUpdate;
   Try
     FList.Clear;
-    // Should Clear set the ObjectState to posEmpty. Originally we thought yes,
-    // then got burnt by side effects, so this was removed 26/09/2001
-    { 2005-08-25 graemeg: I thought I would take my chances as it makes sense
-      to set the ObjectState }
-    ObjectState := posEmpty;
+    FObjectState := posEmpty;
   Finally
     EndUpdate;
   end;
