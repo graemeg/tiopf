@@ -48,6 +48,7 @@ type
     FXMLTags: TtiXMLTags;
     FURLList: TStringList;
     FOnLog: TtiHTTPAutoDetectLogEvent;
+    FSSLLibraryPath: string;
     FConnectionDetails: TtiWebServerClientConnectionDetails;
     function    TestOne(const pURL: string): Boolean;
     function    TestOneWithIndy(const AURL: string): Boolean;
@@ -63,6 +64,7 @@ type
     // Input
     property    URLList: TStringList read FURLList;
     property    OnLog: TtiHTTPAutoDetectLogEvent read FOnLog Write FOnLog;
+    property    SSLLibraryPath: string read FSSLLibraryPath write FSSLLibraryPath;
 
     // Outputs
     property    ConnectionDetails: TtiWebServerClientConnectionDetails read FConnectionDetails;
@@ -304,6 +306,7 @@ begin
     LConnectionDetails.ProxyServerActive:= False;
     LConnectionDetails.ProxyServerPort  := 0;
     LConnectionDetails.ProxyServerName  := '';
+    LConnectionDetails.SSLLibraryPath := SSLLibraryPath;
     Result := tiHTTPTestConnection(LConnectionDetails);
     if Result then
     begin
