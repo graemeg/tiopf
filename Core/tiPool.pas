@@ -178,27 +178,20 @@ function TtiPool.AddItem : TtiPooledItem;
 var
   lPooledItem : TtiPooledItem;
   lList : TList;
-  lsCount : string;
 begin
-  
   lPooledItem := PooledItemClass.Create(self);
-  lsCount    := IntToStr(Count);
-
   try
-    Log('Attempting to add pooled item #' + lsCount, lsConnectionPool);
+    Log('Attempting to add PooledItem #%d', [Count], lsConnectionPool);
 
     lList := FPool.LockList;
     try
       lPooledItem.Owner := Self;
-      Log('Pooled item #' +
-           IntToStr(lList.Count-1) +
-           ' added.', lsConnectionPool);
 
       AfterAddPooledItem(lPooledItem);
 
       lList.Add(lPooledItem);
       lPooledItem.Index := lList.Count - 1;
-
+      Log('PooledItem #%d added.', [lPooledItem.Index], lsConnectionPool);
     finally
       FPool.UnLockList;
     end;
@@ -230,7 +223,7 @@ begin
       Result:= LItem;
       Result.Locked := true;
       Result.Index := I;
-      Log('PooledItem #' + intToStr(I) + ' Locked.', lsConnectionPool);
+      Log('PooledItem #%d locked.', [Result.Index], lsConnectionPool);
       Exit; //==>
     end;
   end;
@@ -261,7 +254,7 @@ begin
       LItem := AddItem;
       LItem.Locked := true;
       Log('A new PooledItem has been added to the pool.', lsConnectionPool);
-      Log('PooledItem #' + intToStr(LPool.Count) + ' locked.', lsConnectionPool);
+      Log('PooledItem #%d locked.', [LItem.Index], lsConnectionPool);
     end;
 
     // If we get here, the semahpore system and the pool area
