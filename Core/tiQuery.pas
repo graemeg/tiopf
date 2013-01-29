@@ -983,14 +983,22 @@ procedure TtiDatabase.Connect(
   const ADatabaseName, AUserName, APassword, AParams, AQueryOptions: string);
 var
   i : Integer;
+  LParams: TStringList;
 begin
   Log('Attempting to connect to: %s Params: %s', [ADatabaseName, AParams], lsConnectionPool);
   DatabaseName    := ADatabaseName;
   UserName        := AUserName    ;
   Password        := APassword    ;
   QueryOptions    := AQueryOptions;
-  for i := 1 to tiNumToken(AParams, ',') do
-    FParams.Add(tiToken(AParams, ',', i));
+  // Add params to existing list. Allow quoted params (with embedded spaces/commas)
+  LParams := TStringList.Create;
+  try
+    LParams.CommaText := AParams;
+    for i := 0 to LParams.Count - 1 do
+      FParams.Add(LParams.Strings[i]);
+  finally
+    LParams.Free;
+  end;
   if gCommandLineParams.IsParam('VerboseDBConnection') then
     Log('Connected. Database: ' + ADatabaseName +
          ' UserName: ' + AUserName +
