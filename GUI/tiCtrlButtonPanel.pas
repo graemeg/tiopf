@@ -81,7 +81,7 @@ type
     FBtnDelete : TtiSpeedButton;
     FBtnView  : TtiSpeedButton;
   protected
-    procedure   SetupSpeedButton(const pBtn : TSpeedButton);virtual;
+    procedure   SetupSpeedButton(const pBtn : TSpeedButton; const ANameStub: string);virtual;
     function    GetOnView: TNotifyEvent; override;
     function    GetOnDelete: TNotifyEvent; override;
     function    GetOnEdit: TNotifyEvent; override;
@@ -152,6 +152,7 @@ implementation
 uses
   tiLog
   ,tiUtils
+  ,tiGUIUtils
   ,tiResources
   ,tiImageMgr
   ,SysUtils
@@ -211,6 +212,8 @@ end;
 constructor TtiCtrlBtnPnlAbs.Create(Owner: TComponent);
 begin
   inherited;
+  Self.Name := tiGetUniqueComponentNameFromParent(Owner, 'CtrlBtnPnl');
+  Self.Caption := '';
   // Had problems with csAcceptsControls being removed at runtime.
   // It was causing flicker when the panel was resized and owned components
   // where not being redrawn properly.
@@ -254,22 +257,22 @@ begin
   Width := (FBtnWidth + cBtnSpace) * 4;
 
   FBtnView           := TtiSpeedButton.Create(self);
-  SetupSpeedButton(FBtnView);
+  SetupSpeedButton(FBtnView, 'View');
   FBtnView.Hint    := 'View [Enter]';
   FBtnView.ControlStyle := FBtnView.ControlStyle + [csNoDesignVisible];
 
   FBtnEdit           := TtiSpeedButton.Create(self);
-  SetupSpeedButton(FBtnEdit);
+  SetupSpeedButton(FBtnEdit, 'Edit');
   FBtnEdit.Hint      := 'Edit [Enter]';
   FBtnEdit.ControlStyle := FBtnEdit.ControlStyle + [csNoDesignVisible];
 
   FbtnNew            := TtiSpeedButton.Create(self);
-  SetupSpeedButton(FbtnNew);
+  SetupSpeedButton(FbtnNew, 'New');
   FBtnNew.Hint       := 'New [Ins]';
   FBtnNew.ControlStyle := FBtnNew.ControlStyle + [csNoDesignVisible];
 
   FBtnDelete         := TtiSpeedButton.Create(self);
-  SetupSpeedButton(FBtnDelete);
+  SetupSpeedButton(FBtnDelete, 'Delete');
   FBtnDelete.Hint    := 'Delete [Del]';
   FBtnDelete.ControlStyle := FBtnDelete.ControlStyle + [csNoDesignVisible];
 
@@ -418,9 +421,12 @@ begin
   FBtnView.OnClick := AValue;
 end;
 
-procedure TtiCtrlBtnPnlButton.SetupSpeedButton(const pBtn: TSpeedButton);
+procedure TtiCtrlBtnPnlButton.SetupSpeedButton(const pBtn: TSpeedButton;
+  const ANameStub: string);
 begin
   pBtn.Parent  := Self;
+  pBtn.Name := tiGetUniqueComponentNameFromParent(Self, ANameStub);
+  pBtn.Caption := '';
   pBtn.Visible := false;
   pBtn.ShowHint := true;
   pBtn.Flat    := true;

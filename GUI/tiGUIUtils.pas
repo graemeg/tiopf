@@ -44,6 +44,9 @@ uses
   {$IFNDEF FPC}
   function  tiGetUniqueComponentName(const ANameStub: string): string;
   {$ENDIF}
+  function  tiGetUniqueComponentNameFromParent(
+      const AParent: TComponent;
+      const ANameStub: string = ''): string;
 
   {: Translate & to &&}
   function  tiEncodeNonAcceleratorInCaption(const ACaption: string): string;
@@ -260,6 +263,40 @@ begin
 
 end;
 {$ENDIF}
+
+
+// Gernate a name based on the parent control name and a unique name within
+// the given parent (stub + numerical suffix if required)
+// e.g. ParentName_NameStub3
+function  tiGetUniqueComponentNameFromParent(const AParent: TComponent;
+  const ANameStub: string = ''): string;
+var
+  LUniqueName: string;
+  LSuffixNumber: Integer;
+begin
+  if AParent = nil then
+  begin
+    Result := ANameStub;
+    Exit; //==>
+  end;
+
+  // Get parent hierarchy names
+  Result := AParent.Name;
+
+  // Get unique name across siblings
+  LUniqueName := ANameStub;
+  LSuffixNumber := 2; // Start with 2 because we already have one instance
+  while AParent.FindComponent(LUniqueName) <> nil do
+  begin
+    LUniqueName := ANameStub + IntToStr(LSuffixNumber);
+    Inc(LSuffixNumber);
+  end;
+
+  // Concatenate names
+  if Result <> '' then
+    Result := Result + '_';
+  Result := Result + LUniqueName;
+end;
 
 
 function tiEncodeNonAcceleratorInCaption(const ACaption: string): string;

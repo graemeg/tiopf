@@ -55,6 +55,7 @@ type
     FFormMgr: TtiFormMgr;
     FLastActiveControl: TWinControl;
     FEscapeKeyEnabled: Boolean;
+    FInitialized: Boolean;
 
     procedure SetFormErrorMessage(const AValue: string);
     procedure SetFormInfoMessage(const AValue: string);
@@ -101,6 +102,7 @@ type
     property  FormInfoMessage: string read FFormInfoMessage Write SetFormInfoMessage;
     property  FormMgr: TtiFormMgr read FFormMgr Write FFormMgr;
     property  EscapeKeyEnabled: Boolean read FEscapeKeyEnabled write SetEscapeKeyEnabled;
+    property  Initialized: Boolean read FInitialized write FInitialized;
 
     property AL: TActionList read FAL;
   end;
@@ -123,6 +125,11 @@ type
     function    GetActiveForm: TtiFormMgrForm;
     procedure   SetActiveForm(const AValue: TtiFormMgrForm);
     procedure   Add(const pForm : TtiFormMgrForm);
+    procedure   InitializeForm(const AForm: TtiFormMgrForm;
+        const AData: TtiObject; AModal: Boolean;
+        const AOnEditsSave: TtiObjectEvent;
+        const AOnEditsCancel: TtiObjectEvent; AReadOnly: boolean;
+        const AFormSettings: TtiObject; const AReferenceData: TtiObject);
     procedure   DoCloseForm(const pForm : TtiFormMgrForm);
     function    CloseCurrentFormActivatePreviousForm(pClose : boolean): boolean;
     procedure   DoOnShowForm(const pForm : TtiFormMgrForm);
@@ -135,7 +142,16 @@ type
     constructor Create;
     destructor  Destroy; override;
 
-    function   ShowForm(     const AFormClass     : TtiFormMgrFormClass;
+    function    CreateForm(const AFormClass: TtiFormMgrFormClass): TtiFormMgrForm;
+    procedure   ShowForm(     const AForm: TtiFormMgrForm;
+                              const AData          : TtiObject = nil;
+                                    AModal         : Boolean = False;
+                              const AOnEditsSave   : TtiObjectEvent = nil;
+                              const AOnEditsCancel : TtiObjectEvent = nil;
+                                    AReadOnly      : boolean = False;
+                              const AFormSettings  : TtiObject = nil;
+                              const AReferenceData : TtiObject = nil); overload;
+    function    ShowForm(     const AFormClass     : TtiFormMgrFormClass;
                               const AData          : TtiObject = nil;
                                     AModal         : Boolean = False;
                               const AOnEditsSave   : TtiObjectEvent = nil;
@@ -143,13 +159,6 @@ type
                                     AReadOnly      : boolean = False;
                               const AFormSettings  : TtiObject = nil;
                               const AReferenceData : TtiObject = nil): TtiFormMgrForm; overload;
-    procedure   ShowForm(     const AForm          : TtiFormMgrForm;
-                              const AData          : TtiObject;
-                                    AModal         : Boolean = False;
-                              const AOnEditsSave   : TtiObjectEvent = nil;
-                              const AOnEditsCancel : TtiObjectEvent = nil;
-                                    AReadOnly      : boolean = False); overload;
-    procedure   ShowForm(     const AForm          : TtiFormMgrForm); overload;
     function    ShowFormModal(const AFormClass     : TtiFormMgrFormClass;
                               const AData          : TtiObject;
                               const AOnEditsSave   : TtiObjectEvent = nil;
@@ -161,6 +170,7 @@ type
     function    FindForm(const AFormClass : TtiFormMgrFormClass): TtiFormMgrForm; overload;
     function    FindForm(const AFormClass : TtiFormMgrFormClass; const AData : TtiObject): TtiFormMgrForm; overload;
     function    IndexOf(const pForm : TtiFormMgrForm): integer;
+    procedure   AddForm(AForm: TtiFormMgrForm);
 
     procedure   CloseForm(const pForm : TtiFormMgrForm);
     procedure   CloseAllForms;
@@ -585,36 +595,109 @@ begin
   FForms[i]:= AValue;
 end;
 
-procedure TtiFormMgr.ShowForm(
-      const AForm: TtiFormMgrForm;
-      const AData: TtiObject;
-            AModal: Boolean = False;
-      const AOnEditsSave: TtiObjectEvent = nil;
-      const AOnEditsCancel: TtiObjectEvent = nil;
-            AReadOnly: boolean = False);
+procedure TtiFormMgr.AddForm(AForm: TtiFormMgrForm);
 begin
-  ShowForm(TtiFormMgrFormClass(AForm.ClassType), AData, AModal, AOnEditsSave, AOnEditsCancel, AReadOnly);
+  if IndexOf(AForm) = -1 then
+    Add(AForm);
 end;
 
-// Show existing instance.
-procedure TtiFormMgr.ShowForm(const AForm: TtiFormMgrForm);
+function TtiFormMgr.CreateForm(const AFormClass: TtiFormMgrFormClass): TtiFormMgrForm;
+begin
+  Result := AFormClass.Create(ParentPnl);
+  Add(Result);
+end;
+
+procedure TtiFormMgr.InitializeForm(
+  const AForm: TtiFormMgrForm;
+  const AData: TtiObject;
+        AModal: Boolean;
+  const AOnEditsSave: TtiObjectEvent;
+  const AOnEditsCancel: TtiObjectEvent;
+        AReadOnly: boolean;
+  const AFormSettings: TtiObject;
+  const AReferenceData: TtiObject);
+begin
+  if AForm.Initialized then
+    raise EtiOPFProgrammerException.Create('Form already initialized');
+
+  {$IFDEF DEBUG}
+  Assert(AForm.HelpContext <> 0, AForm.ClassName + ' help context not set <' + AForm.Name +'>');
+  {$ENDIF}
+
+  AForm.OnFormMessage := FOnFormMessageEvent;
+  if AForm is TtiFormMgrDataForm then
+  begin
+    TtiFormMgrDataForm(AForm).OnEditsSave   := AOnEditsSave;
+    TtiFormMgrDataForm(AForm).OnEditsCancel := AOnEditsCancel;
+  end;
+  AForm.IsModal       := AModal;
+  AForm.FormMgr       := Self;
+  if (AFormSettings <> nil) and
+     (AForm is TtiFormMgrDataForm) and
+     (TtiFormMgrDataForm(AForm).FormSettings <> AFormSettings) then
+    TtiFormMgrDataForm(AForm).FormSettings := AFormSettings;
+  if (AReferenceData <> nil) and
+     (AForm is TtiFormMgrDataForm) and
+     (TtiFormMgrDataForm(AForm).ReferenceData <> AReferenceData) then
+    TtiFormMgrDataForm(AForm).ReferenceData := AReferenceData;
+  if (AData <> nil) and
+     (AForm is TtiFormMgrDataForm) and
+     (TtiFormMgrDataForm(AForm).Data <> AData) then
+    TtiFormMgrDataForm(AForm).Data := AData;
+  AForm.SetupButtons;
+
+  AForm.Initialized := true;
+end;
+
+// Show an existing instance
+procedure TtiFormMgr.ShowForm(
+  const AForm: TtiFormMgrForm;
+  const AData: TtiObject = nil;
+        AModal: Boolean = False;
+  const AOnEditsSave: TtiObjectEvent = nil;
+  const AOnEditsCancel: TtiObjectEvent = nil;
+        AReadOnly: boolean = False;
+  const AFormSettings: TtiObject = nil;
+  const AReferenceData: TtiObject = nil);
 var
   LCursor: TCursor;
+  LActiveForm: TtiFormMgrForm;
 begin
-  LCursor := Screen.Cursor; // tiAutoCursor not working here - I don't understand why
+  if ShuttingDown then
+    Exit; //==>
+
+  if IndexOf(AForm) = -1 then
+    Exit; //==>
+
+  LCursor := Screen.Cursor;
   try
-    if IndexOf(AForm) <> -1 then
-    begin
-      DoBeginUpdate;
-      try
-        if (FActiveForm <> nil) and
-           (not FActiveForm.IsModal) and
-           (not CloseCurrentFormActivatePreviousForm(false)) then
-          Exit; //==>
-        BringToFront(AForm, false);
-      finally
-        DoEndUpdate;
-      end;
+    DoBeginUpdate;
+    LActiveForm := ActiveForm;
+    try
+      if (FActiveForm <> nil) and
+         (not FActiveForm.IsModal) and
+         (not CloseCurrentFormActivatePreviousForm(false)) then
+        Exit; //==>
+
+        HideActiveForm;
+        try
+          if not AForm.Initialized then
+          begin
+            InitializeForm(AForm, AData, AModal, AOnEditsSave, AOnEditsCancel,
+                AReadOnly, AFormSettings, AReferenceData);
+            BringToFront(AForm, true);
+          end else
+            BringToFront(AForm, false);
+        except
+          on e:exception do
+          begin
+            if LActiveForm <> nil then
+              BringToFront(LActiveForm, false);
+            raise;
+          end;
+        end;
+    finally
+      DoEndUpdate;
     end;
   finally
     Screen.Cursor:= LCursor;
@@ -659,34 +742,11 @@ begin
         HideActiveForm;
         LForm:= nil;
         try
-          LForm := AFormClass.Create(nil);
-          Add(LForm);
+          LForm := CreateForm(AFormClass);
 
-         {$IFDEF DEBUG}
-          Assert(LForm.HelpContext <> 0, LForm.ClassName + ' help context not set <' + LForm.Name +'>');
-         {$ENDIF}
+          InitializeForm(LForm, AData, AModal, AOnEditsSave, AOnEditsCancel,
+              AReadOnly, AFormSettings, AReferenceData);
 
-          LForm.OnFormMessage := FOnFormMessageEvent;
-          if LForm is TtiFormMgrDataForm then
-          begin
-            TtiFormMgrDataForm(LForm).OnEditsSave   := AOnEditsSave;
-            TtiFormMgrDataForm(LForm).OnEditsCancel := AOnEditsCancel;
-          end;
-          LForm.IsModal       := AModal;
-          LForm.FormMgr       := Self;
-          if (AFormSettings <> nil) and
-             (LForm is TtiFormMgrDataForm) and
-             (TtiFormMgrDataForm(LForm).FormSettings <> AFormSettings) then
-            TtiFormMgrDataForm(LForm).FormSettings := AFormSettings;
-          if (AReferenceData <> nil) and
-             (LForm is TtiFormMgrDataForm) and
-             (TtiFormMgrDataForm(LForm).ReferenceData <> AReferenceData) then
-            TtiFormMgrDataForm(LForm).ReferenceData := AReferenceData;
-          if (AData <> nil) and
-             (LForm is TtiFormMgrDataForm) and
-             (TtiFormMgrDataForm(LForm).Data <> AData) then
-            TtiFormMgrDataForm(LForm).Data := AData;
-          LForm.SetupButtons;
           BringToFront(LForm, true);
         except
           on e:exception do

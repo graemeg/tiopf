@@ -837,6 +837,7 @@ begin
   FStatusBar.UseSystemFont := True;
 
   FtbDockTop:= TTBXDock.Create(FMainForm);
+  FtbDockTop.Name := 'tbDockTop';
   FtbDockTop.Parent := FMainForm;
   FtbDockTop.Left := 0;
   FtbDockTop.Top := 0;
@@ -846,6 +847,7 @@ begin
   FtbDockTop.HelpContext := FDefHelpContext;
 
   ltbMultiDockTop:= TTBXMultiDock.Create(FMainForm);
+  ltbMultiDockTop.Name := 'tbMultiDockTop';
   ltbMultiDockTop.Parent := FMainForm;
   ltbMultiDockTop.Left := 0;
   ltbMultiDockTop.Top := 9;
@@ -855,6 +857,7 @@ begin
   ltbMultiDockTop.HelpContext := FDefHelpContext;
 
   ltbDockLeft:= TTBXDock.Create(FMainForm);
+  ltbDockLeft.Name := 'tbDockLeft';
   ltbDockLeft.Parent := FMainForm;
   ltbDockLeft.Left := 0;
   ltbDockLeft.Top := 16;
@@ -865,6 +868,7 @@ begin
   ltbDockLeft.HelpContext := FDefHelpContext;
 
   ltbMultiDockLeft:= TTBXMultiDock.Create(FMainForm);
+  ltbMultiDockLeft.Name := 'tbMultiDockLeft';
   ltbMultiDockLeft.Parent := FMainForm;
   ltbMultiDockLeft.Left := 9;
   ltbMultiDockLeft.Top := 16;
@@ -875,6 +879,8 @@ begin
   ltbMultiDockLeft.HelpContext := FDefHelpContext;
 
   FdpMenuSidebar:= TTBXDockablePanel.Create(FMainForm);
+  FdpMenuSidebar.Name := 'dpMenuSidebar';
+  FdpMenuSidebar.Caption := '';
   FdpMenuSidebar.Parent := ltbMultiDockLeft;
   FdpMenuSidebar.Left := 0;
   FdpMenuSidebar.Top := 0;
@@ -900,6 +906,7 @@ begin
   FdpMenuSidebar.DockMode := dmCannotFloatOrChangeDocks;
 
   FtbdBottom:= TTBXDock.Create(FMainForm);
+  FtbdBottom.Name := 'tbdBottom';
   FtbdBottom.Parent := FMainForm;
   FtbdBottom.Left := 0;
   FtbdBottom.Top := 661;
@@ -911,6 +918,7 @@ begin
   FtbdBottom.HelpContext := FDefHelpContext;
 
   FtbMultiDockBottom:= TTBXMultiDock.Create(FMainForm);
+  FtbMultiDockBottom.Name := 'tbMultiDockBottom';
   FtbMultiDockBottom.Parent := FMainForm;
   FtbMultiDockBottom.Left := 0;
   FtbMultiDockBottom.Top := 589;
@@ -921,6 +929,8 @@ begin
   FtbMultiDockBottom.HelpContext := FDefHelpContext;
 
   FdpMessageBar:= TTBXDockablePanel.Create(FMainForm);
+  FdpMessageBar.Name := 'dpMessageBar';
+  FdpMessageBar.Caption := '';
   FdpMessageBar.Parent := FtbMultiDockBottom;
   FdpMessageBar.Left := 0;
   FdpMessageBar.Top := 0;
@@ -943,6 +953,8 @@ begin
   FdpMessageBar.DockMode := dmCannotFloatOrChangeDocks;
 
   FPnlProgress:= TtiRoundedPanel.Create(FMainForm);
+  FPnlProgress.Name := 'PnlProgress';
+  FPnlProgress.Caption := '';
   FPnlProgress.Visible := False;
   FPnlProgress.Parent:= FdpMessageBar;
   FPnlProgress.Align:= alClient;
@@ -952,6 +964,8 @@ begin
   FPnlProgress.CornerRadius := 5;
 
   FPnlEmptyMessage := TtiRoundedPanel.Create(FMainForm);
+  FPnlEmptyMessage.Name := 'PnlEmptyMessage';
+  FPnlEmptyMessage.Caption := '';
   FPnlEmptyMessage.Visible := False;
   FPnlEmptyMessage.Parent := FdpMessageBar;
   FPnlEmptyMessage.Align := alClient;
@@ -961,6 +975,8 @@ begin
   FPnlEmptyMessage.CornerRadius := 5;
 
   FPnlMessageText:= TtiRoundedPanel.Create(FMainForm);
+  FPnlMessageText.Name := 'PnlMessageText';
+  FPnlMessageText.Caption := '';
   FPnlMessageText.Visible := False;
   FPnlMessageText.Parent:= FdpMessageBar;
   FPnlMessageText.Align:= alClient;
@@ -1033,6 +1049,7 @@ end;
 procedure TtiApplicationMenuSystem.CreateMenuSidebar;
 begin
   FdxPageScroller:= TTBXPageScroller.Create(MainForm);
+  FdxPageScroller.Name := 'dxPageScroller';
   FdxPageScroller.Parent := FDPMenuSidebar;
   FdxPageScroller.Left := 0;
   FdxPageScroller.Top := 0;
@@ -1049,12 +1066,13 @@ begin
   FdxPageScroller.HelpContext := FDefHelpContext;
 
   FdxContainer:= TdxContainer.Create(MainForm);
+  FdxContainer.Name := 'dxContainer';
   FdxContainer.Parent := FdxPageScroller;
   FdxContainer.Left := 0;
   FdxContainer.Top := 0;
   FdxContainer.Width := 176;
   FdxContainer.Height := 742;
-  FdxContainer.Align := alTop;
+  FdxContainer.Align := alClient;
   FdxContainer.AutoSize := True;
   FdxContainer.BorderWidth := 5;
   FdxContainer.Caption := 'dxContainer';
@@ -1110,6 +1128,8 @@ procedure TtiApplicationMenuSystem.CreateContainerPanels;
 begin
 
   FpnlBorder:= TtiRoundedPanel.Create(FMainForm);
+  FpnlBorder.Name := 'pnlBorder';
+  FpnlBorder.Caption := '';
   FpnlBorder.Parent := FMainForm;
   FpnlBorder.Color := clSkyBlue;
   FpnlBorder.Align := alClient;
@@ -1118,6 +1138,8 @@ begin
   FpnlBorder.BorderColor := clWhite;
 
   FpnlCaption:= TPanel.Create(FMainForm);
+  FpnlCaption.Name := 'pnlCaption';
+  FpnlCaption.Caption := '';
   FpnlCaption.Parent := FpnlBorder;
   FpnlCaption.BevelOuter := bvNone;
   FpnlCaption.Color := clSkyBlue;
@@ -1127,6 +1149,7 @@ begin
 
   FlblCaption := TLabel.Create(FMainForm);
   FlblCaption.Parent := FpnlCaption;
+  FlblCaption.Caption := '';
   FlblCaption.Top := 8;
   FlblCaption.Left := 8;
   FlblCaption.Font.Size := 10;
@@ -1135,6 +1158,8 @@ begin
   FlblCaption.Font.Name := 'Tahoma';
 
   FpnlParent:= TtiRoundedPanel.Create(FMainForm);
+  FpnlParent.Name := 'pnlParent';
+  FpnlParent.Caption := '';
   FpnlParent.Parent := FPnlBorder;
   FPnlParent.Align := alClient;
   FpnlParent.HelpContext := FDefHelpContext;
