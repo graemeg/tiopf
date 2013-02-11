@@ -46,7 +46,8 @@ uses
   {$ENDIF}
   function  tiGetUniqueComponentNameFromParent(
       const AParent: TComponent;
-      const ANameStub: string = ''): string;
+      const ANameStub: string = '';
+      const ASeparator: string = '_'): string;
 
   {: Translate & to &&}
   function  tiEncodeNonAcceleratorInCaption(const ACaption: string): string;
@@ -269,10 +270,20 @@ end;
 // the given parent (stub + numerical suffix if required)
 // e.g. ParentName_NameStub3
 function  tiGetUniqueComponentNameFromParent(const AParent: TComponent;
-  const ANameStub: string = ''): string;
+  const ANameStub: string = ''; const ASeparator: string = '_'): string;
 var
-  LUniqueName: string;
   LSuffixNumber: Integer;
+
+  function _MakeName(const ASuffixNumber: Integer): string;
+  begin
+    Result := AParent.Name;
+    if Result <> '' then
+      Result := Result + ASeparator;
+    Result := Result + ANameStub;
+    if ASuffixNumber <> 0 then
+      Result := Result + IntToStr(ASuffixNumber);
+  end;
+
 begin
   if AParent = nil then
   begin
@@ -280,22 +291,14 @@ begin
     Exit; //==>
   end;
 
-  // Get parent hierarchy names
-  Result := AParent.Name;
-
   // Get unique name across siblings
-  LUniqueName := ANameStub;
+  Result := _MakeName(0);
   LSuffixNumber := 2; // Start with 2 because we already have one instance
-  while AParent.FindComponent(LUniqueName) <> nil do
+  while AParent.FindComponent(Result) <> nil do
   begin
-    LUniqueName := ANameStub + IntToStr(LSuffixNumber);
+    Result := _MakeName(LSuffixNumber);
     Inc(LSuffixNumber);
   end;
-
-  // Concatenate names
-  if Result <> '' then
-    Result := Result + '_';
-  Result := Result + LUniqueName;
 end;
 
 

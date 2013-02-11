@@ -217,6 +217,7 @@ type
 
   protected
     procedure SetEnabled(AValue: Boolean); override;
+    procedure SetChildControlNames; override;
 
     procedure BeginUpdate;
     procedure EndUpdate;
@@ -314,6 +315,7 @@ uses
   ,tiUtils
   ,tiGUIConstants
   ,tiRTTI
+  ,tiGUIUtils
   ,SysUtils
   ,TypInfo
  ;
@@ -373,7 +375,6 @@ begin
 
   SetVT(TtiVirtualStringTree.Create(self));
   VT.Parent := Self;
-  VT.Name := Name + '_TV';
   VT.Align := alClient;
 
   VT.NodeDataSize := SizeOf(TNodeDataRec);
@@ -1182,6 +1183,19 @@ begin
   FCtrlBtnPnl.OnDelete   := DoDelete;
   FCtrlBtnPnl.RefreshButtons;
   DoResize(nil)
+end;
+
+procedure TtiVTTreeView.SetChildControlNames;
+begin
+  inherited;
+  if VT <> nil then
+    VT.Name := tiGetUniqueComponentNameFromParent(Self, 'TV');
+  if Assigned(FCtrlBtnPnl) then
+    FCtrlBtnPnl.Name := tiGetUniqueComponentNameFromParent(Self, 'CtrlBtnPnl');
+  if Assigned(FPopupMenu) then
+    FPopupMenu.Name := tiGetUniqueComponentNameFromParent(Self, 'PopupMenu');
+  if Assigned(FpmiShowFind) then
+    FpmiShowFind.Name := tiGetUniqueComponentNameFromParent(Self, 'pmiShowFind');
 end;
 
 procedure TtiVTTreeView.SetVisibleButtons(const AValue: TtiLVVisibleButtons);

@@ -95,6 +95,8 @@ type
     FOnKeyPress: TKeyPressEvent;
     FOnKeyDown: TKeyEvent;
 
+    procedure   SetChildControlNames; override;
+
     procedure   SetLabelStyle(const AValue: TLabelStyle); virtual;
     function    GetCaption: TCaption; virtual;
     procedure   SetCaption(const AValue: TCaption); virtual;
@@ -382,6 +384,7 @@ type
     procedure pmiClearOnClick(sender : TObject);
 
   protected
+    procedure   SetChildControlNames; override;
     procedure   SetValue(const AValue: String); override;
     procedure   Loaded; override;
     procedure   DoOnExit(Sender : TObject); override;
@@ -506,6 +509,7 @@ type
     function  GetValue: boolean;
     procedure SetValue(const AValue: boolean);
   protected
+    procedure   SetChildControlNames; override;
     procedure   SetControlColor; override;
     procedure   DataToWinControl; override;
     procedure   WinControlToData; override;
@@ -746,6 +750,7 @@ type
     {$IFNDEF FPC}
     procedure   CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
     {$ENDIF}
+    procedure   SetChildControlNames; override;
     procedure   SetReadOnly(const AValue: Boolean);override;
     procedure   SetControlColor; override;
     procedure   DataToWinControl; override;
@@ -778,6 +783,8 @@ type
     FFileName : TFileName;
     procedure DoOnShow(Sender : TObject);
     procedure DoOnClose(Sender : TObject; var Action : TCloseAction);
+  protected
+    procedure   SetChildControlNames; override;
   public
     constructor CreateNew(AOwner: TComponent; Dummy: Integer = 0); override;
     function    Execute(const
@@ -808,6 +815,7 @@ uses
   ,tiExcept
   ,tiUtils
   ,tiConstants
+  ,tiGUIUtils
  ;
 
 // Added by Chris Latta (andromeda@froggy.com.au) because the values of some
@@ -1002,6 +1010,15 @@ end;
 procedure TtiPerAwareAbs.SetCaption(const AValue: TCaption);
 begin
   FLabel.Caption := AValue;
+end;
+
+procedure TtiPerAwareAbs.SetChildControlNames;
+begin
+  inherited;
+  if Assigned(FLabel) then
+    FLabel.Name := tiGetUniqueComponentNameFromParent(Self, 'Label');
+  if Assigned(FWinControl) then
+    FWinControl.Name := tiGetUniqueComponentNameFromParent(Self, 'Control');
 end;
 
 procedure TtiPerAwareAbs.SetLabelFont(const AValue: TFont);
@@ -1807,6 +1824,13 @@ begin
   result := TCheckBox(FWinControl).Checked;
 end;
 
+
+procedure TtiPerAwareCheckBox.SetChildControlNames;
+begin
+  inherited;
+  if Assigned(FWinControl) then
+    TCheckBox(FWinControl).Caption := '';
+end;
 
 procedure TtiPerAwareCheckBox.SetControlColor;
 var
@@ -2665,6 +2689,38 @@ begin
   end;
 end;
 
+procedure TtiPerAwareImageEdit.SetChildControlNames;
+begin
+  inherited;
+  if Assigned(FScrollBContainer) then
+  begin
+    FScrollBContainer.Name := tiGetUniqueComponentNameFromParent(Self, 'ScrollBContainer');
+    FScrollBContainer.Caption := '';
+  end;
+  if Assigned(FScrollBox) then
+    FScrollBox.Name := tiGetUniqueComponentNameFromParent(Self, 'ScrollBox');
+  if Assigned(FImage) then
+    FImage.Name := tiGetUniqueComponentNameFromParent(Self, 'Image');
+  if Assigned(FbtnLoadFromFile) then
+    FbtnLoadFromFile.Name := tiGetUniqueComponentNameFromParent(Self, 'btnLoadFromFile');
+  if Assigned(FbtnSaveToFile) then
+    FbtnSaveToFile.Name := tiGetUniqueComponentNameFromParent(Self, 'btnSaveToFile');
+  if Assigned(FBtnCopyToClip) then
+    FBtnCopyToClip.Name := tiGetUniqueComponentNameFromParent(Self, 'BtnCopyToClip');
+  if Assigned(FbtnPasteFromClip) then
+    FbtnPasteFromClip.Name := tiGetUniqueComponentNameFromParent(Self, 'btnPasteFromClip');
+{
+  if Assigned(FbtnViewFullScreen) then
+    FbtnViewFullScreen.Name := ChildControlName('btnViewFullScreen');
+}
+  if Assigned(FbtnEdit) then
+    FbtnEdit.Name := tiGetUniqueComponentNameFromParent(Self, 'btnEdit');
+  if Assigned(FbtnClear) then
+    FbtnClear.Name := tiGetUniqueComponentNameFromParent(Self, 'btnClear');
+  if Assigned(FbtnStretch) then
+    FbtnStretch.Name := tiGetUniqueComponentNameFromParent(Self, 'btnStretch');
+end;
+
 procedure TtiPerAwareImageEdit.SetControlColor;
 begin
   Inherited;
@@ -2926,6 +2982,15 @@ begin
   result := ShowModal = mrOK;
   // I can't make this work reliably. Got any ideas?
   FOleContainer.SaveAsDocument(FFileName);
+end;
+
+procedure TtiPerAwareImageEditForm.SetChildControlNames;
+begin
+  inherited;
+  if Assigned(FMenu) then
+    FMenu.Name := tiGetUniqueComponentNameFromParent(Self, 'Menu');
+  if Assigned(FOleContainer) then
+    FOleContainer.Name := tiGetUniqueComponentNameFromParent(Self, 'OleContainer');
 end;
 }
 
@@ -3404,6 +3469,15 @@ begin
 
   Value := lsText;
 
+end;
+
+procedure TtiPerAwareComboBoxHistory.SetChildControlNames;
+begin
+  inherited;
+  if Assigned(FPopupMenu) then
+    FPopupMenu.Name := tiGetUniqueComponentNameFromParent(Self, 'Menu');
+  if Assigned(FpmiClear) then
+    FpmiClear.Name := tiGetUniqueComponentNameFromParent(Self, 'MenuItem_Clear');
 end;
 
 procedure TtiPerAwareComboBoxHistory.SetHistoryCount(const iValue: integer);

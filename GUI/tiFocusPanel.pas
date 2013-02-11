@@ -27,6 +27,8 @@ type
     FShowFocusRect : boolean;
     function IsFocused: boolean;
   protected
+    procedure   SetName(const NewName: TComponentName); override;
+    procedure   SetChildControlNames; virtual;
     procedure   DoEnter; override;
     procedure   DoExit ; override;
     procedure   DoOnClick(Sender : TObject); virtual;
@@ -149,6 +151,20 @@ begin
   inherited Paint;
   if FShowFocusRect then DoDrawFocusRect(IsFocused);
 end;
+
+procedure TtiFocusPanel.SetChildControlNames;
+begin
+  // All controls should have a name to facilitate automated GUI testing etc.
+  // Override in descendant if there are child controls created at runtime.
+  // To generate unique names use tiGetUniqueComponentNameFromParent()
+end;
+
+procedure TtiFocusPanel.SetName(const NewName: TComponentName);
+begin
+  inherited;
+  SetChildControlNames;
+end;
+
 {$ENDIF}
 
 procedure TtiFocusPanel.DoOnClick(Sender : TObject);

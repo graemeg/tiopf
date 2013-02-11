@@ -63,7 +63,8 @@ type
     procedure DoOnEnterFindEdit(Sender: TObject);
     procedure DoOnExitFindEdit(Sender: TObject);
     procedure ClearWrapMessage;
-
+  protected
+    procedure SetName(const NewName: TComponentName); override;
   public
     constructor Create(AOwner: TComponent); override;
     property TextMatching: boolean read FTextMatching write SetTextMatching;
@@ -93,6 +94,7 @@ uses
   Controls
   ,tiImageMgr
   ,tiResources
+  ,tiGUIUtils
   ,Windows
   ,Graphics
   ;
@@ -269,6 +271,26 @@ end;
 procedure TtiVTSearchPanel.SetOnReturnKey(const Value: TNotifyEvent);
 begin
   FOnReturnKey := Value;
+end;
+
+procedure TtiVTSearchPanel.SetName(const NewName: TComponentName);
+begin
+  inherited;
+  if Assigned(FFindLabel) then
+    FFindLabel.Name := tiGetUniqueComponentNameFromParent(Self, 'FindLabel');
+  if Assigned(FFindText) then
+    FFindText.Name := tiGetUniqueComponentNameFromParent(Self, 'FindText');
+  if Assigned(FClose) then
+    FClose.Name := tiGetUniqueComponentNameFromParent(Self, 'Close');
+  if Assigned(FFindNext) then
+    FFindNext.Name := tiGetUniqueComponentNameFromParent(Self, 'FindNext');
+  if Assigned(FFindPrevious) then
+    FFindPrevious.Name := tiGetUniqueComponentNameFromParent(Self, 'FindPrevious');
+  if Assigned(FWrapLabel) then
+  begin
+    FWrapLabel.Name := tiGetUniqueComponentNameFromParent(Self, 'WrapLabel');
+    FWrapLabel.Caption := '';
+  end;
 end;
 
 procedure TtiVTSearchPanel.SetOnEnterFindEdit(const Value: TNotifyEvent);

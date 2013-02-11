@@ -90,6 +90,7 @@ type
 ///
     FLastNode: PVirtualNode;
 ///
+    procedure SetChildControlNames; override;
     function GetObjectFromNode(Node: PVirtualNode): TtiObject; virtual; abstract;
     procedure SetVT(const AVT: TtiVirtualStringTree);
 ////
@@ -119,7 +120,8 @@ type
 implementation
 
 uses
-  SysUtils;
+  SysUtils,
+  tiGUIUtils;
 
 { TtiVTAbstract }
 
@@ -227,6 +229,13 @@ begin
     FVT.OnPaintText := DoOnPaintText
   else
     FVT.OnPaintText := nil;
+end;
+
+procedure TtiVTAbstract.SetChildControlNames;
+begin
+  inherited;
+  if Assigned(FSP) then
+    FSP.Name := tiGetUniqueComponentNameFromParent(Self, 'SearchPanel');
 end;
 
 procedure TtiVTAbstract.SetOnAdvancedPaintText(

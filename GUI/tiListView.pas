@@ -347,7 +347,7 @@ type
     procedure SetInfoTipType(const AValue: TtiLVInfoTypeType);
     procedure DoTipInfo(Sender: TObject; Item: TListItem; var InfoTip: string);
   protected
-
+    procedure   SetChildControlNames; override;
     function    GetDefaultInfoTip(AIndex: Integer): string; virtual;
     procedure   SetData(const AValue: TList); virtual;
     procedure   SetupCols; virtual;
@@ -540,6 +540,7 @@ type
     function  GetVisibleButtons: TtiLVVisibleButtons;
     procedure SetVisibleButtons(const AValue: TtiLVVisibleButtons);
   protected
+    procedure   SetChildControlNames; override;
     procedure   DoEnter; override;
     procedure   DoExit; override;
     procedure   DoReSize(Sender : TObject); override;
@@ -648,6 +649,7 @@ uses
    ,tiImageMgr
    ,tiResources
    ,tiExcept
+   ,tiGUIUtils
   {$IFNDEF VER130}
   ,Variants
   {$ENDIF}
@@ -2620,6 +2622,13 @@ begin
     Refresh;
 end;
 
+procedure TtiCustomListView.SetChildControlNames;
+begin
+  inherited;
+  if Assigned(FLV) then
+    FLV.Name := tiGetUniqueComponentNameFromParent(Self, 'LV');
+end;
+
 procedure TtiCustomListView.SetOnInfoTip(const AValue: TtiLVInfoTipEvent);
 begin
   FOnTipInfo := AValue;
@@ -2757,6 +2766,23 @@ begin
     FCtrlBtnPnl.OnDelete   := DoDelete;
   FCtrlBtnPnl.RefreshButtons;
   DoReSize(nil);
+end;
+
+procedure TtiListView.SetChildControlNames;
+begin
+  inherited;
+  if Assigned(FCtrlBtnPnl) then
+    FCtrlBtnPnl.Name := tiGetUniqueComponentNameFromParent(Self, 'CtrlBtnPnl');
+  if Assigned(FPopupMenu) then
+    FPopupMenu.Name := tiGetUniqueComponentNameFromParent(Self, 'PopupMenu');
+  if Assigned(FpmiView) then
+    FpmiView.Name := tiGetUniqueComponentNameFromParent(Self, 'pmiView');
+  if Assigned(FpmiEdit) then
+    FpmiEdit.Name := tiGetUniqueComponentNameFromParent(Self, 'pmiEdit');
+  if Assigned(FpmiNew) then
+    FpmiNew.Name := tiGetUniqueComponentNameFromParent(Self, 'pmiNew');
+  if Assigned(FpmiDelete) then
+    FpmiDelete.Name := tiGetUniqueComponentNameFromParent(Self, 'pmiDelete');
 end;
 
 procedure TtiListView.SetOnItemDelete(const AValue: TtiLVItemEditEvent);

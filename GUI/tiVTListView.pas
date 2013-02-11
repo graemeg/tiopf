@@ -501,6 +501,7 @@ type
     //FOnTipInfo: TtiLVInfoTipEvent;
     //FInfoTipType: TtiLVInfoTypeType;
   protected
+    procedure   SetChildControlNames; override;
     procedure VTSearchInsideNode(Sender: TBaseVirtualTree; Node: PVirtualNode;
       const SearchText: string; out Result: boolean); override;
     procedure   ApplyGrouping; virtual;
@@ -730,6 +731,7 @@ type
     procedure DestroyWnd; override;
     procedure SetEnabled(AValue: Boolean); override;
     procedure SetHeaderClickSorting(const AValue: boolean); override;
+    procedure SetChildControlNames; override;
 
     procedure DoMenuPopup(Sender: TObject); virtual;
     procedure DoClearSort(Sender: TObject); virtual;
@@ -1725,7 +1727,6 @@ begin
   FFilterEventDispatcher := TtiVTOnFilterDataMulticastEventDispatcher.Create;
 
   SetVT(TtiInternalVirtualTree.Create(Self));
-  VT.Name:= tiGetUniqueComponentName(Name + 'VT');
   VT.SetSubComponent(True);
   VT.Parent := Self;
   VT.NodeDataSize := SizeOf(Pointer);
@@ -2062,6 +2063,13 @@ begin
     FAlternateRowColor := AValue;
     Invalidate;
   end;
+end;
+
+procedure TtiCustomVirtualTree.SetChildControlNames;
+begin
+  inherited;
+  if VT <> nil then
+    VT.Name := tiGetUniqueComponentNameFromParent(Self, 'VT', '');
 end;
 
 procedure TtiCustomVirtualTree.SetData(const AValue: TtiObjectList);
@@ -3454,6 +3462,31 @@ begin
     FButtonStyle := AValue;
     CreateButtonPanel;
   end;
+end;
+
+procedure TtiCustomVirtualEditTree.SetChildControlNames;
+begin
+  inherited;
+  if Assigned(FCtrlBtnPnl) then
+    FCtrlBtnPnl.Name := tiGetUniqueComponentNameFromParent(Self, 'CtrlBtnPnl');
+  if Assigned(FPopupMenu) then
+    FPopupMenu.Name := tiGetUniqueComponentNameFromParent(Self, 'PopupMenu');
+  if Assigned(FpmiView) then
+    FpmiView.Name := tiGetUniqueComponentNameFromParent(Self, 'pmiView');
+  if Assigned(FpmiEdit) then
+    FpmiEdit.Name := tiGetUniqueComponentNameFromParent(Self, 'pmiEdit');
+  if Assigned(FpmiNew) then
+    FpmiNew.Name := tiGetUniqueComponentNameFromParent(Self, 'pmiNew');
+  if Assigned(FpmiDelete) then
+    FpmiDelete.Name := tiGetUniqueComponentNameFromParent(Self, 'pmiDelete');
+  if Assigned(FpmiFilter) then
+    FpmiFilter.Name := tiGetUniqueComponentNameFromParent(Self, 'pmiFilter');
+  if Assigned(FpmiSortGroup) then
+    FpmiSortGroup.Name := tiGetUniqueComponentNameFromParent(Self, 'pmiSortGroup');
+  if Assigned(FpmiClearSort) then
+    FpmiClearSort.Name := tiGetUniqueComponentNameFromParent(Self, 'pmiClearSort');
+  if Assigned(FpmiShowFind) then
+    FpmiShowFind.Name := tiGetUniqueComponentNameFromParent(Self, 'pmiShowFind');
 end;
 
 procedure TtiCustomVirtualEditTree.SetOnClearSort(const AValue: TtiVTClearSortEvent);

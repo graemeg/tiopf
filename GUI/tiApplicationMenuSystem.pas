@@ -1086,6 +1086,7 @@ end;
 function TtiApplicationMenuSystem.AddMenuSidebarGroup(const pCaption: string): TdxWinXPBar;
 begin
   FLastMenuSidebarGroup:= TdxWinXPBar.Create(FDXContainer);
+  FLastMenuSidebarGroup.Name := tiGetUniqueComponentNameFromParent(FDXContainer, 'SidebarGroup');
   FLastMenuSidebarGroup.Parent := FDXContainer;
   FLastMenuSidebarGroup.Align := alTop;
   FLastMenuSidebarGroup.Font.Charset := DEFAULT_CHARSET;

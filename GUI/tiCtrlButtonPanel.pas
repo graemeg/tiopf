@@ -41,6 +41,8 @@ type
     FOnCanDelete: TtiLogicalEvent;
     procedure SetOnCanEdit(const AValue: TtiLogicalEvent);
   protected
+    procedure   SetName(const NewName: TComponentName); override;
+    procedure   SetChildControlNames; virtual;
     function    GetButtonStyle: TLVButtonStyle;virtual; abstract;
     procedure   SetVisibleButtons(const AValue: TtiLVVisibleButtons); virtual;
     procedure   SetAllowedButtons(const AValue: TtiLVVisibleButtons); virtual;
@@ -81,7 +83,8 @@ type
     FBtnDelete : TtiSpeedButton;
     FBtnView  : TtiSpeedButton;
   protected
-    procedure   SetupSpeedButton(const pBtn : TSpeedButton; const ANameStub: string);virtual;
+    procedure   SetChildControlNames; override;
+    procedure   SetupSpeedButton(const pBtn : TSpeedButton); virtual;
     function    GetOnView: TNotifyEvent; override;
     function    GetOnDelete: TNotifyEvent; override;
     function    GetOnEdit: TNotifyEvent; override;
@@ -196,6 +199,7 @@ begin
   else
     raise exception.Create('Invalid button style');
   end;
+  pCtrlBtnPnl.Name := tiGetUniqueComponentNameFromParent(pParent, 'CtrlBtnPnl');
   pCtrlBtnPnl.Parent := pParent;
   pCtrlBtnPnl.Top := 1;
   pCtrlBtnPnl.Left := 1;
@@ -212,7 +216,6 @@ end;
 constructor TtiCtrlBtnPnlAbs.Create(Owner: TComponent);
 begin
   inherited;
-  Self.Name := tiGetUniqueComponentNameFromParent(Owner, 'CtrlBtnPnl');
   Self.Caption := '';
   // Had problems with csAcceptsControls being removed at runtime.
   // It was causing flicker when the panel was resized and owned components
@@ -248,6 +251,19 @@ begin
   EnableButtons;
 end;
 
+procedure TtiCtrlBtnPnlAbs.SetChildControlNames;
+begin
+  // All controls should have a name to facilitate automated GUI testing etc.
+  // Override in descendant if there are child controls created at runtime.
+  // To generate unique names use tiGetUniqueComponentNameFromParent()
+end;
+
+procedure TtiCtrlBtnPnlAbs.SetName(const NewName: TComponentName);
+begin
+  inherited;
+  SetChildControlNames;
+end;
+
 { TtiCtrlBtnPnlButton }
 
 constructor TtiCtrlBtnPnlButton.Create(Owner: TComponent);
@@ -257,28 +273,26 @@ begin
   Width := (FBtnWidth + cBtnSpace) * 4;
 
   FBtnView           := TtiSpeedButton.Create(self);
-  SetupSpeedButton(FBtnView, 'View');
+  SetupSpeedButton(FBtnView);
   FBtnView.Hint    := 'View [Enter]';
   FBtnView.ControlStyle := FBtnView.ControlStyle + [csNoDesignVisible];
 
   FBtnEdit           := TtiSpeedButton.Create(self);
-  SetupSpeedButton(FBtnEdit, 'Edit');
+  SetupSpeedButton(FBtnEdit);
   FBtnEdit.Hint      := 'Edit [Enter]';
   FBtnEdit.ControlStyle := FBtnEdit.ControlStyle + [csNoDesignVisible];
 
   FbtnNew            := TtiSpeedButton.Create(self);
-  SetupSpeedButton(FbtnNew, 'New');
+  SetupSpeedButton(FbtnNew);
   FBtnNew.Hint       := 'New [Ins]';
   FBtnNew.ControlStyle := FBtnNew.ControlStyle + [csNoDesignVisible];
 
   FBtnDelete         := TtiSpeedButton.Create(self);
-  SetupSpeedButton(FBtnDelete, 'Delete');
+  SetupSpeedButton(FBtnDelete);
   FBtnDelete.Hint    := 'Delete [Del]';
   FBtnDelete.ControlStyle := FBtnDelete.ControlStyle + [csNoDesignVisible];
 
-
   Visible := false;
-
 end;
 
 procedure TtiCtrlBtnPnlButton.DrawButtons;
@@ -401,6 +415,30 @@ begin
   Result := FBtnView.OnClick;
 end;
 
+procedure TtiCtrlBtnPnlButton.SetChildControlNames;
+
+  procedure _SetName(AButton: TSpeedButton; const AName: string);
+  var
+    LCaptionSet: Boolean;
+  begin
+    if Assigned(AButton) then
+    begin
+      LCaptionSet := AButton.Caption <> '';
+      AButton.Name := tiGetUniqueComponentNameFromParent(Self, AName);
+      // Undo auto caption same as name
+      if not LCaptionSet then
+        AButton.Caption := '';
+    end;
+  end;
+
+begin
+  inherited;
+  _SetName(FBtnView, 'BtnView');
+  _SetName(FBtnEdit, 'BtnEdit');
+  _SetName(FbtnNew, 'btnNew');
+  _SetName(FBtnDelete, 'BtnDelete');
+end;
+
 procedure TtiCtrlBtnPnlButton.SetOnDelete(const AValue: TNotifyEvent);
 begin
   FBtnDelete.OnClick := AValue;
@@ -421,11 +459,9 @@ begin
   FBtnView.OnClick := AValue;
 end;
 
-procedure TtiCtrlBtnPnlButton.SetupSpeedButton(const pBtn: TSpeedButton;
-  const ANameStub: string);
+procedure TtiCtrlBtnPnlButton.SetupSpeedButton(const pBtn: TSpeedButton);
 begin
   pBtn.Parent  := Self;
-  pBtn.Name := tiGetUniqueComponentNameFromParent(Self, ANameStub);
   pBtn.Caption := '';
   pBtn.Visible := false;
   pBtn.ShowHint := true;

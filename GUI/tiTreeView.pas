@@ -292,6 +292,7 @@ type
 
   protected
     FData: TtiObject;
+    procedure SetChildControlNames; override;
     procedure DoSetData(Sender: TObject); virtual;
     procedure SetData(const AValue: TtiObject); virtual;
     procedure SetName(const AValue: TComponentName); override;
@@ -379,6 +380,7 @@ uses
   //            // doing some debugging and forgot to clean up my mess.
   ,tiImageMgr
   ,tiResources
+  ,tiGUIUtils
  ;
 
 const
@@ -426,7 +428,6 @@ begin
 
   FTV := TTreeView.Create(self);
   FTV.Parent := self;
-  FTV.Name := Name + '_TV';
   FTV.Top := 1;
   FTV.Left := 2;
   FTV.Height := Height - 2;
@@ -2203,6 +2204,17 @@ begin
   FCtrlBtnPnl.OnDelete   := DoDelete;
   FCtrlBtnPnl.RefreshButtons;
   DoReSize(nil);
+end;
+
+procedure TtiTreeView.SetChildControlNames;
+begin
+  inherited;
+  if Assigned(FTV) then
+    FTV.Name := tiGetUniqueComponentNameFromParent(Self, 'TV');
+  if Assigned(FCtrlBtnPnl) then
+    FCtrlBtnPnl.Name := tiGetUniqueComponentNameFromParent(Self, 'CtrlBtnPnl');
+  if Assigned(FPopupMenu) then
+    FPopupMenu.Name := tiGetUniqueComponentNameFromParent(Self, 'PopupMenu');
 end;
 
 procedure TtiTreeView.SetVisibleButtons(const AValue: TtiLVVisibleButtons);
