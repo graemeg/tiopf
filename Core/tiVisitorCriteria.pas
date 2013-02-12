@@ -100,9 +100,9 @@ begin
     result := lVisitor.Text;
 
     if TtiCriteria(pVisited).isEmbraced and (result <> '') then
-      result := '(' + result + ')' + CrLf
+      result := '(' + result + ')' + tiLineEnd
     else
-      result := result + CrLf;
+      result := result + tiLineEnd;
 
 // the following are temerarily removed until they can be properly tested
 //    result := result + lVisitor.GroupByClausesAsText + CrLf;
@@ -428,8 +428,8 @@ begin
   else
   begin
     case TtiCriteria(pVisited).CriteriaType of
-      crAND: Write(' AND ' + CrLf + '(');
-      crOR: Write(' OR ' + CrLf + '(');
+      crAND: Write(' AND ' + tiLineEnd + '(');
+      crOR: Write(' OR ' + tiLineEnd + '(');
       crNONE: Write('(');
     end;
   end;
