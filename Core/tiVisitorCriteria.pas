@@ -418,7 +418,7 @@ begin
   if not AcceptVisitor then
     Exit; //==>
 
-  if not assigned(TtiCriteria(pVisited).SelectionCriterias) or (TtiCriteria(pVisited).SelectionCriterias.Count = 0) then
+  if not Assigned(TtiCriteria(pVisited).SelectionCriterias) or (TtiCriteria(pVisited).SelectionCriterias.Count = 0) then
     exit;
 
   if Stream.Size = 0 then
@@ -439,7 +439,7 @@ begin
   Write(')');
 
   if FWithComments then
-  Write(' /* ' + TtiCriteria(pVisited).Name + '*/ ');
+    Write(' /* ' + TtiCriteria(pVisited).Name + ' */ ');
   FGroupByList.CopyReferences(TtiCriteria(pVisited).GetGroupByList);
 end;
 

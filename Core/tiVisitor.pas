@@ -198,15 +198,13 @@ type
     property Config: TtiVisitorControllerConfig read FConfig;
     property VisitorManager: TtiVisitorManager read FVisitorManager;
   public
-    constructor Create(const AVisitorManager: TtiVisitorManager;
-      const AConfig: TtiVisitorControllerConfig); virtual;
+    constructor Create(const AVisitorManager: TtiVisitorManager; const AConfig: TtiVisitorControllerConfig); virtual;
     destructor Destroy; override;
     property TouchedByVisitorList: TtiTouchedByVisitorList read FTouchedByVisitorList;
     procedure BeforeExecuteVisitorGroup; virtual;
     procedure BeforeExecuteVisitor(const AVisitor: TtiVisitor); virtual;
     procedure AfterExecuteVisitor(const AVisitor: TtiVisitor); virtual;
-    procedure AfterExecuteVisitorGroup(const ATouchedByVisitorList: TtiTouchedByVisitorList);
-      virtual;
+    procedure AfterExecuteVisitorGroup(const ATouchedByVisitorList: TtiTouchedByVisitorList); virtual;
     procedure AfterExecuteVisitorGroupError; virtual;
   end;
 
@@ -267,18 +265,13 @@ type
     FTIOPFManager:     TtiBaseObject;
     FVisitorMappings:  TObjectList;
     FSynchronizer:     TtiMultiReadExclusiveWriteSynchronizer;
-    procedure ExecuteVisitors(const AVisitorController: TtiVisitorController;
-      const AVisitors: TList; const AVisited: TtiVisited);
+    procedure ExecuteVisitors(const AVisitorController: TtiVisitorController; const AVisitors: TList; const AVisited: TtiVisited);
     function GetVisitorMappings: TList;
-    procedure AssignVisitorInstances(
-      const AVisitorMappingGroup: TtiVisitorMappingGroup;
-      const AVisitors: TObjectList);
+    procedure AssignVisitorInstances(const AVisitorMappingGroup: TtiVisitorMappingGroup; const AVisitors: TObjectList);
   protected
     property VisitorMappings: TList read GetVisitorMappings;
-    function FindVisitorMappingGroup(const AGroupName: string): TtiVisitorMappingGroup;
-      virtual;
-    procedure ProcessVisitors(const AGroupName: string; const AVisited: TtiVisited;
-      const AVisitorControllerConfig: TtiVisitorControllerConfig); virtual;
+    function FindVisitorMappingGroup(const AGroupName: string): TtiVisitorMappingGroup; virtual;
+    procedure ProcessVisitors(const AGroupName: string; const AVisited: TtiVisited; const AVisitorControllerConfig: TtiVisitorControllerConfig); virtual;
     function GetTIOPFManager: TtiBaseObject; virtual;
   public
     constructor Create(const ATIOPFManager: TtiBaseObject); virtual;
@@ -286,8 +279,7 @@ type
     property TIOPFManager: TtiBaseObject read GetTIOPFManager;
     procedure RegisterVisitor(const AGroupName: string; const AVisitorClass: TtiVisitorClass);
     procedure UnRegisterVisitors(const AGroupName: string);
-    procedure Execute(const AGroupName: string; const AVisited: TtiVisited);
-      overload; virtual;
+    procedure Execute(const AGroupName: string; const AVisited: TtiVisited); virtual;
   end;
 
 
@@ -909,10 +901,9 @@ begin
 end;
 
 
-function TtiVisitorManager.FindVisitorMappingGroup(const AGroupName: string):
-TtiVisitorMappingGroup;
+function TtiVisitorManager.FindVisitorMappingGroup(const AGroupName: string): TtiVisitorMappingGroup;
 var
-  i:          integer;
+  i: integer;
   LGroupName: string;
 begin
   Assert(AGroupName<>'', 'AGroupName not assigned');
@@ -965,18 +956,14 @@ begin
   try
     LVisitorMappingGroup := FindVisitorMappingGroup(AGroupName);
     if LVisitorMappingGroup = nil then
-      raise EtiOPFProgrammerException.CreateFmt(CErrorInvalidVisitorGroup,
-        [AGroupName]);
-    LVisitorController :=
-      LVisitorMappingGroup.VisitorControllerClass.Create(Self,
-      AVisitorControllerConfig);
+      raise EtiOPFProgrammerException.CreateFmt(CErrorInvalidVisitorGroup, [AGroupName]);
+    LVisitorController := LVisitorMappingGroup.VisitorControllerClass.Create(Self, AVisitorControllerConfig);
     AssignVisitorInstances(LVisitorMappingGroup, LVisitors);
     try
       LVisitorController.BeforeExecuteVisitorGroup;
       try
         ExecuteVisitors(LVisitorController, LVisitors, AVisited);
-        LVisitorController.AfterExecuteVisitorGroup(
-          LVisitorController.TouchedByVisitorList);
+        LVisitorController.AfterExecuteVisitorGroup(LVisitorController.TouchedByVisitorList);
       except
         on e: Exception do
         begin
