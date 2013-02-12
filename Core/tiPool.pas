@@ -5,15 +5,9 @@ unit tiPool;
 interface
 uses
   Classes
-  {$IFDEF MSWINDOWS}
-  ,Windows
-  {$ENDIF MSWINDOWS}
-  {$IFDEF UNIX}
-  ,pthreads
-  ,baseunix
-  {$ENDIF UNIX}
   ,tiBaseObject
   ,tiThread
+  ,tiSemaphore
  ;
 
 const
@@ -68,12 +62,7 @@ type
   TtiPool = class(TtiBaseObject)
   private
     FPool: TThreadList;
-    {$IFDEF MSWINDOWS}
-    FSemaphore: THandle;
-    {$ENDIF MSWINDOWS}
-    {$IFDEF UNIX}
-    FSemaphore: TSemaphore;
-    {$ENDIF UNIX}
+    FSemaphore: TtiSemaphore;
     FMinPoolSize: Word;
     FMaxPoolSize: Word;
     FWaitTime: Word;
@@ -158,28 +147,8 @@ end;
 
 
 procedure TtiPool.DestroyPoolSemaphore;
-{$IFDEF UNIX}
-var
-  error: integer;
-  i: integer;
-{$ENDIF UNIX}
 begin
-  {$IFDEF MSWINDOWS}
-  CloseHandle(FSemaphore);
-  {$ENDIF MSWINDOWS}
-  {$IFDEF UNIX}
-  i := 0;
-  sem_getvalue(@FSemaphore, @i);
-  while i = 0 do
-  begin
-    if sem_post(@FSemaphore) <> 0 then // unlock a semaphore
-      break;  // received an error
-    sem_getvalue(@FSemaphore, @i);
-  end;
-  error := sem_destroy(@FSemaphore);
-  if error <> 0 then
-    raise EtiOPFInternalException.Create('Failed to destroy the semaphore');
-  {$ENDIF UNIX}
+  FSemaphore.Free;
 end;
 
 procedure TtiPool.Clear;
@@ -307,20 +276,7 @@ end;
 
 function TtiPool.LockPoolSemaphore: boolean;
 begin
-  // Wait for a semaphore
-  {$IFDEF MSWINDOWS}
-  result:= WaitForSingleObject(FSemaphore, FWaitTime * 1000) <> WAIT_TIMEOUT;
-  {$ENDIF MSWINDOWS}
-  {$IFDEF UNIX}
-  { TODO: The timeout option is not available in POSIX semaphores. This can be
-    achieved by issuing a non-blocking sem_trywait() within a loop, which
-    counts the timeout value: int sem_trywait(sem_t * sem).
-    i := fpgeterrno; }
-  repeat
-    { TODO -oGraeme -cUnix : Add timeout counter variable here so we can force exit after timeout is reached. }
-    Result := sem_trywait(@FSemaphore) = 0;
-  until Result or (GetLastOSError <> ESysEINTR);  // ESysEINTR = System error: Interrupted system call
-  {$ENDIF UNIX}
+  Result := FSemaphore.Acquire;
 end;
 
 procedure TtiPool.UnLock(const APooledItemData: TtiBaseObject);
@@ -481,28 +437,12 @@ end;
 
 procedure TtiPool.UnlockPoolSemaphore;
 begin
-  {$IFDEF MSWINDOWS}
-  ReleaseSemaphore(FSemaphore, 1, nil);
-  {$ENDIF MSWINDOWS}
-  {$IFDEF UNIX}
-  if sem_post(@FSemaphore) <> 0 then
-    raise EtiOPFInternalException.Create('Failed to unlock the semaphore');
-  {$ENDIF UNIX}
+  FSemaphore.Release;
 end;
 
 procedure TtiPool.CreatePoolSemaphore;
 begin
-  {$IFDEF MSWINDOWS}
-  if FSemaphore <> 0 then
-    CloseHandle(FSemaphore);
-  FSemaphore := CreateSemaphore(nil, FMaxPoolSize, FMaxPoolSize, nil);
-  {$ENDIF MSWINDOWS}
-  {$IFDEF UNIX}
-  FillChar(FSemaphore, sizeof(FSemaphore), 0);
-  // pShared = 0 means, shared between the threads of a process
-  if sem_init(@FSemaphore, 0, FMaxPoolSize) <> 0 then
-    raise EtiOPFInternalException.Create('Failed to initialize the semaphore');
-  {$ENDIF UNIX}
+  FSemaphore := TtiSemaphore.Create(FMaxPoolSize);
 end;
 
 
