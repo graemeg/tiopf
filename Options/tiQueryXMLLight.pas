@@ -103,23 +103,18 @@ function tiMakeXMLLightParams(pReadOnly: Boolean; const pCompress: string;
                                pOptDBSize: TtiOptXMLDBSize;
                                pFieldNameSyle: TtiXMLFieldNameStyle): string;
 var
-  lReadOnly: string;
-  lCompress: string;
-  lOptXMLDBSize: string;
-  lFieldNamesStyle: string;
+  LParams: TStringList;
 begin
-
-  lReadOnly       := 'readonly=' + tiBoolToStr(pReadOnly);
-  lCompress       := cDBParamCompress + '=' + pCompress;
-  lOptXMLDBSize   := cgXMLTagOptXMLDBSize + '=' + cOptXMLDBSize[pOptDBSize];
-  lFieldNamesStyle := cgXMLFieldNameStyle + '=' + cXMLFieldNameStyles[pFieldNameSyle];
-
-  result :=
-    lReadOnly + ',' +
-    lCompress + ',' +
-    lOptXMLDBSize + ',' +
-    lFieldNamesStyle;
-
+  LParams := TStringList.Create;
+  try
+    LParams.Values[cDBParamReadOnly] := tiBoolToStr(pReadOnly);
+    LParams.Values[cDBParamCompress] := pCompress;
+    LParams.Values[cgXMLTagOptXMLDBSize] := cOptXMLDBSize[pOptDBSize];
+    LParams.Values[cgXMLFieldNameStyle] := cXMLFieldNameStyles[pFieldNameSyle];
+    result := LParams.CommaText;
+  finally
+    LParams.Free;
+  end;
 end;
 
 { TtiQueryXMLLight }
