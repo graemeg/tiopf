@@ -235,6 +235,8 @@ var
   LOutput: string;
 
 begin
+  tiUtils.tiForceRemoveDir(ADirectory);
+(*
   // The easiest way I could think of to delete a directory and all
   // it's child directories and files.
   try
@@ -266,6 +268,7 @@ begin
       raise exception.Create('Error in tiDUnitForceRemoveDir(''' +
             ADirectory + '> Message: ' + e.message);
   end;
+*)
   if DirectoryExists(ADirectory) then
       raise exception.CreateFmt('Error in tiDUnitForceRemoveDir. Failed to delete directory "%s"',
             [ADirectory]);
