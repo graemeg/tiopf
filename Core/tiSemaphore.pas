@@ -29,6 +29,9 @@ type
 
 implementation
 
+const
+  INFINITE = Cardinal(-1);
+
 { TtiSemaphore }
 
 procedure TtiSemaphore.SetTimeout(AValue: LongWord);
