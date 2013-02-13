@@ -187,7 +187,7 @@ begin
   LLogFilename := tiGetTempFile('log'); // workable with limited user rights
 
   SetLength(LLoggers, Length(CLoggers));
-  FmtStr(LThreadID, '%.4d', [GetCurrentThreadID]);
+  FmtStr(LThreadID, '%.4d', [PtrUInt(GetCurrentThreadID)]);
 
   for i := Low(LLoggers) to High(LLoggers) do
   begin
