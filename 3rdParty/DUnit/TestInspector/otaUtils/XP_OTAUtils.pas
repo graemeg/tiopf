@@ -34,9 +34,7 @@ unit XP_OTAUtils;
 
 interface
 
-//{$I JEDI.inc}
-{$DEFINE DELPHI6_UP}
-{$DEFINE DELPHI7_UP}
+{$I jedi.inc}   // used solely for delphi version definitions
 
 uses
   ToolsAPI,
@@ -93,6 +91,7 @@ procedure DebugMessageFmt(const AMessageFormat: string;
 {$ENDIF}
 
 function GetIDEEnvironmentOptions(const AOutputFilePath: string): boolean;
+function GetEnvVarValue(const VarName: string): string;
 function WriteToFile(const AText: string; const AFilePath: string): boolean;
 
 //////////////////////////////////////////////////////////////////////////////
@@ -170,16 +169,16 @@ type
 
 implementation
 
-{$IFNDEF DELPHI6_UP}
-uses
-  Variants,
-  FileCtrl;                   // ForceDirectories
-{$ELSE}
+{$IFDEF DELPHI6_UP}
 uses
   Dialogs,
   Windows,      // HKEY_CURRENT_USER
   Registry,
   Variants;
+{$ELSE}
+uses
+  Variants,
+  FileCtrl;                   // ForceDirectories
 {$ENDIF}
 
 {$IFDEF DEBUG}
@@ -212,7 +211,11 @@ begin
     while Src^ <> #0 do
     begin
 
+{$IFDEF DELPHI2009_UP}
+      if not SysUtils.CharInSet(Src^, [#09..#13, #32]) then
+{$ELSE}
       if not (Src^ in [#09..#13, #32]) then
+{$ENDIF}
       begin
         Dst^ := Src^;
         System.Inc(Dst);
@@ -563,14 +566,13 @@ begin
       begin
         // is a relative search path -> make relative to active project absolute folder
         ASearchPaths[i] := Format('%s\%s',[ProjectFolder, ASearchPaths[i]]);
-
       end;
 
       ASearchPaths[i] := IncludeTrailingPathDelimiter(ExpandFileName(ASearchPaths[i]));
     end;
 
     // add project folder to search path
-    ASearchPaths.Insert(0, ProjectFolder);
+    ASearchPaths.Insert(0, IncludeTrailingPathDelimiter(ProjectFolder));
     Result := true;
   end;
 
@@ -696,6 +698,26 @@ begin
     on E: EInOutError do ;  // swallow file errors
   end;
 
+end;
+
+// http://www.delphidabbler.com/articles?article=6#getenvvarvalue
+function GetEnvVarValue(const VarName: string): string;
+var
+  BufSize: Integer;  // buffer size required for value
+begin
+  // Get required buffer size (inc. terminal #0)
+  BufSize := GetEnvironmentVariable(
+    PChar(VarName), nil, 0);
+  if BufSize > 0 then
+  begin
+    // Read env var value into result string
+    SetLength(Result, BufSize - 1);
+    GetEnvironmentVariable(PChar(VarName),
+      PChar(Result), BufSize);
+  end
+  else
+    // No such environment variable
+    Result := '';
 end;
 
 function OpenFileInIDE(const AFilePath: string; const ALineNumber: integer): boolean;

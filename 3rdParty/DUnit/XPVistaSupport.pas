@@ -10,6 +10,8 @@
  * rights and limitations under the License.
  *
 *)
+{$I dunit.inc}
+
 unit XPVistaSupport;
 
 interface
@@ -26,21 +28,26 @@ function  LocalAppDataPath : string;
 implementation
 uses
   Windows,
-  {$IFNDEF VER130}
+  {$IFDEF DELPHI6_UP}
   SHFolder,
   {$ENDIF}
   SysUtils;
 
-{$IFDEF VER130}
+const
+  cPathDelimiter = '\';
+
+{$IFNDEF DELPHI6_UP}
   function LocalAppDataPath : string;
   begin
-    Result := ExtractFilePath(ParamStr(0)) + '\';
+    Result := ExtractFilePath(ParamStr(0));
+    if Result(length(Result)) <> cPathDelimiter then
+      Result:=Result + cPathDelimiter;
   end;
 {$ELSE}
 {$IFNDEF XPVISTA}
   function LocalAppDataPath : string;
   begin
-    Result := ExtractFilePath(ParamStr(0)) + '\';
+    Result := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0)));
   end;
 {$ELSE}
   {$IFDEF CLR} //DotNet
@@ -57,7 +64,7 @@ uses
                      0,                                             //hToken
                      SHGFP_TYPE_CURRENT,                            //dwFlags
                      path);                                         //pszPath
-      Result := string(Path.ToString) + '\' + ChangeFileExt(ExtractFileName(ParamStr(0)), '\');
+      Result := string(Path.ToString) + cPathDelimiter + ChangeFileExt(ExtractFileName(ParamStr(0)), cPathDelimiter);
       Path := nil;
       if not DirectoryExists(Result) then
       try
@@ -67,18 +74,20 @@ uses
       end;
     end;
   {$ELSE}  //Win32
-    function LocalAppDataPath : string;
+    function LocalAppDataPath: string;
       const
         SHGFP_TYPE_CURRENT = 0;
       var
-        path: array [0..MAX_PATH] of char;
+        path: string;
     begin
+      SetLength(path, MAX_PATH);
       SHGetFolderPath(0,                                            //hwndOwner
                      CSIDL_LOCAL_APPDATA or CSIDL_FLAG_CREATE,      //int Folder
                      0,                                             //hToken
                      SHGFP_TYPE_CURRENT,                            //dwFlags
-                     @path[0]);                                     //pszPath
-      Result := string(Path) + '\' + ChangeFileExt(ExtractFileName(ParamStr(0)), '\');
+                     Pointer(path);                                     //pszPath
+      path := PChar(path); // reset string-length to current position of null terminator
+      Result := path + cPathDelimiter + ChangeFileExt(ExtractFileName(ParamStr(0)), cPathDelimiter);
       if not DirectoryExists(Result) then
       try
         CreateDir(Result);

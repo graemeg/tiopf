@@ -81,6 +81,7 @@ const
 
   CEnterTextIntoCommandName = 'EnterTextInto';
   CEnterKeyIntoCommandName = 'EnterKeyInto';
+  CEnterTextCommandName = 'EnterText';
   CEnterKeyCommandName = 'EnterKey';
   CLeftClickCommand = 'Left';
   CRightClickCommand = 'Right';
@@ -128,6 +129,7 @@ type
     FActions: TGUIActionList;
     FEnteredText: string;
     FControl: TControl;
+    FGUI: TWinControl;
     FOnStopRecording: TGUITestCaseStopRecordingEvent;
     procedure AddAction(AAction: TGUIActionAbs);
     procedure FlushTextEntry;
@@ -135,8 +137,8 @@ type
     function CheckKeyState(const AVKCode: Word; var AKeyState: string;
         const ANewKeyState: string): boolean;
     procedure SetActive(const AValue: boolean);
-    procedure SetControl(const AControl: TControl);
-    function IsDesignTimeControl(const AControl: TControl): boolean;
+    procedure SetControl(const AHwnd: HWND; var APoint: TPoint);
+    function ControlByName(const AControl: TControl): boolean;
     function ControlName: string;
   public
     constructor Create;
@@ -148,6 +150,7 @@ type
         const AX: Integer = -1; const AY: Integer = -1);
     procedure StopRecording;
 
+    property GUI: TWinControl read FGUI write FGUI;
     property Active: boolean read FActive write SetActive;
     property Actions: TGUIActionList read FActions;
     property OnStopRecording: TGUITestCaseStopRecordingEvent read
@@ -377,7 +380,7 @@ begin
   FControl := nil;
 end;
 
-function TGUIActionRecorder.IsDesignTimeControl(const AControl: TControl):
+function TGUIActionRecorder.ControlByName(const AControl: TControl):
   boolean;
 begin
   Result := Assigned(FControl) and (FControl.Name <> '');
@@ -385,7 +388,7 @@ end;
 
 function TGUIActionRecorder.ControlName: string;
 begin
-  if IsDesignTimeControl(FControl) then
+  if ControlByName(FControl) then
     Result := FControl.Name
   else
     Result := '';
@@ -422,12 +425,83 @@ begin
   end;
 end;
 
-procedure TGUIActionRecorder.SetControl(const AControl: TControl);
+
+
+function _SourceToTarget(const ASourcePoint: TPoint;
+  const ASourceControl: TControl; const ATargetControl: TControl): TPoint;
 begin
-  if AControl <> FControl then
+  Result := ATargetControl.ScreenToClient(ASourceControl.ClientToScreen(ASourcePoint));
+end;
+
+// Finds the highest z-order (closest/visible) child control at a given point
+// Based on TWinControl.ControlAtPos to fix the bug with nested TWinControls
+// where it does not adjust the point for the child control co-ords
+function _ControlAtPos(const AControl: TWinControl; const APos: TPoint;
+  const AAllowDisabled: Boolean): TControl;
+var
+  I: Integer;
+  LControl: TControl;
+
+  function _ControlHit(const AControl: TControl; const AHitPos: TPoint): Boolean;
+  var
+    LP: TPoint;
+  begin
+    LP := Point(AHitPos.X - AControl.Left, AHitPos.Y - AControl.Top);
+    Result :=
+        AControl.Visible and (AControl.Enabled or AAllowDisabled) and
+        PtInRect(AControl.ClientRect, LP) and
+        (AControl.Perform(CM_HITTEST, 0, PointToLParam(LP)) <> 0);
+  end;
+
+begin
+  Result := nil;
+
+  // A control's non-windowed child controls are listed first followed by its
+  // windowed child controls.
+  // Windowed controls are displayed over the top of non-windowed controls and
+  // later controls are displayed over the top of earlier controls so we check
+  // them in reverse order.
+  for I := AControl.ControlCount - 1 downto 0 do
+    begin
+      LControl := AControl.Controls[I];
+      if _ControlHit(LControl, APos) then
+      begin
+        if LControl is TWinControl then
+        begin
+          Result := _ControlAtPos(LControl as TWinControl,
+              _SourceToTarget(APos, AControl, LControl), AAllowDisabled);
+          if not Assigned(Result) then
+            Result := LControl;
+        end
+        else
+          Result := LControl;
+        break;
+      end;
+    end;
+end;
+
+procedure TGUIActionRecorder.SetControl(const AHwnd: HWND; var APoint: TPoint);
+var
+  LWinControl: TWinControl;
+  LHitControl: TControl;
+begin
+  // Find the VCL control with the given window handle
+  LWinControl := FindControl(AHwnd);
+  if Assigned(LWinControl) then
+  begin
+    LHitControl := _ControlAtPos(LWinControl, APoint, true {AllowDisabled});
+    if Assigned(LHitControl) then
+      // Get point relative to child
+      APoint := _SourceToTarget(APoint, LWinControl, LHitControl)
+    else
+      LHitControl := LWinControl;
+  end else
+    LHitControl := nil;
+
+  if LHitControl <> FControl then
   begin
     FlushTextEntry;
-    FControl := AControl;
+    FControl := LHitControl;
   end;
 end;
 
@@ -486,7 +560,6 @@ procedure TGUIActionRecorder.ProcessMessage(const AMessage: UINT;
   const AHwnd: HWND; const AWParam: WPARAM; out AStopRecording: boolean;
   const AX: Integer; const AY: Integer);
 var
-  LControl: TControl;
   LKeyState: string;
   LPoint: TPoint;
   LButton: TMouseButton;
@@ -511,10 +584,6 @@ begin
     Exit; //==>
   AStopRecording := false;
 
-  // See if the window handle is for a VCL control
-  LControl := FindControl(AHwnd);
-  LPoint := Point(AX, AY);
-
   case AMessage of
     WM_SYSKEYDOWN, WM_KEYDOWN:
       begin
@@ -526,7 +595,8 @@ begin
           Exit; //==>
         end;
 
-        SetControl(LControl);
+        LPoint := Point(AX, AY);
+        SetControl(AHwnd, LPoint);
 
         if (AWParam <> VK_SHIFT) and (AWParam <> VK_CONTROL) and
            (AWParam <> VK_MENU) then
@@ -538,7 +608,8 @@ begin
 
           // Build up as much regular text to enter as possible
           if ((LKeyState = '') or (LKeyState = 'ssShift')) and
-             (AWParam >= $30) and (AWParam <= $5A) then // Regular characters
+             // Regular characters: space to ~
+             (AWParam >= $20) and (AWParam <= $7E) then
             FEnteredText := FEnteredText + CharFromVirtualKey(AWParam)
           else
           begin // Special characters
@@ -552,7 +623,8 @@ begin
     WM_RBUTTONDOWN,
     WM_RBUTTONDBLCLK:
       begin
-        SetControl(LControl);
+        LPoint := Point(AX, AY);
+        SetControl(AHwnd, LPoint);
         FlushTextEntry;
 
         if (AMessage = WM_LBUTTONDOWN) or (AMessage = WM_LBUTTONDBLCLK) then
@@ -567,7 +639,7 @@ begin
 
         // If control cannot be identified by name then find the control
         // at runtime based on co-ords from foreground window.
-        if not IsDesignTimeControl(FControl) then
+        if not ControlByName(FControl) then
           LPoint := _ControlToWindowCoords(LPoint);
 
         AddAction(TGUIActionClick.Create(ControlName, LPoint.X, LPoint.Y,
@@ -587,7 +659,10 @@ end;
 
 function TGUIActionEnterTextInto.GetCommandName: string;
 begin
-  Result := CEnterTextIntoCommandName;
+  if ControlName = '' then
+    Result := CEnterTextCommandName
+  else
+    Result := CEnterTextIntoCommandName;
 end;
 
 function TGUIActionEnterTextInto.GetCommandParameters: string;

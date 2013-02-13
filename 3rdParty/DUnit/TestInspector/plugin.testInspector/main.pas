@@ -16,10 +16,11 @@ uses
   ,WatchFile      // ReadWatchFile
   ,XP_OTAUtils    // GetCurrentProject, GetProjectAbsoluteSearchPaths, OpenFileInIDE...
   ,Forms          // Application
+  ,Windows
   ;
 
 const
-  cPluginAuthor = 'AEMO';
+  cPluginAuthor = 'Paul Spain';
   cPluginName = 'DUnitTestInspector';
 
 type
@@ -28,7 +29,7 @@ type
   private
     FTimer: TTimer;
     FDestroyed: boolean;
-    function InitiateTimer(out ATimer: TTimer;
+    function InitialiseTimer(var ATimer: TTimer;
       const ATimerEvent: TNotifyEvent;
       const AFrequencyMSec: integer = cWatchFileInspectionFrequencyMSec): boolean;
     procedure TimerEvent(Sender: TObject);
@@ -38,6 +39,8 @@ type
     function GetAuthor: string; override;
     function GetName: string; override;
     procedure Destroyed; override;
+
+
   public
     constructor Create;
     destructor Destroy; override;
@@ -47,6 +50,9 @@ procedure Register;
 begin
   ToolsAPI.RegisterPackageWizard(TDUnitTestInspector.Create);
 end;
+
+procedure SwitchToThisWindow(hwnd: HWND; fUnknown: BOOL); stdcall;
+  external user32 name 'SwitchToThisWindow';
 
 { TDUnitTestInspector }
 
@@ -82,8 +88,7 @@ end;
 constructor TDUnitTestInspector.Create;
 begin
   inherited Create;
-  // rubber hits the road here...
-  InitiateTimer(FTimer, TimerEvent);
+  InitialiseTimer(FTimer, TimerEvent);
 end;
 
 destructor TDUnitTestInspector.Destroy;
@@ -109,15 +114,20 @@ begin
   Result := cPluginName;
 end;
 
-function TDUnitTestInspector.InitiateTimer(out ATimer: TTimer;
+function TDUnitTestInspector.InitialiseTimer(var ATimer: TTimer;
   const ATimerEvent: TNotifyEvent; const AFrequencyMSec: integer): boolean;
 begin
-  ATimer := TTimer.Create(nil);
-  ATimer.Enabled := false;
-  ATimer.OnTimer := ATimerEvent;
-  ATimer.Interval := AFrequencyMSec;
-  ATimer.Enabled := true;
-  Result := true;
+  Result := false;
+
+  if not Assigned(ATimer) then
+  begin
+    ATimer := TTimer.Create(nil);
+    ATimer.Enabled := false;
+    ATimer.OnTimer := ATimerEvent;
+    ATimer.Interval := AFrequencyMSec;
+    ATimer.Enabled := true;
+    Result := true;
+  end;
 end;
 
 procedure TDUnitTestInspector.TimerEvent(Sender: TObject);
@@ -128,6 +138,8 @@ var
   LFilePath: string;
   LLineNumber: integer;
   i,j: integer;
+const
+  cAltTab = true;
 begin
   LFilesToOpen := nil;
   LSearchPaths := nil;
@@ -160,8 +172,9 @@ begin
 
         end;
 
-        // Bring Delphi to foreground
-        Application.BringToFront;
+        // Application.BringToFront; // doesn't work for minimised app
+        // Bring app to foreground (even if minimised)
+        SwitchToThisWindow(Application.MainForm.Handle, cAltTab);
       end;
 
     end;

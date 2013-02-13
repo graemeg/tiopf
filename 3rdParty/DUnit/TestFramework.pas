@@ -1,4 +1,4 @@
-{#(@)$Id: TestFramework.pas 67 2010-07-21 01:23:03Z jarrodh $ }
+{#(@)$Id: TestFramework.pas 97 2013-02-12 06:02:24Z jarrodh $ }
 {  DUnit: An XTreme testing framework for Delphi programs. }
 (*
  * The contents of this file are subject to the Mozilla Public
@@ -252,7 +252,7 @@ type
                           const ErrorMsg: string = ''; ErrorAddrs: Pointer = nil); //virtual;
     procedure OnCheckCalled;
   {$IFDEF VER130}
-    function  BoolToStr(ABool: boolean): string;
+    function  BoolToStr(ABool: boolean; AUseBoolStrs: Boolean = false): string;
   {$ENDIF}
 
     { The following are the calls users make in test procedures . }
@@ -3220,7 +3220,7 @@ procedure TTestProc.CheckTrue(const condition: boolean; const ErrorMsg: string);
 begin
   OnCheckCalled;
   if (not condition) then
-      FailNotEquals(BoolToStr(true), BoolToStr(false), ErrorMsg, CallerAddr);
+      FailNotEquals(BoolToStr(true, true), BoolToStr(false, true), ErrorMsg, CallerAddr);
 end;
 
 procedure TTestProc.ClearExpectedException;
@@ -3232,7 +3232,7 @@ procedure TTestProc.CheckFalse(const condition: boolean; const ErrorMsg: string)
 begin
   OnCheckCalled;
   if (condition) then
-      FailNotEquals(BoolToStr(false), BoolToStr(true), ErrorMsg, CallerAddr);
+      FailNotEquals(BoolToStr(false, true), BoolToStr(true, true), ErrorMsg, CallerAddr);
 end;
 
 procedure TTestProc.CheckEquals(const expected, actual: int64;
@@ -3347,7 +3347,7 @@ procedure TTestProc.CheckEquals(const expected, actual: boolean;
 begin
   OnCheckCalled;
   if (expected <> actual) then
-    FailNotEquals(BoolToStr(expected), BoolToStr(actual), ErrorMsg, CallerAddr);
+    FailNotEquals(BoolToStr(expected, true), BoolToStr(actual, true), ErrorMsg, CallerAddr);
 end;
 
 procedure TTestProc.CheckEqualsBin(const expected, actual: longword;
@@ -3400,7 +3400,7 @@ procedure TTestProc.CheckNotEquals(const expected, actual: boolean;
 begin
   OnCheckCalled;
   if (expected = actual) then
-    FailEquals(BoolToStr(expected), BoolToStr(actual), ErrorMsg, CallerAddr);
+    FailEquals(BoolToStr(expected, true), BoolToStr(actual, true), ErrorMsg, CallerAddr);
 end;
 
 procedure TTestProc.CheckEquals(const expected, actual: integer;
@@ -3608,9 +3608,12 @@ end;
 
 
 {$IFDEF VER130}
-function TTestProc.BoolToStr(ABool: boolean): string;
+function TTestProc.BoolToStr(ABool: boolean; AUseBoolStrs: Boolean = false): string;
 begin
-  Result := BooleanIdents[ABool];
+  if AUseBoolStrs then
+    Result := BooleanIdents[ABool]
+  else
+    Result := IntToStr(Integer(ABool));
 end;
 {$ENDIF}
 

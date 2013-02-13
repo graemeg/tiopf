@@ -1,15 +1,24 @@
-	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
 			<ProjectGuid>{3fec3331-e735-4b92-b490-da8b63ae89a3}</ProjectGuid>
 			<MainSource>DUnitTestInspector.dpk</MainSource>
-			<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-			<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+			<Configuration Condition=" '$(Configuration)' == ''">Debug</Configuration>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 			<DCC_DependencyCheckOutputName>_bin\DUnitTestInspector.bpl</DCC_DependencyCheckOutputName>
-			<ProjectVersion>12.0</ProjectVersion>
+			<ProjectVersion>13.4</ProjectVersion>
 			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Base>True</Base>
+			<AppType>Package</AppType>
+			<FrameworkType>None</FrameworkType>
+			<Platform Condition="'$(Platform)'==''">Win32</Platform>
+			<TargetedPlatforms>1</TargetedPlatforms>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Base)'=='true') or '$(Base_Win32)'!=''">
+			<Base_Win32>true</Base_Win32>
+			<CfgParent>Base</CfgParent>
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_1)'!=''">
@@ -22,13 +31,35 @@
 			<CfgParent>Base</CfgParent>
 			<Base>true</Base>
 		</PropertyGroup>
+		<PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_2)'=='true') or '$(Cfg_2_Win32)'!=''">
+			<Cfg_2_Win32>true</Cfg_2_Win32>
+			<CfgParent>Cfg_2</CfgParent>
+			<Cfg_2>true</Cfg_2>
+			<Base>true</Base>
+		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_UsePackage>rtl;$(DCC_UsePackage)</DCC_UsePackage>
+			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+			<DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;Vcl;$(DCC_Namespace)</DCC_Namespace>
+			<VerInfo_Locale>3081</VerInfo_Locale>
+			<DCC_DcuOutput>.\_dcu</DCC_DcuOutput>
+			<DCC_BplOutput>.\_bin</DCC_BplOutput>
+			<DCC_DcpOutput>.\_bin</DCC_DcpOutput>
+			<DCC_DependencyCheckOutputName>_bin\DUnitTestInspector.bpl</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
-			<DCC_DependencyCheckOutputName>C:\Documents and Settings\All Users\Documents\RAD Studio\9.0\Bpl\DUnitTestInspector.bpl</DCC_DependencyCheckOutputName>
 			<DCC_Description>DUnit Test Inspector</DCC_Description>
-			<GenDll>true</GenDll>
+			<DCC_UnitSearchPath>.\_bin;..\..\externals\jcl\source\include;..\..\externals\jcl\source\include\jedi;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<GenPackage>true</GenPackage>
+			<GenDll>true</GenDll>
 			<DesignOnlyPackage>true</DesignOnlyPackage>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base_Win32)'!=''">
+			<DCC_UsePackage>OTAUtils;$(DCC_UsePackage)</DCC_UsePackage>
+			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+			<VerInfo_Locale>1033</VerInfo_Locale>
+			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+			<DCC_Namespace>Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
 			<Version>7.0</Version>
@@ -38,28 +69,23 @@
 			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
-			<DCC_DependencyCheckOutputName>_bin\DUnitTestInspector.bpl</DCC_DependencyCheckOutputName>
 			<Version>7.0</Version>
-			<DCC_UnitSearchPath>C:\Program Files\CodeGear\RAD Studio\5.0\source\ToolsAPI;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-			<DCC_ResourcePath>C:\Program Files\CodeGear\RAD Studio\5.0\source\ToolsAPI;$(DCC_ResourcePath)</DCC_ResourcePath>
-			<DCC_ObjPath>C:\Program Files\CodeGear\RAD Studio\5.0\source\ToolsAPI;$(DCC_ObjPath)</DCC_ObjPath>
-			<DCC_IncludePath>C:\Program Files\CodeGear\RAD Studio\5.0\source\ToolsAPI;$(DCC_IncludePath)</DCC_IncludePath>
-			<DCC_DcuOutput>_dcu</DCC_DcuOutput>
+			<DCC_ResourcePath>$(BDS)\source\ToolsAPI;$(DCC_ResourcePath)</DCC_ResourcePath>
+			<DCC_ObjPath>$(BDS)\source\ToolsAPI;$(DCC_ObjPath)</DCC_ObjPath>
+			<DCC_IncludePath>$(BDS)\source\ToolsAPI;$(DCC_IncludePath)</DCC_IncludePath>
 			<DCC_ObjOutput>_dcu</DCC_ObjOutput>
 			<DCC_HppOutput>_dcu</DCC_HppOutput>
-			<DCC_BplOutput>_bin</DCC_BplOutput>
-			<DCC_DcpOutput>_bin</DCC_DcpOutput>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+			<DCC_UnitSearchPath>..\..\externals\fastmm;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<VerInfo_Locale>1033</VerInfo_Locale>
 		</PropertyGroup>
 		<ProjectExtensions>
 			<Borland.Personality>Delphi.Personality.12</Borland.Personality>
 			<Borland.ProjectType>Package</Borland.ProjectType>
 			<BorlandProject>
 				<Delphi.Personality>
-					<Parameters>
-						<Parameters Name="UseLauncher">False</Parameters>
-						<Parameters Name="LoadAllSymbols">True</Parameters>
-						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
-					</Parameters>
+					<Parameters/>
 					<VersionInfo>
 						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
 						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
@@ -91,34 +117,39 @@
 						<Source Name="MainSource">DUnitTestInspector.dpk</Source>
 					</Source>
 					<Excluded_Packages>
-						<Excluded_Packages Name="$(BDS)\bin\dclofficexp100.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
-						<Excluded_Packages Name="$(BDS)\bin\dcloffice2k100.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\dcloffice2k160.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\dclofficexp160.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
 					</Excluded_Packages>
 				</Delphi.Personality>
+				<Platforms>
+					<Platform value="Win64">False</Platform>
+					<Platform value="OSX32">False</Platform>
+					<Platform value="Win32">True</Platform>
+				</Platforms>
 			</BorlandProject>
 			<ProjectFileVersion>12</ProjectFileVersion>
 		</ProjectExtensions>
 		<ItemGroup>
-			<DelphiCompile Include="DUnitTestInspector.dpk">
+			<DelphiCompile Include="$(MainSource)">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
 			<DCCReference Include="rtl.dcp"/>
 			<DCCReference Include="designide.dcp"/>
-			<DCCReference Include="main.pas"/>
-			<DCCReference Include="..\watchFile.pas"/>
-			<DCCReference Include="XP_OTAWizards.pas"/>
-			<DCCReference Include="XP_OTAUtils.pas"/>
-			<BuildConfiguration Include="Base">
-				<Key>Base</Key>
-			</BuildConfiguration>
+			<DCCReference Include="OTAUtils.dcp"/>
+			<DCCReference Include="..\..\src\plugin.testInspector\main.pas"/>
+			<DCCReference Include="..\..\src\watchFile.pas"/>
 			<BuildConfiguration Include="Debug">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Base">
+				<Key>Base</Key>
 			</BuildConfiguration>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_1</Key>
 				<CfgParent>Base</CfgParent>
 			</BuildConfiguration>
 		</ItemGroup>
-		<Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')"/>
+		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')" Project="$(BDS)\Bin\CodeGear.Delphi.Targets"/>
+		<Import Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')" Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj"/>
 	</Project>

@@ -1,6 +1,7 @@
 package DUnitTestInspector;
 
 {$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -22,18 +23,18 @@ package DUnitTestInspector;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
+{$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'DUnit Test Inspector'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
-  designide;
+  designide,
+  OTAUtils;
 
 contains
-  main in 'main.pas',
-  watchFile in '..\watchFile.pas',
-  XP_OTAWizards in 'XP_OTAWizards.pas',
-  XP_OTAUtils in 'XP_OTAUtils.pas';
+  main in '..\..\src\plugin.testInspector\main.pas',
+  watchFile in '..\..\src\watchFile.pas';
 
 end.

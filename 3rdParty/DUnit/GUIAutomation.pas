@@ -77,6 +77,7 @@ type
   TGUIAutomation = class
   private
     FActionDelay: Integer;
+    FMouseMoveDelay: Integer;
     FKeyDownDelay: Integer;
     FTextEntryDelay: Integer;
     FOnGetContinueExecution: TOnGetContinueExecutionEvent;
@@ -175,7 +176,8 @@ type
     procedure SetFocus(Control :TControl; Addrs :Pointer = nil); overload;
     procedure SetFocus(ControlName :string);                    overload;
 
-    property ActionDelay: Integer  read FActionDelay write FActionDelay;
+    property ActionDelay: Integer read FActionDelay write FActionDelay;
+    property MouseMoveDelay: Integer read FMouseMoveDelay write FMouseMoveDelay;
     property KeyDownDelay: Integer read FKeyDownDelay write FKeyDownDelay;
     property TextEntryDelay: Integer  read FTextEntryDelay write FTextEntryDelay;
     property OnGetContinueExecution: TOnGetContinueExecutionEvent read FOnGetContinueExecution write FOnGetContinueExecution;
@@ -183,6 +185,7 @@ type
 
 const
   CDefaultGUIActionDelay = 100; // Milliseconds
+  CDefaultGUIMouseMoveDelay = 100; // Milliseconds
   CDefaultGUIKeyDownDelay = 50; // Milliseconds
   CDefaultGUITextEntryDelay = 100; // Milliseconds
   CGUIPositionalClickDelay = 400; // Milliseconds
@@ -288,6 +291,7 @@ constructor TGUIAutomation.Create;
 begin
   inherited;
   FActionDelay := CDefaultGUIActionDelay;
+  FMouseMoveDelay := CDefaultGUIMouseMoveDelay;
   FKeyDownDelay := CDefaultGUIKeyDownDelay;
   FTextEntryDelay := CDefaultGUITextEntryDelay;
 end;
@@ -353,14 +357,33 @@ begin
   Result := DoFind(Comp, UpperCase(CtlName));
 
   if Result = nil then
-    raise EGUIAutomation.Create(Format('Control named "%s" not found in %s',
+    raise EGUIAutomation.Create(Format('Control named "%s" not found in active form %s',
         [CtlName, Screen.ActiveForm.Name]));
 end;
 
 function TGUIAutomation.GetWinControl(var AControl: TControl; var AX: Integer;
   var AY: Integer): boolean;
+var
+  LPoint: TPoint;
 begin
-  AControl := FindParentWinControl(AControl);
+  if not (AControl is TWinControl) then
+  begin
+    // Translate actual control co-ords to parent window control co-ords
+    if (AX <> -1) and (AY <> -1) then
+    begin
+      LPoint.X := AX;
+      LPoint.Y := AY;
+      LPoint := AControl.ClientToScreen(LPoint);
+    end;
+    AControl := FindParentWinControl(AControl);
+    if Assigned(AControl) and (AX <> -1) and (AY <> -1) then
+    begin
+      LPoint := AControl.ScreenToClient(LPoint);
+      AX := LPoint.X;
+      AY := LPoint.Y;
+    end;
+  end;
+
   result := AControl <> nil;
   if result then
   begin
@@ -515,6 +538,9 @@ begin
 
 {$IFDEF DUNIT_CLX}
   LPoint := Point(AX, AY);
+  evMouse := QMouseEvent_create(QEventType_MouseMove, @LPoint, 1, 0);
+  QApplication_sendEvent(AHwnd, evMouse);
+  SyncSleep(MouseMoveDelay);
   evMouse := QMouseEvent_create(QEventType_MouseButtonPress, @LPoint,
       AMouseDownMsg, AMouseDownMsg);
   QApplication_sendEvent(AHwnd, evMouse);
@@ -523,6 +549,8 @@ begin
   QApplication_sendEvent(AHwnd, evMouse);
 {$ELSE}
   LSmallPoint := SmallPoint(AX, AY);
+  PostMessage(AHwnd, WM_MOUSEMOVE, 0, Longint(LSmallPoint));
+  SyncSleep(MouseMoveDelay);
   WaitForWindowEnabled(AHwnd);
   PostMessage(AHwnd, AMouseDownMsg, 0, Longint(LSmallPoint));
   PostMessage(AHwnd, AMouseUpMsg, 0,   Longint(LSmallPoint));
