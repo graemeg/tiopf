@@ -44,12 +44,16 @@ type
 implementation
 uses
   tiConstants
+  ,tiLog
   ,SysUtils
 {$IFDEF MSWINDOWS}
   ,Windows
 {$ENDIF}
   ,tiExcept
  ;
+
+var
+  URequestID: Integer;
 
 procedure TtiHTTPIndy.CreateHTTP;
 begin
@@ -83,40 +87,50 @@ begin
   inherited;
 end;
 
-//procedure TtiHTTPIndy.SetSSLLibraryPath;
-//begin
-//  if not FSSLLibraryPathSet then
-//    SetSSLLibraryPath;
-//end;
-
 procedure TtiHTTPIndy.DoGet(const AURL : string; AInput, AOutput: TStringStream);
 var
   LURL: string;
+  LRequestID: Integer;
 begin
   Assert(AURL<>'', 'AURL not assigned');
   Assert(AInput<>nil, 'AInput not assigned');
   Assert(AOutput<>nil, 'AInput not assigned');
   CreateHTTP;
   AOutput.Size:= 0;
+LRequestID := URequestID;
+Inc(URequestID);
   try
     FHTTP.Response.KeepAlive:= False;
     FHTTP.Request.CustomHeaders.Values[ctiOPFHTTPBlockHeader]:= RequestTIOPFBlockHeader;
     AOutput.Size:= 0;
     LURL := CorrectURL(AddURLParams(AURL, AInput.DataString));
+Log('Request INDY %d: GET START [%s]', [LRequestID, LURL]);
+try
     FHTTP.Get(LURL, AOutput);
+Log('Response INDY %d: GET [%s]', [LRequestID, FHTTP.Response.ResponseText]);
+finally
+  Log('Request INDY %d: GET END', [LRequestID]);
+end;
   except
     on e:exception do
+    begin
+Log('Request INDY %d: GET ERROR [%s]', [LRequestID, e.message]);
       raise EtiOPFHTTPException.Create(e.message);
+    end;
   end;
 end;
 
 procedure TtiHTTPIndy.DoPost(const AURL : string; AInput, AOutput: TStringStream);
+var
+  LRequestID: Integer;
 begin
   Assert(AURL<>'', 'AURL not assigned');
   Assert(AInput<>nil, 'AInput not assigned');
   Assert(AOutput<>nil, 'AInput not assigned');
   CreateHTTP;
   AOutput.Size:= 0;
+LRequestID := URequestID;
+Inc(URequestID);
   try
     // Had problem with this error after the app being idle for a period:
     // "Socket Error # 10054 Connection reset by peer"
@@ -124,10 +138,19 @@ begin
     // http://groups.google.com.au/group/borland.public.delphi.internet.winsock/browse_thread/thread/21285265e0ab0f69/a6d9c0608aeb691e?lnk=st&q=TidHTTP+%22Socket+Error+%23+10054+Connection+reset+by+peer%22&rnum=1&hl=en#a6d9c0608aeb691e
     FHTTP.Response.KeepAlive:= False;
     FHTTP.Request.CustomHeaders.Values[ctiOPFHTTPBlockHeader]:= RequestTIOPFBlockHeader;
+Log('Request INDY %d: POST START [%s]', [LRequestID, AURL]);
+try
     FHTTP.Post(AURL, AInput, AOutput);
+Log('Response INDY %d: POST [%s]', [LRequestID, FHTTP.Response.ResponseText]);
+finally
+  Log('Request INDY %d: POST END', [LRequestID]);
+end;
   except
     on e:exception do
+    begin
+Log('Request INDY %d: POST ERROR [%s]', [LRequestID, e.message]);
       raise EtiOPFHTTPException.Create(e.message);
+    end;
   end;
 end;
 
@@ -179,5 +202,6 @@ end;
 initialization
   gTIHTTPClass := TtiHTTPIndy;
   gTIHTTPFactory.RegisterMapping(cHTTPIndy, TtiHTTPIndy);
+  URequestID := 1;
 
 end.

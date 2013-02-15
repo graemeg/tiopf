@@ -171,6 +171,7 @@ procedure TtiDBPS_ExecuteRemoteXML.Execute(
 var
   LS: string;
 begin
+  Log('Executing remote XML');
   LS:=ExecuteRemoteXML(ARequestParams);
   tiStringToStream(LS, AResponse);
 end;

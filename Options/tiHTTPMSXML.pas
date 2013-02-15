@@ -46,6 +46,7 @@ uses
   tiConstants
   ,tiWin32
   ,tiExcept
+  ,tiLog
   ,SysUtils
   ,Math
   ,ComObj
@@ -113,10 +114,13 @@ begin
 
   LURL := CorrectURL(LURL);
   try
+Log('Request MSXML: GET OPEN');
     FHTTP.open('GET', LURL, False, '', '');
     if RequestTIOPFBlockHeader <> '' then
       FHTTP.setRequestHeader(ctiOPFHTTPBlockHeader, RequestTIOPFBlockHeader);
+Log('Request MSXML: GET SEND');
     FHTTP.Send(EmptyParam);
+Log('Response MSXML: GET [%s]', [FHTTP.responseText]);
     if FHTTP.Get_Status <> 200 then
       raise Exception.CreateFmt(cErrorHTTPServer, [FHTTP.Get_Status]);
     AOutput.Size := 0;
@@ -149,10 +153,13 @@ begin
   FLastCallTime:= GetTickCount;
 
   try
+Log('Request MSXML: POST OPEN [%s]', [lURL]);
     FHTTP.open('POST', lURL, False, '', '');
     if RequestTIOPFBlockHeader <> '' then
       FHTTP.setRequestHeader(ctiOPFHTTPBlockHeader, RequestTIOPFBlockHeader);
+Log('Request MSXML: POST SEND');
     FHTTP.Send(AInput.DataString);
+Log('Response MSXML: POST [%s]', [FHTTP.responseText]);
     if FHTTP.Get_Status <> 200 then
       raise Exception.CreateFmt(cErrorHTTPServer, [FHTTP.Get_Status]);
     AOutput.Size := 0;

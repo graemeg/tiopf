@@ -184,6 +184,7 @@ uses
   ,tiUtils
   ,tiCRC32
   ,tiExcept
+  ,tiLog
   {$IFDEF DELPHIXEORABOVE}
   ,RegularExpressions
   {$ENDIF}
@@ -516,6 +517,7 @@ var
   LReturnBlockIndex: LongWord;
   LReturnBlockSize: LongWord;
 begin
+Log('DoGetOrPostBlock block %d', [ABlockIndex]);
   if FDeriveRequestTIOPFBlockHeader then
     RequestTIOPFBlockHeader:= tiMakeTIOPFHTTPBlockHeader(ABlockIndex, ABlockCount, FBlockSize, ATransID, 0);
   AGetOrPostMethod(AURL, AInput, AOutput);
@@ -537,6 +539,7 @@ begin
   while (not LSuccess) and
     (i< FRetryLimit) do
   begin
+Log('DoGetOrPostBlockWithRetry attempt %d', [i+1]);
     // Within the retry range
     if i < FRetryLimit - 1 then
     begin
@@ -549,6 +552,7 @@ begin
       except
         on e:exception do
         begin
+Log('DoGetOrPostBlockWithRetry fail: %s', [e.Message]);
           Sleep(1000); // ToDo: Parameterise the retry wait period
           LSuccess:= false;
         end;
@@ -565,7 +569,10 @@ begin
         LSuccess:= (ABlockCRC = 0) or (tiCRC32FromStream(AOutput) = ABlockCRC);
       except
         on e:exception do
+        begin
+Log('DoGetOrPostBlockWithRetry fail final: %s', [e.Message]);
           raise EtiOPFHTTPException.CreateFmt(CErrorHTTPRetryLimiteExceded, [e.message, i+1])
+        end;
       end;
     end;
   end;

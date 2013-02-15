@@ -267,7 +267,7 @@ begin
     on e:exception do
       Log('Error:'    + Cr + e.Message + Cr(2) +
            'Request:'  + Cr + lRequest  + Cr(2) +
-           'Response:' + Cr + lResponse);
+           'Response:' + Cr + lResponse, lsError);
   end;
 end;
 
@@ -372,6 +372,7 @@ end;
 procedure TtiQueryRemoteExec.DoCommit;
 begin
   Assert(gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), CTIErrorInvalidObject);
+  Log('Commit: TransactionID = %s', [FTransactionID], lsDebug);
   gStatefulDBConnectionPool.Commit(FTransactionID);
   FTransactionID := cNullTransactionID;
 end;
@@ -379,6 +380,7 @@ end;
 procedure TtiQueryRemoteExec.DoRollBack;
 begin
   Assert(gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), CTIErrorInvalidObject);
+  Log('RollBack: TransactionID = %s', [FTransactionID], lsDebug);
   gStatefulDBConnectionPool.RollBack(FTransactionID);
   FTransactionID := cNullTransactionID;
 end;
@@ -393,8 +395,10 @@ var
 begin
   Assert(gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), CTIErrorInvalidObject);
   Assert(FTransactionID <> '', 'TransactionID not assigned');
+  Log('ExecSQL: TransactionID = %s', [FTransactionID], lsDebug);
   lQuery := GTIOPFManager.DefaultPerLayer.QueryClass.Create;
   try
+    Log('ExecSQL: Getting DB connection', lsDebug);
     lSavedDBConnectionHolder := gStatefulDBConnectionPool.FindSavedDBConnectionHolder(FTransactionID);
     if LSavedDBConnectionHolder.RollBackAtNextOpportunity then
       raise Exception.Create(CErrorDatabaseConnectionBeingRolledBack);
@@ -405,6 +409,7 @@ begin
       Assert(lSavedDBConnectionHolder.DBConnection.TestValid(TtiDatabase), CTIErrorInvalidObject);
       lDatabase := lSavedDBConnectionHolder.DBConnection;
       lQuery.AttachDatabase(lDatabase);
+      Log('ExecSQL: Assigning query params', lsDebug);
       FQueryParams.AssignToQuery(lQuery);
       lSQL:= lQuery.SQLText;
       lSQL:= tiStrTran(lSQL, '  ', ' ');
@@ -430,10 +435,12 @@ end;
 procedure TtiQueryRemoteExec.DoStartTransaction;
 begin
   Assert(gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), CTIErrorInvalidObject);
+  Log('StartTransaction', lsDebug);
   FTransactionID :=
     gStatefulDBConnectionPool.StartTransaction(
       GTIOPFManager.DefaultDBConnectionName,
       FRemoteComputerName, FRemoteUserName);
+  Log('StartTransaction: TransactionID = %s', [FTransactionID], lsDebug);
 end;
 
 procedure TtiQueryRemoteExec.InsertResponseMessageData;
@@ -463,6 +470,7 @@ var
   lMD : TtiDBMetaDataTable;
 begin
   Assert(FDBRequest.TestValid(TtiDatabaseXMLLight), CTIErrorInvalidObject);
+  Log('CreateTable', lsDebug);
   lMD := TtiDBMetaDataTable.Create;
   try
     lQuery := TtiQueryXMLLight.Create;
@@ -493,6 +501,7 @@ procedure TtiQueryRemoteExec.DoDropTable;
 var
   lMD : TtiDBMetaDataTable;
 begin
+  Log('DropTable', lsDebug);
   lMD := TtiDBMetaDataTable.Create;
   try
     GTIOPFManager.DropTable(FRemoteCommandText);
@@ -508,6 +517,7 @@ var
   i        : integer;
 begin
   Assert(FXMLWriterData.TestValid(TtiDataBufferToXMLWriter), CTIErrorInvalidObject);
+  Log('ReadMetaDataFields', lsDebug);
   CreateResponseMetaDataTable;
 
   LDatabase := GTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.Lock;
@@ -539,6 +549,7 @@ var
   i        : integer;
 begin
   Assert(FXMLWriterMessage.TestValid(TtiDataBufferToXMLWriter), CTIErrorInvalidObject);
+  Log('ReadMetaDataTables', lsDebug);
   CreateResponseMetaDataTable;
   LDatabase := GTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.Lock;
   try

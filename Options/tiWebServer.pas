@@ -416,71 +416,78 @@ begin
 //    end;
   end;
 
-  LDocument := ARequestInfo.Document;
-  if LDocument[1] = '/' then
-    LDocument := Copy(LDocument, 2, Length(LDocument) - 1);
-
-  LParams:= tiHTTPRequestInfoToParams(ARequestInfo);
-
-  LRequestTIOPFBlockHeader:= ARequestInfo.RawHeaders.Values[ctiOPFHTTPBlockHeader];
-  tiHTTP.tiParseTIOPFHTTPBlockHeader(LRequestTIOPFBlockHeader, LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
-
-  LResponseCode:= cHTTPResponseCodeOK;
-  LContentType:= cHTTPContentTypeTextHTML;
-  LResponse:= TMemoryStream.Create;
   try
+    LDocument := ARequestInfo.Document;
+    if LDocument[1] = '/' then
+      LDocument := Copy(LDocument, 2, Length(LDocument) - 1);
 
-    // BlockSize = 0, so don't block result
-    if (LBlockSize = 0) then
-    begin
-      ProcessHTTPGet(LDocument, ARequestInfo, LParams, LResponse, LContentType, LResponseCode, AResponseInfo);
-      LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(0, 0, 0, 0, 0);
-    end
-    // BlockSize <> 0 and TransID = 0, a new blocked request
-    else if (LBlockSize <> 0) and (LTransID = 0) then
-    begin
-      ProcessHTTPGet(LDocument, ARequestInfo, LParams, LResponse, LContentType, LResponseCode, AResponseInfo);
-      // To fix http://meldeopd1:8080/browse/BR-242:
-      //   "Error reading response from remote server: Transaction ID#39096 timed out.",
-      // we need to reset the corresponding transaction in the StatelessDBConnection's
-      // LastUsed value to Now. This will involve passing the transaction ID back
-      // and hitting the StatelessDBConnectionPool from  here. Hard to do.
-      FBlockStreamCache.AddBlockStream(tiStreamToString(LResponse), LBlockSize, LTemp, LBlockCount, LTransID);
-      tiStringToStream(LTemp, LResponse);
-      LBlockCRC:= tiCRC32FromStream(LResponse);
-      if LBlockCount > 1 then
-        Log('HTTP Trans ID: ' + IntToStr(LTransID) + '. Returning block 0 of ' + IntToStr(LBlockCount), lsQueryTiming);
-      LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(0, LBlockCount, LBlockSize, LTransID, LBlockCRC);
-    end
-    // BlockSize <> 0 and TransID <> 0, Retrun and existing block from the cache
-    else if (LBlockSize <> 0) and (LTransID <> 0) then
-    begin
-      FBlockStreamCache.ReadBlock(LTransID, LBlockIndex, LTemp);
-      tiStringToStream(LTemp, LResponse);
-      LBlockCRC:= tiCRC32FromStream(LResponse);
-      Log('HTTP Trans ID: ' + IntToStr(LTransID) + '. Returning block ' + IntToStr(LBlockIndex) + ' of ' + IntToStr(LBlockCount), lsQueryTiming);
-      LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
+    LParams:= tiHTTPRequestInfoToParams(ARequestInfo);
+
+    LRequestTIOPFBlockHeader:= ARequestInfo.RawHeaders.Values[ctiOPFHTTPBlockHeader];
+    tiHTTP.tiParseTIOPFHTTPBlockHeader(LRequestTIOPFBlockHeader, LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
+
+    LResponseCode:= cHTTPResponseCodeOK;
+    LContentType:= cHTTPContentTypeTextHTML;
+    LResponse:= TMemoryStream.Create;
+    try
+
+      // BlockSize = 0, so don't block result
+      if (LBlockSize = 0) then
+      begin
+        ProcessHTTPGet(LDocument, ARequestInfo, LParams, LResponse, LContentType, LResponseCode, AResponseInfo);
+        LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(0, 0, 0, 0, 0);
+      end
+      // BlockSize <> 0 and TransID = 0, a new blocked request
+      else if (LBlockSize <> 0) and (LTransID = 0) then
+      begin
+        ProcessHTTPGet(LDocument, ARequestInfo, LParams, LResponse, LContentType, LResponseCode, AResponseInfo);
+        // To fix http://meldeopd1:8080/browse/BR-242:
+        //   "Error reading response from remote server: Transaction ID#39096 timed out.",
+        // we need to reset the corresponding transaction in the StatelessDBConnection's
+        // LastUsed value to Now. This will involve passing the transaction ID back
+        // and hitting the StatelessDBConnectionPool from  here. Hard to do.
+        FBlockStreamCache.AddBlockStream(tiStreamToString(LResponse), LBlockSize, LTemp, LBlockCount, LTransID);
+        tiStringToStream(LTemp, LResponse);
+        LBlockCRC:= tiCRC32FromStream(LResponse);
+        if LBlockCount > 1 then
+          Log('HTTP Trans ID: ' + IntToStr(LTransID) + '. Returning block 0 of ' + IntToStr(LBlockCount), lsQueryTiming);
+        LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(0, LBlockCount, LBlockSize, LTransID, LBlockCRC);
+      end
+      // BlockSize <> 0 and TransID <> 0, Retrun and existing block from the cache
+      else if (LBlockSize <> 0) and (LTransID <> 0) then
+      begin
+        FBlockStreamCache.ReadBlock(LTransID, LBlockIndex, LTemp);
+        tiStringToStream(LTemp, LResponse);
+        LBlockCRC:= tiCRC32FromStream(LResponse);
+        Log('HTTP Trans ID: ' + IntToStr(LTransID) + '. Returning block ' + IntToStr(LBlockIndex) + ' of ' + IntToStr(LBlockCount), lsQueryTiming);
+        LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
+      end;
+
+      LPassThroughValue := AResponseInfo.CustomHeaders.Values[ctiOPFHTTPPassThroughHeader];
+      if SameText(LPassThroughValue, ctiOPFHTTPIsPassThroughContent) then
+      begin
+        // _Entire_ response is PassThrough response content
+        AResponseInfo.HeaderHasBeenWritten := true; // suppress HTTP headers from response
+        ApplyResponseStreamToHTTPResponse(AResponseInfo, LResponse,
+            '' {AContentType}, LResponseCode, '' {AContentEncoding});
+      end
+      else
+      begin
+        ApplyResponseStreamToHTTPResponse(AResponseInfo, LResponse,
+            LContentType, LResponseCode, 'MIME');
+        AResponseInfo.CustomHeaders.Values[ctiOPFHTTPBlockHeader]:= LResponseTIOPFBlockHeader;
+      end;
+
+    finally
+      LResponse.Free;
     end;
-
-    LPassThroughValue := AResponseInfo.CustomHeaders.Values[ctiOPFHTTPPassThroughHeader];
-    if SameText(LPassThroughValue, ctiOPFHTTPIsPassThroughContent) then
+  except
+    on E: Exception do
     begin
-      // _Entire_ response is PassThrough response content
-      AResponseInfo.HeaderHasBeenWritten := true; // suppress HTTP headers from response
-      ApplyResponseStreamToHTTPResponse(AResponseInfo, LResponse,
-          '' {AContentType}, LResponseCode, '' {AContentEncoding});
-    end
-    else
-    begin
-      ApplyResponseStreamToHTTPResponse(AResponseInfo, LResponse,
-          LContentType, LResponseCode, 'MIME');
-      AResponseInfo.CustomHeaders.Values[ctiOPFHTTPBlockHeader]:= LResponseTIOPFBlockHeader;
+      Log('Server exception: %s', [E.Message], lsError);
+      raise;
     end;
-
-  finally
-    LResponse.Free;
   end;
-
 end;
 
 function TtiWebServer.GetPort: Integer;
@@ -526,6 +533,7 @@ var
   LServerAction : TtiWebServerAction;
   LErrorMessage: string;
 begin
+  Log('ProcessHTTPGet: Request Document: %s', [ADocument], lsDebug);
   Assert(AResponse<>nil, 'AResponse not assigned');
   try
     for i := 0 to FServerActions.Count - 1 do
