@@ -286,7 +286,6 @@ end;
 
 procedure TtiQueryRemoteExec.ExecuteRequest;
 begin
-  GetRemoteCommandType;
   case FRemoteCommandType of
   rctStartTransaction  : DoStartTransaction;
   rctCommit            : DoCommit;
@@ -364,6 +363,11 @@ begin
     FRemoteCommandText := lQuery.FieldAsString[uXMLTags.FieldNameQuerySQL];
     FRemoteComputerName := lQuery.FieldAsString[uXMLTags.FieldNameComputerName];
     FRemoteUserName    := lQuery.FieldAsString[uXMLTags.FieldNameUserName];
+    Log('CommandType: %s', [lCommandType], lsDebug);
+    Log('TransactionID: %s', [FTransactionID], lsDebug);
+    Log('RemoteCommandText: %s', [FRemoteCommandText], lsDebug);
+    Log('RemoteComputerName: %s', [FRemoteComputerName], lsDebug);
+    Log('RemoteUserName: %s', [FRemoteUserName], lsDebug);
   finally
     lQuery.Free;
   end;

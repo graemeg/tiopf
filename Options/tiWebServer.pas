@@ -23,6 +23,7 @@ const
   cDefaultBlockStreamCacheTimeout= 120;
   cDefaultBlockStreamCacheSweepEvery= 120;
   cDefaultSleepSec= 10;
+  CProxyClientServersHeaderField = 'X-Forwarded-For';
 
 type
 
@@ -400,6 +401,9 @@ var
   LTemp: string; // Change to a stream - might be a little faster
 
 begin
+  Log('Request from %s:%d (proxy client and servers: %s)',
+      [AContext.Binding.PeerIP, AContext.Binding.PeerPort,
+       ARequestInfo.RawHeaders.Values[CProxyClientServersHeaderField]]);
   if FLogFullHTTPRequest then
   begin
     Log('* * * * * * * * * *');
@@ -409,6 +413,10 @@ begin
     Log(ARequestInfo.FormParams);
     Log('--- Params.Text');
     Log(ARequestInfo.Params.Text);
+    Log('--- Document');
+    Log(ARequestInfo.Document);
+    Log('--- Request Headers');
+    Log(ARequestInfo.RawHeaders.Text);
 //    if Assigned(ARequestInfo.PostStream) then
 //    begin
 //      Log('--- PostStream');
@@ -418,7 +426,7 @@ begin
 
   try
     LDocument := ARequestInfo.Document;
-    if LDocument[1] = '/' then
+    if (Length(LDocument) > 0) and (LDocument[1] = '/') then
       LDocument := Copy(LDocument, 2, Length(LDocument) - 1);
 
     LParams:= tiHTTPRequestInfoToParams(ARequestInfo);
@@ -430,7 +438,6 @@ begin
     LContentType:= cHTTPContentTypeTextHTML;
     LResponse:= TMemoryStream.Create;
     try
-
       // BlockSize = 0, so don't block result
       if (LBlockSize = 0) then
       begin
