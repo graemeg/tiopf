@@ -641,6 +641,7 @@ uses
    ,Math
    ,Forms
    ,Dialogs
+   ,CommCtrl
    ,tiLog
    ,tiUtils
    ,tiImageMgr
@@ -1771,12 +1772,46 @@ procedure TtiCustomListView.DoCustomDrawItem(Sender: TCustomListView;
                                           Item: TListItem;
                                           State: TCustomDrawState;
                                           var DefaultDraw: Boolean);
+var
+ lIndex : Integer;
+ ListView :  TListView;
+ lRect : TRect;
+ lText : string;
 begin
-  if Assigned(FOnGetFont) then begin
+  if Assigned(FOnGetFont) then
+  begin
     FOnGetFont(Self,
                 FLV.Canvas,
                 Item,
                 TtiObject(FDataInternal.Items[Item.Index]));
+  end;
+  // Fix for display glitches in column dividers under Vista, Win 7 etc with Aero themes enabled. AD
+  DefaultDraw := False;
+  ListView := TListView(FLV);
+  for lIndex := 0 to ListView.Columns.Count-1 do
+  begin
+
+    if not ListView_GetSubItemRect(ListView.Handle, Item.Index, lIndex, LVIR_BOUNDS, @lRect) then
+       Continue;
+
+    if Item.Selected and (not ListView.IsEditing) then
+    begin
+      ListView.Canvas.Brush.Color := clHighlight;
+      ListView.Canvas.Font.Color  := clHighlightText;
+    end
+    else
+    begin
+      ListView.Canvas.Brush.Color := ListView.Color;
+      ListView.Canvas.Font.Color  := ListView.Font.Color;
+    end;
+
+    ListView.Canvas.FillRect(lRect);
+    if (lIndex = 0) then
+      lText := Item.Caption
+    else
+      lText := Item.SubItems[lIndex - 1];
+
+    ListView.Canvas.TextRect(lRect, lRect.Left + 2, lRect.Top, lText);
   end;
 end;
 
