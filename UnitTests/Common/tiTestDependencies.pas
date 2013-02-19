@@ -98,7 +98,6 @@ uses
   ,tiOPFTAB_TST
   ,tiOPFXML_TST
   ,tiOPFXMLLight_TST
-  //,tiOPFZeos_FB10_TST  // No tests
   ,tiOPFZeos_FB_TST
   ,tiOPFDBISASM4_TST
   ,tiOPFAsqlite3_TST

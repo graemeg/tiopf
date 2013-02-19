@@ -29,7 +29,6 @@ begin
   tiRemoveXMLLightIfNotRegistered;
 
   tiTestDependencies.tiRegisterTests;
-//  fpgApplication.CreateForm(TGUITestRunner, TestRunner);
   RunRegisteredTests;
 end.
 
