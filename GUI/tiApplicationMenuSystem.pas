@@ -101,6 +101,7 @@ type
     FWorkListFormClass: TtiFormMgrFormClass;
     FHelpFileName: string;
     FDefHelpContext: integer;
+    FBackgroundColor: TColor;
 
     FlblCaption : TLabel;
     FpnlCaption: TPanel;
@@ -225,7 +226,8 @@ type
                         const AHelpFileName: string;
                         const ADefHelpContext: Integer;
                         const AAboutFormClass: TFormClass;
-                        const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent
+                        const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent;
+                        const ABackgroundColor: TColor = clSkyBlue
                       );
      destructor  Destroy; override;
      property    MainForm : TForm read FMainForm;
@@ -302,7 +304,8 @@ procedure CreateAMS(
   const AHelpFileName: string;
   const ADefHelpContext : Integer;
   const AFormAboutClass: TFormClass;
-  const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent);
+  const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent;
+  const ABackgroundColor: TColor = clSkyBlue);
 
 implementation
 uses
@@ -340,7 +343,8 @@ procedure CreateAMS(
   const AHelpFileName: string;
   const ADefHelpContext : Integer;
   const AFormAboutClass: TFormClass;
-  const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent);
+  const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent;
+  const ABackgroundColor: TColor = clSkyBlue);
 begin
   Assert(uAMS = nil, 'AMS already created');
   uAMS := TtiApplicationMenuSystem.Create(
@@ -349,7 +353,8 @@ begin
     AHelpFileName,
     ADefHelpContext,
     AFormAboutClass,
-    ALblMessageOnHotSpotClickEvent);
+    ALblMessageOnHotSpotClickEvent,
+    ABackgroundColor);
 end;
 
 { TtiApplicationBusyToolbarImage }
@@ -585,7 +590,8 @@ constructor TtiApplicationMenuSystem.Create(
   const AHelpFileName: string;
   const ADefHelpContext : Integer;
   const AAboutFormClass: TFormClass;
-  const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent);
+  const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent;
+  const ABackgroundColor: TColor = clSkyBlue);
 begin
   Assert(AMainForm <> nil, 'pMainForm not assigned');
   Assert(not Assigned(AMainForm.OnResize), 'pMainForm.OnResize assigned');
@@ -594,6 +600,7 @@ begin
   FWorkListFormClass := AWorkListFormClass;
   FHelpFileName := AHelpFileName;
   FDefHelpContext := ADefHelpContext;
+  FBackgroundColor := ABackgroundColor;
 
   FAL := TActionList.Create(MainForm);
 
@@ -665,7 +672,7 @@ begin
       if pForm.Color <> clWhite then
         ParentPnl.Color := pForm.Color
       else
-       ParentPnl.Color := clSkyBlue;
+       ParentPnl.Color := FBackgroundColor;
 
     finally
       lList.Free;
@@ -959,7 +966,7 @@ begin
   FPnlProgress.Parent:= FdpMessageBar;
   FPnlProgress.Align:= alClient;
   FPnlProgress.Color := clPaleBlue;
-  FPnlProgress.BorderColor:= clSkyBlue;
+  FPnlProgress.BorderColor:= FBackgroundColor;
   FPnlProgress.HelpContext := FDefHelpContext;
   FPnlProgress.CornerRadius := 5;
 
@@ -970,7 +977,7 @@ begin
   FPnlEmptyMessage.Parent := FdpMessageBar;
   FPnlEmptyMessage.Align := alClient;
   FPnlEmptyMessage.Color := clWhite;
-  FPnlEmptyMessage.BorderColor := clSkyBlue;
+  FPnlEmptyMessage.BorderColor := FBackgroundColor;
   FPnlEmptyMessage.HelpContext := FDefHelpContext;
   FPnlEmptyMessage.CornerRadius := 5;
 
@@ -981,7 +988,7 @@ begin
   FPnlMessageText.Parent:= FdpMessageBar;
   FPnlMessageText.Align:= alClient;
   FPnlMessageText.Color := clYellow;
-  FPnlMessageText.BorderColor:= clSkyBlue;
+  FPnlMessageText.BorderColor:= FBackgroundColor;
   FPnlMessageText.HelpContext := FDefHelpContext;
   FPnlMessageText.CornerRadius := 5;
 
@@ -1057,7 +1064,7 @@ begin
   FdxPageScroller.Height := 487;
   FdxPageScroller.Align := alClient;
   FdxPageScroller.AutoRange := True;
-  FdxPageScroller.Color := clSkyBlue;
+  FdxPageScroller.Color := FBackgroundColor;
   FdxPageScroller.DoubleBuffered := True;
   FdxPageScroller.Margin := 10;
   FdxPageScroller.ParentColor := False;
@@ -1076,7 +1083,7 @@ begin
   FdxContainer.AutoSize := True;
   FdxContainer.BorderWidth := 5;
   FdxContainer.Caption := 'dxContainer';
-  FdxContainer.Color := clSkyBlue;
+  FdxContainer.Color := FBackgroundColor;
   FdxContainer.ParentColor := False;
   FdxContainer.Color   := FpnlBorder.Color;
   FdxContainer.HelpContext := FDefHelpContext;
@@ -1132,10 +1139,10 @@ begin
   FpnlBorder.Name := 'pnlBorder';
   FpnlBorder.Caption := '';
   FpnlBorder.Parent := FMainForm;
-  FpnlBorder.Color := clSkyBlue;
+  FpnlBorder.Color := FBackgroundColor;
   FpnlBorder.Align := alClient;
   FpnlBorder.HelpContext := FDefHelpContext;
-  FpnlBorder.Color := clSkyBlue;
+  FpnlBorder.Color := FBackgroundColor;
   FpnlBorder.BorderColor := clWhite;
 
   FpnlCaption:= TPanel.Create(FMainForm);
@@ -1143,7 +1150,7 @@ begin
   FpnlCaption.Caption := '';
   FpnlCaption.Parent := FpnlBorder;
   FpnlCaption.BevelOuter := bvNone;
-  FpnlCaption.Color := clSkyBlue;
+  FpnlCaption.Color := FBackgroundColor;
   FpnlCaption.Align := alTop;
   FpnlCaption.Height := 33;
   FpnlCaption.HelpContext := FDefHelpContext;
@@ -1164,7 +1171,7 @@ begin
   FpnlParent.Parent := FPnlBorder;
   FPnlParent.Align := alClient;
   FpnlParent.HelpContext := FDefHelpContext;
-  FpnlParent.Color := clSkyBlue;
+  FpnlParent.Color := FBackgroundColor;
   FpnlParent.BorderColor := clWhite;
   FpnlParent.CornerRadius := 8; 
 
