@@ -40,7 +40,7 @@ type
     destructor Destroy; override;
     function  View: TListView; reintroduce;
     procedure HandleSelectionChanged; override;
-    procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation); override;
+    procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject); override;
   end;
 
 
@@ -227,7 +227,7 @@ begin
   inherited SetActive(AValue);
 end;
 
-procedure TtiListViewMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
+procedure TtiListViewMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject);
 var
   C: integer;
 begin
@@ -235,7 +235,7 @@ begin
     C := View.Items.Count
   else
     C := -1;
-  inherited Update(ASubject, AOperation);
+  inherited Update(ASubject, AOperation, AData);
   if (AOperation = noAddItem) and (C = 0) and (View.Selected = Nil) and (View.Items.Count = 1) then
      View.Selected := View.Items[0];
 end;

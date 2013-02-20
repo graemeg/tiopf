@@ -520,14 +520,16 @@ type
     procedure   Update(ASubject: TtiObject); overload; virtual;
     {: Only needed if performing a observing role where other events than changed need to be observed }
     procedure   Update(ASubject: TtiObject; AOperation: TNotifyOperation); overload; virtual;
+    procedure   Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject = nil); overload; virtual;
     {: Notify all the attached observers about a change }
     procedure   NotifyObservers; overload; virtual;
     {: Notify all the attached observers about a change for a specific topic }
     procedure   NotifyObservers(const ATopic: string); overload; virtual;
     {: Notify all the attached observers about a change operation}
-    procedure   NotifyObservers(ASubject : TTiObject; AOperation : TNotifyOperation); overload; virtual;
+    procedure   NotifyObservers(ASubject : TtiObject; AOperation : TNotifyOperation); overload; virtual;
     {: Notify all the attached observers about a change operation for a specific topic }
-    procedure   NotifyObservers(ASubject : TTiObject; AOperation : TNotifyOperation; const ATopic: string); overload; virtual;
+    procedure   NotifyObservers(ASubject : TtiObject; AOperation : TNotifyOperation; const ATopic: string); overload; virtual;
+    procedure   NotifyObservers(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject; const ATopic: string); overload; virtual;
     {: Used to get access to the internal observer list. This has been surfaced
        so that the MGM List Views can atttach/detach observers to the selected
        object. Not a great way of doing it - we need a different design. }
@@ -893,7 +895,7 @@ type
     constructor Create(const ASubject: TtiObject;
         const AOnUpdate: TtiObjectUpdateEvent); reintroduce; virtual;
     destructor Destroy; override;
-    procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation); override;
+    procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation; AChild: TtiObject=nil); overload; override;
     property Subject: TtiObject read FSubject write SetSubject;
   end;
 
@@ -1436,7 +1438,7 @@ begin
   if FbAutoSetItemOwner then
     AObject.Owner := FItemOwner;
   result := FList.Add(AObject);
-  NotifyObservers(self, noAddItem);
+  NotifyObservers(self, noAddItem, AObject, '');
 end;
 
 procedure TtiObjectList.Clear;
@@ -4094,22 +4096,28 @@ end;
 
 procedure TtiObject.NotifyObservers;
 begin
-  NotifyObservers(Self, noChanged, '');
+  NotifyObservers(Self, noChanged, nil, '');
 end;
 
 procedure TtiObject.NotifyObservers(const ATopic: string);
 begin
-  NotifyObservers(Self, noChanged, ATopic);
+  NotifyObservers(Self, noChanged, nil, ATopic);
 end;
 
 procedure TtiObject.NotifyObservers(ASubject: TTiObject;
   AOperation: TNotifyOperation);
 begin
-  NotifyObservers(ASubject, AOperation, '');
+  NotifyObservers(ASubject, AOperation, nil, '');
 end;
 
 procedure TtiObject.NotifyObservers(ASubject: TTiObject;
   AOperation: TNotifyOperation; const ATopic: string);
+begin
+  NotifyObservers(ASubject, AOperation, nil, ATopic);
+end;
+
+procedure TtiObject.NotifyObservers(ASubject: TTiObject;
+  AOperation: TNotifyOperation; AData: TTiObject; const ATopic: string);
 var
   ObjectIndex: Integer;
   Observer: TtiObject;
@@ -4161,7 +4169,7 @@ begin
       if Assigned(Observer) and
          ((ObjectIndex = 0) or (FObserverList.IndexOf(Observer) <> -1)) then
       begin
-        Observer.Update(ASubject, AOperation);
+        Observer.Update(ASubject, AOperation, AData);
         if NeedsErrorList then
         begin
           if Supports(Observer, ItiObserverHandlesErrorState, ObsIntf) then
@@ -4187,6 +4195,12 @@ begin
 end;
 
 procedure TtiObject.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
+begin
+  Update(ASubject, AOperation, nil);
+end;
+
+procedure TtiObject.Update(ASubject: TtiObject; AOperation: TNotifyOperation;
+  AData: TtiObject);
 begin
   if (AOperation=noChanged) then
     Update(ASubject)
@@ -4433,9 +4447,9 @@ begin
 end;
 
 procedure TtiObserverProxy.Update(ASubject: TtiObject;
-  AOperation: TNotifyOperation);
+  AOperation: TNotifyOperation; AChild: TtiObject);
 begin
-  inherited;
+  inherited Update(ASubject, AOperation, AChild);
   if (ASubject = Subject) and (AOperation = noFree) then
     Subject := nil;
   FOnUpdate(ASubject, AOperation);

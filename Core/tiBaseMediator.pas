@@ -111,7 +111,7 @@ type
     // Copy GUI to Object. Calls OnObjectToGUI if set, and then calls DoGUIToObject if needed
     procedure ObjectToGUI(const AForceUpdate: boolean = false);
     // Called by NotifyObservers of subject. Calls ObjectToGUI by default.
-    procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation); override;
+    procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject=nil); override;
     // Call when GUI changed. Will call GUIToObject.
     procedure GUIChanged;
     // Set view. Override if additional handling required.
@@ -274,7 +274,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
     class function CompositeMediator: Boolean; override;
-    procedure Update(ASubject: TtiObject; AOperation : TNotifyOperation); override;
+    procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject); override;
     procedure HandleSelectionChanged; virtual; // Called from the GUI to trigger events
     procedure ItemDeleted(const ASubject: TtiObject); virtual;
   published
@@ -627,9 +627,9 @@ begin
     Update(FSubject,noChanged);
 end;
 
-procedure TtiMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
+procedure TtiMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject);
 begin
-  inherited Update(ASubject, AOperation);
+  inherited Update(ASubject, AOperation, AData);
   { We can be observing FSubject and ValueList, so make sure we handle the
     correct one. }
   if FSubject = ASubject then
@@ -1293,7 +1293,7 @@ begin
   begin
     FModel.AttachObserver(Self);
     if B and Active then
-      Update(FModel,noChanged);
+      Update(FModel,noChanged, nil);
   end;
 end;
 
@@ -1305,7 +1305,7 @@ end;
 procedure TtiListItemMediator.Update(ASubject: TtiObject);
 begin
   Assert(Model = ASubject);
-  inherited;
+  inherited Update(ASubject);
   if ASubject.Deleted and Assigned(ListMediator) then
     // WARNING: this may result in us being deleted.
     ListMediator.ItemDeleted(ASubject);
@@ -1505,17 +1505,17 @@ begin
   Result := True;
 end;
 
-procedure TtiCustomListMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
+procedure TtiCustomListMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject);
 var
   M: TtiListItemMediator;
 begin
   // Do not call inherited, it will rebuild the list !!
   Case AOperation of
     noAddItem    : begin
-                     M := DoCreateItemMediator(ASubject,Model.Count-1); // always at the end...
+                     M := DoCreateItemMediator(AData,Model.Count-1); // always at the end...
                      M.ListMediator := Self;
                    end;
-    noDeleteItem : ItemDeleted(ASubject);
+    noDeleteItem : ItemDeleted(AData);
     noFree       : if (ASubject = FSubject) then
                      Subject := nil;
     noChanged    :

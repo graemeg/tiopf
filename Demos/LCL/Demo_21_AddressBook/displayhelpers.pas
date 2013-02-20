@@ -31,7 +31,7 @@ type
   public
     constructor CreateCustom(ASubject: TtiObjectList);
     destructor  Destroy; override;
-    procedure   Update(ASubject: TtiObject; AOperation: TNotifyOperation); override;
+    procedure   Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject=nil); override;
     property    Subject: TtiObjectList read FSubject;
   end;
 
@@ -89,12 +89,12 @@ begin
   inherited Destroy;
 end;
 
-procedure TBaseDisplayList.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
+procedure TBaseDisplayList.Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject);
 begin
   if (AOperation=noAddItem) then
-    ItemAdded(ASubject)
+    ItemAdded(AData)
   else if (AOperation=noDeleteItem) then
-    ItemDeleted(ASubject)
+    ItemDeleted(AData)
   else if (AOperation=noChanged) then
   begin
      { Safety measure: The displaylist could have been created after the
@@ -103,7 +103,7 @@ begin
       RebuildList;
   end
   else
-    inherited Update(ASubject, AOperation);
+    inherited Update(ASubject, AOperation, AData);
 end;
 
 end.
