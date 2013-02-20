@@ -146,9 +146,9 @@ uses
     ,FileCtrl
   {$ENDIF}
   {$ENDIF MSWINDOWS}
-  {$IFDEF LINUX}
+  {$IFDEF UNIX}
   ,Types
-  {$ENDIF LINUX}
+  {$ENDIF UNIX}
   ,tiConstants
   ,tiUtils
   ,tiGUIINI

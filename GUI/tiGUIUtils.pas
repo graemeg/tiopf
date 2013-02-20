@@ -630,15 +630,15 @@ begin
 end;
 {$ENDIF MSWINDOWS}
 
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 function tiEditFile(const AFileName : string): integer;
 var
   Helper: string;
 begin
   { TODO: There is no standard editor included with all
-    flavours of linux. Might implement tiEditFile with a fallback as a form with
-    a memo control and basic edit functions. ie: Something like
-    NotePad for Windows }
+    flavours of Linux or Unix. We might need to implement tiEditFile with a
+    fallback as a form with a memo control and basic edit functions.
+    ie: Something like NotePad for Windows }
 
   Helper := '';
   if fpsystem('which xdg-open') = 0 then
@@ -653,7 +653,7 @@ begin
   if Helper <> '' then
     fpSystem(Helper + ' ' + AFileName + '&');
 end;
-{$ENDIF LINUX}
+{$ENDIF UNIX}
 
 function tiObjectConfirmDelete(const AData: TtiObject): boolean;
 begin

@@ -26,7 +26,7 @@ const
     {$ENDIF}
   {$ENDIF}
 
-  {$IFDEF LINUX}
+  {$IFDEF UNIX}
     {$IFDEF LCLGTK1}  // GTK1
       {$IFDEF GUI_FIXED_FONT}
       cDefaultFixedFontName   = '-*-fixed-medium-*-normal-*-*-140-*-*-*-*-iso8859-1';
