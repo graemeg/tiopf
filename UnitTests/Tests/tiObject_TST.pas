@@ -174,6 +174,7 @@ type
 {$IFDEF DELPHI9ORABOVE}
     procedure   ForIn;
 {$ENDIF}
+    // TODO: NotifyObservers unit tests for Insert, Extract and Delete are still required
     procedure   Add_NotifyObservers_Subject;
     procedure   Remove_NotifyObservers_Subject;
     procedure   BeginEnd_NotifyObservers_Subject;
@@ -283,6 +284,7 @@ type
   // Used in NotifyObserver test.
   TtstObserver2 = class(TtiObject)
   private
+    FLastUpdateDataObject: TtiObject;
     FLastUpdateSubject: TtiObject;
     FLastNotifyOperation: TNotifyOperation;
     FUpdateCount: integer;
@@ -291,6 +293,7 @@ type
     procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject=nil); override;
     property LastNotifyOperation: TNotifyOperation read FLastNotifyOperation write FLastNotifyOperation;
     property LastUpdateSubject: TtiObject read FLastUpdateSubject write FLastUpdateSubject;
+    property LastUpdateDataObject: TtiObject read FLastUpdateDataObject write FLastUpdateDataObject;
     property UpdateCount: integer read FUpdateCount write FUpdateCount;
   end;
 
@@ -3757,6 +3760,8 @@ begin
   CheckNotifyOperation(noAddItem, lObserver.LastNotifyOperation, 'Failed on 5');
   { The Subject in Update() should be the list, not the item added }
   CheckTrue(lObserver.LastUpdateSubject = lList, 'Failed on 6');
+  { The AData or affected object in Update() should not be nil }
+  CheckTrue(lObserver.LastUpdateDataObject = lItem, 'Failed on 7');
 
   lList.Remove(lItem);
   lList.Free;
@@ -3789,6 +3794,8 @@ begin
   CheckNotifyOperation(noDeleteItem, lObserver.LastNotifyOperation, 'Failed on 5');
   { The Subject in Update() should be the list, not the item added }
   CheckTrue(lObserver.LastUpdateSubject = lList, 'Failed on 6');
+  { The AData or affected object in Update() should not be nil }
+  CheckTrue(lObserver.LastUpdateDataObject = lItem, 'Failed on 7');
 
   lList.Free;
   lObserver.Free;
@@ -4903,6 +4910,8 @@ begin
   inherited Create;
   FUpdateCount := 0;
   FLastNotifyOperation := noCustom;
+  FLastUpdateSubject := nil;
+  FLastUpdateDataObject := nil;
 end;
 
 procedure TtstObserver2.Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject);
@@ -4910,6 +4919,7 @@ begin
   Inc(FUpdateCount);
   FLastUpdateSubject := ASubject;
   FLastNotifyOperation := AOperation;
+  FLastUpdateDataObject := AData;
   inherited Update(ASubject, AOperation, AData);
 end;
 
