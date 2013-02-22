@@ -107,6 +107,7 @@ type
     procedure FieldName;
     procedure AttachDetachObserver;
     procedure NotifyObservers;
+    procedure NotifyObservers_vs_IsValid_call_count;
   end;
 
 
@@ -261,10 +262,14 @@ type
   // Used in AttachDetachObserver test.
   TtstSubject = class(TtiObject)
   private
+    FIsValidCallCount: integer;
     FName: string;
     procedure SetName(const AValue: string);
   public
-    property  Name: string read FName write SetName;
+    constructor Create; override;
+    function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
+    property    Name: string read FName write SetName;
+    property    IsValidCallCount: integer read FIsValidCallCount write FIsValidCallCount;
   end;
 
 
@@ -312,15 +317,13 @@ uses
   tiTestDependencies,
   tiOPFManager,
   tiUtils,
-  tiVisitor,
   tiConstants,
   tiOID,
   tiOIDGUID,
   tiRTTI,
   tiExcept,
   tiSmartPointer,
-
-  // Delphi
+  tiBaseMediator,
   SysUtils,
   TypInfo,
   DateUtils;
@@ -4882,6 +4885,35 @@ begin
   lObserver.Free;
 end;
 
+procedure TtiObjectTestCase.NotifyObservers_vs_IsValid_call_count;
+var
+  lItem: TtstSubject;
+  lObserver: TtstObserver;
+  lMediator: TtiMediatorView;
+begin
+  lItem := TtstSubject.Create;
+  lObserver := TtstObserver.Create;
+  lItem.AttachObserver(lObserver);
+
+  { No observer implements the ItiObserverHandlesErrorState interface, so IsValid
+    should not be called during NotifyObservers. }
+  CheckEquals(0, lItem.IsValidCallCount, 'Failed on 1');
+  lItem.Name := 'AAAAA';
+  CheckEquals(0, lItem.IsValidCallCount, 'Failed on 2');
+
+  { reset counter }
+  lItem.IsValidCallCount := 0;
+
+  { The TtiMediatorView implementes the ItiObserverHandlesErrorState interface,
+    so it is interested in IsValid results. }
+  lMediator := TtiMediatorView.Create;
+  lItem.AttachObserver(lMediator);
+
+  CheckEquals(0, lItem.IsValidCallCount, 'Failed on 3');
+  lItem.Name := 'BBBBB';
+  CheckEquals(1, lItem.IsValidCallCount, 'Failed on 4');
+end;
+
 { TtstSubject }
 
 procedure TtstSubject.SetName(const AValue: string);
@@ -4889,6 +4921,21 @@ begin
   BeginUpdate;
   FName := AValue;
   EndUpdate;
+end;
+
+constructor TtstSubject.Create;
+begin
+  inherited Create;
+  FIsValidCallCount := 0;
+end;
+
+function TtstSubject.IsValid(const AErrors: TtiObjectErrors): boolean;
+begin
+  inherited IsValid(AErrors);
+  Inc(FIsValidCallCount);
+  if FName = '' then
+    AErrors.AddError('The Name field is missing data');
+  Result := (AErrors.Count = 0);
 end;
 
 { TtstObserver }

@@ -4209,9 +4209,11 @@ var
   LObserverList: TList;
   LErrors: TtiObjectErrors;
   ObsIntf: ItiObserverHandlesErrorState;
+  NeedsErrorList: Boolean;
 begin
   if not Assigned(FObserverList) then
     Exit; //==>
+  LErrors := nil;
 
   if ATopic <> '' then
     UpdateTopicList.Add(ATopic);
@@ -4221,9 +4223,27 @@ begin
   try
     LObserverList.Assign(FObserverList);
 
+    { First find out if we need to call IsValid. Also IsValid should only be
+      called if AOperation <> noFree. ie: not during a destructor. }
+    NeedsErrorList := False;
+    ObjectIndex := 0;
+    if (AOperation <> noFree) then
+    begin
+      while (not NeedsErrorList) and (ObjectIndex < LObserverList.Count) do
+      begin
+        Observer := TtiObject(LObserverList.Items[ObjectIndex]);
+        if Assigned(Observer) and Supports(Observer, ItiObserverHandlesErrorState, ObsIntf) then
+          NeedsErrorList := True;
+        inc(ObjectIndex);
+      end;
+    end;
+
     { collect possible errors }
-    LErrors := TtiObjectErrors.Create;
-    ASubject.IsValid(LErrors);
+    if NeedsErrorList then
+    begin
+      LErrors := TtiObjectErrors.Create;
+      ASubject.IsValid(LErrors);
+    end;
 
     for ObjectIndex := 0 to LObserverList.Count - 1 do
     begin
@@ -4235,12 +4255,16 @@ begin
          ((ObjectIndex = 0) or (FObserverList.IndexOf(Observer) <> -1)) then
       begin
         Observer.Update(ASubject, AOperation);
-        if Supports(Observer, ItiObserverHandlesErrorState, ObsIntf) then
-          ObsIntf.ProcessErrorState(ASubject, AOperation, LErrors);
+        if NeedsErrorList then
+        begin
+          if Supports(Observer, ItiObserverHandlesErrorState, ObsIntf) then
+            ObsIntf.ProcessErrorState(ASubject, AOperation, LErrors);
+        end;
       end;
     end;
   finally
-    LErrors.Free;
+    if Assigned(LErrors) then
+      LErrors.Free;
     LObserverList.Free;
   end;
 
