@@ -128,7 +128,7 @@ var
   LDBExists: boolean;
 begin
   LDB       := TestSetupData.DBName;
-  Check(FileExists(LDB), 'Database file not found so test can not be performed');
+  Check(FileExists(LDB), Format('Database file <%s> not found so test can not be performed', [LDB]));
   LDBExists :=
     PersistenceLayer.DatabaseClass.DatabaseExists(
     TestSetupData.DBName,
