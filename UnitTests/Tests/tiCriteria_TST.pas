@@ -69,9 +69,10 @@ procedure RegisterTests;
 
 implementation
 uses
-  tiCriteria
+  SysUtils
+  ,tiUtils
+  ,tiCriteria
   ,tiVisitorCriteria
-  ,SysUtils
   ,tiTestDependencies
   ,tiQuery
   ;
@@ -1720,7 +1721,7 @@ begin
     lCriteriaBase.AddOrCriteria(lCriteriaOr);
 
     lSQL := Trim(tiCriteriaAsSQL(lCriteriaBase));
-    CheckEquals('((OID = ''1'') OR '#$D#$A'(OID = ''2''))', lSQL, 'Failed on 1');
+    CheckEquals('((OID = ''1'') OR ' + tiLineEnd + '(OID = ''2''))', lSQL, 'Failed on 1');
 
     lCriteriaBase.Criterias.Clear;
   finally
