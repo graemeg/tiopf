@@ -30,6 +30,35 @@
         'sysdba', 'masterkey', 'protocol=firebird-2.5,role=admin');
 
 }
+{
+  This persistence layer uses ZEOS components to communicate with a Firebird
+  database server. This unit is now a merged unit encapsulating all Firebird
+  Server versions.
+
+  The connection string format is the same as the standard Interbase/Firebird
+  persistence layers.
+
+  IMPORTANT:
+  The only extra requirement here is that the PROTOCOL parameter must be
+  specified in the connection call, so that ZEOS library knows which
+  Firebird database driver to load. Here are some examples:
+
+  Firebird 1.5
+  ------------
+    GTIOPFManager.ConnectDatabase('192.168.0.20:E:\Databases\Test.fdb',
+        'sysdba', 'masterkey', 'protocol=firebird-1.5');
+
+  Firebird 2.1
+  ------------
+    GTIOPFManager.ConnectDatabase('192.168.0.20:E:\Databases\Test.fdb',
+        'sysdba', 'masterkey', 'protocol=firebird-2.1');
+
+  Firebird 2.5
+  ------------
+    GTIOPFManager.ConnectDatabase('192.168.0.20:E:\Databases\Test.fdb',
+        'sysdba', 'masterkey', 'protocol=firebird-2.5');
+
+}
 unit tiQueryZeosIBFB;
 
 {$I tiDefines.inc}
@@ -54,6 +83,40 @@ type
     procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); override;
   end;
 
+const
+  cErrorProtocolParameterNeeded = ' needs a ''protocol'' param';
+
+{ TtiPersistenceLayerZeosFB }
+
+function TtiPersistenceLayerZeosFB.GetPersistenceLayerName: string;
+begin
+  Result := cTIPersistZeosFB;
+end;
+
+function TtiPersistenceLayerZeosFB.GetDatabaseClass: TtiDatabaseClass;
+begin
+  Result := TtiDatabaseZeosIBFB;
+end;
+
+function TtiPersistenceLayerZeosFB.GetQueryClass: TtiQueryClass;
+begin
+  Result := TtiQueryZeos;
+end;
+
+procedure TtiPersistenceLayerZeosFB.AssignPersistenceLayerDefaults(
+  const APersistenceLayerDefaults: TtiPersistenceLayerDefaults);
+begin
+  Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  APersistenceLayerDefaults.PersistenceLayerName := cTIPersistZeosFB;
+  APersistenceLayerDefaults.DatabaseName :=
+    CDefaultDatabaseDirectory + CDefaultDatabaseName + '.fdb';
+  APersistenceLayerDefaults.Username := 'SYSDBA';
+  APersistenceLayerDefaults.Password := 'masterkey';
+  APersistenceLayerDefaults.CanDropDatabase := False;
+  APersistenceLayerDefaults.CanCreateDatabase := True;
+  APersistenceLayerDefaults.CanSupportMultiUser := True;
+  APersistenceLayerDefaults.CanSupportSQL := True;
+end;
 
   TtiDatabaseZeosIBFB = class(TtiDatabaseZeosAbs)
   protected
@@ -149,6 +212,14 @@ begin
     end
     else
       raise EtiOPFProgrammerException.Create(ClassName + cErrorProtocolParameterNeeded);
+
+    if lParams.Values['PROTOCOL'] <> '' then
+    begin
+      Connection.Protocol := lParams.Values['PROTOCOL'];
+      lParams.Delete(lParams.IndexOfName('PROTOCOL'));
+    end
+    else
+      raise EtiOPFProgrammerException.Create( ClassName + cErrorProtocolParameterNeeded);
 
 //    if Params.Values['CODEPAGE'] <> '' then
 //      Connection.Properties.Add('CODEPAGE=' + Params.Values['CODEPAGE']);
