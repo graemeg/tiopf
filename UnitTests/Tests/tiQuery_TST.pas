@@ -272,7 +272,8 @@ begin
       TestSetupData.DBName,
       TestSetupData.UserName,
       TestSetupData.Password,
-      '', '');
+      TestSetupData.QueryParams,
+      '');
     Check(LDatabase.Connected, 'Connect failed');
     LDatabase.Connected := false;
     Check(not LDatabase.Connected, 'Connected := false failed');

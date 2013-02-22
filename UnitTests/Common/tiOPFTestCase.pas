@@ -742,7 +742,6 @@ begin
   Result := TestSetupData.QueryParams;
 end;
 
-
 function TtiTestCaseWithDatabaseConnection.GetUserName: string;
 begin
   Assert(TestSetupData.TestValid, CTIErrorInvalidObject);
