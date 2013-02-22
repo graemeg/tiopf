@@ -23,6 +23,9 @@ uses
   ,registry
   ,windows  // needed for HWnd under FPC
   {$ENDIF}
+  {$IFDEF UNIX}
+  ,Types
+  {$ENDIF}
   ,ExtCtrls
   ,Math
   ,TypInfo
