@@ -72,7 +72,7 @@ type
   public
     constructor CreateCustom(AModel: TtiObject; AView: TListItem; const AFieldsInfo: TtiMediatorFieldInfoList; AIsObserving: Boolean = True); reintroduce; overload;
     constructor CreateCustom(AModel: TtiObject; AView: TListItem; AOnBeforeSetupField: TtiOnBeforeSetupField; const AFieldsInfo: TtiMediatorFieldInfoList; AIsObserving: Boolean = True); reintroduce; overload;
-    procedure Update(ASubject: TtiObject); override;
+    procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject); override;
   published
     property View: TListItem read FView;
   end;
@@ -86,7 +86,7 @@ type
     FRowIndex: integer;
   public
     constructor CreateCustom(AModel: TtiObject; AGrid: TStringGrid; const AFieldsInfo: TtiMediatorFieldInfoList; ARowIndex: integer; AIsObserving: Boolean = True); reintroduce; overload;
-    procedure Update(ASubject: TtiObject); override;
+    procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject); override;
   published
     property View: TStringGrid read FView;
     property RowIndex: integer read FRowIndex;
@@ -334,7 +334,7 @@ begin
   Active      := AIsObserving; // Will attach
 end;
 
-procedure TtiListViewListItemMediator.Update(ASubject: TtiObject);
+procedure TtiListViewMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject);
 var
   c: integer;
   lMemberName: string;
@@ -371,7 +371,7 @@ begin
   for i := 0 to View.RowCount - 1 do
     begin
     O := View.Objects[0, i];
-    if assigned (O) and (TtiListItemMediator(O).Model = AValue) then
+    if Assigned (O) and (TtiListItemMediator(O).Model = AValue) then
     begin
       View.Row := i;
       Exit; //==>
@@ -536,7 +536,7 @@ begin
   Active      := AIsObserving; // Will attach
 end;
 
-procedure TtiStringGridRowMediator.Update(ASubject: TtiObject);
+procedure TtiStringGridRowMediator.Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject);
 var
   i: integer;
   lvalue, lFieldName: string;

@@ -291,7 +291,7 @@ type
     FUpdateCount: integer;
   public
     constructor Create; override;
-    procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation); override;
+    procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject=nil); override;
     property LastNotifyOperation: TNotifyOperation read FLastNotifyOperation write FLastNotifyOperation;
     property LastUpdateSubject: TtiObject read FLastUpdateSubject write FLastUpdateSubject;
     property UpdateCount: integer read FUpdateCount write FUpdateCount;
@@ -4955,12 +4955,12 @@ begin
   FLastNotifyOperation := noCustom;
 end;
 
-procedure TtstObserver2.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
+procedure TtstObserver2.Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject);
 begin
   Inc(FUpdateCount);
   FLastUpdateSubject := ASubject;
   FLastNotifyOperation := AOperation;
-  inherited Update(ASubject, AOperation);
+  inherited Update(ASubject, AOperation, AData);
 end;
 
 procedure TtiObjectListTestCase.CompareWithEvent;
