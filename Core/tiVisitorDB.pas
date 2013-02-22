@@ -77,8 +77,7 @@ type
     procedure BeforeExecuteVisitorGroup; override;
     procedure BeforeExecuteVisitor(const AVisitor: TtiVisitor); override;
     procedure AfterExecuteVisitor(const AVisitor: TtiVisitor); override;
-    procedure AfterExecuteVisitorGroup(const ATouchedByVisitorList: TtiTouchedByVisitorList);
-      override;
+    procedure AfterExecuteVisitorGroup(const ATouchedByVisitorList: TtiTouchedByVisitorList); override;
     procedure AfterExecuteVisitorGroupError; override;
   end;
 
@@ -91,15 +90,14 @@ type
   public
     property PersistenceLayerName: string read FPersistenceLayerName;
     property DatabaseName: string read FDatabaseName;
-    procedure SetDatabaseAndPersistenceLayerNames(
-      const APersistenceLayerName, ADBConnectionName: string);
+    procedure SetDatabaseAndPersistenceLayerNames(const APersistenceLayerName, ADBConnectionName: string);
   end;
 
   TtiObjectVisitorManager = class(TtiVisitorManager)
   public
     procedure Execute(const AGroupName: string; const AVisited: TtiVisited;
       const ADBConnectionName: string; const APersistenceLayerName: string = ''); overload;
-    procedure Execute(const AGroupName: string; const AVisited: TtiVisited); override;
+    procedure Execute(const AGroupName: string; const AVisited: TtiVisited); overload; override;
   end;
 
 
