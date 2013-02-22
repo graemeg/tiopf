@@ -105,7 +105,7 @@ begin
     else
       result := result + tiLineEnd;
 
-// the following are temerarily removed until they can be properly tested
+// TODO: the following are temporarily removed until they can be properly tested
 //    result := result + lVisitor.GroupByClausesAsText + CrLf;
 
 //    result := result + lVisitor.OrderByClausesAsText + CrLf;
@@ -229,84 +229,6 @@ function ToSelectClause(ACriteria: TtiFieldCriteriaAbs): string;
 begin
   Result := ACriteria.FieldName + ACriteria.GetClause + GetSqlValue(ACriteria.Value);
 end;
-
-//function AsSQLClause(ACriterias: TtiSelectionCriteriaList): string;
-//var
-//  i: integer;
-//  FAppendBegin: string;
-//  FAppendEnd: string;
-//
-//  //-----------------
-//  procedure Include(AClause: string);
-//  begin
-//    Result := Result + FAppendBegin + AClause + FAppendEnd;
-//  end;
-//
-//  //-----------------
-//  procedure Apply(FSelCriteria: TtiSelectionCriteriaAbs);
-//  begin
-//    if FSelCriteria is TtiBetweenCriteria then
-//      begin
-//        Include(ToSelectClause(TtiBetweenCriteria(FSelCriteria)));
-//        Exit;
-//      end;
-//
-//    if FSelCriteria is TtiNullCriteria then
-//      begin
-//        Include(ToSelectClause(TtiNullCriteria(FSelCriteria)));
-//        Exit;
-//      end;
-//
-//    if FSelCriteria is TtiInCriteria then
-//      begin
-//        Include(ToSelectClause(TtiInCriteria(FSelCriteria)));
-//        Exit;
-//      end;
-//
-//    if FSelCriteria is TtiExistsCriteria then
-//      begin
-//        Include(ToSelectClause(TtiExistsCriteria(FSelCriteria)));
-//        Exit;
-//      end;
-//
-//    if FSelCriteria is TtiSQLCriteria then
-//      begin
-//        Include(ToSelectClause(TtiSQLCriteria(FSelCriteria)));
-//        Exit;
-//      end;
-//
-//    if FSelCriteria is TtiFieldCriteriaAbs then
-//      begin
-//        Include(ToSelectClause(TtiFieldCriteriaAbs(FSelCriteria)));
-//        Exit;
-//      end;
-//
-//    Include(ToSelectClause(FSelCriteria, ));
-//  end;
-//
-//begin
-//  FAppendBegin := '';
-//  FAppendEnd := '';
-//  if ACriterias.Count = 0 then
-//    Exit; //==>
-//
-//  Apply(ACriterias.Items[0]);
-//
-//  if ACriterias.Count = 1 then
-//    Exit; //==>
-//
-//  Result := '(' + Result + ')';
-//
-//  FAppendBegin := ' AND (';
-//  FAppendEnd := ')';
-//
-//  for i := 1 to ACriterias.Count - 1 do
-//  begin
-//    Apply(ACriterias.Items[i]);
-//  end;
-//
-////  Apply(ACriterias.Items[ACriterias.Count - 1]);
-//end;
 
 
 { TVisObjectToSQL }
