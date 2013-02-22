@@ -175,6 +175,9 @@ type
     procedure   tiListToStreamFields;
     procedure   GetEnumerator;
     procedure   ForIn;
+    procedure   Add_NotifyObservers_Subject;
+    procedure   Remove_NotifyObservers_Subject;
+    procedure   BeginEnd_NotifyObservers_Subject;
     procedure   IsUniqueCustom;
   end;
 
@@ -3720,6 +3723,93 @@ begin
   finally
     LList.Free;
   end;
+end;
+
+procedure TtiObjectListTestCase.Add_NotifyObservers_Subject;
+var
+  lList: TtiObjectList;
+  lItem: TtiObject;
+  lObserver: TtstObserver2;
+begin
+  lList := TtiObjectList.Create;
+  lItem := TtiObject.Create;
+  lObserver := TtstObserver2.Create;
+
+  lList.AttachObserver(lObserver);
+  { simply testing the default value - first item in TNotifyOperation enum }
+  CheckNotifyOperation(noCustom, lObserver.LastNotifyOperation, 'Failed on 1');
+  CheckEquals(0, lObserver.UpdateCount, 'Failed on 2');
+  CheckTrue(lObserver.LastUpdateSubject = nil, 'Failed on 3');
+
+  lList.Add(lItem);
+  CheckEquals(1, lObserver.UpdateCount, 'Failed on 4');
+  CheckNotifyOperation(noAddItem, lObserver.LastNotifyOperation, 'Failed on 5');
+  { The Subject in Update() should be the list, not the item added }
+  CheckTrue(lObserver.LastUpdateSubject = lList, 'Failed on 6');
+
+  lList.Remove(lItem);
+  lList.Free;
+  lObserver.Free;
+end;
+
+procedure TtiObjectListTestCase.Remove_NotifyObservers_Subject;
+var
+  lList: TtiObjectList;
+  lItem: TtiObject;
+  lObserver: TtstObserver2;
+begin
+  lList := TtiObjectList.Create;
+  lItem := TtiObject.Create;
+  lObserver := TtstObserver2.Create;
+
+  lList.AttachObserver(lObserver);
+  { simply testing the default value - first item in TNotifyOperation enum }
+  CheckNotifyOperation(noCustom, lObserver.LastNotifyOperation, 'Failed on 1');
+  CheckEquals(0, lObserver.UpdateCount, 'Failed on 2');
+  CheckTrue(lObserver.LastUpdateSubject = nil, 'Failed on 3');
+
+  lList.Add(lItem);
+  { Reset last values }
+  lObserver.UpdateCount := 0;
+  lObserver.LastUpdateSubject := nil;
+
+  lList.Remove(lItem);
+  CheckEquals(1, lObserver.UpdateCount, 'Failed on 4');
+  CheckNotifyOperation(noDeleteItem, lObserver.LastNotifyOperation, 'Failed on 5');
+  { The Subject in Update() should be the list, not the item added }
+  CheckTrue(lObserver.LastUpdateSubject = lList, 'Failed on 6');
+
+  lList.Free;
+  lObserver.Free;
+end;
+
+procedure TtiObjectListTestCase.BeginEnd_NotifyObservers_Subject;
+var
+  lList: TtiObjectList;
+  lItem: TtiObject;
+  lObserver: TtstObserver2;
+begin
+  lList := TtiObjectList.Create;
+  lItem := TtiObject.Create;
+  lObserver := TtstObserver2.Create;
+
+  lList.AttachObserver(lObserver);
+  { simply testing the default value - first item in TNotifyOperation enum }
+  CheckNotifyOperation(noCustom, lObserver.LastNotifyOperation, 'Failed on 1');
+  CheckEquals(0, lObserver.UpdateCount, 'Failed on 2');
+  CheckTrue(lObserver.LastUpdateSubject = nil, 'Failed on 3');
+
+  lList.BeginUpdate;
+  lList.Add(lItem);
+  lList.EndUpdate;
+  CheckEquals(2, lObserver.UpdateCount, 'Failed on 4');
+  CheckNotifyOperation(noChanged, lObserver.LastNotifyOperation, 'Failed on 5');
+  { The Subject in Update() should be the list, not the item added }
+  CheckTrue(lObserver.LastUpdateSubject = lList, 'Failed on 6');
+
+  lList.Remove(lItem);
+  lList.Free;
+  lObserver.Free;
 end;
 
 procedure TtiObjectListTestCase.tiListToStreamDefault;
