@@ -9,9 +9,6 @@ interface
 uses
   SysUtils
   ,Classes
-  {$IFNDEF FPC}
-  ,WinProcs
-  {$ENDIF}
   ,Graphics
   ,Controls
   ,Forms
