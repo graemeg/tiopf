@@ -54,6 +54,7 @@ uses
   variants
   ,tiUtils        { GetPropNames }
   ,tiRTTI
+  ,tiLog
   ;
 
 const
@@ -409,6 +410,7 @@ function TVisObjectToSQL.AcceptVisitor: Boolean;
 begin
   result := (Visited is TtiCriteria) and
     (not TtiObject(Visited).Deleted);
+  Log([ClassName, Visited.ClassName, Result], lsAcceptVisitor);
 end;
 
 procedure TVisObjectToSQL.Execute(const pVisited: TtiVisited);
