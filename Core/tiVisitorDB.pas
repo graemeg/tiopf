@@ -96,8 +96,8 @@ type
   TtiObjectVisitorManager = class(TtiVisitorManager)
   public
     procedure Execute(const AGroupName: string; const AVisited: TtiVisited;
-      const ADBConnectionName: string; const APersistenceLayerName: string = ''); overload;
-    procedure Execute(const AGroupName: string; const AVisited: TtiVisited); overload; override;
+      const ADBConnectionName: string; const APersistenceLayerName: string = ''); reintroduce; overload;
+    procedure Execute(const AGroupName: string; const AVisited: TtiVisited); reintroduce; overload;
   end;
 
 
@@ -478,7 +478,8 @@ end;
 { TtiObjectVisitorManager }
 
 procedure TtiObjectVisitorManager.Execute(const AGroupName: string;
-  const AVisited: TtiVisited; const ADBConnectionName, APersistenceLayerName: string);
+  const AVisited: TtiVisited; const ADBConnectionName: string;
+  const APersistenceLayerName: string);
 var
   FVisitorControllerConfig: TtiObjectVisitorControllerConfig;
 begin
