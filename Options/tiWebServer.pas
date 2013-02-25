@@ -851,7 +851,7 @@ begin
     Result := False
   else begin
     LFileName:= StaticPageLocation + ADocument;
-    Result := FileExists(LFileName);
+    Result := tiIsFileNameValid(LFileName) and FileExists(LFileName);
     if (not Result) and (tiExtractExtension(LFileName)='') then
       Result:= FileExists(tiSwapExt(LFileName, 'htm')) or
                FileExists(tiSwapExt(LFileName, 'html'));

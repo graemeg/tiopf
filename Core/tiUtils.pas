@@ -2830,40 +2830,79 @@ begin
 end;
 
 
+// From:
+// Naming Files, Paths, and Namespaces
+// http://msdn.microsoft.com/en-us/library/aa365247.aspx?ppud=4
 function tiIsFileNameCharValid(const AFileNameChar : char): boolean;
 const
-  ExcludedChars = [ '\', '/', ':', '*', '?', '"', '<', '>', '|' ];
+  CExcludedChars = [ '\', '/', ':', '*', '?', '"', '<', '>', '|' ];
 begin
-  // From the NT help
-  //A filename can contain up to 255 characters, including spaces.
-  // But, it cannot contain any of the following characters:
-  // \ /: * ? " < > |
-  result := not CharInSet(AFileNameChar, ExcludedChars);
+  result := not CharInSet(AFileNameChar, CExcludedChars);
 end;
 
 
+// From:
+// Naming Files, Paths, and Namespaces
+// http://msdn.microsoft.com/en-us/library/aa365247.aspx?ppud=4
 function tiIsFileNameValid(const AFileName : string): boolean;
 var
-  lFileName : string;
-  i : integer;
+  LFileName: string;
+  LLastChar: Char;
+  i: integer;
+const
+  CReservedFileName: array [1..4] of string = ('CON','NUL','PRN','AUX');
+  CReservedFileNameNumbered: array [1..2] of string = ('COM','LPT');
+  CDeviceNamespace = '\\.\';
 begin
-  lFileName := ExtractFileName(AFileName);
+  LFileName := ExtractFileName(AFileName);
   result :=
-    (Length(lFileName) <= 255) and
-    (Length(lFileName) > 0);
+    (Length(LFileName) <= 255) and
+    (Length(LFileName) > 0);
   if not result then
     Exit; //==>
+  LLastChar := LFileName[Length(LFileName)];
 
-  // From the NT help
-  //A filename can contain up to 255 characters, including spaces.
-  // But, it cannot contain any of the following characters:
-  // \ /: * ? " < > |
-  for i := 1 to Length(lFileName) do
-    if not tiIsFileNameCharValid(lFileName[i]) then
+  // Path cannot contain a device reference
+  if Pos(CDeviceNamespace, AFileName) > 0 then
+  begin
+    result := false;
+    Exit; //==>
+  end;
+
+  // File name must contain valid characters
+  for i := 1 to Length(LFileName) do
+    if not tiIsFileNameCharValid(LFileName[i]) then
     begin
       result := false;
       Exit; //==>
     end;
+
+  // File name cannot end with a period or space
+  if (LLastChar = '.') or (LLastChar = ' ') then
+  begin
+    result := false;
+    Exit; //==>
+  end;
+
+  // File name cannot be a device name
+  for i := Low(CReservedFileName) to High(CReservedFileName) do
+    if SameText(CReservedFileName[i], LFileName) then
+    begin
+      result := false;
+      Exit; //==>
+    end;
+
+  // File name cannot be a numbered device name alias
+  if (LLastChar >= '1') and (LLastChar <= '9') then
+  begin
+    LFileName := Copy(LFileName, 1, Length(LFileName) - 1);
+    for i := Low(CReservedFileNameNumbered) to High(CReservedFileNameNumbered) do
+      if SameText(CReservedFileNameNumbered[i], LFileName) then
+      begin
+        result := false;
+        Exit; //==>
+      end;
+  end;
 end;
 
 

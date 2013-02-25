@@ -2412,6 +2412,23 @@ begin
   Check(not tiUtils.tiIsFileNameValid('test>'), 'test>');
   Check(not tiUtils.tiIsFileNameValid('test<'), 'test<');
   Check(not tiUtils.tiIsFileNameValid('test|'), 'test|');
+  Check(not tiUtils.tiIsFileNameValid('test.'), 'test.');
+  Check(not tiUtils.tiIsFileNameValid('test '), 'test ');
+  Check(not tiUtils.tiIsFileNameValid('C:\Temp\\\.\DEVICE'), 'C:\Temp\\\.\DEVICE');
+  Check(not tiUtils.tiIsFileNameValid('C:\Temp\CON'), 'C:\Temp\CON');
+  Check(not tiUtils.tiIsFileNameValid('C:\Temp\NUL'), 'C:\Temp\NUL');
+  Check(not tiUtils.tiIsFileNameValid('C:\Temp\PRN'), 'C:\Temp\PRN');
+  Check(not tiUtils.tiIsFileNameValid('C:\Temp\AUX'), 'C:\Temp\AUX');
+  Check(not tiUtils.tiIsFileNameValid('C:\Temp\COM1'), 'C:\Temp\COM1');
+  Check(not tiUtils.tiIsFileNameValid('C:\Temp\cOm9'), 'C:\Temp\cOm9');
+  Check(not tiUtils.tiIsFileNameValid('C:\Temp\LPT1'), 'C:\Temp\LPT1');
+  Check(not tiUtils.tiIsFileNameValid('C:\Temp\lpt9'), 'C:\Temp\lpt9');
+  Check(tiUtils.tiIsFileNameValid('C:\Temp\CON1'), 'C:\Temp\CON1');
+  Check(tiUtils.tiIsFileNameValid('C:\Temp\NUL1'), 'C:\Temp\NUL1');
+  Check(tiUtils.tiIsFileNameValid('C:\Temp\PRN1'), 'C:\Temp\PRN1');
+  Check(tiUtils.tiIsFileNameValid('C:\Temp\AUX1'), 'C:\Temp\AUX1');
+  Check(tiUtils.tiIsFileNameValid('C:\Temp\COM10'), 'C:\Temp\COM10');
+  Check(tiUtils.tiIsFileNameValid('C:\Temp\LPT10'), 'C:\Temp\LPT10');
 end;
 
 procedure TTestTIUtils.tiCheckFileCanBeCreated;
