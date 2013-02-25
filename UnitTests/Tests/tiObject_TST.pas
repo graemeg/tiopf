@@ -178,8 +178,11 @@ type
     procedure   ForIn;
     // TODO: NotifyObservers unit tests for Insert, Extract and Delete are still required
     procedure   Add_NotifyObservers_Subject;
+    procedure   Add_NotifyObservers_Subject_BeginEnd;
     procedure   Remove_NotifyObservers_Subject;
+    procedure   Remove_NotifyObservers_Subject_BeginEnd;
     procedure   BeginEnd_NotifyObservers_Subject;
+    procedure   Clear_NotifyObservers_Subject_BeginEnd;
     procedure   IsUniqueCustom;
   end;
 
@@ -3760,6 +3763,53 @@ begin
   lObserver.Free;
 end;
 
+procedure TtiObjectListTestCase.Add_NotifyObservers_Subject_BeginEnd;
+var
+  lList: TtiObjectList;
+  lItem1, lItem2: TtiObject;
+  lObserver: TtstObserver2;
+begin
+  lList := TtiObjectList.Create;
+  lItem1 := TtiObject.Create;
+  lItem2 := TtiObject.Create;
+  lObserver := TtstObserver2.Create;
+
+  lList.AttachObserver(lObserver);
+  { simply testing the default value - first item in TNotifyOperation enum }
+  CheckNotifyOperation(noCustom, lObserver.LastNotifyOperation, 'Failed on 1');
+  CheckEquals(0, lObserver.UpdateCount, 'Failed on 2');
+  CheckTrue(lObserver.LastUpdateSubject = nil, 'Failed on 3');
+  CheckTrue(lObserver.LastUpdateDataObject = nil, 'Failed on 4');
+
+  lList.BeginUpdate;
+
+  lList.Add(lItem1);
+  CheckEquals(0, lObserver.UpdateCount, 'Failed on 5');
+  CheckNotifyOperation(noCustom, lObserver.LastNotifyOperation, 'Failed on 6');
+  CheckTrue(lObserver.LastUpdateSubject = nil, 'Failed on 7');
+  CheckTrue(lObserver.LastUpdateDataObject = nil, 'Failed on 8');
+
+  lList.Add(lItem2);
+  CheckEquals(0, lObserver.UpdateCount, 'Failed on 9');
+  CheckNotifyOperation(noCustom, lObserver.LastNotifyOperation, 'Failed on 10');
+  CheckTrue(lObserver.LastUpdateSubject = nil, 'Failed on 11');
+  CheckTrue(lObserver.LastUpdateDataObject = nil, 'Failed on 12');
+
+  lList.EndUpdate;
+
+  CheckEquals(1, lObserver.UpdateCount, 'Failed on 13');
+  CheckNotifyOperation(noChanged, lObserver.LastNotifyOperation, 'Failed on 14');
+  { The Subject in Update() should be the list, not the item added }
+  CheckTrue(lObserver.LastUpdateSubject = lList, 'Failed on 15');
+  { The AData or affected object in Update() should not be nil }
+  CheckTrue(lObserver.LastUpdateDataObject = nil, 'Failed on 16');
+
+  lList.Remove(lItem2);
+  lList.Remove(lItem1);
+  lList.Free;
+  lObserver.Free;
+end;
+
 procedure TtiObjectListTestCase.Remove_NotifyObservers_Subject;
 var
   lList: TtiObjectList;
@@ -3793,6 +3843,59 @@ begin
   lObserver.Free;
 end;
 
+procedure TtiObjectListTestCase.Remove_NotifyObservers_Subject_BeginEnd;
+var
+  lList: TtiObjectList;
+  lItem1, lItem2: TtiObject;
+  lObserver: TtstObserver2;
+begin
+  lList := TtiObjectList.Create;
+  lItem1 := TtiObject.Create;
+  lItem2 := TtiObject.Create;
+  lObserver := TtstObserver2.Create;
+
+  lList.AttachObserver(lObserver);
+  { simply testing the default value - first item in TNotifyOperation enum }
+  CheckNotifyOperation(noCustom, lObserver.LastNotifyOperation, 'Failed on 1');
+  CheckEquals(0, lObserver.UpdateCount, 'Failed on 2');
+  CheckTrue(lObserver.LastUpdateSubject = nil, 'Failed on 3');
+
+  lList.Add(lItem1);
+  lList.Add(lItem2);
+  { Reset last values }
+  lObserver.UpdateCount := 0;
+  lObserver.LastNotifyOperation := noChanged;
+  lObserver.LastUpdateSubject := nil;
+  lObserver.LastUpdateDataObject := nil;
+
+  lList.BeginUpdate;
+
+  lList.Remove(lItem2);
+  CheckEquals(0, lObserver.UpdateCount, 'Failed on 4');
+  CheckNotifyOperation(noChanged, lObserver.LastNotifyOperation, 'Failed on 5');
+  CheckTrue(lObserver.LastUpdateSubject = nil, 'Failed on 6');
+  CheckTrue(lObserver.LastUpdateDataObject = nil, 'Failed on 7');
+
+  lList.Remove(lItem1);
+  CheckEquals(0, lObserver.UpdateCount, 'Failed on 8');
+  CheckNotifyOperation(noChanged, lObserver.LastNotifyOperation, 'Failed on 9');
+  CheckTrue(lObserver.LastUpdateSubject = nil, 'Failed on 10');
+  CheckTrue(lObserver.LastUpdateDataObject = nil, 'Failed on 11');
+
+  lList.EndUpdate;
+
+  CheckEquals(1, lObserver.UpdateCount, 'Failed on 12');
+  CheckNotifyOperation(noChanged, lObserver.LastNotifyOperation, 'Failed on 13');
+  { The Subject in Update() should be the list, not the items removed }
+  CheckTrue(lObserver.LastUpdateSubject = lList, 'Failed on 14');
+  { The AData or affected object in Update() should not be nil because
+    BeginUpdate..EndUpdate in a generalised notification.  }
+  CheckTrue(lObserver.LastUpdateDataObject = nil, 'Failed on 15');
+
+  lList.Free;
+  lObserver.Free;
+end;
+
 procedure TtiObjectListTestCase.BeginEnd_NotifyObservers_Subject;
 var
   lList: TtiObjectList;
@@ -3812,12 +3915,75 @@ begin
   lList.BeginUpdate;
   lList.Add(lItem);
   lList.EndUpdate;
-  CheckEquals(2, lObserver.UpdateCount, 'Failed on 4');
+  CheckEquals(1, lObserver.UpdateCount, 'Failed on 4');
   CheckNotifyOperation(noChanged, lObserver.LastNotifyOperation, 'Failed on 5');
   { The Subject in Update() should be the list, not the item added }
   CheckTrue(lObserver.LastUpdateSubject = lList, 'Failed on 6');
 
   lList.Remove(lItem);
+  lList.Free;
+  lObserver.Free;
+end;
+
+procedure TtiObjectListTestCase.Clear_NotifyObservers_Subject_BeginEnd;
+var
+  lList: TtiObjectList;
+  lItem1, lItem2: TtiObject;
+  lObserver: TtstObserver2;
+begin
+  lList := TtiObjectList.Create;
+  lItem1 := TtiObject.Create;
+  lItem2 := TtiObject.Create;
+  lObserver := TtstObserver2.Create;
+
+  lList.AttachObserver(lObserver);
+  { simply testing the default value - first item in TNotifyOperation enum }
+  CheckNotifyOperation(noCustom, lObserver.LastNotifyOperation, 'Failed on 1');
+  CheckEquals(0, lObserver.UpdateCount, 'Failed on 2');
+  CheckTrue(lObserver.LastUpdateSubject = nil, 'Failed on 3');
+
+  lList.Add(lItem1);
+  lList.Add(lItem2);
+  { Reset last values }
+  lObserver.UpdateCount := 0;
+  lObserver.LastNotifyOperation := noChanged;
+  lObserver.LastUpdateSubject := nil;
+  lObserver.LastUpdateDataObject := nil;
+
+  lList.Clear;
+  { Because the TtiObjectList.Clear implementation calls BeginUpdate..EndUpdate }
+  CheckEquals(1, lObserver.UpdateCount, 'Failed on 4');
+  CheckNotifyOperation(noChanged, lObserver.LastNotifyOperation, 'Failed on 5');
+  CheckTrue(lObserver.LastUpdateSubject = lList, 'Failed on 6');
+
+  lItem1 := TtiObject.Create;
+  lItem2 := TtiObject.Create;
+  lList.Add(lItem1);
+  lList.Add(lItem2);
+  { Reset last values }
+  lObserver.UpdateCount := 0;
+  lObserver.LastNotifyOperation := noChanged;
+  lObserver.LastUpdateSubject := nil;
+  lObserver.LastUpdateDataObject := nil;
+
+  lList.BeginUpdate;
+
+  lList.Clear;
+  CheckEquals(0, lObserver.UpdateCount, 'Failed on 7');
+  CheckNotifyOperation(noChanged, lObserver.LastNotifyOperation, 'Failed on 8');
+  CheckTrue(lObserver.LastUpdateSubject = nil, 'Failed on 9');
+  CheckTrue(lObserver.LastUpdateDataObject = nil, 'Failed on 10');
+
+  lList.EndUpdate;
+
+  CheckEquals(1, lObserver.UpdateCount, 'Failed on 11');
+  CheckNotifyOperation(noChanged, lObserver.LastNotifyOperation, 'Failed on 12');
+  { The Subject in Update() should be the list, not the items removed }
+  CheckTrue(lObserver.LastUpdateSubject = lList, 'Failed on 13');
+  { The AData or affected object in Update() should not be nil because
+    BeginUpdate..EndUpdate in a generalised notification.  }
+  CheckTrue(lObserver.LastUpdateDataObject = nil, 'Failed on 14');
+
   lList.Free;
   lObserver.Free;
 end;
@@ -4869,14 +5035,16 @@ begin
   CheckNotifyOperation(noCustom, lObserver.LastNotifyOperation, 'Failed on 1');
   CheckEquals(0, lObserver.UpdateCount, 'Failed on 2');
 
-  { BeginUpdate..EndUpdate is added here to show that an extra notification is
-    added for observers, using the generic noChanged state. }
+  { BeginUpdate..EndUpdate is added here to show that intermediate notifications
+    are muted and that only a single generic noChanged state happens after
+    EndUpdate. Hence the UpdateCount only increments by 1. }
   lList.BeginUpdate;
   lList.Add(lItem);
-  CheckEquals(1, lObserver.UpdateCount, 'Failed on 3');
-  CheckNotifyOperation(noAddItem, lObserver.LastNotifyOperation, 'Failed on 4');
+  CheckEquals(0, lObserver.UpdateCount, 'Failed on 3');
+  { nothing changed here }
+  CheckNotifyOperation(noCustom, lObserver.LastNotifyOperation, 'Failed on 4');
   lList.EndUpdate;
-  CheckEquals(2, lObserver.UpdateCount, 'Failed on 5');
+  CheckEquals(1, lObserver.UpdateCount, 'Failed on 5');
   CheckNotifyOperation(noChanged, lObserver.LastNotifyOperation, 'Failed on 6');
 
   lObserver.UpdateCount := 0; // reset the counter
