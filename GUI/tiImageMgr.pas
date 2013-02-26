@@ -63,6 +63,8 @@ const
   cErrorFailedLoadingResourceDLL = 'Failed loading resource DLL <%s>. Called in %s';
   cErrorInvalidImageState        = 'Invalid TtiImageState. Called in %s';
   cErrorInvalidImageSize         = 'Invalid TtiImageSize. Called in %s';
+  CResourceTypeJPEG = 'JPEG';
+  CResourceTypePNG = RT_RCDATA;
 
 type
 
@@ -125,6 +127,8 @@ type
     {$IFNDEF FPC}
     procedure   LoadJPGFromRes(const pResName: string; const pPicture : TPicture);
     {$ENDIF}
+    procedure   LoadPNGFromRes(const AResName: string; const APicture: TPicture);
+    procedure   LoadImageFromRes(const AResName: string; const APicture: TPicture);
     procedure   LoadBMPFromImageList16(const pResName: string; const pBMP    : TBitMap);
     procedure   LoadIconFromRes(const pResName : string);
     procedure   LoadBMPToTISPeedButton16(const pResName: string; const pButton : TtiSpeedButton);
@@ -138,8 +142,10 @@ uses
   SysUtils
   {$IFNDEF FPC}
   ,JPeg
+  ,PNGImage
   {$ENDIF}
   ,tiResources
+  ,tiExcept
   ,Forms
  ;
 
@@ -348,7 +354,7 @@ var
   lResSize  : Longint;
   lJPEGImage : TJPEGImage;
 begin
-  lResHandle := FindResource(FResFileInstance, PChar(pResName), 'JPEG');
+  lResHandle := FindResource(FResFileInstance, PChar(pResName), CResourceTypeJPEG);
   Assert(lResHandle<>0, 'Unable to find resource <' + pResName + '> in <' +
          FResFileName + '>');
   lMemHandle := LoadResource(FResFileInstance, lResHandle);
@@ -372,6 +378,51 @@ begin
   end;
 end;
 {$ENDIF}
+
+procedure TtiImageListMgr.LoadPNGFromRes(const AResName: string;
+  const APicture: TPicture);
+var
+  LResHandle: THandle;
+  LMemHandle: THandle;
+  LMemStream: TMemoryStream;
+  LResPtr: PByte;
+  LResSize: Longint;
+  LPNGImage: TPngImage;
+begin
+  LResHandle := FindResource(FResFileInstance, PChar(AResName), CResourceTypePNG);
+  Assert(LResHandle<>0, 'Unable to find resource <' + AResName + '> in <' +
+         FResFileName + '>');
+  LMemHandle := LoadResource(FResFileInstance, LResHandle);
+  LResPtr := LockResource(LMemHandle);
+  LMemStream := TMemoryStream.Create;
+  try
+    LPNGImage := TPngImage.Create;
+    try
+      LResSize := SizeOfResource(FResFileInstance, LResHandle);
+      LMemStream.SetSize(LResSize);
+      LMemStream.Write(LResPtr^, LResSize);
+      FreeResource(LMemHandle);
+      LMemStream.Seek(0, 0);
+      LPNGImage.LoadFromStream(LMemStream);
+      APicture.Assign(LPNGImage);
+    finally
+      LPNGImage.Free;
+    end;
+  finally
+    LMemStream.Free;
+  end;
+end;
+
+procedure TtiImageListMgr.LoadImageFromRes(const AResName: string;
+  const APicture: TPicture);
+begin
+  if FindResource(FResFileInstance, PChar(AResName), CResourceTypeJPEG) <> 0 then
+    LoadJPGFromRes(AResName, APicture)
+  else if FindResource(FResFileInstance, PChar(AResName), CResourceTypePNG) <> 0 then
+    LoadPNGFromRes(AResName, APicture)
+  else
+    raise EtiOPFProgrammerException.Create('Image resource not found: ' + AResName);
+end;
 
 procedure TtiImageListMgr.LoadImagesFromResource(const pResName: string;
   pSizes: TtiImageSizes);

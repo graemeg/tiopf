@@ -93,6 +93,19 @@ type
 
   TLblMessageOnHotSpotClickEvent = procedure(const ASrc: string) of object;
 
+  TtiApplicationMenuSystemDisplaySetings = class
+  private
+    FBackgroundColor: TColor;
+    FSidebarGroupBodyColor: TColor;
+    FSidebarGroupGradientFrom: TColor;
+    FSidebarGroupGradientTo: TColor;
+  public
+    property BackgroundColor: TColor read FBackgroundColor write FBackgroundColor;
+    property SidebarGroupBodyColor: TColor read FSidebarGroupBodyColor write FSidebarGroupBodyColor;
+    property SidebarGroupGradientFrom: TColor read FSidebarGroupGradientFrom write FSidebarGroupGradientFrom;
+    property SidebarGroupGradientTo: TColor read FSidebarGroupGradientTo write FSidebarGroupGradientTo;
+  end;
+
   TtiApplicationMenuSystem = class(TtiBaseObject)
   private
     FFormMgr: TtiFormMgr;
@@ -101,7 +114,8 @@ type
     FWorkListFormClass: TtiFormMgrFormClass;
     FHelpFileName: string;
     FDefHelpContext: integer;
-    FBackgroundColor: TColor;
+    FDefaultDisplaySettings: TtiApplicationMenuSystemDisplaySetings;
+    FDisplaySettings: TtiApplicationMenuSystemDisplaySetings; // Reference
 
     FlblCaption : TLabel;
     FpnlCaption: TPanel;
@@ -227,7 +241,7 @@ type
                         const ADefHelpContext: Integer;
                         const AAboutFormClass: TFormClass;
                         const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent;
-                        const ABackgroundColor: TColor = clSkyBlue
+                        const ADisplaySettings: TtiApplicationMenuSystemDisplaySetings = nil
                       );
      destructor  Destroy; override;
      property    MainForm : TForm read FMainForm;
@@ -305,7 +319,7 @@ procedure CreateAMS(
   const ADefHelpContext : Integer;
   const AFormAboutClass: TFormClass;
   const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent;
-  const ABackgroundColor: TColor = clSkyBlue);
+  const ADisplaySettings: TtiApplicationMenuSystemDisplaySetings = nil);
 
 implementation
 uses
@@ -344,7 +358,7 @@ procedure CreateAMS(
   const ADefHelpContext : Integer;
   const AFormAboutClass: TFormClass;
   const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent;
-  const ABackgroundColor: TColor = clSkyBlue);
+  const ADisplaySettings: TtiApplicationMenuSystemDisplaySetings = nil);
 begin
   Assert(uAMS = nil, 'AMS already created');
   uAMS := TtiApplicationMenuSystem.Create(
@@ -354,7 +368,7 @@ begin
     ADefHelpContext,
     AFormAboutClass,
     ALblMessageOnHotSpotClickEvent,
-    ABackgroundColor);
+    ADisplaySettings);
 end;
 
 { TtiApplicationBusyToolbarImage }
@@ -591,7 +605,7 @@ constructor TtiApplicationMenuSystem.Create(
   const ADefHelpContext : Integer;
   const AAboutFormClass: TFormClass;
   const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent;
-  const ABackgroundColor: TColor = clSkyBlue);
+  const ADisplaySettings: TtiApplicationMenuSystemDisplaySetings = nil);
 begin
   Assert(AMainForm <> nil, 'pMainForm not assigned');
   Assert(not Assigned(AMainForm.OnResize), 'pMainForm.OnResize assigned');
@@ -600,7 +614,17 @@ begin
   FWorkListFormClass := AWorkListFormClass;
   FHelpFileName := AHelpFileName;
   FDefHelpContext := ADefHelpContext;
-  FBackgroundColor := ABackgroundColor;
+  if Assigned(ADisplaySettings) then
+    FDisplaySettings := ADisplaySettings
+  else
+  begin
+    FDefaultDisplaySettings := TtiApplicationMenuSystemDisplaySetings.Create;
+    FDefaultDisplaySettings.BackgroundColor := clSkyBlue;
+    FDefaultDisplaySettings.SidebarGroupBodyColor := $00F7DFD6;
+    FDefaultDisplaySettings.SidebarGroupGradientFrom := clWhite;
+    FDefaultDisplaySettings.SidebarGroupGradientTo := $00F7D7C6;
+    FDisplaySettings := FDefaultDisplaySettings;
+  end;
 
   FAL := TActionList.Create(MainForm);
 
@@ -672,7 +696,7 @@ begin
       if pForm.Color <> clWhite then
         ParentPnl.Color := pForm.Color
       else
-       ParentPnl.Color := FBackgroundColor;
+        ParentPnl.Color := FDisplaySettings.BackgroundColor;
 
     finally
       lList.Free;
@@ -966,7 +990,7 @@ begin
   FPnlProgress.Parent:= FdpMessageBar;
   FPnlProgress.Align:= alClient;
   FPnlProgress.Color := clPaleBlue;
-  FPnlProgress.BorderColor:= FBackgroundColor;
+  FPnlProgress.BorderColor:= FDisplaySettings.BackgroundColor;
   FPnlProgress.HelpContext := FDefHelpContext;
   FPnlProgress.CornerRadius := 5;
 
@@ -977,7 +1001,7 @@ begin
   FPnlEmptyMessage.Parent := FdpMessageBar;
   FPnlEmptyMessage.Align := alClient;
   FPnlEmptyMessage.Color := clWhite;
-  FPnlEmptyMessage.BorderColor := FBackgroundColor;
+  FPnlEmptyMessage.BorderColor:= FDisplaySettings.BackgroundColor;
   FPnlEmptyMessage.HelpContext := FDefHelpContext;
   FPnlEmptyMessage.CornerRadius := 5;
 
@@ -988,7 +1012,7 @@ begin
   FPnlMessageText.Parent:= FdpMessageBar;
   FPnlMessageText.Align:= alClient;
   FPnlMessageText.Color := clYellow;
-  FPnlMessageText.BorderColor:= FBackgroundColor;
+  FPnlMessageText.BorderColor:= FDisplaySettings.BackgroundColor;
   FPnlMessageText.HelpContext := FDefHelpContext;
   FPnlMessageText.CornerRadius := 5;
 
@@ -1064,7 +1088,7 @@ begin
   FdxPageScroller.Height := 487;
   FdxPageScroller.Align := alClient;
   FdxPageScroller.AutoRange := True;
-  FdxPageScroller.Color := FBackgroundColor;
+  FdxPageScroller.Color:= FDisplaySettings.BackgroundColor;
   FdxPageScroller.DoubleBuffered := True;
   FdxPageScroller.Margin := 10;
   FdxPageScroller.ParentColor := False;
@@ -1083,7 +1107,7 @@ begin
   FdxContainer.AutoSize := True;
   FdxContainer.BorderWidth := 5;
   FdxContainer.Caption := 'dxContainer';
-  FdxContainer.Color := FBackgroundColor;
+  FdxContainer.Color:= FDisplaySettings.BackgroundColor;
   FdxContainer.ParentColor := False;
   FdxContainer.Color   := FpnlBorder.Color;
   FdxContainer.HelpContext := FDefHelpContext;
@@ -1113,6 +1137,9 @@ begin
   FLastMenuSidebarGroup.HeaderFont.Style := [fsBold];
   FLastMenuSidebarGroup.ImageList := FtbImageList16;
   FLastMenuSidebarGroup.ShowHint := true;
+  FLastMenuSidebarGroup.BodyColor := FDisplaySettings.SidebarGroupBodyColor;
+  FLastMenuSidebarGroup.GradientFrom := FDisplaySettings.SidebarGroupGradientFrom;
+  FLastMenuSidebarGroup.GradientTo := FDisplaySettings.SidebarGroupGradientTo;
   result := FLastMenuSidebarGroup;
 end;
 
@@ -1139,10 +1166,10 @@ begin
   FpnlBorder.Name := 'pnlBorder';
   FpnlBorder.Caption := '';
   FpnlBorder.Parent := FMainForm;
-  FpnlBorder.Color := FBackgroundColor;
+  FpnlBorder.Color := FDisplaySettings.BackgroundColor;
   FpnlBorder.Align := alClient;
   FpnlBorder.HelpContext := FDefHelpContext;
-  FpnlBorder.Color := FBackgroundColor;
+  FpnlBorder.Color := FDisplaySettings.BackgroundColor;
   FpnlBorder.BorderColor := clWhite;
 
   FpnlCaption:= TPanel.Create(FMainForm);
@@ -1150,7 +1177,7 @@ begin
   FpnlCaption.Caption := '';
   FpnlCaption.Parent := FpnlBorder;
   FpnlCaption.BevelOuter := bvNone;
-  FpnlCaption.Color := FBackgroundColor;
+  FpnlCaption.Color := FDisplaySettings.BackgroundColor;
   FpnlCaption.Align := alTop;
   FpnlCaption.Height := 33;
   FpnlCaption.HelpContext := FDefHelpContext;
@@ -1171,7 +1198,7 @@ begin
   FpnlParent.Parent := FPnlBorder;
   FPnlParent.Align := alClient;
   FpnlParent.HelpContext := FDefHelpContext;
-  FpnlParent.Color := FBackgroundColor;
+  FpnlParent.Color := FDisplaySettings.BackgroundColor;
   FpnlParent.BorderColor := clWhite;
   FpnlParent.CornerRadius := 8; 
 
@@ -1693,6 +1720,7 @@ begin
   FreeAndNil(FApplicationBusyToolbarImage);
   FreeAndNil(FBruteForceNoFlicker);
   FFormMgr.Free;
+  FDefaultDisplaySettings.Free;
   inherited;
 end;
 

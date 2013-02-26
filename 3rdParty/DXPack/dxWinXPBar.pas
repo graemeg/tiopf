@@ -288,6 +288,9 @@ type
     property HeaderFont: TFont read FHeaderFont write SetHeaderFont stored IsFontStored;
     property HotTrack: Boolean read FHotTrack write SetHotTrack default True;
     property HotTrackColor: TColor read FHotTrackColor write SetHotTrackColor default $00FF7C35;
+    property BodyColor: TColor read FBodyColor write FBodyColor default $00F7DFD6;
+    property GradientFrom: TColor read FGradientFrom write FGradientFrom default clWhite;
+    property GradientTo: TColor read FGradientTo write FGradientTo default $00F7D7C6;
     property Icon: TIcon read FIcon write SetIcon;
     property ImageList: TCustomImageList read FImageList write SetImageList;
     property ItemHeight: Integer read FItemHeight write SetItemHeight default 20;
@@ -322,6 +325,9 @@ type
     property HeaderFont;
     property HotTrack;
     property HotTrackColor;
+    property BodyColor;
+    property GradientFrom;
+    property GradientTo;
     property Icon;
     property ImageList;
     property ItemHeight;
