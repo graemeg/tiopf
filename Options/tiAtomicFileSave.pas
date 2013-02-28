@@ -105,7 +105,7 @@ end;
     property  FileName: string read FFileName write FFileName;
     property  DirectoryName: string read GetDirectoryName;
     property  LockStream: TFileStream read FLockStream;
-    property  Error: boolean read FError;
+    property  Error: boolean read FError write FError;
     procedure StartTransaction;
     procedure Commit; virtual; abstract;
     procedure Rollback;
@@ -169,7 +169,7 @@ begin
     (FList.Items[i] as TtiAtomicFileSaveResourceAbs).Commit;
   if Error then
   begin
-    raise Exception.Create(ErrorMessage);
+    raise EtiOPFUserFeedbackException.Create(ErrorMessage);
     // ToDo: Implement rollback
   end;
   for i := 0 to FList.Count-1 do
@@ -280,13 +280,6 @@ begin
   FInTransaction:= true;
 end;
 
-{ TtiAtomicFileSaveResourceStream }
-
-procedure TtiAtomicFileSaveResourceStream.Commit;
-begin
-  tiCopyStream(Stream, LockStream);
-end;
-
 { TtiAtomicFileSaveResourceAbs }
 
 constructor TtiAtomicFileSaveResourceAbs.Create;
@@ -301,7 +294,7 @@ begin
     tiForceDirectories(DirectoryName);
   except
     on e:Exception do
-      FError:= True;
+      Error:= True;
   end;
 end;
 
@@ -323,7 +316,7 @@ begin
     FHadToCreateFile:= False;
   except
     on e:Exception do
-      FError:= True;
+      Error:= True;
   end;
 end;
 
@@ -334,7 +327,7 @@ begin
     FHadToCreateFile:= True;
   except
     on e:EFCreateError do
-      FError:= True;
+      Error:= True;
   end;
 end;
 
@@ -363,11 +356,29 @@ begin
   FreeAndNil(FLockStream);
 end;
 
+{ TtiAtomicFileSaveResourceStream }
+
+procedure TtiAtomicFileSaveResourceStream.Commit;
+begin
+  try
+    tiCopyStream(Stream, LockStream);
+  except
+    on E: EWriteError do
+      Error := True;
+  end;
+end;
+
 { TtiAtomicFileSaveResourcePreSizedStream }
 
 procedure TtiAtomicFileSaveResourcePreSizedStream.Commit;
 begin
-  Stream.AssignTo(LockStream);
+  try
+    Stream.AssignTo(LockStream);
+  except
+    on E: EWriteError do
+      Error := True;
+  end;
 end;
 
 end.
+
