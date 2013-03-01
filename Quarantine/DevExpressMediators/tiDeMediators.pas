@@ -345,6 +345,8 @@ type
     constructor CreateCustom(AView: TComponent; ASubject: TtiObject;
         AFieldName: string; AValueClass: TtiObjectClass); reintroduce;
     destructor Destroy; override;
+    function GetSelectedObject: TtiObject; override;
+    procedure SetSelectedObject(const AValue: TtiObject); override;
     class function ComponentClass: TClass; override;
     property ShowDeleted: Boolean read GetShowDeleted write SetShowDeleted;
   end;
@@ -1211,6 +1213,19 @@ begin
     View.DataController.CustomDataSource.DataChanged;
 end;
 
+function TticxCustomGridTableViewMediatorView.GetSelectedObject: TtiObject;
+var
+  i: Integer;
+begin
+  Assert(View <> Nil);
+  Assert(Assigned(FUserDataSource.ObjectList));
+  i := View.DataController.FocusedRecordIndex;
+  if (i > - 1) and (i < FUserDataSource.ObjectList.Count) then
+    Result := FUserDataSource.ObjectList.Items[View.DataController.FocusedRecordIndex]
+  else
+    Result := nil;
+end;
+
 function TticxCustomGridTableViewMediatorView.GetShowDeleted: Boolean;
 begin
   Result := FUserDataSource.ShowDeleted;
@@ -1315,6 +1330,22 @@ begin
     begin
       (ANewColumn.Properties as TcxSpinEditProperties).MinValue := Mi;
       (ANewColumn.Properties as TcxSpinEditProperties).MaxValue := Ma;
+    end;
+  end;
+end;
+
+procedure TticxCustomGridTableViewMediatorView.SetSelectedObject(const AValue: TtiObject);
+var
+  i: Integer;
+begin
+  Assert(View <> Nil);
+  Assert(Assigned(FUserDataSource));
+  for i := 0 to Pred(FUserDataSource.ObjectList.Count) do
+  begin
+    if TtiObject(FUserDataSource.ObjectList.Items[i]) = AValue then
+    begin
+      View.DataController.FocusedRecordIndex := i;
+      Break;
     end;
   end;
 end;
