@@ -1670,9 +1670,9 @@ begin
     // FPC's FormatFloat uses Bankers Rounding which differs from Delphi.
     // Setting the precision resolves this issue.
     e := tiSetPrecision(AValue, 2);
-    result := FormatFloat('$ #,##0.00', e);
+    result := FormatFloat(FormatSettings.CurrencyString + ' #,##0.00', e);
   except
-    result := '0.00';
+    result := '0' + FormatSettings.DecimalSeparator + '00';
   end;
 end;
 
