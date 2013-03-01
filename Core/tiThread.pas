@@ -661,7 +661,7 @@ begin
     The default TThread.WaitFor is a blocking method under Unix, suspending the
     main thread. If the thread calls synchronise, it waits for the main thread which
     is suspended, thus we sit with a deadlock! This issue is only under Unix.
-    Under Windows (applies to FPC and Delphi) i uses a specific Win API to make
+    Under Windows (applies to FPC and Delphi) we use a specific Windows API to make
     TThread.WaitFor non-blocking.
 
     See the following URL for a more detailed explanation:
