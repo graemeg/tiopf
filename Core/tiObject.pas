@@ -850,7 +850,6 @@ type
   protected
     function    AcceptVisitor : boolean; override;
   public
-    constructor Create; override;
     procedure   Execute(const AVisited : TtiVisited); override;
     property    Found : TtiObject read FFound;
     property    PerObjFindMethod : TPerObjFindMethod read FPerObjFindMethod write FPerObjFindMethod;
@@ -1111,7 +1110,7 @@ end;
 destructor TtiNotifyObserversHelper.Destroy;
 begin
   FObserved.EndUpdate;
-  inherited;
+  inherited Destroy;
 end;
 
 
@@ -1442,7 +1441,7 @@ end;
 destructor TtiObjectList.Destroy;
 begin
   FList.Free;
-  inherited;
+  inherited Destroy;
 end;
 
 function TtiObjectList.Add(const AObject : TtiObject): integer;
@@ -1577,7 +1576,7 @@ end;
  
 constructor TPerStream.Create;
 begin
-  inherited;
+  inherited Create;
   FStream := nil;
   Clear;
 end;
@@ -1585,7 +1584,7 @@ end;
 destructor TPerStream.Destroy;
 begin
   FStream.Free;
-  inherited;
+  inherited Destroy;
 end;
 
 procedure TPerStream.Clear;
@@ -1721,7 +1720,7 @@ end;
 
 constructor TVisPerObjFindByOID.Create;
 begin
-  inherited;
+  inherited Create;
   FFound := nil;
 end;
 
@@ -1819,12 +1818,6 @@ begin
             ((FFound = nil) or (FFoundList <> nil));
 end;
 
-constructor TVisPerObjFind.Create;
-begin
-  inherited;
-
-end;
-
 procedure TVisPerObjFind.Execute(const AVisited: TtiVisited);
 var
   lbFound : boolean;
@@ -1844,11 +1837,12 @@ begin
     raise EtiOPFProgrammerException.Create(cErrorNoFindMethodAssigned);
 
   if lbFound then
+  begin
     if FoundList = nil then
       FFound := TtiObject(Visited)
     else
       FoundList.Add(Visited);
-
+  end;
 end;
 
 function TtiObject.GetOwner: TtiObject;
@@ -1943,13 +1937,13 @@ end;
 constructor TPerStringStream.Create;
 begin
   FStream := TStringStream.Create('');
-  inherited;
+  inherited Create;
 end;
 
 destructor TPerStringStream.Destroy;
 begin
   FStream.Free;
-  inherited;
+  inherited Destroy;
 end;
 
 function TPerStringStream.GetAsString: string;
@@ -2413,7 +2407,7 @@ end;
 
 constructor TPerObjThreadList.Create;
 begin
-  inherited;
+  inherited Create;
   FCriticalSection := TCriticalSection.Create;
 end;
 
@@ -2430,7 +2424,7 @@ end;
 destructor TPerObjThreadList.Destroy;
 begin
   FreeAndNil(FCriticalSection);
-  inherited;
+  inherited Destroy;
 end;
 
 procedure TPerObjThreadList.Empty;
@@ -2592,7 +2586,7 @@ end;
 
 constructor TPerObjFactory.Create;
 begin
-  inherited;
+  inherited Create;
   FList := TObjectList.Create;
 end;
 
@@ -2618,10 +2612,10 @@ begin
   result := lPerObjClassMapping.PerObjAbsClass.CreateNew(AOwner);
 end;
 
-destructor TPerObjFactory.destroy;
+destructor TPerObjFactory.Destroy;
 begin
   FList.Free;
-  inherited;
+  inherited Destroy;
 end;
 
 function TPerObjFactory.FindByClassName(const AClassName: string): TPerObjClassMapping;
@@ -3028,7 +3022,7 @@ begin
   NotifyObservers(Self,noFree);
   FreeAndNil(FObserverList);
   FreeAndNil(FUpdateTopicList);
-  inherited;
+  inherited Destroy;
 end;
 
 function TtiObject.Find(AOIDToFindAsString: string): TtiObject;
@@ -3224,7 +3218,7 @@ end;
 
 constructor TPerObjClassMapping.Create;
 begin
-  inherited;
+  inherited Create;
 end;
 
 { TPerObjFieldAbs }
@@ -3284,7 +3278,7 @@ end;
 
 procedure TtiFieldString.Clear;
 begin
-  inherited;
+  inherited Clear;
   FValue := '';
 end;
 
@@ -3341,7 +3335,7 @@ end;
 
 procedure TtiFieldInteger.Clear;
 begin
-  inherited;
+  inherited Clear;
   FValue := 0;
 end;
 
@@ -3405,7 +3399,7 @@ end;
 
 procedure TtiFieldFloat.Clear;
 begin
-  inherited;
+  inherited Clear;
   FValue := 0;
 end;
 
@@ -3485,7 +3479,7 @@ end;
 
 procedure TtiFieldCurrency.Clear;
 begin
-  inherited;
+  inherited Clear;
   FValue := 0;
 end;
 
@@ -3497,7 +3491,7 @@ end;
 constructor TtiFieldCurrency.Create(const AOwner: TtiObject;
   const ANullValidation: TtiNullValidation);
 begin
-  inherited;
+  inherited Create(AOwner, ANullValidation);
   FValue:= 0;
 end;
 
@@ -3620,7 +3614,7 @@ end;
 
 procedure TtiFieldBoolean.Clear;
 begin
-  inherited;
+  inherited Clear;
   FValue := False;
 end;
 
@@ -3757,7 +3751,7 @@ end;
 
 constructor TtiFieldList.Create;
 begin
-  inherited;
+  inherited Create;
   {NB: Overriding the default here so that child objects will not automatically be
   freed when the list is freed. If you want the standard behaviour of an Objectlist
   then just set the OwnsObjects property to True after Create.}
@@ -3826,7 +3820,7 @@ end;
 
 constructor TVisTIObjectAsDebugString.Create;
 begin
-  inherited;
+  inherited Create;
   FToShow:= CTIAsDebugStringDataAll;
 end;
 
@@ -4431,7 +4425,7 @@ end;
 
 procedure TtiFieldDate.Clear;
 begin
-  inherited;
+  inherited Clear;
   FValue := 0;
 end;
 
@@ -4521,7 +4515,7 @@ end;
 destructor TtiObserverProxy.Destroy;
 begin
   Subject := nil;
-  inherited;
+  inherited Destroy;
 end;
 
 procedure TtiObserverProxy.SetSubject(const AValue: TtiObject);
@@ -4540,7 +4534,7 @@ end;
 
 procedure TtiObserverProxy.StopObserving(ASubject: TtiObject);
 begin
-  inherited;
+  inherited StopObserving(ASubject);
   Subject := nil;
 end;
 
