@@ -1,4 +1,4 @@
-program dunit2_fpc_textrunner;
+program tiOPFUnitTestsConsole;
 
 {$mode objfpc}{$H+}
 

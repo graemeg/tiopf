@@ -10,6 +10,7 @@
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
+      <Title Value="tiOPFUnitTestsConsole"/>
       <UseAppBundle Value="False"/>
     </General>
     <i18n>
@@ -42,9 +43,9 @@
     </RequiredPackages>
     <Units Count="6">
       <Unit0>
-        <Filename Value="dunit2_fpc_textrunner.lpr"/>
+        <Filename Value="tiOPFUnitTestsConsole.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="dunit2_fpc_textrunner"/>
+        <UnitName Value="tiOPFUnitTestsConsole"/>
       </Unit0>
       <Unit1>
         <Filename Value="textprogressrunner.pas"/>
@@ -74,9 +75,9 @@
     </Units>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <Target>
-      <Filename Value="dunit2_fpc_textrunner"/>
+      <Filename Value="tiOPFUnitTestsConsole"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="../../Core"/>
