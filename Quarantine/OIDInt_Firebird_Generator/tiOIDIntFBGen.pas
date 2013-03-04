@@ -62,9 +62,6 @@ type
 
   TOIDGeneratorIntFBGenAbs = class(TtiOIDGenerator)
   private
-    FLow: Int64;
-    FLowRange: Int64;
-    FDirty: boolean;
     FNextOIDData: TNextOIDFBGenData;
     FCritSection: TCriticalSection;
     function NextOID(const ADatabaseName: string;
