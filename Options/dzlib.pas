@@ -47,6 +47,7 @@ type
   protected
     procedure Progress(Sender: TObject); dynamic;
     property OnProgress: TNotifyEvent read FOnProgress write FOnProgress;
+  public
     constructor Create(Strm: TStream);
   end;
 
