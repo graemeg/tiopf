@@ -277,9 +277,11 @@ type
 
   TUserDataSource = class(TcxCustomDataSource)
   private
+    FObserver: TtiObserverProxy;
     FObjectList: TtiObjectList;
     FShowDeleted: Boolean;
     FValueClass: TtiObjectClass;
+    procedure SetObjectList(const AValue: TtiObjectList);
   protected
     function AppendRecord: Pointer; override;
     procedure DeleteRecord(ARecordHandle: TcxDataRecordHandle); override;
@@ -293,8 +295,11 @@ type
         TcxDataRecordHandle; override;
     procedure SetValue(ARecordHandle: TcxDataRecordHandle; AItemHandle:
         TcxDataItemHandle; const AValue: Variant); override;
+    procedure OnObjectListUpdate(ASubject: TtiObject; AOperation: TNotifyOperation);
   public
-    property ObjectList: TtiObjectList read FObjectList write FObjectList;
+    constructor Create; virtual;
+    destructor Destroy; override;
+    property ObjectList: TtiObjectList read FObjectList write SetObjectList;
     property ShowDeleted: Boolean read FShowDeleted write FShowDeleted;
     property ValueClass: TtiObjectClass read FValueClass write FValueClass;
   end;
@@ -1042,6 +1047,12 @@ begin
   DataChanged;
 end;
 
+constructor TUserDataSource.Create;
+begin
+  inherited Create;
+  FObserver := TtiObserverProxy.Create(Nil, OnObjectListUpdate);
+end;
+
 procedure TUserDataSource.DeleteRecord(ARecordHandle: TcxDataRecordHandle);
 begin
   if TtiObject(ARecordHandle).ObjectState = posCreate then
@@ -1049,6 +1060,12 @@ begin
   else
     TtiObject(ARecordHandle).Deleted := True;
   DataChanged;
+end;
+
+destructor TUserDataSource.Destroy;
+begin
+  FObserver.Free;
+  inherited Destroy;
 end;
 
 function TUserDataSource.GetItemHandle(AItemIndex: Integer): TcxDataItemHandle;
@@ -1115,6 +1132,19 @@ begin
     Result := nil;
 
   DataChanged;
+end;
+
+procedure TUserDataSource.OnObjectListUpdate(ASubject: TtiObject; AOperation: TNotifyOperation);
+begin
+  DataChanged;
+end;
+
+procedure TUserDataSource.SetObjectList(const AValue: TtiObjectList);
+begin
+  if FObjectList = AValue then
+    Exit; // ==>
+  FObjectList := AValue;
+  FObserver.Subject := FObjectList;
 end;
 
 procedure TUserDataSource.SetValue(ARecordHandle: TcxDataRecordHandle;
