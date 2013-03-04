@@ -48,15 +48,22 @@ uses
   ,cxColorComboBox
   ,cxTLData
   ,cxTL
+  ,dxLayoutLookAndFeels
+  ,dxLayoutContainer
+  ,dxLayoutControl
   ;
 
 type
   TticxCustomEditMediatorView = class(TtiMediatorView)
   private
+    FViewLayoutItem: TdxLayoutItem;
+    FViewLookAndFeel: TdxCustomLayoutLookAndFeel;
+    FViewErrorLookAndFeel: TdxCustomLayoutLookAndFeel;
     FViewColor: TColor;
     FViewErrorColor: TColor;
     FViewHint: string;
     procedure SetViewErrorColor(const AValue: TColor);
+    procedure SetViewErrorLookAndFeel(const AValue: TdxCustomLayoutLookAndFeel);
   protected
     function GetCurrentControlColor: TColor; virtual;
     procedure SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment);
@@ -69,6 +76,8 @@ type
     function View: TcxCustomEdit; reintroduce;
     property ViewErrorColor: TColor read FViewErrorColor write
         SetViewErrorColor;
+    property ViewErrorLookAndFeel: TdxCustomLayoutLookAndFeel read
+        FViewErrorLookAndFeel write SetViewErrorLookAndFeel;
   end;
 
   TticxCustomTextEditMediatorView = class(TticxCustomEditMediatorView)
@@ -1438,6 +1447,9 @@ constructor TticxCustomEditMediatorView.Create;
 begin
   inherited;
   FViewErrorColor := clError;
+  FViewLayoutItem := Nil;
+  FViewLookAndFeel := Nil;
+  FViewErrorLookAndFeel := Nil;
 end;
 
 class function TticxCustomEditMediatorView.ComponentClass: TClass;
@@ -1471,6 +1483,35 @@ end;
 procedure TticxCustomEditMediatorView.SetView(const AValue: TComponent);
 var
   LValue: TcxCustomEdit;
+  function FindLayoutItem(AControl : TcxCustomEdit) : TdxLayoutItem;
+  var
+    lContador: Integer;
+    lLayout : TdxLayoutControl;
+    clItem  : TdxCustomLayoutItem;
+    lItem   : TdxLayoutItem;
+  begin
+    Result := Nil;
+    if not Assigned(AControl) then
+      Exit; // ==>
+
+    if AControl.Parent = Nil then
+      Exit; // ==>
+
+    if not (AControl.Parent is TdxLayoutControl) then
+      Exit; // ==>
+
+    lLayout := TdxLayoutControl(AControl.Parent);
+    for lContador := 0 to Pred(lLayout.AbsoluteItemCount) do
+    begin
+      clItem := lLayout.AbsoluteItems[lContador];
+      if clItem.InheritsFrom(TdxLayoutItem) then
+      begin
+        lItem := TdxLayoutItem(clItem);
+        if lItem.Control = AControl then
+          Result := lItem;
+      end;
+    end;
+  end;
 begin
   Assert((AValue = nil) or (AValue is TcxCustomEdit), 'Expected TcxCustomEdit');
   LValue := AValue as TcxCustomEdit;
@@ -1482,13 +1523,20 @@ begin
     begin
       View.Hint := FViewHint;
       THackcxCustomEdit(View).Color := FViewColor;
+      if Assigned(FViewLayoutItem) and Assigned(FViewLookAndFeel) then
+        FViewLayoutItem.LayoutLookAndFeel := FViewLookAndFeel;
     end;
+
+    FViewLayoutItem := Nil;
 
     // Preserve state of new view
     if Assigned(LValue) then
     begin
       FViewHint := LValue.Hint;
       FViewColor := THackcxCustomEdit(LValue).Color;
+      FViewLayoutItem := FindLayoutItem(lValue);
+      if Assigned(FViewLayoutItem) then
+        FViewLookAndFeel :=  FViewLayoutItem.LayoutLookAndFeel;
     end;
   end;
 
@@ -1504,6 +1552,15 @@ begin
   end;
 end;
 
+procedure TticxCustomEditMediatorView.SetViewErrorLookAndFeel(const AValue: TdxCustomLayoutLookAndFeel);
+begin
+  if AValue <> FViewErrorLookAndFeel then
+  begin
+    FViewErrorLookAndFeel := AValue;
+    TestIfValid; // Update view
+  end;
+end;
+
 procedure TticxCustomEditMediatorView.UpdateGUIValidStatus(pErrors:
     TtiObjectErrors);
 var
@@ -1514,11 +1571,16 @@ begin
   oError := pErrors.FindByErrorProperty(RootFieldName);
   if oError <> nil then
   begin
-    THackcxCustomEdit(View).Color := ViewErrorColor;
+    if Assigned(FViewLayoutItem) and Assigned(FViewErrorLookAndFeel) then
+      FViewLayoutItem.LayoutLookAndFeel := FViewErrorLookAndFeel
+    else
+      THackcxCustomEdit(View).Color := ViewErrorColor;
     View.Hint := oError.ErrorMessage;
   end
   else
   begin
+    if Assigned(FViewLayoutItem) and Assigned(FViewLookAndFeel) then
+      FViewLayoutItem.LayoutLookAndFeel := FViewLookAndFeel;
     THackcxCustomEdit(View).Color := GetCurrentControlColor;
     View.Hint := FViewHint;
   end;
