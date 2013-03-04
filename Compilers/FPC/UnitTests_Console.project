@@ -65,4 +65,6 @@ UnitDir13=/data/devel/tiopf/UnitTests/Tests
 UnitDir14=/data/devel/tiopf/UnitTests/Text/
 
 [Units]
-UnitCount=0
+UnitCount=2
+Unit1=tiOPFUnitTestsConsole.lpr,-1
+Unit2=../../UnitTests/Common/tiTestDependencies.pas,-1
