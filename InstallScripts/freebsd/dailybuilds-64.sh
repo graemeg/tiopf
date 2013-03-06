@@ -29,8 +29,8 @@ rm /tmp/DUnitReportShort${FPCVER}.txt
 cd $TIOPF/Compilers/FPC
 $SCRIPTS/opf_package-64.run
 
-# compile Text Test Runner application
-/bin/rm -f $TIOPF/UnitTests/Text/textrunner
+# compile Console Test Runner application
+/bin/rm -f $TIOPF/Compilers/FPC/tiOPFUnitTestsConsole
 $SCRIPTS/textrunner_dunit2-64.run
 
 
@@ -48,16 +48,16 @@ $SCRIPTS/textrunner_dunit2-64.run
 #./fpcUnitTIOPFText.exe -a > results.xml
 #./fpcUnitTIOPFText.exe -a --file=results.xml
 #rm ./results.xml
-cd $TIOPF/UnitTests/Text/
-./textrunner64 -xml
+cd $TIOPF/Compilers/FPC
+./tiOPFUnitTestsConsole -xml
 
 # Do we have test results?
-if ! [ -f ./textrunner64.xml ]; then
+if ! [ -f ./tiOPFUnitTestsConsole.xml ]; then
   exit 0
 fi
 
 # generate the result in text and html format
-cp textrunner64.xml $BASEDIR/tiopf_dailybuilds/results/results64.xml
+cp tiOPFUnitTestsConsole.xml $BASEDIR/tiopf_dailybuilds/results/results64.xml
 cd $BASEDIR/tiopf_dailybuilds/results/
 /usr/local/bin/xsltproc -o index.html $SCRIPTS/fpcunit2.xsl results64.xml
 /usr/local/bin/xsltproc -o msg.txt $SCRIPTS/summarypost-64.xsl results64.xml

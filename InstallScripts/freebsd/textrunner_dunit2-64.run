@@ -1,5 +1,5 @@
 #!/bin/sh
-# Build script for tiOPF's TextRunner using 64-bit Free Pascal Compiler
+# Build script for tiOPF's Console Test Runner using 64-bit Free Pascal Compiler
 
 BASEDIR="/data/devel"
 TARGET="x86_64-freebsd"
@@ -23,10 +23,10 @@ $FPC -S2cgi -O1 -gl -ve -l \
   -Fu$BASEDIR/fptest/3rdparty/epiktimer/ \
   -Fu. \
   -Fu$ZEOS \
-  -o$TIOPF/UnitTests/Text/textrunner64 \
-  -FU$TIOPF/UnitTests/Text/_Dcu \
+  -o$TIOPF/Compilers/FPC/tiOPFUnitTestsConsole \
+  -FU$TIOPF/Compilers/FPC/lib/$TARGET/ \
   -dDUNIT2 -dXMLLISTENER \
   -dLINK_CSV -dLINK_TAB -dLINK_XMLLIGHT -dLINK_SQLDB_IB -dLINK_FBL -dLINK_ZEOS_FB \
   -dUseCThreads \
-  $TIOPF/UnitTests/Text/dunit2_fpc_textrunner.lpr
+  $TIOPF/Compilers/FPC/tiOPFUnitTestsConsole.lpr
 
