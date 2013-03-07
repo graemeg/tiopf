@@ -1893,8 +1893,10 @@ var
   LField:  TtiFieldDate;
   LValue   : TDateTime;
   LValueStr : string;
+  LDateTimeFormatting: string;
 begin
-
+  LDateTimeFormatting := ShortDateFormat;
+  ShortDateFormat := 'yyyy-mm-dd';
   LObj := TtiObject.Create;
   try
     LField:= TtiFieldDate.Create(LObj);
@@ -1928,6 +1930,7 @@ begin
     end;
   finally
     LObj.Free;
+    ShortDateFormat := LDateTimeFormatting;
   end;
 end;
 
