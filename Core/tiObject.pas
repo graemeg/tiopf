@@ -3566,7 +3566,8 @@ begin
   else
     LSign:= 1;
 
-  LValue:= tiStrTran(LValue, ',', '');
+  LValue:= tiStrTran(LValue, FormatSettings.ThousandSeparator, '');
+  LValue:= tiStrTran(LValue, FormatSettings.CurrencyString, '');
   LValue:= tiStrTran(LValue, '$', '');
   LValue:= tiStrTran(LValue, 'DR', '');
   LValue:= tiStrTran(LValue, 'CR', '');
@@ -3581,7 +3582,6 @@ begin
   LWhole:= tiToken(LValue, '.', 1);
   LFrac:= tiToken(LValue, '.', 2);
   FValue:= (StrToIntDef(LWhole, 0) * 100 + StrToIntDef(LFrac, 0)) * LSign;
-
 end;
 
 procedure TtiFieldCurrency.SetAsFloat(const AValue: Extended);
