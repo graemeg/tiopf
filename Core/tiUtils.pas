@@ -1672,7 +1672,7 @@ begin
     e := tiSetPrecision(AValue, 2);
     result := FormatFloat(FormatSettings.CurrencyString + ' #,##0.00', e);
   except
-    result := '0' + FormatSettings.DecimalSeparator + '00';
+    result := FormatSettings.CurrencyString + ' 0' + FormatSettings.DecimalSeparator + '00';
   end;
 end;
 
