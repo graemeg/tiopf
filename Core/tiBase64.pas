@@ -106,9 +106,6 @@ function DecodeStringBase64(const s:string):String;
 
 implementation
 
-uses
-  Math;
-
 const
   SStrictNonBase64Char    = 'Non-valid Base64 Encoding character in input';
   SStrictInputTruncated   = 'Input stream was truncated at non-4 byte boundary';

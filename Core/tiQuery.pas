@@ -638,7 +638,6 @@ uses
   ,tiUtils
   ,tiExcept
   ,tiLog
-  ,tiDBConnectionPool
   ,tiConstants
   ,tiStreams
   ,tiVisitorCriteria

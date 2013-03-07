@@ -268,7 +268,6 @@ uses
   ,tiStreams
   ,SysUtils
   ,TypInfo
-  ,Math
  ;
 
 
