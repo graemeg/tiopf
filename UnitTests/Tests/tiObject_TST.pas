@@ -2341,25 +2341,15 @@ procedure TtiObjectTestCase.FieldCurrency;
 var
   LObj: TtiObject;
   LField:  TtiFieldCurrency;
-  OldCurrency: string;
-  OldThousand: char;
-  OldDecimal: char;
+  LValueCurrencyStr: string;
 const
   CValue    = 1234.56;
   CValueStr = '1234.56';
   CValueInt = 123456;
-  CValueCurrencyStr = '$ 1,234.56';
 begin
+  LValueCurrencyStr := CurrencyString + FormatCurr(' #,##0.00', 1234.56);
   LObj := TtiObject.Create;
-  OldCurrency := CurrencyString;
-  OldThousand := ThousandSeparator;
-  OldDecimal  := DecimalSeparator;
   try
-    { hard-code tests to USA locale }
-    CurrencyString    := '$';
-    ThousandSeparator := ',';
-    DecimalSeparator  := '.';
-
     LField:= TtiFieldCurrency.Create(LObj);
     try
       Check(LField.IsNull, 'IsNull #1');
@@ -2368,7 +2358,7 @@ begin
       CheckEquals(CValueStr, LField.AsString, 'AsString #1');
       CheckEquals(CValue, LField.AsFloat, 0.0001, 'AsFloat #1');
       CheckEquals(CValueInt, LField.AsInteger, 'AsInteger #1');
-      CheckEquals(CValueCurrencyStr, LField.AsCurrencyString, 'AsCurrencyStr #1');
+      CheckEquals(LValueCurrencyStr, LField.AsCurrencyString, 'AsCurrencyStr #1');
       Check(not LField.IsNull, 'IsNull #1');
 
       LField.AsString := '';
@@ -2382,7 +2372,7 @@ begin
       CheckEquals(CValueStr, LField.AsString, 'AsString #3');
       CheckEquals(CValue, LField.AsFloat, 0.0001, 'AsFloat #3');
       CheckEquals(CValueInt, LField.AsInteger, 'AsInteger #3');
-      CheckEquals(CValueCurrencyStr, LField.AsCurrencyString, 'AsCurrencyStr #3');
+      CheckEquals(LValueCurrencyStr, LField.AsCurrencyString, 'AsCurrencyStr #3');
       Check(not LField.IsNull, 'IsNull #3');
 
       LField.IsNull:= True;
@@ -2396,7 +2386,7 @@ begin
       CheckEquals(CValueStr, LField.AsString, 'AsString #5');
       CheckEquals(CValue, LField.AsFloat, 0.0001, 'AsFloat #5');
       CheckEquals(CValueInt, LField.AsInteger, 'AsInteger #5');
-      CheckEquals(CValueCurrencyStr, LField.AsCurrencyString, 'AsCurrencyStr #5');
+      CheckEquals(LValueCurrencyStr, LField.AsCurrencyString, 'AsCurrencyStr #5');
       Check(not LField.IsNull, 'IsNull #5');
 
       LField.IsNull:= True;
@@ -2406,11 +2396,11 @@ begin
       CheckEquals('', LField.AsCurrencyString, 'AsCurrencyStr #6');
       Check(LField.IsNull, 'IsNull #6');
 
-      LField.AsCurrencyString := CValueCurrencyStr;
+      LField.AsCurrencyString := LValueCurrencyStr;
       CheckEquals(CValueStr, LField.AsString, 'AsString #7');
       CheckEquals(CValue, LField.AsFloat, 0.0001, 'AsFloat #7');
       CheckEquals(CValueInt, LField.AsInteger, 'AsInteger #7');
-      CheckEquals(CValueCurrencyStr, LField.AsCurrencyString, 'AsCurrencyStr #7');
+      CheckEquals(LValueCurrencyStr, LField.AsCurrencyString, 'AsCurrencyStr #7');
       Check(not LField.IsNull, 'IsNull #7');
 
       LField.IsNull:= True;
@@ -2425,7 +2415,7 @@ begin
       CheckEquals('1234.06', LField.AsString, 'AsString #9');
       CheckEquals(1234.06, LField.AsFloat, 0.0001, 'AsFloat #9');
       CheckEquals(123406, LField.AsInteger, 'AsInteger #9');
-      CheckEquals('$ 1,234.06', LField.AsCurrencyString, 'AsCurrencyStr #9');
+      CheckEquals(CurrencyString + ' 1,234.06', LField.AsCurrencyString, 'AsCurrencyStr #9');
       Check(not LField.IsNull, 'IsNull #9');
 
       // test fraction padding and rounding
@@ -2433,17 +2423,13 @@ begin
       CheckEquals('1234.07', LField.AsString, 'AsString #10');
       CheckEquals(1234.07, LField.AsFloat, 0.0001, 'AsFloat #10');
       CheckEquals(123407, LField.AsInteger, 'AsInteger #10');
-      CheckEquals('$ 1,234.07', LField.AsCurrencyString, 'AsCurrencyStr #10');
+      CheckEquals(CurrencyString + ' 1,234.07', LField.AsCurrencyString, 'AsCurrencyStr #10');
       Check(not LField.IsNull, 'IsNull #10');
     finally
       LField.Free;
     end;
   finally
     LObj.Free;
-    { restore original locale info }
-    CurrencyString    := OldCurrency;
-    ThousandSeparator := OldThousand;
-    DecimalSeparator  := OldDecimal;
   end;
 end;
 
