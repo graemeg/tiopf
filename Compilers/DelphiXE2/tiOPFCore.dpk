@@ -66,9 +66,10 @@ contains
   tiOIDGUID in '..\..\Core\tiOIDGUID.pas',
   tiBaseMediator in '..\..\Core\tiBaseMediator.pas',
   tiModelMediator in '..\..\Core\tiModelMediator.pas',
-  tiGenericList in '..\..\Core\tiGenericList.pas',
+  tiAutoMapSelect in '..\..\Core\tiAutoMapSelect.pas',
   tiGenericBase in '..\..\Core\tiGenericBase.pas',
-  tiAutoMapSelect in '..\..\Core\tiAutoMapSelect.pas';
+  tiGenericList in '..\..\Core\tiGenericList.pas',
+  tiSemaphore in '..\..\Core\tiSemaphore.pas';
 
 {$I tiDefines.inc}
 
