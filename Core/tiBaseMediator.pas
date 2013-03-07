@@ -509,7 +509,7 @@ begin
 
   if not CompositeMediator then
   begin
-    Result := (IsPublishedProp(FSubject, FFieldName));
+    Result := (tiIsPublishedProp(FSubject, FFieldName));
     if not Result then
       RaiseMediatorError('<%s> is not a property of <%s>',
           [FFieldName, FSubject.ClassName]);
