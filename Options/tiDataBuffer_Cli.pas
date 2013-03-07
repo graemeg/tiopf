@@ -198,9 +198,9 @@ const
 { Delphi compatible defines }
 {$DEFINE USEASM}
 {$IFDEF FPC}
-{$IFNDEF CPU386}
-{$UNDEF USEASM}
-{$ENDIF}
+  {$IFNDEF CPU386}
+    {$UNDEF USEASM}
+  {$ENDIF}
 {$ENDIF}
 
 {$IFDEF USEASM}

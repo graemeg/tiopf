@@ -142,7 +142,7 @@ begin
   Clear;
   FPool.Free;
   DestroyPoolSemaphore;
-  inherited;
+  inherited Destroy;
 end;
 
 
@@ -178,7 +178,6 @@ var
   lList : TList;
   lsCount : string;
 begin
-  
   lPooledItem := PooledItemClass.Create(self);
   lsCount    := IntToStr(Count);
 

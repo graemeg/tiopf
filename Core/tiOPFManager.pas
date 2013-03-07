@@ -598,8 +598,7 @@ begin
 
   if (SameText(lRegPerLayer.DefaultDBConnectionName, ADatabaseName)) then
     lRegPerLayer.DefaultDBConnectionName := '';
-  lRegPerLayer.DBConnectionPools.DisConnect(ADatabaseName);
-
+  lRegPerLayer.DBConnectionPools.Disconnect(ADatabaseName);
 end;
 
 
