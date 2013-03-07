@@ -47,12 +47,12 @@
         <UnitName Value="tiOPFUnitTestsFPGui"/>
       </Unit0>
       <Unit1>
-        <Filename Value="../Common/tiTestDependencies.pas"/>
+        <Filename Value="../../UnitTests/Common/tiTestDependencies.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiTestDependencies"/>
       </Unit1>
       <Unit2>
-        <Filename Value="../Common/tiDUnitINI.pas"/>
+        <Filename Value="../../UnitTests/Common/tiDUnitINI.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiDUnitINI"/>
       </Unit2>
@@ -64,8 +64,8 @@
       <Filename Value="tiOPFUnitTestsFPGui"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="../../Core;$(ProjOutDir)"/>
-      <OtherUnitFiles Value="../Common;../Tests"/>
+      <IncludeFiles Value="../../Core"/>
+      <OtherUnitFiles Value="../../UnitTests/Common;../../UnitTests/Tests"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>
@@ -77,7 +77,8 @@
       <CompilerMessages>
         <UseMsgFile Value="True"/>
       </CompilerMessages>
-      <CustomOptions Value="-dLINK_CSV
+      <CustomOptions Value="-dDUNIT2
+-dLINK_CSV
 -dLINK_TAB
 -dLINK_XMLLight
 -dLINK_SQLDB_IB

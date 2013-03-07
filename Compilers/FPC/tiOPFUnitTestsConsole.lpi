@@ -53,22 +53,22 @@
         <UnitName Value="textprogressrunner"/>
       </Unit1>
       <Unit2>
-        <Filename Value="../Common/tiTextTestRunner.pas"/>
+        <Filename Value="../../UnitTests/Common/tiTextTestRunner.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiTextTestRunner"/>
       </Unit2>
       <Unit3>
-        <Filename Value="../Common/tiTestDependencies.pas"/>
+        <Filename Value="../../UnitTests/Common/tiTestDependencies.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiTestDependencies"/>
       </Unit3>
       <Unit4>
-        <Filename Value="../Common/tiTestFramework.pas"/>
+        <Filename Value="../../UnitTests/Common/tiTestFramework.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiTestFramework"/>
       </Unit4>
       <Unit5>
-        <Filename Value="../Common/tiOPFTestCase.pas"/>
+        <Filename Value="../../UnitTests/Common/tiOPFTestCase.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiOPFTestCase"/>
       </Unit5>
@@ -81,12 +81,13 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="../../Core"/>
-      <OtherUnitFiles Value="../Common;../Tests"/>
+      <OtherUnitFiles Value="../../UnitTests/Common;../../UnitTests/Tests"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
         <CStyleOperator Value="False"/>
+        <IncludeAssertionCode Value="True"/>
         <AllowLabel Value="False"/>
         <CPPInline Value="False"/>
       </SyntaxOptions>
@@ -102,7 +103,6 @@
       </CompilerMessages>
       <CustomOptions Value="-dDUNIT2
 -dXMLLISTENER
--FU_Dcu
 -dLINK_CSV
 -dLINK_TAB
 -dLINK_FBLx
