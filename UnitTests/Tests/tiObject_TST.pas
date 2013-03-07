@@ -2378,12 +2378,13 @@ procedure TtiObjectTestCase.FieldCurrency;
 var
   LObj: TtiObject;
   LField:  TtiFieldCurrency;
+  LValueCurrencyStr: string;
 const
   CValue    = 1234.56;
   CValueStr = '1234.56';
   CValueInt = 123456;
-  CValueCurrencyStr = '$ 1,234.56';
 begin
+  LValueCurrencyStr := FormatSettings.CurrencyString + FormatCurr(' #,##0.00', 1234.56);
   LObj := TtiObject.Create;
   try
     LField:= TtiFieldCurrency.Create(LObj);
@@ -2394,7 +2395,7 @@ begin
       CheckEquals(CValueStr, LField.AsString, 'AsString #1');
       CheckEquals(CValue, LField.AsFloat, 0.0001, 'AsFloat #1');
       CheckEquals(CValueInt, LField.AsInteger, 'AsInteger #1');
-      CheckEquals(CValueCurrencyStr, LField.AsCurrencyString, 'AsCurrencyStr #1');
+      CheckEquals(LValueCurrencyStr, LField.AsCurrencyString, 'AsCurrencyStr #1');
       Check(not LField.IsNull, 'IsNull #1');
 
       LField.AsString := '';
@@ -2408,7 +2409,7 @@ begin
       CheckEquals(CValueStr, LField.AsString, 'AsString #3');
       CheckEquals(CValue, LField.AsFloat, 0.0001, 'AsFloat #3');
       CheckEquals(CValueInt, LField.AsInteger, 'AsInteger #3');
-      CheckEquals(CValueCurrencyStr, LField.AsCurrencyString, 'AsCurrencyStr #3');
+      CheckEquals(LValueCurrencyStr, LField.AsCurrencyString, 'AsCurrencyStr #3');
       Check(not LField.IsNull, 'IsNull #3');
 
       LField.IsNull:= True;
@@ -2422,7 +2423,7 @@ begin
       CheckEquals(CValueStr, LField.AsString, 'AsString #5');
       CheckEquals(CValue, LField.AsFloat, 0.0001, 'AsFloat #5');
       CheckEquals(CValueInt, LField.AsInteger, 'AsInteger #5');
-      CheckEquals(CValueCurrencyStr, LField.AsCurrencyString, 'AsCurrencyStr #5');
+      CheckEquals(LValueCurrencyStr, LField.AsCurrencyString, 'AsCurrencyStr #5');
       Check(not LField.IsNull, 'IsNull #5');
 
       LField.IsNull:= True;
@@ -2432,11 +2433,11 @@ begin
       CheckEquals('', LField.AsCurrencyString, 'AsCurrencyStr #6');
       Check(LField.IsNull, 'IsNull #6');
 
-      LField.AsCurrencyString := CValueCurrencyStr;
+      LField.AsCurrencyString := LValueCurrencyStr;
       CheckEquals(CValueStr, LField.AsString, 'AsString #7');
       CheckEquals(CValue, LField.AsFloat, 0.0001, 'AsFloat #7');
       CheckEquals(CValueInt, LField.AsInteger, 'AsInteger #7');
-      CheckEquals(CValueCurrencyStr, LField.AsCurrencyString, 'AsCurrencyStr #7');
+      CheckEquals(LValueCurrencyStr, LField.AsCurrencyString, 'AsCurrencyStr #7');
       Check(not LField.IsNull, 'IsNull #7');
 
       LField.IsNull:= True;
