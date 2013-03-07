@@ -1761,62 +1761,33 @@ begin
   CheckEquals('-1,000,000', tiUtils.tiIntToCommaStr(-1000000), 'Failed on -1000000');
 end;
 
+{ helper function for tiFloatToCurrency tests }
+function AddLocaleCurrency(const AFormatString: string): string;
+begin
+  Result := CurrencyString + AFormatString;
+end;
 
 procedure TTestTIUtils.tiFloatToCurrencyHide0;
-var
-  OldCurrency: string;
-  OldThousand: char;
-  OldDecimal: char;
 begin
-  OldCurrency := CurrencyString;
-  OldThousand := ThousandSeparator;
-  OldDecimal  := DecimalSeparator;
-  try
-    { hard-code tests to USA locale }
-    CurrencyString    := '$';
-    ThousandSeparator := ',';
-    DecimalSeparator  := '.';
-    CheckEquals('', tiUtils.tiFloatToCurrencyHide0(0), 'Failed on 1');
-    CheckEquals('$ 0.01', tiUtils.tiFloatToCurrencyHide0(0.01), 'Failed on 2');
-    CheckEquals('', tiUtils.tiFloatToCurrencyHide0(0.001), 'Failed on 3');
-    CheckEquals('$ 0.01', tiUtils.tiFloatToCurrencyHide0(0.005), 'Failed on 4');
-    CheckEquals('$ 100.00', tiUtils.tiFloatToCurrencyHide0(100), 'Failed on 5');
-    CheckEquals('$ 1,000.00', tiUtils.tiFloatToCurrencyHide0(1000), 'Failed on 6');
-    CheckEquals('$ 1,000,000.00', tiUtils.tiFloatToCurrencyHide0(1000000), 'Failed on 7');
-  finally
-    CurrencyString    := OldCurrency;
-    ThousandSeparator := OldThousand;
-    DecimalSeparator  := OldDecimal;
-  end;
+  CheckEquals('', tiUtils.tiFloatToCurrencyHide0(0), 'Failed on 1');
+  CheckEquals(AddLocaleCurrency(' 0.01'), tiUtils.tiFloatToCurrencyHide0(0.01), 'Failed on 2');
+  CheckEquals('', tiUtils.tiFloatToCurrencyHide0(0.001), 'Failed on 3');
+  CheckEquals(AddLocaleCurrency(' 0.01'), tiUtils.tiFloatToCurrencyHide0(0.005), 'Failed on 4');
+  CheckEquals(AddLocaleCurrency(' 100.00'), tiUtils.tiFloatToCurrencyHide0(100), 'Failed on 5');
+  CheckEquals(AddLocaleCurrency(' 1,000.00'), tiUtils.tiFloatToCurrencyHide0(1000), 'Failed on 6');
+  CheckEquals(AddLocaleCurrency(' 1,000,000.00'), tiUtils.tiFloatToCurrencyHide0(1000000), 'Failed on 7');
 end;
 
 
 procedure TTestTIUtils.tiFloatToCurrency;
-var
-  OldCurrency: string;
-  OldThousand: char;
-  OldDecimal: char;
 begin
-  OldCurrency := CurrencyString;
-  OldThousand := ThousandSeparator;
-  OldDecimal  := DecimalSeparator;
-  try
-    { hard-code tests to USA locale }
-    CurrencyString    := '$';
-    ThousandSeparator := ',';
-    DecimalSeparator  := '.';
-    CheckEquals('$ 0.00', tiUtils.tiFloatToCurrency(0), 'Failed on 1');
-    CheckEquals('$ 0.01', tiUtils.tiFloatToCurrency(0.01), 'Failed on 2');
-    CheckEquals('$ 0.00', tiUtils.tiFloatToCurrency(0.001), 'Failed on 3');
-    CheckEquals('$ 0.01', tiUtils.tiFloatToCurrency(0.005), 'Failed on 4');
-    CheckEquals('$ 100.00', tiUtils.tiFloatToCurrency(100), 'Failed on 5');
-    CheckEquals('$ 1,000.00', tiUtils.tiFloatToCurrency(1000), 'Failed on 6');
-    CheckEquals('$ 1,000,000.00', tiUtils.tiFloatToCurrency(1000000), 'Failed on 7');
-  finally
-    CurrencyString    := OldCurrency;
-    ThousandSeparator := OldThousand;
-    DecimalSeparator  := OldDecimal;
-  end;
+  CheckEquals(AddLocaleCurrency(' 0.00'), tiUtils.tiFloatToCurrency(0), 'Failed on 1');
+  CheckEquals(AddLocaleCurrency(' 0.01'), tiUtils.tiFloatToCurrency(0.01), 'Failed on 2');
+  CheckEquals(AddLocaleCurrency(' 0.00'), tiUtils.tiFloatToCurrency(0.001), 'Failed on 3');
+  CheckEquals(AddLocaleCurrency(' 0.01'), tiUtils.tiFloatToCurrency(0.005), 'Failed on 4');
+  CheckEquals(AddLocaleCurrency(' 100.00'), tiUtils.tiFloatToCurrency(100), 'Failed on 5');
+  CheckEquals(AddLocaleCurrency(' 1,000.00'), tiUtils.tiFloatToCurrency(1000), 'Failed on 6');
+  CheckEquals(AddLocaleCurrency(' 1,000,000.00'), tiUtils.tiFloatToCurrency(1000000), 'Failed on 7');
 end;
 
 procedure TTestTIUtils.tiFloatToCurrency_with_locales;
