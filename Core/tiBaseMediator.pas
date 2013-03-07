@@ -643,10 +643,17 @@ begin
   inherited Update(ASubject, AOperation, AData);
   if FSubject = ASubject then
   begin
-    if (AOperation=noChanged) and Active then
-      ObjectToGUI
-    else if (AOperation=noFree) then
-      FSubject:=Nil;
+    if (AOperation = noChanged) and Active then
+    begin
+      ObjectToGUI;
+    end
+    else if (AOperation = noFree) then
+      FSubject := nil;
+  end
+  else if ASubject = FListObject then
+  begin
+    if (AOperation = noFree) then
+      FListObject := nil;
   end;
 end;
 
