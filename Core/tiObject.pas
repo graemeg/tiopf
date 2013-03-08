@@ -103,6 +103,7 @@ type
      define. Simple data types will not handle NULL values so if NULL management
      is required, you should use persistent fields. Using persistent fields
      however, makes the code more complex and harder to maintain.}
+{$M+}
   TtiFieldAbs = class(TtiBaseObject)
   private
     FOwner: TtiObject;
@@ -127,10 +128,11 @@ type
     property    Owner:            TtiObject         read FOwner;
     property    FieldName:        string            read GetFieldName write SetFieldName;
     property    NullValidation:   TtiNullValidation read FNullValidation write FNullValidation;
-    property    AsString:         string            read GetAsString Write SetAsString;
     property    IsNull:           Boolean           read FIsNull write SetIsNull;
-
+  published
+    property    AsString:         string            read GetAsString Write SetAsString;
   end;
+{$M-}
 
   {: Concrete persistent string field}
   TtiFieldString = class(TtiFieldAbs)
@@ -192,8 +194,9 @@ type
     function    Equals(const ACompareWith: TtiFieldAbs): Boolean; override;
     procedure   Assign(const AAssignFrom: TtiFieldAbs); override;
 
-    property    AsInteger : Int64 read FValue Write SetAsInteger;
     property    MaxDigits : Integer read FMaxDigits;
+  published
+    property    AsInteger : Int64 read FValue Write SetAsInteger;
   end;
 
   {: Concrete persistent float field}
@@ -217,9 +220,10 @@ type
                        const APrecision: Integer); reintroduce; overload;
     function    Equals(const ACompareWith: TtiFieldAbs): Boolean; override;
     procedure   Assign(const AAssignFrom: TtiFieldAbs); override;
-    property    AsFloat: Extended read FValue Write SetAsFloat;
     property    Precision: Integer Read FPrecision Write SetPrecision;
     property    Epsilon: Extended Read FEpsilon Write FEpsilon;
+  published
+    property    AsFloat: Extended read FValue Write SetAsFloat;
   end;
 
   {: Concrete persistent currency field}
@@ -243,9 +247,10 @@ type
     procedure   Assign(const AAssignFrom: TtiFieldAbs); override;
     property    AsFloat: Extended read GetAsFloat Write SetAsFloat;
     property    AsInteger: Int64 read FValue write SetAsInteger;
-    property    AsCurrencyString: string read GetAsCurrencyString write SetAsCurrencyString;
     procedure   Inc(const AField: TtiFieldCurrency); overload;
     procedure   Inc(const AValue: integer); overload;
+  published
+    property    AsCurrencyString: string read GetAsCurrencyString write SetAsCurrencyString;
   end;
 
   {: Concrete persistent boolean field}
@@ -260,6 +265,7 @@ type
   public
     function    Equals(const ACompareWith: TtiFieldAbs): Boolean; override;
     procedure   Assign(const AAssignFrom: TtiFieldAbs); override;
+  published
     property    AsBoolean: Boolean read FValue Write SetAsBoolean;
   end;
 
@@ -279,10 +285,11 @@ type
   public
     function    Equals(const ACompareWith: TtiFieldAbs): Boolean; override;
     procedure   Assign(const AAssignFrom: TtiFieldAbs); override;
-    property    AsDateTime: TDateTime read FValue Write SetAsDateTime;
     property    Days: Word read GetDays;
     property    Months: Word read GetMonths;
     property    Years: Word read GetYears;
+  published
+    property    AsDateTime: TDateTime read FValue Write SetAsDateTime;
   end;
 
   {: Concrete persistent TDateTime field}
