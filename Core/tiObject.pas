@@ -893,23 +893,20 @@ type
     property    Dirty : boolean read FbDirty write FbDirty;
   end;
 
-  { TtiObserverProxy }
-
   TtiObserverProxy = class(TtiObject)
   private
     FSubject: TtiObject;
     FOnUpdate: TtiObjectUpdateEvent;
-    procedure SetSubject(const AValue: TtiObject);
+    procedure   SetSubject(const AValue: TtiObject);
   protected
-    procedure StopObserving(ASubject: TtiObject); override;
+    procedure   StopObserving(ASubject: TtiObject); override;
   public
     constructor Create; overload; override;
-    constructor Create(const ASubject: TtiObject;
-        const AOnUpdate: TtiObjectUpdateEvent); reintroduce; overload; virtual;
-    destructor Destroy; override;
-    procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation; AChild: TtiObject=nil); overload; override;
-    property Subject: TtiObject read FSubject write SetSubject;
-    property OnUpdate: TtiObjectUpdateEvent read FOnUpdate write FOnUpdate;
+    constructor Create(const ASubject: TtiObject; const AOnUpdate: TtiObjectUpdateEvent); reintroduce; overload; virtual;
+    destructor  Destroy; override;
+    procedure   Update(ASubject: TtiObject; AOperation: TNotifyOperation; AChild: TtiObject=nil); overload; override;
+    property    Subject: TtiObject read FSubject write SetSubject;
+    property    OnUpdate: TtiObjectUpdateEvent read FOnUpdate write FOnUpdate;
   end;
 
 const
