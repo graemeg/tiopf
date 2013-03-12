@@ -903,11 +903,13 @@ type
   protected
     procedure StopObserving(ASubject: TtiObject); override;
   public
+    constructor Create; overload; override;
     constructor Create(const ASubject: TtiObject;
-        const AOnUpdate: TtiObjectUpdateEvent); reintroduce; virtual;
+        const AOnUpdate: TtiObjectUpdateEvent); reintroduce; overload; virtual;
     destructor Destroy; override;
     procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation; AChild: TtiObject=nil); overload; override;
     property Subject: TtiObject read FSubject write SetSubject;
+    property OnUpdate: TtiObjectUpdateEvent read FOnUpdate write FOnUpdate;
   end;
 
 const
@@ -4502,6 +4504,13 @@ end;
 
 { TtiObserverProxy }
 
+constructor TtiObserverProxy.Create;
+begin
+  inherited Create;
+  Subject := nil;
+  FOnUpdate := nil;
+end;
+
 constructor TtiObserverProxy.Create(const ASubject: TtiObject;
   const AOnUpdate: TtiObjectUpdateEvent);
 begin
@@ -4544,7 +4553,8 @@ begin
   inherited Update(ASubject, AOperation, AChild);
   if (ASubject = Subject) and (AOperation = noFree) then
     Subject := nil;
-  FOnUpdate(ASubject, AOperation);
+  if Assigned(FOnUpdate) then
+    FOnUpdate(ASubject, AOperation);
 end;
 
 end.
