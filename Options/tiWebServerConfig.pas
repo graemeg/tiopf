@@ -144,17 +144,27 @@ end;
 function TtiWebServerConfig.GetRegistryValue(const AName, ADefault: string): string;
 var
   LRegistry: TRegistry;
+  LNewValue: string;
 begin
-  LRegistry := TRegistry.Create(HKEY_LOCAL_MACHINE);
+  LRegistry := TRegistry.Create;
   try
+    LNewValue := ExtractFileDrive(ParamStr(0)) + ADefault;
+    Result := '';
+
     LRegistry.RootKey := HKEY_LOCAL_MACHINE;
-    LRegistry.OpenKey(GetRegistryKey, True);
-    Result := LRegistry.ReadString(AName);
-    if Result = '' then
+    // Requires elevation on Windows Vista and later
+    if LRegistry.OpenKey(GetRegistryKey, True) then
     begin
-      Result:= ExtractFileDrive(ParamStr(0)) + ADefault;
-      LRegistry.WriteString(AName, Result);
-    end;
+      Result := LRegistry.ReadString(AName);
+      if Result = '' then
+        LRegistry.WriteString(AName, LNewValue);
+    end
+    // Fall back to read only
+    else if LRegistry.OpenKeyReadOnly(GetRegistryKey) then
+      Result := LRegistry.ReadString(AName);
+
+    if Result = '' then
+      Result := LNewValue;
   finally
     LRegistry.Free;
   end;
