@@ -224,6 +224,9 @@ type
     property StringProp: string read FStringProp write FStringProp;
   end;
 
+  TTestEnumType = (enOne, enTwo, enThree, enFour, enFive);
+  TTestEnumOptions = set of TTestEnumType;
+
   TTestGetPropNamesAbs = class(TtiObject)
   private
     FStringProp:     string;
@@ -238,6 +241,8 @@ type
     FObjectProp:     TTestObjectProperty;
     FDateTimeProp:   TDateTime;
     FBoolProp:       boolean;
+    FEnumProp: TTestEnumType;
+    FEnumSetProp: TTestEnumOptions;
   protected
     property StringProp: string read FStringProp write FStringProp;
     property ShortStringProp: ShortString read FShortStringStringProp write FShortStringStringProp;
@@ -252,8 +257,10 @@ type
 
     property ObjectProp: TTestObjectProperty read FObjectProp write FObjectProp;
     property MethodProp: TNotifyEvent read FMethodProp write FMethodProp;
+    property EnumProp: TTestEnumType read FEnumProp write FEnumProp;
+    property EnumSetProp: TTestEnumOptions read FEnumSetProp write FEnumSetProp;
     // These are the leftovers
-    // tkUnknown, tkEnumeration, tkSet, tkVariant, tkArray, tkRecord, tkInterface, tkDynArray
+    // tkUnknown, tkVariant, tkArray, tkRecord, tkInterface, tkDynArray
 
     property ReadOnlyStringProp: string read FStringProp;
     property ReadOnlyShortStringProp: ShortString read FShortStringStringProp;
@@ -267,6 +274,8 @@ type
     property ReadOnlyFloatProp: extended read FFloatProp;
     property ReadOnlyObjectProp: TTestObjectProperty read FObjectProp;
     property ReadOnlyMethodProp: TNotifyEvent read FMethodProp;
+    property ReadOnlyEnumProp: TTestEnumType read FEnumProp;
+    property ReadOnlyEnumSetProp: TTestEnumOptions read FEnumSetProp;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -306,6 +315,8 @@ type
     property FloatProp;
     property ObjectProp;
     property MethodProp;
+    property EnumProp;
+    property EnumSetProp;
     property ReadOnlyStringProp;
     property ReadOnlyShortStringProp;
     property ReadOnlyWideStringProp;
@@ -318,6 +329,8 @@ type
     property ReadOnlyFloatProp;
     property ReadOnlyObjectProp;
     property ReadOnlyMethodProp;
+    property ReadOnlyEnumProp;
+    property ReadOnlyEnumSetProp;
   end;
 
 
@@ -798,6 +811,8 @@ constructor TTestGetPropNamesAbs.Create;
 begin
   inherited;
   FObjectProp := TTestObjectProperty.Create;
+  FEnumProp := enOne;
+  FEnumSetProp := [enOne, enThree];
 end;
 
 destructor TTestGetPropNamesAbs.Destroy;

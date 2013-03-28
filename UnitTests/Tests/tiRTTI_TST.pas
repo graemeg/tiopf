@@ -24,6 +24,7 @@ type
     procedure tiIsNumericProp;
     procedure tiGetPropertyNamesObject;
     procedure tiGetPropertyNamesClass;
+    procedure tiGetPropertyNamesEnum;
     procedure tiIsReadWritePropObject;
     procedure tiIsReadWritePropClass;
     procedure tiIsPublishedProp_Simple;
@@ -209,6 +210,34 @@ begin
     tiRTTI.tiGetPropertyNames(TTestGetPropNames, lsl, [tkMethod]);
     CheckEquals(2, lsl.Count, 'Failed on MethodProp');
     CheckEquals('MethodProp', lsl.Strings[0], 'Failed on MethodProp');
+  finally
+    lsl.Free;
+  end;
+end;
+
+procedure TTesttiRTTI.tiGetPropertyNamesEnum;
+var
+  lsl : TStringList;
+  lObj : TtiBaseObject;
+begin
+  lsl := TStringList.Create;
+  try
+    lObj := TTestGetPropNames.Create;
+    try
+      tiRTTI.tiGetPropertyNames(lObj, lsl, [ tkEnumeration ]);
+      CheckEquals(4, lsl.Count, 'Failed on 1');
+      CheckEquals('BoolProp', lsl.Strings[0], 'BoolProp');
+      CheckEquals('EnumProp', lsl.Strings[1], 'EnumProp');
+      CheckEquals('ReadOnlyBoolProp', lsl.Strings[2], 'ReadOnlyBoolProp');
+      CheckEquals('ReadOnlyEnumProp', lsl.Strings[3], 'ReadOnlyEnumProp');
+
+      tiRTTI.tiGetPropertyNames(lObj, lsl, [ tkSet ]);
+      CheckEquals(2, lsl.Count, 'Failed on 2');
+      CheckEquals('EnumSetProp', lsl.Strings[0], 'EnumSetProp');
+      CheckEquals('ReadOnlyEnumSetProp', lsl.Strings[1], 'ReadOnlyEnumSetProp');
+    finally
+      lObj.Free;
+    end;
   finally
     lsl.Free;
   end;
