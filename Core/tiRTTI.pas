@@ -168,7 +168,7 @@ var
   b: boolean;
   {$ENDIF}
 begin
-  // ToDo: I'm not sure that invalid AObject or APropPath should be swallowed with null returned
+  // ToDo: I'm not sure that APropPath should be swallowed with null returned
   //       Would it be better if an exception was raised?
   //       How should we differentiate between invalid parameters, and an actual null result?
   if Assigned(AObject) then
@@ -194,8 +194,12 @@ begin
         Result:= Null;
     end else
       Result := PtrInt(AObject);
-  end else
+  end
+  else
+  begin
     Result:= Null;
+    raise EtiOPFDataException.Create('AObject must be assigned');
+  end;
 end;
 
 function tiGetPropertyCoalesce(const AObject: TObject;

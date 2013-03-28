@@ -14,6 +14,8 @@ uses
 type
 
   TTesttiRTTI = class(TtiTestCase)
+  private
+    procedure TestGetPropertyException;
   published
     procedure tiGetSimplePropType;
     procedure tiVarSimplePropType;
@@ -66,6 +68,7 @@ uses
   tiTestDependencies,
   tiRTTI,
   tiBaseObject,
+  tiExcept,
   SysUtils,
   {$IFDEF DELPHI6ORABOVE}
   Variants,
@@ -105,6 +108,11 @@ begin
   finally
     LItem.Free;
   end;
+end;
+
+procedure TTesttiRTTI.TestGetPropertyException;
+begin
+  tiGetProperty(nil, 'BoolField');
 end;
 
 procedure TTesttiRTTI.tiGetPropertyNamesClass;
@@ -611,7 +619,7 @@ begin
     CheckEquals(lDate, tiGetProperty(LItem, 'DateField'), 'Failed on 4');
     CheckEquals(True, tiGetProperty(LItem, 'BoolField'), 'Failed on 5');
     Check(VarIsNull(tiGetProperty(LItem, 'NonExistantProperty')));
-    Check(VarIsNull(tiGetProperty(nil, 'BoolField')));
+    CheckException(TestGetPropertyException, EtiOPFDataException);
 
   finally
     LItem.Free;
