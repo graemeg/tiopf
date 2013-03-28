@@ -87,7 +87,7 @@ type
   function tiIsReadWriteProp(const AData : TtiBaseObjectClass; const APropName : string): boolean; overload;
 
   function  tiGetTypeInfo(PropInfo: PPropInfo): PTypeInfo;
-  function  tiGetProperty(const AObject: TObject; const APropPath: string): Variant;
+  function  tiGetProperty(const AObject: TObject; const APropPath: string; const APreferStrings: boolean = False): Variant;
   {: Get the property as a string. If the property is not valid then return a default. }
   function  tiGetPropertyCoalesce(const AObject: TObject; const APropPath: string; const ADefault: string = ''): string;
   procedure tiSetProperty(const AObject: TObject; const APropPath: string; const APropValue: Variant);
@@ -160,7 +160,7 @@ begin
 {$ENDIF}
 end;
 
-function tiGetProperty(const AObject: TObject; const APropPath: string): Variant;
+function tiGetProperty(const AObject: TObject; const APropPath: string; const APreferStrings: boolean): Variant;
 var
   LPropInfo: PPropInfo;
   LObject: TObject;
@@ -176,7 +176,7 @@ begin
       LPropInfo := tiGetPropInfo(LObject.ClassType, APropPath, @LObject);
       if Assigned(LPropInfo) and Assigned(LPropInfo.GetProc) and
          Assigned(LObject) then // Check that class property is assigned
-        Result := GetPropValue(LObject, string(LPropInfo^.Name))
+        Result := GetPropValue(LObject, string(LPropInfo^.Name), APreferStrings)
       else
         Result:= Null;
     end else

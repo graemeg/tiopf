@@ -18,7 +18,6 @@ type
 
   TTesttiRTTI = class(TtiTestCase)
   published
-
     procedure tiGetSimplePropType;
     procedure tiVarSimplePropType;
     procedure tiIsNumericProp;
@@ -29,14 +28,13 @@ type
     procedure tiIsReadWritePropClass;
     procedure tiIsPublishedProp_Simple;
     procedure tiIsPublishedProp_PropertyPath;
-
     procedure SetProperty_Simple;
     procedure SetProperty_PropertyPath;
     procedure GetProperty_Simple;
     procedure GetProperty_PropertyPath;
     procedure GetPropertyClass;
     procedure PropertyInheritsFrom;
-
+    procedure GetSetPropertyEnum;
   end;
   
 
@@ -606,6 +604,28 @@ begin
 
   finally
     LItem.Free;
+  end;
+end;
+
+procedure TTesttiRTTI.GetSetPropertyEnum;
+var
+  obj: TTestGetPropNames;
+  lEnum: TTestEnumType;
+  s: String;
+begin
+  obj := TTestGetPropNames.Create;
+  try
+    lEnum := tiGetProperty(obj, 'EnumProp');
+    CheckTrue(lEnum = enOne, 'Failed on 1');
+
+    tiSetProperty(obj, 'EnumProp', enThree);
+    lEnum := tiGetProperty(obj, 'EnumProp');
+    CheckTrue(lEnum = enThree, 'Failed on 2');
+
+    s := tiGetProperty(obj, 'EnumProp', True);
+    CheckTrue(s = 'enThree', 'Failed on 3');
+  finally
+    obj.Free;
   end;
 end;
 
