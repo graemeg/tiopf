@@ -623,15 +623,15 @@ var
 begin
   obj := TTestGetPropNames.Create;
   try
-    lEnum := tiGetProperty(obj, 'EnumProp');
-    CheckTrue(lEnum = enOne, 'Failed on 1');
+    s := tiGetProperty(obj, 'EnumProp');
+    CheckTrue(s = 'enOne', 'Failed on 1');
 
     tiSetProperty(obj, 'EnumProp', enThree);
-    lEnum := tiGetProperty(obj, 'EnumProp');
-    CheckTrue(lEnum = enThree, 'Failed on 2');
+    s := tiGetProperty(obj, 'EnumProp');
+    CheckTrue(s = 'enThree', 'Failed on 2');
 
-    s := tiGetProperty(obj, 'EnumProp', True);
-    CheckTrue(s = 'enThree', 'Failed on 3');
+    lEnum := tiGetProperty(obj, 'EnumProp', False);
+    CheckTrue(lEnum = enThree, 'Failed on 3');
   finally
     obj.Free;
   end;

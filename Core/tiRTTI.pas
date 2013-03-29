@@ -87,7 +87,7 @@ type
   function tiIsReadWriteProp(const AData : TtiBaseObjectClass; const APropName : string): boolean; overload;
 
   function  tiGetTypeInfo(PropInfo: PPropInfo): PTypeInfo;
-  function  tiGetProperty(const AObject: TObject; const APropPath: string; const APreferStrings: boolean = False): Variant;
+  function  tiGetProperty(const AObject: TObject; const APropPath: string; const APreferStrings: boolean = True): Variant;
   {: Get the property as a string. If the property is not valid then return a default. }
   function  tiGetPropertyCoalesce(const AObject: TObject; const APropPath: string; const ADefault: string = ''): string;
   procedure tiSetProperty(const AObject: TObject; const APropPath: string; const APropValue: Variant);
