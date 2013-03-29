@@ -217,6 +217,14 @@ type
   end;
 
 
+  TTestObjectProperty = class(TtiObject)
+  private
+    FStringProp: string;
+  published
+    property StringProp: string read FStringProp write FStringProp;
+  end;
+
+
   TTestGetPropNamesAbs = class(TtiObject)
   private
     FStringProp:     string;
@@ -228,7 +236,7 @@ type
     FIntProp:        integer;
     FFloatProp:      extended;
     FMethodProp:     TNotifyEvent;
-    FObjectProp:     TObject;
+    FObjectProp:     TTestObjectProperty;
     FDateTimeProp:   TDateTime;
     FBoolProp:       boolean;
   protected
@@ -243,7 +251,7 @@ type
     property DateTimeProp: TDateTime read FDateTimeProp write FDateTimeProp;
     property FloatProp: extended read FFloatProp write FFloatProp;
 
-    property ObjectProp: TObject read FObjectProp write FObjectProp;
+    property ObjectProp: TTestObjectProperty read FObjectProp write FObjectProp;
     property MethodProp: TNotifyEvent read FMethodProp write FMethodProp;
     // These are the leftovers
     // tkUnknown, tkEnumeration, tkSet, tkVariant, tkArray, tkRecord, tkInterface, tkDynArray
@@ -258,8 +266,11 @@ type
     property ReadOnlyBoolProp: boolean read FBoolProp;
     property ReadOnlyDateTimeProp: TDateTime read FDateTimeProp;
     property ReadOnlyFloatProp: extended read FFloatProp;
-    property ReadOnlyObjectProp: TObject read FObjectProp;
+    property ReadOnlyObjectProp: TTestObjectProperty read FObjectProp;
     property ReadOnlyMethodProp: TNotifyEvent read FMethodProp;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
   end;
 
 
@@ -782,11 +793,19 @@ begin
   inherited;
 end;
 
+{ TTestGetPropNamesAbs }
+
+constructor TTestGetPropNamesAbs.Create;
+begin
+  inherited;
+  FObjectProp := TTestObjectProperty.Create;
+end;
+
+destructor TTestGetPropNamesAbs.Destroy;
+begin
+  FObjectProp.Free;
+  inherited;
+end;
+
 end.
-
-
-
-
-
-
 

@@ -356,6 +356,9 @@ begin
       on e:exception do
         CheckIs(e, Exception, 'Failed on MethodProp');
     end;
+
+    // Sub-properties
+    Check(tiRTTI.tiGetSimplePropType(lObj, 'ObjectProp.StringProp') = tiTKString, 'Failed on ObjectProp.StringProp');
   finally
     lObj.Free;
   end;
