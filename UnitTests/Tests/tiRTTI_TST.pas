@@ -31,6 +31,7 @@ type
     procedure GetProperty_PropertyPath;
     procedure GetPropertyClass;
     procedure PropertyInheritsFrom;
+    procedure GetSetPropertyEnum;
   end;
   
 
@@ -683,6 +684,25 @@ begin
 
   CheckFalse(tiPropertyInheritsFrom(TtiRTTITestClassB, 'TestItemB.TestItem', TtiRTTITestClass), 'Failed on 9');
   CheckFalse(tiPropertyInheritsFrom(TtiRTTITestClassB, 'TestItemB.NotAProperty', TObject), 'Failed on 10');
+end;
+
+procedure TTesttiRTTI.GetSetPropertyEnum;
+var
+  obj: TTestGetPropNames;
+  lEnum: TTestEnumType;
+  s: String;
+begin
+  obj := TTestGetPropNames.Create;
+  try
+    s := tiGetProperty(obj, 'EnumProp');
+    CheckTrue(s = 'enOne', 'Failed on 1');
+
+    tiSetProperty(obj, 'EnumProp', enThree);
+    s := tiGetProperty(obj, 'EnumProp');
+    CheckTrue(s = 'enThree', 'Failed on 2');
+  finally
+    obj.Free;
+  end;
 end;
 
 
