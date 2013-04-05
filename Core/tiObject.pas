@@ -35,15 +35,6 @@ resourcestring
   
 type
 
-  {: The possible states of a TtiObjector descendant in memory.
-   @enum posEmpty The object has been created, but not filled with data from the DB
-   @enum posPK The object has been created, but only it's primary key has been read
-   @enum posCreate The object has been created and populated with data and must be saved to the DB
-   @enum posUpdate The object has been changed, the DB must be updated
-   @enum posDelete The object has been deleted, it must be deleted from the DB
-   @enum posDeleted The object was marked for deletion, and has been deleted in the database
-   @enum posClean The object is 'Clean' no DB update necessary
-   }
   TPerObjectState = (
                       posEmpty,
                       posPK,
@@ -51,7 +42,8 @@ type
                       posUpdate,
                       posDelete,
                       posDeleted,
-                      posClean
+                      posClean,
+                      posLoading
                     );
 
   {: The possible values to be displayed by TtiObjectAsDebugString}
