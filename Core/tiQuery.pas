@@ -110,7 +110,7 @@ type
     procedure   Read(const ADBConnectionName: string = ''; APersistenceLayerName : string = ''); override;
     function    FindByTableName(const ATableName : TTableName): TtiDBMetaDataTable;
   end;
-  
+
 
   TtiDBMetaDataTable = class(TtiObjectList)
   private
@@ -144,7 +144,7 @@ type
   published
     property    Name : TTableName read FName write FName;
   end;
-  
+
 
   TtiDBMetaDataField = class(TtiObject)
   private
@@ -223,7 +223,7 @@ type
                              const AParams : TtiQueryParams;
                              const AWhere    : TtiQueryParams); virtual;
   end;
-  
+
 
   TtiQuery = class(TtiBaseObject)
   private
@@ -548,7 +548,7 @@ type
     procedure   SetValueAsString(const AValue : string); override;
     procedure   AssignToTIQuery(const AQuery : TtiQuery); override;
   end;
-  
+
 
   TtiQueryParamInteger = class(TtiQueryParamAbs)
   private
@@ -562,7 +562,7 @@ type
     function    GetValueAsString : string; override;
     procedure   AssignToTIQuery(const AQuery : TtiQuery); override;
   end;
-  
+
 
   TtiQueryParamFloat = class(TtiQueryParamAbs)
   private
@@ -576,7 +576,7 @@ type
     function    GetValueAsString : string; override;
     procedure   AssignToTIQuery(const AQuery : TtiQuery); override;
   end;
-  
+
 
   TtiQueryParamDateTime = class(TtiQueryParamAbs)
   private
@@ -590,7 +590,7 @@ type
     function    GetValueAsString : string; override;
     procedure   AssignToTIQuery(const AQuery : TtiQuery); override;
   end;
-  
+
 
   TtiQueryParamBoolean = class(TtiQueryParamAbs)
   private
@@ -604,7 +604,7 @@ type
     function    GetValueAsString : string; override;
     procedure   AssignToTIQuery(const AQuery : TtiQuery); override;
   end;
-  
+
 
   TtiQueryParamStream = class(TtiQueryParamAbs)
   private
@@ -621,7 +621,7 @@ type
     function    GetValueAsStream : TStream;
     procedure   AssignToTIQuery(const AQuery : TtiQuery); override;
   end;
-  
+
 
 const
   cgtiQueryMacroChr  = '&';

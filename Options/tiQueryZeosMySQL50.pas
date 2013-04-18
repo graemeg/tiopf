@@ -57,7 +57,7 @@ begin
   APersistenceLayerDefaults.IsDatabaseNameFilePath:= False;
   APersistenceLayerDefaults.Username:= 'root';
   APersistenceLayerDefaults.Password:= '';
-  APersistenceLayerDefaults.CanDropDatabase:= False;
+  APersistenceLayerDefaults.CanDropDatabase:= True;
   APersistenceLayerDefaults.CanCreateDatabase:= True;
   APersistenceLayerDefaults.CanSupportMultiUser:= True;
   APersistenceLayerDefaults.CanSupportSQL:= True;

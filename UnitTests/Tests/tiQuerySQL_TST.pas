@@ -57,13 +57,13 @@ begin
   InsertIntoTestGroup(1, Database);
   Database.StartTransaction;
   try
-    Query.SQLText := 'select count(*) from test_group';
+    Query.SQLText := 'select count(*) from Test_Group';
     Query.Open;
     Check(Query.FieldAsInteger[ Query.FieldName(0) ] = 1, 'FQuery.ExecSQL failed');
     Query.Close;
-    Query.SQLText := 'delete from test_group';
+    Query.SQLText := 'delete from Test_Group';
     Query.ExecSQL;
-    Query.SQLText := 'select count(*) from test_group';
+    Query.SQLText := 'select count(*) from Test_Group';
     Query.Open;
     Check(Query.FieldAsInteger[Query.FieldName(0)] = 0, 'FQuery.ExecSQL failed');
     Query.Close;
@@ -89,7 +89,7 @@ begin
     Check(Query.Active, 'FQuery.Active := true failed');
     Query.Active := false;
     Check(not Query.Active, 'FQuery.Active := false failed');
-    Database.DeleteRow('test_group', nil);
+    Database.DeleteRow(cTableNameTestGroup, nil);
   finally
     Database.Commit;
   end;
@@ -457,23 +457,23 @@ begin
   InsertIntoTestGroup(1, Database);
   Database.StartTransaction;
   try
-    Query.SQLText := 'insert into test_group (OID,Group_Int_Field) VALUES ('+QuotedStr(NewOID)+',1)';
+    Query.SQLText := 'insert into Test_Group (OID,Group_Int_Field) VALUES ('+QuotedStr(NewOID)+',1)';
     LCountRowsAffected:=Query.ExecSQL;
     if Query.SupportsRowsAffected then
     begin
       CheckEquals(1,LCountRowsAffected,'Error testing ExecSQL WITH INSERT');
 
-      Query.SQLText := 'update test_group SET Group_Int_Field=3 '
+      Query.SQLText := 'update Test_Group SET Group_Int_Field=3 '
                       +' WHERE OID='+QuotedStr(NewOID)+' AND Group_Int_Field=2';
       LCountRowsAffected:=Query.ExecSQL;
       CheckEquals(0,LCountRowsAffected,'Error testing ExecSQL WITH UPDATE');
 
-      Query.SQLText := 'update test_group SET Group_Int_Field=3 '
+      Query.SQLText := 'update Test_Group SET Group_Int_Field=3 '
                       +' WHERE OID='+QuotedStr(NewOID)+' AND Group_Int_Field=1';
       LCountRowsAffected:=Query.ExecSQL;
       CheckEquals(1,LCountRowsAffected,'Error testing ExecSQL WITH UPDATE');
 
-      Query.SQLText := 'delete from test_group';
+      Query.SQLText := 'delete from Test_Group';
       LCountRowsAffected:=Query.ExecSQL;
       CheckEquals(2,LCountRowsAffected,'Error testing ExecSQL WITH DELETE');
     end else

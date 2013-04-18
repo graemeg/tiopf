@@ -102,7 +102,7 @@ uses
   ,tiOPFDBISASM4_TST
   ,tiOPFAsqlite3_TST
   //,tiOPFZeos_MySQL41_TST // No tests
-  //,tiOPFZeos_MySQL50_TST // No tests
+  ,tiOPFZeos_MySQL50_TST
   ,tiOPFUIB_FB_TST
   ;
 
@@ -187,8 +187,8 @@ begin
   tiOPFXML_TST.RegisterTests;
   tiOPFXMLLight_TST.RegisterTests;
   tiOPFZeos_FB_TST.RegisterTests;
-  //tiOPFZeos_MySQL41_TST.RegisterTests; // No tests
-  //tiOPFZeos_MySQL50_TST.RegisterTests; // No tests
+//  tiOPFZeos_MySQL41_TST.RegisterTests; // No tests
+  tiOPFZeos_MySQL50_TST.RegisterTests;
   tiOPFDBISASM4_TST.RegisterTests;
   tiOPFAsqlite3_TST.RegisterTests;
   tiOPFUIB_FB_TST.RegisterTests;

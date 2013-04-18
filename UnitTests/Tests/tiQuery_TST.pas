@@ -379,7 +379,7 @@ begin
   CreateTableTestGroup(Database);
   Database.StartTransaction;
   try
-    FQuery.SelectRow('test_group', nil);
+    FQuery.SelectRow('Test_Group', nil);
     Check(FQuery.EOF, 'FQuery.EOF = true failed.');
     FQuery.Close;
   finally
@@ -389,7 +389,7 @@ begin
   InsertIntoTestGroup(1, Database);
   Database.StartTransaction;
   try
-    FQuery.SelectRow('test_group', nil);
+    FQuery.SelectRow('Test_Group', nil);
     Check(not FQuery.EOF, 'FQuery.EOF = false failed.');
     FQuery.Close;
   finally
@@ -493,7 +493,7 @@ begin
   InsertIntoTestGroup(1, Database);
   Database.StartTransaction;
   try
-    FQuery.SelectRow('test_group', nil);
+    FQuery.SelectRow('Test_Group', nil);
     lFieldCount := FQuery.FieldCount;
     CheckEquals(7, lFieldCount);
     FQuery.Close;
@@ -509,8 +509,8 @@ begin
   InsertIntoTestGroup(1, Database);
   Database.StartTransaction;
   try
-    FQuery.SelectRow('test_Group', nil);
-    Check(FQuery.FieldIndex('oid'              ) = 0, 'FQuery.FieldIndex = 0 failed');
+    FQuery.SelectRow('Test_Group', nil);
+    Check(FQuery.FieldIndex('OID'              ) = 0, 'FQuery.FieldIndex = 0 failed');
     Check(FQuery.FieldIndex('Group_Str_Field'  ) = 1, 'FQuery.FieldIndex = 1 failed');
     Check(FQuery.FieldIndex('Group_Int_Field'  ) = 2, 'FQuery.FieldIndex = 2 failed');
     Check(FQuery.FieldIndex('Group_Float_Field') = 3, 'FQuery.FieldIndex = 3 failed');
@@ -535,8 +535,8 @@ begin
     try
       lParams.SetValueAsString('OID', '1');
       Database.InsertRow('Test_Group', lParams);
-      FQuery.SelectRow('test_group', nil);
-      Check(FQuery.FieldIsNull[ 'group_str_field' ], 'FieldIsNull  = true failed');
+      FQuery.SelectRow('Test_Group', nil);
+      Check(FQuery.FieldIsNull[ 'Group_Str_Field' ], 'FieldIsNull  = true failed');
       Check(FQuery.FieldIsNullByIndex[ cFieldAs_Index ], 'FieldIsNull  = true failed');
       FQuery.Close;
     finally
@@ -546,7 +546,7 @@ begin
     Database.Commit;
   end;
 
-  Database.DeleteRow('test_group', nil);
+  Database.DeleteRow('Test_Group', nil);
   Database.StartTransaction;
   try
     lParams := TtiQueryParams.Create;
@@ -554,8 +554,8 @@ begin
       lParams.SetValueAsString('OID', '2');
       lParams.SetValueAsString('Group_Str_Field', '2');
       Database.InsertRow('Test_Group', lParams);
-      FQuery.SelectRow('test_group', nil);
-      Check(not FQuery.FieldIsNull[ 'group_str_field' ], 'FieldIsNull = false failed');
+      FQuery.SelectRow('Test_Group', nil);
+      Check(not FQuery.FieldIsNull[ 'Group_Str_Field' ], 'FieldIsNull = false failed');
       Check(not FQuery.FieldIsNullByIndex[ cFieldAs_Index ], 'FieldIsNull = false failed');
       FQuery.Close;
     finally
@@ -574,7 +574,7 @@ begin
   InsertIntoTestGroup(1, Database);
   Database.StartTransaction;
   try
-    FQuery.SelectRow('test_group', nil);
+    FQuery.SelectRow('Test_Group', nil);
     Check(FQuery.FieldKind(FQuery.FieldIndex('Group_Str_Field'  ))  = qfkString,     'FQuery.FieldKind = qfkString failed');
     Check(FQuery.FieldKind(FQuery.FieldIndex('Group_Int_Field'  ))  = qfkInteger,    'FQuery.FieldKind = qfkInteger failed');
     Check(FQuery.FieldKind(FQuery.FieldIndex('Group_Float_Field'))  = qfkFloat,      'FQuery.FieldKind = qfkFloat failed');
@@ -595,8 +595,8 @@ begin
   InsertIntoTestGroup(1, Database);
   Database.StartTransaction;
   try
-    FQuery.SelectRow('test_group', nil);
-    Check(SameText(FQuery.FieldName(0), 'oid'              ),  'FQuery.FieldName(0) failed');
+    FQuery.SelectRow('Test_Group', nil);
+    Check(SameText(FQuery.FieldName(0), 'OID'              ),  'FQuery.FieldName(0) failed');
     Check(SameText(FQuery.FieldName(1), 'Group_Str_Field'  ),  'FQuery.FieldName(1) failed');
     Check(SameText(FQuery.FieldName(2), 'Group_Int_Field'  ),  'FQuery.FieldName(2) failed');
     Check(SameText(FQuery.FieldName(3), 'Group_Float_Field'),  'FQuery.FieldName(3) failed');
@@ -648,7 +648,7 @@ begin
   InsertIntoTestGroup(5, Database);
   Database.StartTransaction;
   try
-    FQuery.SelectRow('test_group', nil);
+    FQuery.SelectRow('Test_Group', nil);
     Check(not FQuery.EOF, '0 FQuery.EOF = true failed.');
     FQuery.Next;
     Check(not FQuery.EOF, '1 FQuery.EOF = true failed.');
@@ -688,8 +688,8 @@ begin
     LDatabase:= DBConnectionPool.Lock;
     try
       LDatabase.ReadMetaDataTables(LDBMetaData);
-      LDBMetaDataTable := LDBMetaData.FindByTableName('test_item');
-      Check(LDBMetaDataTable <> nil, 'Unable to find metadata for test_item');
+      LDBMetaDataTable := LDBMetaData.FindByTableName('Test_Item');
+      Check(LDBMetaDataTable <> nil, 'Unable to find metadata for Test_Item');
       Check(SameText(LDBMetaDataTable.Name, 'Test_Item'), 'Wrong table found when searching for <test_item>');
       LDatabase.ReadMetaDataFields(LDBMetaDataTable);
 
@@ -705,7 +705,7 @@ begin
       CheckFieldMetaData(LDBMetaDataTable, 'ITEM_Date_FIELD',  qfkDateTime);
       CheckFieldMetaData(LDBMetaDataTable, 'ITEM_Notes_FIELD', qfkLongString);
 
-      LDBMetaDataTable := LDBMetaData.FindByTableName('test_group');
+      LDBMetaDataTable := LDBMetaData.FindByTableName('Test_Group');
       Check(LDBMetaDataTable <> nil, 'Unable to find metadata for test_group');
       Check(SameText(LDBMetaDataTable.Name, 'Test_Group'), 'Wrong table found when searching for <test_group>');
       LDatabase.ReadMetaDataFields(LDBMetaDataTable);
@@ -1170,7 +1170,7 @@ begin
         LParams:= TtiQueryParams.Create;
         LParams.SetValueAsInteger('oid', 1);
         LDatabase.StartTransaction;
-        LQuery.InsertRow('test_group', LParams);
+        LQuery.InsertRow(cTableNameTestGroup, LParams);
         LDatabase.Rollback;
 
         LDatabase.StartTransaction;
@@ -1179,7 +1179,7 @@ begin
         Check(LEOF, 'Transaction not rolled back');
         LQuery.Close;
 
-        LQuery.InsertRow('test_group', LParams);
+        LQuery.InsertRow(cTableNameTestGroup, LParams);
         LDatabase.Commit;
 
         LDatabase.StartTransaction;
@@ -2312,7 +2312,7 @@ procedure TTestTIPersistenceLayers.ConnectDatabase;
 var
   LPersistenceLayer: TtiPersistenceLayer;
 const
-  CDatabaseAlias = 'TestDatabaseAlias';  
+  CDatabaseAlias = 'TestDatabaseAlias';
 begin
   // just a safety precaution.
   if not Assigned(TestSetupData) then
