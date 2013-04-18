@@ -100,6 +100,9 @@ uses
   ,tiOPFRemote_TST
   ,tiOPFSQLDB_IB_TST
   ,tiOPFSQLDB_PQ_TST
+//  ,tiOPFSQLDB_MY50_TST
+//  ,tiOPFSQLDB_MY51_TST
+  ,tiOPFSQLDB_MY55_TST
   ,tiOPFTAB_TST
   ,tiOPFXML_TST
   ,tiOPFXMLLight_TST
@@ -188,6 +191,9 @@ begin
   tiOPFRemote_TST.RegisterTests;
   tiOPFSQLDB_IB_TST.RegisterTests;
   tiOPFSQLDB_PQ_TST.RegisterTests;
+//  tiOPFSQLDB_MY50_TST.RegisterTests;
+//  tiOPFSQLDB_MY51_TST.RegisterTests;
+  tiOPFSQLDB_MY55_TST.RegisterTests;
   tiOPFTAB_TST.RegisterTests;
   tiOPFXML_TST.RegisterTests;
   tiOPFXMLLight_TST.RegisterTests;
