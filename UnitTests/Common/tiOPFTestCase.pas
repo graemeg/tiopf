@@ -391,7 +391,7 @@ begin
         LDatabase.DropTable(ATableName);
       except
         on e: Exception do
-          SendDebug('Error trying to drop table <' + ATableName + '>.' + tiLineEnd + e.Message);
+          EtiOPFDUnitException.Create('Error trying to drop table <' + ATableName + '>.' + tiLineEnd + e.Message);
       end;
     finally
       DBConnectionPool.UnLock(LDatabase);
@@ -403,7 +403,7 @@ begin
       ADatabase.DropTable(ATableName);
     except
       on e: Exception do
-        SendDebug('Error trying to drop table <' + ATableName + '>.' + tiLineEnd + e.Message);
+        EtiOPFDUnitException.Create('Error trying to drop table <' + ATableName + '>.' + tiLineEnd + e.Message);
     end;
   end;
   LIndex:= FCreatedTables.IndexOf(ATableName);
