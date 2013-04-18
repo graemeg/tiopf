@@ -92,6 +92,7 @@ uses
   ,tiDUnitINI
   ,tiConstants
   ,tiOIDForTesting
+  {$IFDEF gDEBUG},dbugintf{$ENDIF}
  ;
 
 const
@@ -123,10 +124,10 @@ begin
   inherited;
   FTestNonPersistentClasses:= True;
   FTestAll := FindCmdLineSwitch('All', ['-', '/'], true);
-  {$IFDEF gDEBUG}writeln('Persistence layers found:');{$ENDIF}
+  {$IFDEF gDEBUG}SendDebug('Persistence layers found:');{$ENDIF}
   for i := 0 to GTIOPFManager.PersistenceLayers.Count - 1 do
   begin
-    {$IFDEF gDEBUG} writeln(#9 + GTIOPFManager.PersistenceLayers.Items[i].PersistenceLayerName); {$ENDIF}
+    {$IFDEF gDEBUG}SendDebug('    ' + GTIOPFManager.PersistenceLayers.Items[i].PersistenceLayerName); {$ENDIF}
     L:= TtiOPFTestSetupData.Create(GTIOPFManager.PersistenceLayers.Items[i]);
     Add(L);
   end;
@@ -185,7 +186,7 @@ var
   i: Integer;
 begin
   {$IFDEF gDEBUG}
-  writeln('DUnit ini file: ' + gDUnitINICommon.FileName);
+  SendDebug('DUnit ini file: ' + gDUnitINICommon.FileName);
   {$ENDIF}
   if not gDUnitINICommon.ValueExists(cINIPerLayersToTest, 'NonPersistent') then
     gDUnitINICommon.WriteBool(cINIPerLayersToTest, 'NonPersistent', True);
