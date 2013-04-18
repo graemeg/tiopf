@@ -16,7 +16,6 @@ type
   published
     procedure GetSetSQL; override;
     procedure QueryType; override;
-    {$IFNDEF FPCx}   { Temporary disabled for FPC - will fix soon (Graeme) }
     procedure ParamName; override;
     procedure ParamCount; override;
     procedure ParamsAsString; override;
@@ -28,7 +27,6 @@ type
     procedure ParamAsStream; override;
     procedure ParamAsMacro; override;
     procedure ParamIsNull; override;
-    {$ENDIF}
     procedure OpenCloseActive; override;
     procedure ExecSQL; override;
     procedure RowsAffected; override;
@@ -152,7 +150,6 @@ begin
 end;
 
 
-{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamAsBoolean;
 begin
   CreateTableInteger(Database);
@@ -168,10 +165,8 @@ begin
     Database.Commit;
   end;
 end;
-{$ENDIF}
 
 
-{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamAsDateTime;
 var
   lDate : TDateTime;
@@ -188,10 +183,8 @@ begin
     Database.Commit;
   end;
 end;
-{$ENDIF}
 
 
-{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamAsFloat;
 const
   cValue = 12345.6789;
@@ -207,10 +200,8 @@ begin
     Database.Commit;
   end;
 end;
-{$ENDIF}
 
 
-{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamAsInteger;
 begin
   CreateTableInteger(Database);
@@ -224,10 +215,8 @@ begin
     Database.Commit;
   end;
 end;
-{$ENDIF}
 
 
-{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamAsMacro;
 const
   cFields = 'Item_Str_Field';
@@ -240,10 +229,8 @@ begin
                    'select ' + cFields + ' from ' + cTable),
          'ParamAsMacro failed');
 end;
-{$ENDIF}
 
 
-{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamAsString;
 begin
   CreateTableString(Database);
@@ -257,10 +244,8 @@ begin
     Database.Commit;
   end;
 end;
-{$ENDIF}
 
 
-{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamCount;
 begin
   CreateTableTestGroup(Database);
@@ -300,10 +285,8 @@ begin
     Database.Commit;
   end;
 end;
-{$ENDIF}
 
 
-{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamIsNull;
 begin
   CreateTableTestGroup(Database);
@@ -318,10 +301,8 @@ begin
     Database.Commit;
   end;
 end;
-{$ENDIF}
 
 
-{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamName;
 begin
   CreateTableTestGroup(Database);
@@ -346,10 +327,8 @@ begin
     Database.Commit;
   end;
 end;
-{$ENDIF}
 
 
-{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamsAsString;
 var
   lResult : string;
@@ -395,7 +374,6 @@ begin
     Database.Commit;
   end;
 end;
-{$ENDIF}
 
 
 procedure TTestTIQuerySQL.QueryType;
@@ -417,7 +395,6 @@ begin
 end;
 
 
-{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamAsStream;
 var
   lStreamFrom : TStringStream;
@@ -445,7 +422,7 @@ begin
     lStreamFrom.Free;
   end;
 end;
-{$ENDIF}
+
 
 procedure TTestTIQuerySQL.RowsAffected;
 const
