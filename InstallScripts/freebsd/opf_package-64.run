@@ -1,7 +1,7 @@
 #!/bin/sh
 # Build script for tiOPF using 64bit Free Pascal Compiler
 BASEDIR="/data/devel"
-FPC="$BASEDIR/fpc-2.6.0/x86_64-freebsd/bin/ppcx64"
+FPC="$BASEDIR/fpc-2.6.2/x86_64-freebsd/bin/ppcx64"
 FPCVER=`$FPC -iV`
 FPCCPU=`$FPC -iTP`
 FPCHOST=`$FPC -iTO`
