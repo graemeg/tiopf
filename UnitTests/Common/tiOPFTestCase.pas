@@ -230,7 +230,7 @@ begin
         'Expected Output ="" but got "%s"', [LOutput]);
 
     {$ENDIF MSWINDOWS}
-    
+
     {$IFDEF LINUX}
     tiUtils.tiRunEXEAndWait('rm -f -R ' + ADirectory);
     {$ENDIF LINUX}
@@ -399,14 +399,24 @@ begin
     try
       try
         LDatabase.DropTable(ATableName);
-      except end;
+      except
+        on e: Exception do
+          EtiOPFDUnitException.Create('Error trying to drop table <' + ATableName + '>.' + tiLineEnd + e.Message);
+      end;
     finally
       DBConnectionPool.UnLock(LDatabase);
     end;
   end
   else
-    ADatabase.DropTable(ATableName);
-  LIndex:= FCreatedTables.IndexOf(LowerCase(ATableName));
+  begin
+    try
+      ADatabase.DropTable(ATableName);
+    except
+      on e: Exception do
+        EtiOPFDUnitException.Create('Error trying to drop table <' + ATableName + '>.' + tiLineEnd + e.Message);
+    end;
+  end;
+  LIndex:= FCreatedTables.IndexOf(ATableName);
   if LIndex <> -1 then
   begin
     FCreatedTables.Delete(LIndex);
@@ -453,12 +463,12 @@ var
 begin
   LDatabase:= DBConnectionPool.Lock;
   try
-    LDatabase.DeleteRow('test_item',    nil);
+    LDatabase.DeleteRow('Test_Item',    nil);
     LDatabase.DeleteRow(cTableNameTestGroup,   nil);
-    LDatabase.DeleteRow('test_bin',     nil);
+    LDatabase.DeleteRow('Test_Bin',     nil);
     LDatabase.DeleteRow(cTableNameTIOPFTestChild_A, nil);
     LDatabase.DeleteRow(cTableNameTIOPFTestChild_B, nil);
-    LDatabase.DeleteRow('test_parent',  nil);
+    LDatabase.DeleteRow('Test_Parent',  nil);
   finally
     DBConnectionPool.UnLock(LDatabase);
   end;
@@ -560,7 +570,7 @@ procedure TtiTestCaseWithDatabaseConnection.CreateTableInPassedDB(
 begin
   try
     ADatabase.CreateTable(ATable);
-    FCreatedTables.Add(LowerCase(ATable.Name));
+    FCreatedTables.Add(ATable.Name);
   except
     on e:exception do
     begin
@@ -569,7 +579,7 @@ begin
       // If this does not work, another exception will be raised.
       DropTable(ATable.Name,ADatabase);
       ADatabase.CreateTable(ATable);
-      FCreatedTables.Add(LowerCase(ATable.Name));
+      FCreatedTables.Add(ATable.Name);
     end;
   end;
 end;

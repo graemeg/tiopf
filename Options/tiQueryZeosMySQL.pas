@@ -144,12 +144,7 @@ begin
     qfkInteger: result := 'Integer';
 //    qfkFloat: result := 'Decimal( 10, 5 )';
     qfkFloat: result := 'DOUBLE PRECISION';
-    // Just for new version of IB (6.x)
-    // DATE holds only DATE without TIME...
-    qfkDateTime: result := 'datetime'; {if Connection.Properties.Values['DIALECT'] <> '1' then
-        result := 'TIMESTAMP'
-      else
-        result := 'Date';}
+    qfkDateTime: result := 'datetime';
     {$IFDEF BOOLEAN_CHAR_1}
     qfkLogical    : result := 'Char(1) default ''F''';
     {$ELSE}
@@ -190,7 +185,7 @@ const
   cIBField_BLOB_ID    = 45;
 begin
   lTable := (pData as TtiDBMetaDataTable);
-  lTableName := UpperCase(lTable.Name);
+  lTableName := lTable.Name;
   try
     conn := Self.Connection.DbcConnection;
     Metadata := conn.GetMetadata;

@@ -147,7 +147,7 @@ type
   published
     property    Name : TTableName read FName write FName;
   end;
-  
+
 
   TtiDBMetaDataField = class(TtiObject)
   private
@@ -553,7 +553,7 @@ type
     procedure   SetValueAsString(const AValue : string); override;
     procedure   AssignToTIQuery(const AQuery : TtiQuery); override;
   end;
-  
+
 
   TtiQueryParamInteger = class(TtiQueryParamAbs)
   private
@@ -567,7 +567,7 @@ type
     function    GetValueAsString : string; override;
     procedure   AssignToTIQuery(const AQuery : TtiQuery); override;
   end;
-  
+
 
   TtiQueryParamFloat = class(TtiQueryParamAbs)
   private
@@ -581,7 +581,7 @@ type
     function    GetValueAsString : string; override;
     procedure   AssignToTIQuery(const AQuery : TtiQuery); override;
   end;
-  
+
 
   TtiQueryParamDateTime = class(TtiQueryParamAbs)
   private
@@ -595,7 +595,7 @@ type
     function    GetValueAsString : string; override;
     procedure   AssignToTIQuery(const AQuery : TtiQuery); override;
   end;
-  
+
 
   TtiQueryParamBoolean = class(TtiQueryParamAbs)
   private
@@ -609,7 +609,7 @@ type
     function    GetValueAsString : string; override;
     procedure   AssignToTIQuery(const AQuery : TtiQuery); override;
   end;
-  
+
 
   TtiQueryParamStream = class(TtiQueryParamAbs)
   private
@@ -626,7 +626,7 @@ type
     function    GetValueAsStream : TStream;
     procedure   AssignToTIQuery(const AQuery : TtiQuery); override;
   end;
-  
+
 
 const
   cgtiQueryMacroChr  = '&';

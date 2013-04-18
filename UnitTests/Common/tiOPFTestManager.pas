@@ -166,7 +166,7 @@ begin
     begin
       result := Items[i];
       Exit; //==>
-    end; 
+    end;
 end;
 
 

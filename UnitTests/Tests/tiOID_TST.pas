@@ -741,13 +741,13 @@ begin
         LQuery := LDatabase.CreateTIQuery;
         try
           LQuery.AttachDatabase(LDatabase);
-          LQuery.SQLText := 'update next_oid set oid = :oid';
+          LQuery.SQLText := 'update Next_OID set OID = :OID';
           LOID.AsString  := CExpected;
           LOID.AssignToTIQuery(LQuery);
           LQuery.ExecSQL;
-          LQuery.SQLText := 'select oid from next_oid';
+          LQuery.SQLText := 'select OID from Next_OID';
           LQuery.Active  := True;
-          LActual        := IntToStr(LQuery.FieldAsInteger['oid']);
+          LActual        := IntToStr(LQuery.FieldAsInteger['OID']);
           CheckEquals(CExpected, LActual);
         finally
           LQuery.Free;
@@ -779,11 +779,11 @@ begin
         LQuery := LDatabase.CreateTIQuery;
         try
           LQuery.AttachDatabase(LDatabase);
-          LQuery.SelectRow('next_oid', nil);
+          LQuery.SelectRow('Next_OID', nil);
           LOID.AssignFromTIQuery(LQuery);
           Check(not LQuery.EOF);
           CheckNotEquals(LOID.NullOIDAsString, LOID.AsString);
-          CheckEquals(LQuery.FieldAsString['oid'], LOID.AsString);
+          CheckEquals(LQuery.FieldAsString['OID'], LOID.AsString);
         finally
           LQuery.Free;
         end;
@@ -824,13 +824,13 @@ begin
         LQuery := LDatabase.CreateTIQuery;
         try
           LQuery.AttachDatabase(LDatabase);
-          LQuery.SQLText := 'update next_oid set oid = :newoid';
+          LQuery.SQLText := 'update Next_OID set OID = :newoid';
           LOID.AsString  := CExpected;
           LOID.AssignToTIQuery('newoid', LQuery);
           LQuery.ExecSQL;
-          LQuery.SQLText := 'select oid from next_oid';
+          LQuery.SQLText := 'select OID from Next_OID';
           LQuery.Active  := True;
-          LActual        := IntToStr(LQuery.FieldAsInteger['oid']);
+          LActual        := IntToStr(LQuery.FieldAsInteger['OID']);
           CheckEquals(CExpected, LActual);
         finally
           LQuery.Free;
@@ -862,11 +862,11 @@ begin
         LQuery := LDatabase.CreateTIQuery;
         try
           LQuery.AttachDatabase(LDatabase);
-          LQuery.SelectRow('next_oid', nil);
-          LOID.AssignFromTIQuery('oid', LQuery);
+          LQuery.SelectRow('Next_OID', nil);
+          LOID.AssignFromTIQuery('OID', LQuery);
           Check(not LQuery.EOF);
           CheckNotEquals(LOID.NullOIDAsString, LOID.AsString);
-          CheckEquals(LQuery.FieldAsString['oid'], LOID.AsString);
+          CheckEquals(LQuery.FieldAsString['OID'], LOID.AsString);
         finally
           LQuery.Free;
         end;
@@ -896,7 +896,7 @@ begin
         LQuery := LDatabase.CreateTIQuery;
         try
           LQuery.AttachDatabase(LDatabase);
-          LQuery.SelectRow('next_oid', nil);
+          LQuery.SelectRow('Next_OID', nil);
           LOID.AssignFromTIQuery(LQuery);
           Check(LOID.EqualsQueryField('OID', LQuery));
           LOID.AsString := '-1';
