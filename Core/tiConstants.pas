@@ -28,6 +28,8 @@ const
   cTIPersistSqldbMySQL40  = 'Sqldb_MySQL40';
   cTIPersistSqldbMySQL41  = 'Sqldb_MySQL41';
   cTIPersistSqldbMySQL50  = 'Sqldb_MySQL50';
+//  cTIPersistSqldbMySQL51  = 'Sqldb_MySQL51';
+  cTIPersistSqldbMySQL55  = 'Sqldb_MySQL55';
   cTIPersistTAB           = 'TAB';
   cTIPersistXML           = 'XML';          // ToDo: Rename this MSXML
   cTIPersistXMLLight      = 'XMLLight';

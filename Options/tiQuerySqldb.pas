@@ -369,27 +369,16 @@ begin
 
     FDatabase.Connected    := True;
   except
-    // ToDo: Must come up with a better solution that this:
-    //       Try several times before raising an exception.
-    //       Rather than calling 'Halt', just terminate this database connection,
-    //       unless this is the first connection.
     on e: EDatabaseError do
     begin
-      // Invalid username / password error
-      //      if (EIBError(E).IBErrorCode = 335544472) then
-      //        raise EtiOPFDBExceptionUserNamePassword.Create(cTIPersistIBX, DatabaseName, UserName, Password)
-      //      else
-      //      begin
-      lMessage := 'Error attempting to connect to database.' + Cr + e.Message;
-      raise EtiOPFDBExceptionUserNamePassword.Create(
-        cTIPersistSqldbIB, DatabaseName, UserName, Password, lMessage);
-      //      end;
+      lMessage := 'Error attempting to connect to database.' + tiLineEnd+ e.Message;
+      raise EtiOPFDBExceptionUserNamePassword.Create('Sqldb', DatabaseName, UserName, Password, lMessage);
     end;
 
     on e: Exception do
     begin
-      lMessage := 'Error attempting to connect to database.' + Cr + e.Message;
-      raise EtiOPFDBException.Create(cTIPersistSqldbIB, DatabaseName, UserName, Password, lMessage)
+      lMessage := 'Error attempting to connect to database.' + tiLineEnd + e.Message;
+      raise EtiOPFDBException.Create('Sqldb', DatabaseName, UserName, Password, lMessage)
     end;
   end;
 end;
