@@ -35,7 +35,7 @@ $FPC -MObjFPC -S2cai -O1 -gl -ve \
   -Fu$FBLIB \
   -Fu$ZEOS/packages/lazarus/lib/$FPCCPU-$FPCHOST/ \
   -Fu. -FE$TIOPF/Compilers/FPC/lib/$FPCCPU-$FPCHOST/ \
-  -dLINK_CSV -dLINK_TAB -dLINK_XMLLIGHT -dLINK_SQLDB_IB -dLINK_FBLx -dLINK_ZEOS_FB \
+  -dLINK_CSV -dLINK_TAB -dLINK_XMLLIGHT -dLINK_SQLDB_IB -dLINK_FBLx -dLINK_ZEOS_FB -dLINK_ZEOS_MYSQL50 \
   -dUseCThreads \
   $TIOPF/Compilers/FPC/tiOPF.pas
 

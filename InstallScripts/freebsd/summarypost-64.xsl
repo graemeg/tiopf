@@ -27,6 +27,7 @@ Persistence Layers Tested:
    FBLIB
    SqlDB - Firebird 2.5
    Zeos - Firebird 2.5
+   Zeos - MySQL 5.x
 
 <xsl:call-template name="summary"/>
 
