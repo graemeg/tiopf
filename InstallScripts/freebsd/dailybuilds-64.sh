@@ -7,9 +7,12 @@
 BASEDIR="/data/devel"
 TIOPF="$BASEDIR/tiopf_dailybuilds/tiopf"              # tiOPF root directory
 SCRIPTS="$TIOPF/InstallScripts/freebsd"       # scripts directory
-FPC="$BASEDIR/fpc-2.6.0/x86_64-freebsd/bin/ppcx64"
+FPC="$BASEDIR/fpc-2.6.2/x86_64-freebsd/bin/ppcx64"
 #REV=`svnversion -n $TIOPF/`
-REV=`git log --pretty="%h" --abbrev-commit -1`
+
+cd $TIOPF
+REV=`/usr/local/bin/git log --pretty="%h" --abbrev-commit -1`
+
 FPCVER=`$FPC -iV`
 FPCCPU=`$FPC -iTP`
 FPCHOST=`$FPC -iTO`
@@ -72,3 +75,4 @@ cat msg3.txt divider.txt /tmp/DUnitReportShort${FPCVER}.txt > msg4.txt
 /usr/local/bin/rpost opensoft.homeip.net < msg4.txt
 # copy html results to web server
 scp -q -i /home/graemeg/.ssh/id_rsa index.html graemeg@192.168.0.5:/usr/local/www/opensoft.homeip.net/tiopf/unittests/freebsd64.html
+
