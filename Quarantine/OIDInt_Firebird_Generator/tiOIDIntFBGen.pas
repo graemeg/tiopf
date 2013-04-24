@@ -2,6 +2,8 @@ unit tiOIDIntFBGen;
 
 { This is a clone of tiOIDInt64, but for use with firbird/interbase generators.
   Created by Carlo Marona 06 jan 2008
+  Modified by Raul Ferriz 2013-04-24
+    Properly handle NULL at firebird.
   }
 
 {$I tiDefines.inc}
@@ -107,6 +109,8 @@ uses
 const
   cDefaultOIDClassName = 'OIDClassNameIntFBGen';
   cDefaultFBGeneratorName = 'GEN_NEXT_OID';
+  { We need a different mark instead of cNullOIDInteger to be able to use 0 as valid OID }
+  cFBNullOIDInteger = Low(Int64);
 
 
 
@@ -125,17 +129,23 @@ const
 
 function TOIDIntFBGen.getAsString: String;
 begin
-  result := IntToStr(FAsInt64);
+  if IsNull then
+    Result := NullOIDAsString
+  else
+    Result := IntToStr(FAsInt64);
 end;
 
 procedure TOIDIntFBGen.SetAsString(const AValue: String);
 begin
-  FAsInt64 := StrToInt(AValue);
+  if AValue = '' then
+    SetToNull
+  else
+    FAsInt64 := StrToInt(AValue);
 end;
 
 function TOIDIntFBGen.IsNull: boolean;
 begin
-  result := FAsInt64 = cNullOIDInteger;
+  result := (FAsInt64 = cFBNullOIDInteger);
 end;
 
 procedure TOIDIntFBGen.AssignFromTIQuery(const AFieldName : string; const AQuery: TtiBaseObject);
@@ -144,7 +154,10 @@ var
 begin
   Assert(AQuery is TtiQuery, 'AQuery not a TtiQuery');
   lQuery := TtiQuery(AQuery);
-  FAsInt64 := lQuery.FieldAsInteger[ AFieldName ];
+  if lQuery.FieldIsNull[AFieldName] then
+    FAsInt64 := cFBNullOIDInteger
+  else
+    FAsInt64 := lQuery.FieldAsInteger[ AFieldName ];
 end;
 
 procedure TOIDIntFBGen.AssignToTIQuery(const AFieldName : string; const AQuery: TtiBaseObject);
@@ -153,7 +166,10 @@ var
 begin
   Assert(AQuery is TtiQuery, 'AQuery not a TtiQuery');
   lQuery := TtiQuery(AQuery);
-  lQuery.ParamAsInteger[ AFieldName ]:= FAsInt64;
+  if FAsInt64 = cFBNullOIDInteger then
+    lQuery.ParamIsNull[AFieldName] := True
+  else
+    lQuery.ParamAsInteger[ AFieldName ]:= FAsInt64;
 end;
 
 function TOIDIntFBGen.EqualsQueryField(const AFieldName: string; const AQuery: TtiBaseObject): boolean;
@@ -162,7 +178,10 @@ var
 begin
   Assert(AQuery is TtiQuery, 'AQuery not a TtiQuery');
   lQuery := TtiQuery(AQuery);
-  result := (FAsInt64 = lQuery.FieldAsInteger[ AFieldName ]);
+  if IsNull and lQuery.FieldIsNull[AFieldName] then
+    Result := True
+  else
+    result := (FAsInt64 = lQuery.FieldAsInteger[ AFieldName ]);
 end;
 
 procedure TOIDIntFBGen.Assign(const ASource: TtiOID);
@@ -173,7 +192,7 @@ end;
 function TOIDIntFBGen.Compare(const ACompareWith: TtiOID): Integer;
 begin
   Assert(ACompareWith is TOIDIntFBGen, 'ACompareWith not a TOIDIntFBGen');
-  
+
   if AsInt64 < TOIDIntFBGen(ACompareWith).AsInt64 then
     result := -1
   else if AsInt64 > TOIDIntFBGen(ACompareWith).AsInt64 then
@@ -202,7 +221,7 @@ end;
 
 constructor TOIDGeneratorIntFBGenAbs.Create;
 begin
-  inherited;
+  inherited Create;
 
   FNextOIDData := TNextOIDFBGenData.Create;
   FCritSection:= TCriticalSection.Create;
@@ -212,7 +231,7 @@ destructor TOIDGeneratorIntFBGenAbs.destroy;
 begin
   FCritSection.Free;
   FNextOIDData.Free;
-  inherited;
+  inherited Destroy;
 end;
 
 function TOIDGeneratorIntFBGenAbs.NextOID(const ADatabaseName : string;
@@ -237,7 +256,7 @@ end;
 
 procedure TOIDIntFBGen.SetToNull;
 begin
-  FAsInt64 := cNullOIDInteger;
+  FAsInt64 := cFBNullOIDInteger;
 end;
 
 function TOIDIntFBGen.GetAsVariant: Variant;
@@ -257,7 +276,7 @@ end;
 
 function TOIDIntFBGen.NullOIDAsString: string;
 begin
-  result := IntToStr(cNullOIDInteger);
+  result := '';
 end;
 
 procedure TOIDIntFBGen.AssignToTIQueryParam(const AFieldName: string;const AParams: TtiBaseObject);
@@ -266,7 +285,10 @@ var
 begin
   Assert(AParams is TtiQueryParams, 'AQuery not a TtiQuery');
   lParams := TtiQueryParams(AParams);
-  lParams.SetValueAsInteger(AFieldName, FAsInt64);
+  if IsNull then
+    lParams.SetValueAsString(aFieldName, '')
+  else
+    lParams.SetValueAsInteger(AFieldName, FAsInt64);
 end;
 
 { TVisDBNextOIDAmblerRead }
