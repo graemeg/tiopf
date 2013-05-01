@@ -430,7 +430,10 @@ begin
   begin
     LIterationDepth := AIterationDepth + 1;
     if AVisitor.AcceptVisitor(Self) then
+    begin
+tiAppendStringToFile('visitor: ' + AVisitor.ClassName, '\dunitpos.txt');
       ATouchMethod(Self, AVisitor, ATouchedByVisitorList, LIterationDepth);
+    end;
     LClassPropNames := TStringList.Create;
     try
       tiGetPropertyNames(Self, LClassPropNames, [tkClass]);
