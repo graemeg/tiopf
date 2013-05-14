@@ -1538,7 +1538,6 @@ end;
 
 procedure TVisAutoCollectionReadAbs.Execute(const AData: TtiVisited);
 begin
-tiAppendStringToFile('TVisAutoCollectionReadAbs.Execute'#13#10, '\dunitpos.txt');
   inherited Execute(AData);
   if not AcceptVisitor then
     Exit; //==>
@@ -1759,7 +1758,6 @@ var
   lCollections: TList;
   i: integer;
 begin
-tiAppendStringToFile('TVisAutoCollectionReadRegistered.ReadData'#13#10, '\dunitpos.txt');
   lCollections := TList.Create;
   try
     lCollections.Clear;
@@ -1776,14 +1774,9 @@ end;
 
 procedure TVisAutoCollectionReadRegistered.ReadDataForParentClass(ACollection: TtiClassDBCollection);
 begin
-tiAppendStringToFile('TVisAutoCollectionReadRegistered.ReadDataForParentClass'#13#10, '\dunitpos.txt');
   FClassDBCollection := ACollection;
   SetupParams;
   SetUpCriteria; 
-tiAppendStringToFile('TVisAutoCollectionReadRegistered.ReadDataForParentClass: table=' + FAttrColMaps.TableName + #13#10, '\dunitpos.txt');
-tiAppendStringToFile('TVisAutoCollectionReadRegistered.ReadDataForParentClass: where=' + FWhere.AsString + #13#10, '\dunitpos.txt');
-  if Assigned(FCriteria) then
-tiAppendStringToFile('TVisAutoCollectionReadRegistered.ReadDataForParentClass: criteria=' + IntToStr(FCriteria.Criterias.Count) + #13#10, '\dunitpos.txt');
 
   // use 2 different SelectRow methods so that non-criteria-aware queries still work
   if Assigned(FCriteria) then
@@ -1793,7 +1786,6 @@ tiAppendStringToFile('TVisAutoCollectionReadRegistered.ReadDataForParentClass: c
 
   while not Query.EOF do
   begin
-tiAppendStringToFile('TVisAutoCollectionReadRegistered.ReadDataForParentClass: MapRowToObject'#13#10, '\dunitpos.txt');
     MapRowToObject(False);
     Query.Next;
   end;
@@ -1823,12 +1815,10 @@ var
   lCount:     integer;
   lTableName: string;
 begin
-tiAppendStringToFile('TVisAutoCollectionReadRegistered.ReadDataForChildClasses'#13#10, '\dunitpos.txt');
   FClassDBCollection := ACollection;
   GetAttrColMaps;
   for i := 0 to List.Count - 1 do
   begin
-tiAppendStringToFile('TVisAutoCollectionReadRegistered.ReadDataForChildClasses item ' + IntToStr(i) + #13#10, '\dunitpos.txt');
     _GetWhereAttrColMaps(List.Items[i]);
     lTableName := FWhereAttrColMaps.TableName;
     Assert(lTableName <> '', 'Unable to find table name. FWhereAttrColMaps.Count = ' +
@@ -1838,7 +1828,6 @@ tiAppendStringToFile('TVisAutoCollectionReadRegistered.ReadDataForChildClasses i
     lCount     := 0;
     while not Query.EOF do
     begin
-tiAppendStringToFile('TVisAutoCollectionReadRegistered.ReadDataForChildClasses MapRowToObject'#13#10, '\dunitpos.txt');
       MapRowToObject(True);
       Query.Next;
       Inc(lCount);
