@@ -264,7 +264,7 @@ type
     procedure   DoObjectToGui; override;
   public
     procedure   RefreshList; virtual;
-    procedure   Update(ASubject: TtiObject; AOperation: TNotifyOperation); override;
+    procedure   Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject=nil); override;
     property    DisplayFieldName: string read GetDisplayFieldName write FDisplayFieldName;
   end;
 
@@ -1179,7 +1179,7 @@ begin
   InternalListRefresh;
 end;
 
-procedure TtiDynamicListBoxMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
+procedure TtiDynamicListBoxMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject);
 var
   EditOperation: boolean;
 begin
@@ -1191,7 +1191,7 @@ begin
     TestIfValid;
   end
   else
-    inherited Update(ASubject, AOperation);
+    inherited Update(ASubject, AOperation, AData);
 end;
 
 { TtiItemListBoxMediatorView }
