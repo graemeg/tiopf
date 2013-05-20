@@ -752,7 +752,7 @@ begin
   end;
 end;
 
-{ Items that are now owned by the ObjectList must NOT be deleted. This is
+{ Items that are not owned by the ObjectList must NOT be deleted. This is
   what this test is for. }
 procedure TtiObjectTestCase.Deleted_TtiObjectList_AutoSetItemOwnerFalse;
 var
