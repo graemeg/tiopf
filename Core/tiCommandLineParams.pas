@@ -63,12 +63,6 @@ begin
   result := UCommandLineParams;
 end;
 
-{$IFDEF DUNIT}
-function ParamCount: integer
-begin
-end;
-{$ENDIF}
-
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
 // * TtiCommandLineParams
