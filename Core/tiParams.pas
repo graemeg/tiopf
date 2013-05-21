@@ -33,7 +33,7 @@ type
 
 function TCMLParams.ParamCount: integer;
 begin
-  Result := System.ParamCount
+  Result := System.ParamCount;
 end;
 
 function TCMLParams.ParamStr(const AIndex: integer): string;

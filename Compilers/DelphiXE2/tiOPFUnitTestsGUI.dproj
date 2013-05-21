@@ -3,7 +3,7 @@
 			<ProjectGuid>{1180B8C7-A5C3-4A2E-A1A4-1A6592A3813B}</ProjectGuid>
 			<ProjectVersion>13.4</ProjectVersion>
 			<MainSource>tiOPFUnitTestsGUI.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 			<Base>True</Base>
 			<AppType>Application</AppType>

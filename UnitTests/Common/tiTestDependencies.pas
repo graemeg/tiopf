@@ -77,6 +77,7 @@ uses
   ,tiAtomicFileSave_tst
   ,tiBaseMediator_TST
   {$IFNDEF FPC}
+  ,tiCommandLineParams_TST
   ,tiXMLToTIDataSet_TST
   ,tiHTTP_TST
   ,tiWebServer_TST
@@ -166,6 +167,7 @@ begin
   tiLogToFile_TST.RegisterTests;
   tiBaseMediator_TST.RegisterTests;
   {$IFNDEF FPC}
+  tiCommandLineParams_TST.RegisterTests;
   tiXMLToTIDataSet_TST.RegisterTests;
   tiHTTP_TST.RegisterTests;
   tiWebServer_TST.RegisterTests;
