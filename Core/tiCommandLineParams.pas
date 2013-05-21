@@ -6,6 +6,7 @@ interface
 uses
   tiBaseObject
   ,Classes
+  ,tiParams
  ;
 
 const
@@ -13,11 +14,12 @@ const
 
 type
 
+
   TtiCommandLineParams = class(TtiBaseObject)
   private
     FsParams : string;
     FslParams : TStringList;
-    procedure ReadParams;
+    procedure ReadParams(const ACML: ICMLParams);
     function  WordExtract(const AInput : string;
                            const APos : integer;
                            const ADelims : string): string;
@@ -33,7 +35,7 @@ type
     function  StrTran(AValue, ADel, AIns: string): string;
 
   public
-    constructor Create;
+    constructor Create(const ACML: ICMLParams = nil);
     destructor  Destroy; override;
     function    IsParam(const AParam : string) : boolean; overload;
     function    IsParam(const AParams : array of string) : boolean; overload;
@@ -43,7 +45,7 @@ type
   end;
 
 // Singleton
-function GCommandLineParams : TtiCommandLineParams;
+function GCommandLineParams(const ACML: ICMLParams = nil) : TtiCommandLineParams;
 
 implementation
 uses
@@ -54,23 +56,32 @@ var
   UCommandLineParams : TtiCommandLineParams;
 
 // Singleton
-function GCommandLineParams : TtiCommandLineParams;
+function GCommandLineParams(const ACML: ICMLParams) : TtiCommandLineParams;
 begin
   if UCommandLineParams = nil then
-    UCommandLineParams := TtiCommandLineParams.Create;
+    UCommandLineParams := TtiCommandLineParams.Create(ACML);
   result := UCommandLineParams;
 end;
+
+{$IFDEF DUNIT}
+function ParamCount: integer
+begin
+end;
+{$ENDIF}
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
 // * TtiCommandLineParams
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiCommandLineParams.Create;
+constructor TtiCommandLineParams.Create(const ACML: ICMLParams);
 begin
-  inherited;
+  inherited Create;
   FslParams := TStringList.Create;
-  ReadParams;
+  if ACML = nil then
+    ReadParams(tiParams.CreateCMLParams)
+  else
+    ReadParams(ACML);
 end;
 
 destructor TtiCommandLineParams.destroy;
@@ -110,7 +121,7 @@ begin
     end;
 end;
 
-procedure TtiCommandLineParams.ReadParams;
+procedure TtiCommandLineParams.ReadParams(const ACML: ICMLParams);
 var
   i : integer;
   j : integer;
@@ -121,10 +132,10 @@ const
   cDelim  = ' ';
 begin
   FsParams := '';
-  j := ParamCount;
+  j := ACML.ParamCount;
   for i := 1 to j do begin
     if FsParams <> '' then FsParams := FsParams + cDelim;
-    FsParams := FsParams + ParamStr(i);
+    FsParams := FsParams + ACML.ParamStr(i);
   end ;
 
   j := WordCount(FsParams, ctiCommandLineParamPrefix);
