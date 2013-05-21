@@ -1,0 +1,48 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{9E7476A3-03B8-4CE1-A270-C943BEABD248}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="otaUtils\OTAUtils.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="DUnitTestInspector.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="OTAUtils">
+			<MSBuild Projects="otaUtils\OTAUtils.dproj"/>
+		</Target>
+		<Target Name="OTAUtils:Clean">
+			<MSBuild Projects="otaUtils\OTAUtils.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="OTAUtils:Make">
+			<MSBuild Projects="otaUtils\OTAUtils.dproj" Targets="Make"/>
+		</Target>
+		<Target Name="DUnitTestInspector">
+			<MSBuild Projects="DUnitTestInspector.dproj"/>
+		</Target>
+		<Target Name="DUnitTestInspector:Clean">
+			<MSBuild Projects="DUnitTestInspector.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="DUnitTestInspector:Make">
+			<MSBuild Projects="DUnitTestInspector.dproj" Targets="Make"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="OTAUtils;DUnitTestInspector"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="OTAUtils:Clean;DUnitTestInspector:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="OTAUtils:Make;DUnitTestInspector:Make"/>
+		</Target>
+		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" Project="$(BDS)\Bin\CodeGear.Group.Targets"/>
+	</Project>

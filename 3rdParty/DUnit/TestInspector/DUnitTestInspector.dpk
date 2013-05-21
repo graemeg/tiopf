@@ -34,7 +34,7 @@ requires
   OTAUtils;
 
 contains
-  main in '..\..\src\plugin.testInspector\main.pas',
-  watchFile in '..\..\src\watchFile.pas';
+  main in '.\plugin.testInspector\main.pas',
+  watchFile in '.\plugin.testInspector\watchFile.pas';
 
 end.

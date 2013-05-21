@@ -34,7 +34,10 @@ unit XP_OTAUtils;
 
 interface
 
-{$I jedi.inc}   // used solely for delphi version definitions
+//{$I jedi.inc}   // used solely for delphi version definitions
+{$DEFINE DELPHI6_UP}
+{$DEFINE DELPHI7_UP}
+{$DEFINE DELPHI2009_UP}
 
 uses
   ToolsAPI,
