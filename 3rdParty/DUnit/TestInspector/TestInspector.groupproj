@@ -6,7 +6,7 @@
 			<Projects Include="otaUtils\OTAUtils.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="DUnitTestInspector.dproj">
+			<Projects Include="plugin.testInspector\DUnitTestInspector.dproj">
 				<Dependencies/>
 			</Projects>
 		</ItemGroup>
@@ -27,13 +27,13 @@
 			<MSBuild Projects="otaUtils\OTAUtils.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="DUnitTestInspector">
-			<MSBuild Projects="DUnitTestInspector.dproj"/>
+			<MSBuild Projects="plugin.testInspector\DUnitTestInspector.dproj"/>
 		</Target>
 		<Target Name="DUnitTestInspector:Clean">
-			<MSBuild Projects="DUnitTestInspector.dproj" Targets="Clean"/>
+			<MSBuild Projects="plugin.testInspector\DUnitTestInspector.dproj" Targets="Clean"/>
 		</Target>
 		<Target Name="DUnitTestInspector:Make">
-			<MSBuild Projects="DUnitTestInspector.dproj" Targets="Make"/>
+			<MSBuild Projects="plugin.testInspector\DUnitTestInspector.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="Build">
 			<CallTarget Targets="OTAUtils;DUnitTestInspector"/>

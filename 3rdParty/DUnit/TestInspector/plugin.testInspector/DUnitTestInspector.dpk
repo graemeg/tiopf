@@ -12,17 +12,18 @@ package DUnitTestInspector;
 {$LOCALSYMBOLS ON}
 {$LONGSTRINGS ON}
 {$OPENSTRINGS ON}
-{$OPTIMIZATION ON}
+{$OPTIMIZATION OFF}
 {$OVERFLOWCHECKS OFF}
 {$RANGECHECKS OFF}
 {$REFERENCEINFO ON}
 {$SAFEDIVIDE OFF}
-{$STACKFRAMES OFF}
+{$STACKFRAMES ON}
 {$TYPEDADDRESS OFF}
 {$VARSTRINGCHECKS ON}
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
+{$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'DUnit Test Inspector'}
 {$DESIGNONLY}
@@ -34,7 +35,7 @@ requires
   OTAUtils;
 
 contains
-  main in '.\plugin.testInspector\main.pas',
-  watchFile in '.\plugin.testInspector\watchFile.pas';
+  main in 'main.pas',
+  watchFile in 'watchFile.pas';
 
 end.
