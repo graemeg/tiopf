@@ -15,6 +15,17 @@ const
 type
 
 
+//  Model of command line params:
+//  *** As determined by reverse engineering of code 21/05/2013 ***
+//  1) <CommandLineArgs> is a sequence of 0..N <NameValue>
+//  2) <NameValue> is a <Name> followed by 0..1 <Value>
+//  3) <Name> begins with 1..N <Delimiter> unless it is the first argument,
+//     when 1..N <delimiter> are not required. <Name> cannot contain whitespace.
+//  4) <Value> does not begin with a <Delimiter>, and is terminated by, and
+//     exclusive of, a <Delimiter>. <Value> may contain whitespace, but may not
+//     contain <Delimiter>.
+//  5) <Delimiter> = dash/minus character '-'
+
   TtiCommandLineParams = class(TtiBaseObject)
   private
     FsParams : string;
@@ -291,54 +302,19 @@ end;
 
 function TtiCommandLineParams.StripLeadingDelims(const AStrToProcess : string;
                                      ADelims : string): string;
-var i : integer;
-    lCharCurrent : char;
 begin
   result := AStrToProcess;
-  // Loop through each char in the string
-  for i := 1 to length(AStrToProcess) do begin
-    // Extract the current character
-    lCharCurrent := ExtractChar(AStrToProcess, i);
-
-    // Is this character a NON word delim?, then we have found the body of the string.
-    if not CharInStr(lCharCurrent, ADelims) then begin
-      result := copy(AStrToProcess, i,
-                      length(AStrToProcess) - i + 1);
-      exit; //==>
-    // The current char is a word delim, but we are at the end of the string -
-    // so no words
-    end else begin
-      if i = length(AStrToProcess) then begin
-        result := '';
-      end;
-    end;
-  end;
+  while (Length(result) > 0) and (Pos(result[1], ADelims) <> 0) do
+    Delete(result, 1, 1)
 end;
 
 // Strip any trailing ADelims
 function TtiCommandLineParams.StripTrailingDelims(const AStrToProcess : string;
                                       ADelims : string): string;
-var i : integer;
-    lCharCurrent : char;
 begin
   result := AStrToProcess;
-  // Loop through each char in the string
-  for i := length(AStrToProcess) downto 1 do begin
-    // Extract the current character
-    lCharCurrent := ExtractChar(AStrToProcess, i);
-
-    // Is this character a NON word delim?, then we have found the body of the string.
-    if not CharInStr(lCharCurrent, ADelims) then begin
-      result := copy(AStrToProcess, 1, i);
-      exit; //==>
-    // The current char is a word delim, but we are at the beginning of the string -
-    // so no words
-    end else begin
-      if i = length(AStrToProcess) then begin
-        result := '';
-      end;
-    end;
-  end;
+  while (Length(result) > 0) and (Pos(result[Length(result)], ADelims) <> 0) do
+    Delete(result, Length(result), 1)
 end;
 
 // Given a set of word delimiters, return number of words in S

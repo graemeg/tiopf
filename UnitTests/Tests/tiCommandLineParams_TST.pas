@@ -21,7 +21,7 @@ type
     procedure   TearDown; override;
   published
     procedure   NoParams;
-    procedure   ThreeParams;
+    procedure   ThreeUnNamedParams;
   end;
 
 procedure RegisterTests;
@@ -86,13 +86,23 @@ begin
   FCML := nil;
 end;
 
-procedure TTestTICommandLineParams.ThreeParams;
+procedure TTestTICommandLineParams.ThreeUnNamedParams;
 var
   LCLP: TtiCommandLineParams;
+  LMock: ICMLParamSetter;
 begin
+    LMock := FCML as ICMLParamSetter;
+    LMock.Params.Clear;
+    LMock.Params.Add('a');
+    LMock.Params.Add('b');
+    LMock.Params.Add('c');
+
   LCLP := TtiCommandLineParams.Create(FCML);
   try
-    CheckEquals(3, LCLP.Params.Count, 'FCML with 3 params');
+    CheckEquals('a b c', LCLP.AsString, 'LCLP.AsString');
+    CheckEquals('A=b c'#13#10, LCLP.Params.Text, 'LCLP.Params.Text');
+    CheckEquals(true, LCLP.IsParam('a'), 'LCLP.IsParam(a)');
+    CheckEquals('b c', LCLP.GetParam('a'), 'LCLP.GetParam(a)');
   finally
     LCLP.Free;
   end;
