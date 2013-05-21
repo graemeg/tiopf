@@ -639,7 +639,10 @@ procedure TtiDatabaseRemoteXML.SetConnected(AValue: boolean);
         raise EtiOPFDBExceptionCanNotConnect.Create(cTIPersistRemote, DatabaseName, UserName, Password, cTIOPFExcMsgCanNotConnectToServer);
     end;
     if not TtiAppServerVersionAbs.IsXMLValid(LS) then
+    begin
+      Log(cTIOPFExcMsgConnectionConfirmationFormatWrong, [TtiAppServerVersionAbs.ExpectedAsString, ls], lsError);
       raise exception.createFmt(cTIOPFExcMsgConnectionConfirmationFormatWrong, [TtiAppServerVersionAbs.ExpectedAsString, ls]);
+    end;
   end;
   procedure _TestServerVersion;
   var
