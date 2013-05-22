@@ -21,7 +21,11 @@ type
     procedure   TearDown; override;
   published
     procedure   NoParams;
-    procedure   ThreeUnNamedParams;
+    procedure   OneName;
+    procedure   OneNameValue;
+    procedure   OneValue;
+    procedure   ThreeValues;
+    procedure   TwoNameValues;
   end;
 
 procedure RegisterTests;
@@ -68,6 +72,78 @@ begin
   LCLP := TtiCommandLineParams.Create(FCML);
   try
     CheckEquals(0, LCLP.Params.Count, 'FCML intially empty');
+    CheckEquals(false, LCLP.IsParam('a'), 'LCLP.IsParam(a)');
+    CheckEquals('', LCLP.GetParam('a'), 'LCLP.GetParam(a)');
+  finally
+    LCLP.Free;
+  end;
+
+end;
+
+procedure TTestTICommandLineParams.OneName;
+var
+  LCLP: TtiCommandLineParams;
+  LMock: ICMLParamSetter;
+begin
+    LMock := FCML as ICMLParamSetter;
+    LMock.Params.Clear;
+    LMock.Params.Add('-a');
+
+  LCLP := TtiCommandLineParams.Create(FCML);
+  try
+    CheckEquals('-a', LCLP.AsString, 'LCLP.AsString');
+    CheckEquals('A='#13#10, LCLP.Params.Text, 'LCLP.Params.Text');
+    CheckEquals(true, LCLP.IsParam('a'), 'LCLP.IsParam(a)');
+    CheckEquals('', LCLP.GetParam('a'), 'LCLP.GetParam(a)');
+    CheckEquals(false, LCLP.IsParam('b'), 'LCLP.IsParam(b)');
+    CheckEquals('', LCLP.GetParam('b'), 'LCLP.GetParam(b)');
+  finally
+    LCLP.Free;
+  end;
+
+end;
+
+procedure TTestTICommandLineParams.OneNameValue;
+var
+  LCLP: TtiCommandLineParams;
+  LMock: ICMLParamSetter;
+begin
+    LMock := FCML as ICMLParamSetter;
+    LMock.Params.Clear;
+    LMock.Params.Add('-a');
+    LMock.Params.Add('b');
+
+  LCLP := TtiCommandLineParams.Create(FCML);
+  try
+    CheckEquals('-a b', LCLP.AsString, 'LCLP.AsString');
+    CheckEquals('A=b'#13#10, LCLP.Params.Text, 'LCLP.Params.Text');
+    CheckEquals(true, LCLP.IsParam('a'), 'LCLP.IsParam(a)');
+    CheckEquals('b', LCLP.GetParam('a'), 'LCLP.GetParam(a)');
+    CheckEquals(false, LCLP.IsParam('b'), 'LCLP.IsParam(b)');
+    CheckEquals('', LCLP.GetParam('b'), 'LCLP.GetParam(b)');
+  finally
+    LCLP.Free;
+  end;
+
+end;
+
+procedure TTestTICommandLineParams.OneValue;
+var
+  LCLP: TtiCommandLineParams;
+  LMock: ICMLParamSetter;
+begin
+    LMock := FCML as ICMLParamSetter;
+    LMock.Params.Clear;
+    LMock.Params.Add('a');
+
+  LCLP := TtiCommandLineParams.Create(FCML);
+  try
+    CheckEquals('a', LCLP.AsString, 'LCLP.AsString');
+    CheckEquals('A='#13#10, LCLP.Params.Text, 'LCLP.Params.Text');
+    CheckEquals(true, LCLP.IsParam('a'), 'LCLP.IsParam(a)');
+    CheckEquals('', LCLP.GetParam('a'), 'LCLP.GetParam(a)');
+    CheckEquals(false, LCLP.IsParam('b'), 'LCLP.IsParam(b)');
+    CheckEquals('', LCLP.GetParam('b'), 'LCLP.GetParam(b)');
   finally
     LCLP.Free;
   end;
@@ -86,7 +162,7 @@ begin
   FCML := nil;
 end;
 
-procedure TTestTICommandLineParams.ThreeUnNamedParams;
+procedure TTestTICommandLineParams.ThreeValues;
 var
   LCLP: TtiCommandLineParams;
   LMock: ICMLParamSetter;
@@ -103,6 +179,32 @@ begin
     CheckEquals('A=b c'#13#10, LCLP.Params.Text, 'LCLP.Params.Text');
     CheckEquals(true, LCLP.IsParam('a'), 'LCLP.IsParam(a)');
     CheckEquals('b c', LCLP.GetParam('a'), 'LCLP.GetParam(a)');
+  finally
+    LCLP.Free;
+  end;
+
+end;
+
+procedure TTestTICommandLineParams.TwoNameValues;
+var
+  LCLP: TtiCommandLineParams;
+  LMock: ICMLParamSetter;
+begin
+    LMock := FCML as ICMLParamSetter;
+    LMock.Params.Clear;
+    LMock.Params.Add('-a');
+    LMock.Params.Add('b');
+    LMock.Params.Add('-c');
+    LMock.Params.Add('d');
+
+  LCLP := TtiCommandLineParams.Create(FCML);
+  try
+    CheckEquals('-a b -c d', LCLP.AsString, 'LCLP.AsString');
+    CheckEquals('A=b'#13#10'C=d'#13#10, LCLP.Params.Text, 'LCLP.Params.Text');
+    CheckEquals(true, LCLP.IsParam('a'), 'LCLP.IsParam(a)');
+    CheckEquals('b', LCLP.GetParam('a'), 'LCLP.GetParam(a)');
+    CheckEquals(true, LCLP.IsParam('c'), 'LCLP.IsParam(c)');
+    CheckEquals('d', LCLP.GetParam('c'), 'LCLP.GetParam(d)');
   finally
     LCLP.Free;
   end;
