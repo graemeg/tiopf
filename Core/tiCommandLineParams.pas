@@ -1,19 +1,17 @@
 unit tiCommandLineParams;
 
 {$I tiDefines.inc}
+{$DEFINE NEW_VERSION_CLP}
 
 interface
 uses
   tiBaseObject
   ,Classes
   ,tiParams
+  ,SysUtils
  ;
 
-const
-  ctiCommandLineParamPrefix = '-';
-
 type
-
 
 //  Model of command line params:
 //  *** As determined by reverse engineering of code 21/05/2013 ***
@@ -26,11 +24,38 @@ type
 //     contain <Delimiter>.
 //  5) <Delimiter> = dash/minus character '-'
 
+{$IFDEF NEW_VERSION_CLP}
+
+  ECLParamName = class(Exception);
+  ECLParamValue = class(Exception);
+
+  TtiCommandLineParams = class(TtiBaseObject)
+  private
+    FParams : TStringList;
+    // FCML stored for use in GetAsString()
+    FCLParams: ICLParams;
+    function GetAsString: string;
+    function IsName(const ACLArg: string): boolean;
+    procedure ReadParams(const ACLParams: ICLParams);
+    function MakeName(const AName: string): string;
+    procedure CheckIsValue(const ACLArg: string);
+  public
+    constructor Create(const ACLParams: ICLParams = nil);
+    destructor  Destroy; override;
+    function    IsParam(const AParam : string) : boolean; overload;
+    function    IsParam(const AParams : array of string) : boolean; overload;
+    function    GetParam(const AParam : string): string ;
+    property    AsString : string read GetAsString;
+    property    Params : TStringList read FParams;
+  end;
+
+{$ELSE}
+
   TtiCommandLineParams = class(TtiBaseObject)
   private
     FsParams : string;
     FslParams : TStringList;
-    procedure ReadParams(const ACML: ICMLParams);
+    procedure ReadParams(const ACLParams: ICLParams);
     function  WordExtract(const AInput : string;
                            const APos : integer;
                            const ADelims : string): string;
@@ -46,7 +71,7 @@ type
     function  StrTran(AValue, ADel, AIns: string): string;
 
   public
-    constructor Create(const ACML: ICMLParams = nil);
+    constructor Create(const ACLParams: ICLParams = nil);
     destructor  Destroy; override;
     function    IsParam(const AParam : string) : boolean; overload;
     function    IsParam(const AParams : array of string) : boolean; overload;
@@ -55,22 +80,24 @@ type
     property    AsString : string read FsParams;
   end;
 
+{$ENDIF}
+
 // Singleton
-function GCommandLineParams(const ACML: ICMLParams = nil) : TtiCommandLineParams;
+function GCommandLineParams(const ACLParams: ICLParams = nil) : TtiCommandLineParams;
 
 implementation
-uses
-  SysUtils
- ;
+
+const
+  ctiCommandLineParamPrefix = '-';
 
 var
   UCommandLineParams : TtiCommandLineParams;
 
 // Singleton
-function GCommandLineParams(const ACML: ICMLParams) : TtiCommandLineParams;
+function GCommandLineParams(const ACLParams: ICLParams) : TtiCommandLineParams;
 begin
   if UCommandLineParams = nil then
-    UCommandLineParams := TtiCommandLineParams.Create(ACML);
+    UCommandLineParams := TtiCommandLineParams.Create(ACLParams);
   result := UCommandLineParams;
 end;
 
@@ -79,14 +106,139 @@ end;
 // * TtiCommandLineParams
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiCommandLineParams.Create(const ACML: ICMLParams);
+
+{$IFDEF NEW_VERSION_CLP}
+
+{ TtiCommandLineParams }
+
+constructor TtiCommandLineParams.Create(const ACLParams: ICLParams);
+begin
+  inherited Create;
+  FParams := TStringList.Create;
+
+  if ACLParams = nil then
+    FCLParams := tiParams.CreateSystemCLParams
+  else
+    FCLParams := ACLParams;
+
+  ReadParams(FCLParams);
+end;
+
+destructor TtiCommandLineParams.Destroy;
+begin
+  FParams.Free;
+  inherited;
+end;
+
+procedure TtiCommandLineParams.CheckIsValue(const ACLArg: string);
+begin
+  if Pos(ctiCommandLineParamPrefix, ACLArg) <> 0 then
+     raise ECLParamValue.CreateFmt('Error: "%s" is an invalid parameter value',
+      [ACLArg]);
+end;
+
+// This function is unused in the OPDMS code base, and, frankly, isn't very
+// useful, except perhaps for testing. Evaluate on demand as it's rarely/never used.
+function TtiCommandLineParams.GetAsString: string;
+var
+  LArgIndex, LMAxArgIndex, LParamIndex: integer;
+  LArg, LName: string;
+
+begin
+  LMAxArgIndex := FCLParams.ParamCount;
+
+  for LArgIndex := 1 to LMAxArgIndex do
+    FmtStr(Result, '%s%s ', [Result, FCLParams.ParamStr(LArgIndex)]);
+  Result := Trim(Result);
+end;
+
+function TtiCommandLineParams.GetParam(const AParam: string): string;
+begin
+  Result := FParams.Values[AParam];
+end;
+
+function TtiCommandLineParams.IsName(const ACLArg: string): boolean;
+begin
+  Result := (Pos(ctiCommandLineParamPrefix, ACLArg) = 1);
+end;
+
+function TtiCommandLineParams.IsParam(const AParam: string): boolean;
+begin
+  Result := (FParams.IndexOfName(AParam) >= 0);
+end;
+
+// This function is badly-named. It returns true if any of AParams is a
+// parameter - a better function name would be IsAnyParam()
+// Carried over as-is from old implementation - this function is unused in the
+// OPDMS code-base
+function  TtiCommandLineParams.IsParam(const AParams : array of string) : boolean;
+var
+  i : integer;
+begin
+  result := false;
+  for i := Low(AParams) to High(AParams) do
+    if IsParam(AParams[i]) then
+    begin
+      result := true;
+      Exit; //==>
+    end;
+end;
+
+procedure TtiCommandLineParams.ReadParams(const ACLParams: ICLParams);
+var
+  LArgIndex, LMAxArgIndex, LParamIndex: integer;
+  LArg, LName: string;
+
+begin
+  LMAxArgIndex := ACLParams.ParamCount;
+
+  for LArgIndex := 1 to LMAxArgIndex do
+  begin
+    LArg := ACLParams.ParamStr(LArgIndex);
+
+    if IsName(LArg) or (LArgIndex = 1) then
+    begin
+      LName := MakeName(LArg);
+      FParams.Add(LName + '=');
+    end
+    else
+    begin
+      CheckIsValue(LArg);
+
+      if FParams.Values[LName] <> '' then
+        raise ECLParamValue.CreateFmt(
+          'Error: Parameter value "%s" without preceding name', [LArg]);
+
+      FParams.Values[LName] := LArg;
+    end;
+
+  end ;
+
+end;
+
+function TtiCommandLineParams.MakeName(const AName: string): string;
+begin
+  result := UpperCase(AName);
+
+  while (Length(result) > 0) and (result[1] = ctiCommandLineParamPrefix) do
+    Delete(result, 1, 1);
+
+  if Pos(ctiCommandLineParamPrefix, result) <> 0 then
+    raise ECLParamName.CreateFmt('Error: "%s" is an invalid parameter name',
+      [result]);
+
+end;
+
+{$ELSE}
+
+constructor TtiCommandLineParams.Create(const ACLParams: ICLParams);
 begin
   inherited Create;
   FslParams := TStringList.Create;
-  if ACML = nil then
+  if ACLParams = nil then
     ReadParams(tiParams.CreateCMLParams)
   else
-    ReadParams(ACML);
+    ReadParams(ACLParams);
 end;
 
 destructor TtiCommandLineParams.destroy;
@@ -126,7 +278,7 @@ begin
     end;
 end;
 
-procedure TtiCommandLineParams.ReadParams(const ACML: ICMLParams);
+procedure TtiCommandLineParams.ReadParams(const ACLParams: ICLParams);
 var
   i : integer;
   j : integer;
@@ -137,10 +289,10 @@ const
   cDelim  = ' ';
 begin
   FsParams := '';
-  j := ACML.ParamCount;
+  j := ACLParams.ParamCount;
   for i := 1 to j do begin
     if FsParams <> '' then FsParams := FsParams + cDelim;
-    FsParams := FsParams + ACML.ParamStr(i);
+    FsParams := FsParams + ACLParams.ParamStr(i);
   end ;
 
   j := WordCount(FsParams, ctiCommandLineParamPrefix);
@@ -359,6 +511,8 @@ function TtiCommandLineParams.CharInStr(const AChr : char; const AStr : string):
 begin
   result := pos(AChr, AStr) <> 0;
 end;
+
+{$ENDIF}
 
 initialization
 
