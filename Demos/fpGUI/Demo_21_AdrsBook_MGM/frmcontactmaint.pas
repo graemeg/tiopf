@@ -100,7 +100,7 @@ begin
   if not Assigned(FAdrsMediator) then
   begin
     FAdrsMediator := TtiModelMediator.Create(self);
-    FAdrsMediator.AddComposite({'AddressType.Name;}'AddressType4GUI(50,"Type");Nr;Street;Telephone1', lvAddresses);
+    FAdrsMediator.AddComposite('AddressType.Name(50,"Type");Nr;Street;Telephone1', lvAddresses);
   end;
   FAdrsMediator.Subject := FData.AddressList;
   FAdrsMediator.Active := True;
