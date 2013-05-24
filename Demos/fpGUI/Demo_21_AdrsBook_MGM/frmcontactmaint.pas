@@ -8,6 +8,7 @@ uses
   SysUtils, Classes, fpg_base, fpg_main, fpg_edit,
   fpg_widget, fpg_form, fpg_label, fpg_button,
   fpg_listview, fpg_memo, fpg_panel,
+  contact_views,
   model, tiModelMediator;
 
 type
@@ -38,6 +39,7 @@ type
     FData: TContact;
     FMediator: TtiModelMediator;
     FAdrsMediator: TtiModelMediator;
+//    m: TContactPhotoMediator;   { if you wanted to manually create a mediator instance }
     procedure SetData(const AValue: TContact);
     procedure SetupMediators;
     procedure btnDebugClicked(Sender: TObject);
@@ -45,6 +47,7 @@ type
     procedure btnAddClicked(Sender: TObject);
     procedure btnDelClicked(Sender: TObject);
   public
+    destructor Destroy; override;
     procedure AfterCreate; override;
     property  Data: TContact read FData write SetData;
   end;
@@ -62,7 +65,6 @@ uses
   tiBaseMediator,
   fpg_imgfmt_png,
   contactmanager,
-  contact_views,
   frmAddressMaint;
 
 
@@ -104,6 +106,13 @@ begin
   end;
   FAdrsMediator.Subject := FData.AddressList;
   FAdrsMediator.Active := True;
+
+  { Here is an example of creating the mediator instance manually - in case you
+    needed to do this for some reason. }
+{
+  m := TContactPhotoMediator.CreateCustom(ImgPanel, FData, 'Photo', 'Image');
+  FData.NotifyObservers;
+}
 end;
 
 procedure TContactEditForm.btnDebugClicked(Sender: TObject);
@@ -150,7 +159,12 @@ begin
       obj.Deleted := True;
     end;
   end;
+end;
 
+destructor TContactEditForm.Destroy;
+begin
+//  m.Free;     { if we created the instance manually, we need to free it too }
+  inherited Destroy;
 end;
 
 procedure TContactEditForm.SetData(const AValue: TContact);
