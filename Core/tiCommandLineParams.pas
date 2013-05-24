@@ -39,6 +39,7 @@ type
     procedure ReadParams(const ACLParams: ICLParams);
     function MakeName(const AName: string): string;
     procedure CheckIsValue(const ACLArg: string);
+//    function IsQuoted(const ACLArg: string): boolean;
   public
     constructor Create(const ACLParams: ICLParams = nil);
     destructor  Destroy; override;
@@ -132,7 +133,8 @@ end;
 
 procedure TtiCommandLineParams.CheckIsValue(const ACLArg: string);
 begin
-  if Pos(ctiCommandLineParamPrefix, ACLArg) <> 0 then
+//  if not ((Pos(ctiCommandLineParamPrefix, ACLArg) = 0) or IsQuoted(ACLArg)) then
+  if Pos(ctiCommandLineParamPrefix, ACLArg) = 1 then
      raise ECLParamValue.CreateFmt('Error: "%s" is an invalid parameter value',
       [ACLArg]);
 end;
@@ -141,8 +143,7 @@ end;
 // useful, except perhaps for testing. Evaluate on demand as it's rarely/never used.
 function TtiCommandLineParams.GetAsString: string;
 var
-  LArgIndex, LMAxArgIndex, LParamIndex: integer;
-  LArg, LName: string;
+  LArgIndex, LMAxArgIndex: integer;
 
 begin
   LMAxArgIndex := FCLParams.ParamCount;
@@ -174,6 +175,7 @@ end;
 function  TtiCommandLineParams.IsParam(const AParams : array of string) : boolean;
 var
   i : integer;
+
 begin
   result := false;
   for i := Low(AParams) to High(AParams) do
@@ -184,9 +186,18 @@ begin
     end;
 end;
 
+//function TtiCommandLineParams.IsQuoted(const ACLArg: string): boolean;
+//const
+//  cQuotes = ['"', ''''];
+//
+//begin
+//  Result := (Length(ACLArg) > 2) and (ACLArg[1] = ACLArg[Length(ACLArg)]) and
+//    (ACLArg[1] in cQuotes) and (ACLArg[Length(ACLArg)] in cQuotes);
+//end;
+
 procedure TtiCommandLineParams.ReadParams(const ACLParams: ICLParams);
 var
-  LArgIndex, LMAxArgIndex, LParamIndex: integer;
+  LArgIndex, LMAxArgIndex: integer;
   LArg, LName: string;
 
 begin
