@@ -34,6 +34,7 @@ requires
 
 contains
   tiBaseObject in '..\..\Core\tiBaseObject.pas',
+  tiParams in '..\..\Core\tiParams.pas',
   tiCommandLineParams in '..\..\Core\tiCommandLineParams.pas',
   tiCompress in '..\..\Core\tiCompress.pas',
   tiConstants in '..\..\Core\tiConstants.pas',

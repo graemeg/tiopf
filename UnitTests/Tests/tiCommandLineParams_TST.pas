@@ -14,12 +14,6 @@ uses
 
 type
 
-  // Mock Interface for manipulating command-line params
-  IMockCLParams = interface(ICLParams)
-    ['{9B7C1E42-04CA-482A-B3B3-C8DD9ADAD086}']
-    function Params: TStrings;
-  end;
-
   TTestTICommandLineParams = class(TtiTestCase)
   private
     FCLParams: ICLParams;
@@ -52,25 +46,12 @@ begin
   tiRegisterNonPersistentTest(TTestTICommandLineParams);
 end;
 
-type
-  TMockCLParams = class(TInterfacedObject, ICLParams, IMockCLParams)
-  private
-    FParams: TStrings;
-  protected
-    function ParamCount: integer;
-    function ParamStr(const AIndex: integer): string;
-    function Params: TStrings;
-  public
-    constructor Create;
-    destructor Destroy;
-  end;
-
 { TTestTICommandLineParams }
 
 constructor TTestTICommandLineParams.Create;
 begin
   inherited;
-  FMockCLParams := TMockCLParams.Create;
+  FMockCLParams := CreateMockCLParams;
   FCLParams := FMockCLParams as ICLParams;
 end;
 
@@ -209,35 +190,6 @@ begin
     LCLP.Free;
   end;
 
-end;
-
-{ TCLMock }
-
-constructor TMockCLParams.Create;
-begin
-  inherited;
-  FParams := TStringList.Create;
-end;
-
-destructor TMockCLParams.Destroy;
-begin
-  FParams.Free;
-  inherited;
-end;
-
-function TMockCLParams.ParamCount: integer;
-begin
-  Result := FParams.Count;
-end;
-
-function TMockCLParams.Params: TStrings;
-begin
-  Result := FParams;
-end;
-
-function TMockCLParams.ParamStr(const AIndex: integer): string;
-begin
-  Result := FParams[AIndex - 1]
 end;
 
 end.

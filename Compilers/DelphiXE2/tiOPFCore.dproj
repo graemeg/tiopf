@@ -121,6 +121,7 @@
 			<DCCReference Include="vcl.dcp"/>
 			<DCCReference Include="rtl.dcp"/>
 			<DCCReference Include="..\..\Core\tiBaseObject.pas"/>
+			<DCCReference Include="..\..\Core\tiParams.pas"/>
 			<DCCReference Include="..\..\Core\tiCommandLineParams.pas"/>
 			<DCCReference Include="..\..\Core\tiCompress.pas"/>
 			<DCCReference Include="..\..\Core\tiConstants.pas"/>

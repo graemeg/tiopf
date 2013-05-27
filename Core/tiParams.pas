@@ -2,6 +2,9 @@ unit tiParams;
 
 interface
 
+uses
+  Classes;
+
 type
   // Define interface for accessing command line params. This facilitates
   // dependency injection into TtiCommandLineParams,
@@ -15,6 +18,16 @@ type
 
 function CreateSystemCLParams: ICLParams;
 
+type
+
+  // Mock Interface for manipulating command-line params
+  IMockCLParams = interface(ICLParams)
+    ['{9B7C1E42-04CA-482A-B3B3-C8DD9ADAD086}']
+    function Params: TStrings;
+  end;
+
+function CreateMockCLParams: IMockCLParams;
+
 implementation
 
 type
@@ -24,10 +37,28 @@ type
     function ParamStr(const AIndex: integer): string;
   end;
 
-  function CreateSystemCLParams: ICLParams;
-  begin
-    Result := TSystemCLParams.Create;
+function CreateSystemCLParams: ICLParams;
+begin
+  Result := TSystemCLParams.Create;
+end;
+
+type
+  TMockCLParams = class(TInterfacedObject, ICLParams, IMockCLParams)
+  private
+    FParams: TStrings;
+  protected
+    function ParamCount: integer;
+    function ParamStr(const AIndex: integer): string;
+    function Params: TStrings;
+  public
+    constructor Create;
+    destructor Destroy; override;
   end;
+
+function CreateMockCLParams: IMockCLParams;
+begin
+  Result := TMockCLParams.Create;
+end;
 
 { TCLParams }
 
@@ -40,5 +71,35 @@ function TSystemCLParams.ParamStr(const AIndex: integer): string;
 begin
   Result := System.ParamStr(AIndex);
 end;
+
+{ TMockCLParams }
+
+constructor TMockCLParams.Create;
+begin
+  inherited;
+  FParams := TStringList.Create;
+end;
+
+destructor TMockCLParams.Destroy;
+begin
+  FParams.Free;
+  inherited;
+end;
+
+function TMockCLParams.ParamCount: integer;
+begin
+  Result := FParams.Count;
+end;
+
+function TMockCLParams.Params: TStrings;
+begin
+  Result := FParams;
+end;
+
+function TMockCLParams.ParamStr(const AIndex: integer): string;
+begin
+  Result := FParams[AIndex - 1]
+end;
+
 
 end.
