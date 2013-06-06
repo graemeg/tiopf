@@ -479,7 +479,7 @@ begin
   LBlockCRC:= 0;
   LBlockCount:= 0;
 
-  DoGetOrPostBlock(AURL, AGetOrPostMethod, Input, Output, 0, LTransID, LBlockCRC, LBlockCount);
+  DoGetOrPostBlockWithRetry(AURL, AGetOrPostMethod, Input, Output, 0, LTransID, LBlockCRC, LBlockCount);
 
   if (LBlockCount > 1) and not IsTerminated then
   begin
@@ -553,7 +553,7 @@ Log('DoGetOrPostBlockWithRetry attempt %d', [i+1]);
         on e:exception do
         begin
 Log('DoGetOrPostBlockWithRetry fail: %s', [e.Message]);
-          Sleep(1000); // ToDo: Parameterise the retry wait period
+          Sleep(2000); // ToDo: Parameterise the retry wait period
           LSuccess:= false;
         end;
       end;
