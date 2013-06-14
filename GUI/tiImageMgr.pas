@@ -545,6 +545,7 @@ begin
     LoadImagesFromResource(cResTI_Delete,                      [tiIS16]);
     LoadImagesFromResource(cResTI_Deletex,                     [tiIS16, tiIS24]);
     LoadImagesFromResource(cResTI_Edit,                        [tiIS16]);
+    LoadImagesFromResource(cResTI_Email,                       [tiIS16]);
     LoadImagesFromResource(cResTI_Exit,                        [tiIS16,tiIS24]);
     LoadImagesFromResource(cResTI_Export,                      [tiIS16]);
     LoadImagesFromResource(cResTI_ExportToCSV,                 [tiIS16]);

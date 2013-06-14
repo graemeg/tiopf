@@ -29,14 +29,20 @@ const
   cAViewMenuSidebarNm    = 'ViewMenuSidebar';        cAViewMenuSidebarCptn    = 'Menu sidebar';        cAViewMenuSidebarHnt    = 'View the menu sidebar';
   cAViewProgressWindowNm = 'ViewProgressWindow';     cAViewProgressWindowCptn = 'Progress window';     cAViewProgressWindowHnt = 'View the progress window';
 
-  cAWindowPreviousNm     = 'PreviousPage';           cAWindowPreviousCptn     = 'Previous page';       cAWindowPreviousHnt     = 'Show the previous page';
-  cAWindowNextNm         = 'NextPage';               cAWindowNextCptn         = 'Next page';           cAWindowNextHnt         = 'Show the next page';
-  cAFileExitNm           = 'FileExit';               cAFileExitCptn           = 'E&xit';               cAFileExitHnt           = 'Exit the application';
+  cAWindowPreviousMenuNm    = 'PreviousPageMenu';   cAWindowPreviousCptn     = 'Previous page';       cAWindowPreviousHnt     = 'Show the previous page';
+  cAWindowPreviousToolbarNm = 'PreviousPageToolbar';
+  cAWindowNextMenuNm        = 'NextPageMenu';       cAWindowNextCptn         = 'Next page';           cAWindowNextHnt         = 'Show the next page';
+  cAWindowNextToolbarNm     = 'NextPageToolbar';
+  cAFileExitMenuNm       = 'FileExitMenu';           cAFileExitCptn           = 'E&xit';               cAFileExitHnt           = 'Exit the application';
+  cAFileExitToolbarNm    = 'FileExitToolbar';
 
-  cAHelpContentsNm       = 'HelpContentsForm';       cAHelpContentsCptn       = 'Help contents';      cAHelpContentsHnt       = 'Show the OPDMS help table of contents';
-  cAHelpActiveFormNm     = 'HelpActiveForm';         cAHelpActiveFormCptn     = 'Help current form';   cAHelpActiveFormHnt     = 'Get help on the current form';
-  cAHelpWhatsThisNm      = 'HelpWhatsThis';         cAHelpWhatsThisCptn      = 'What''s this?';      cAHelpWhatsThisHnt      = 'Click on an item to show what it does';
-  cAHelpAboutNm          = 'HelpAbout';              cAHelpAboutCptn          = 'About OPDMS'  ;      cAHelpAboutHnt          = 'About the OPDMS';
+  cAHelpContentsNm       = 'HelpContentsForm';       cAHelpContentsCptn       = 'Help contents';       cAHelpContentsHnt       = 'Show the OPDMS help table of contents';
+  cAHelpActiveFormMenuNm    = 'HelpActiveFormMenu';  cAHelpActiveFormCptn     = 'Help current form';   cAHelpActiveFormHnt     = 'Get help on the current form';
+  cAHelpActiveFormToolbarNm = 'HelpActiveFormToolbar';
+  cAHelpWhatsThisMenuNm     = 'HelpWhatsThisMenu';   cAHelpWhatsThisCptn      = 'What''s this?';       cAHelpWhatsThisHnt      = 'Click on an item to show what it does';
+  cAHelpWhatsThisToolbarNm  = 'HelpWhatsThisToolbar';
+  cAHelpContactNm        = 'HelpContact';            cAHelpContactCptn        = 'Contact %s';          cAHelpContactHnt        = 'Send an email to %s';
+  cAHelpAboutNm          = 'HelpAbout';              cAHelpAboutCptn          = 'About OPDMS'  ;       cAHelpAboutHnt          = 'About the OPDMS';
 
   cMessageWindowHint     = 'Click here to hide this message|';
 
@@ -114,6 +120,8 @@ type
     FWorkListFormClass: TtiFormMgrFormClass;
     FHelpFileName: string;
     FDefHelpContext: integer;
+    FContactName: string;
+    FContactEmailAddress: string;
     FDefaultDisplaySettings: TtiApplicationMenuSystemDisplaySetings;
     FDisplaySettings: TtiApplicationMenuSystemDisplaySetings; // Reference
 
@@ -166,8 +174,10 @@ type
 
     FWhatsThis : TWhatsThis;
 
-    FActionWindowPrevious : TAction;
-    FActionWindowNext     : TAction;
+    FActionWindowPreviousMenu : TAction;
+    FActionWindowNextMenu     : TAction;
+    FActionWindowPreviousToolbar : TAction;
+    FActionWindowNextToolbar     : TAction;
     FAViewAppToolBarNm    : TAction;
     FAViewHelpToolbarNm   : TAction;
     FAViewMenuSidebarNm   : TAction;
@@ -209,6 +219,7 @@ type
     procedure DoHelpContents(Sender: TObject);
     procedure DoHelpActiveForm(Sender: TObject);
     procedure DoHelpWhatsThis(Sender: TObject);
+    procedure DoHelpContact(Sender: TObject);
     procedure DoHelpAbout(Sender: TObject);
     //procedure DoOnViewMenuPopup(Sender: TTBCustomItem; FromLink: Boolean);
     function  DoOnWhatsThisGetActiveWindow : TWinControl;
@@ -241,6 +252,8 @@ type
                         const ADefHelpContext: Integer;
                         const AAboutFormClass: TFormClass;
                         const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent;
+                        const AContactName: string = '';
+                        const AContactEmailAddress: string = '';
                         const ADisplaySettings: TtiApplicationMenuSystemDisplaySetings = nil
                       );
      destructor  Destroy; override;
@@ -319,6 +332,8 @@ procedure CreateAMS(
   const ADefHelpContext : Integer;
   const AFormAboutClass: TFormClass;
   const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent;
+  const AContactName: string = '';
+  const AContactEmailAddress: string = '';
   const ADisplaySettings: TtiApplicationMenuSystemDisplaySetings = nil);
 
 implementation
@@ -358,6 +373,8 @@ procedure CreateAMS(
   const ADefHelpContext : Integer;
   const AFormAboutClass: TFormClass;
   const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent;
+  const AContactName: string = '';
+  const AContactEmailAddress: string = '';
   const ADisplaySettings: TtiApplicationMenuSystemDisplaySetings = nil);
 begin
   Assert(uAMS = nil, 'AMS already created');
@@ -368,6 +385,8 @@ begin
     ADefHelpContext,
     AFormAboutClass,
     ALblMessageOnHotSpotClickEvent,
+    AContactName,
+    AContactEmailAddress,
     ADisplaySettings);
 end;
 
@@ -605,6 +624,8 @@ constructor TtiApplicationMenuSystem.Create(
   const ADefHelpContext : Integer;
   const AAboutFormClass: TFormClass;
   const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent;
+  const AContactName: string = '';
+  const AContactEmailAddress: string = '';
   const ADisplaySettings: TtiApplicationMenuSystemDisplaySetings = nil);
 begin
   Assert(AMainForm <> nil, 'pMainForm not assigned');
@@ -614,6 +635,8 @@ begin
   FWorkListFormClass := AWorkListFormClass;
   FHelpFileName := AHelpFileName;
   FDefHelpContext := ADefHelpContext;
+  FContactName := AContactName;
+  FContactEmailAddress := AContactEmailAddress;
   if Assigned(ADisplaySettings) then
     FDisplaySettings := ADisplaySettings
   else
@@ -712,18 +735,18 @@ begin
   FtbxApplication.OnDockChanged := OnMainFormResize;
   FtbxApplication.OnVisibleChanged := OnMainFormResize;
 
-  FtbxPrevForm := AddDropDownToolButton(FindAction(cAWindowPreviousNm));
+  FtbxPrevForm := AddDropDownToolButton(FindAction(cAWindowPreviousToolbarNm));
   FtbxPrevForm.DropdownCombo := True;
   FtbxPrevForm.OnPopup := DoToolButtonFormPopup;
   FtbxPrevForm.DisplayMode := nbdmImageAndText;
 
-  FtbxNextForm := AddDropDownToolButton(FindAction(cAWindowNextNm));
+  FtbxNextForm := AddDropDownToolButton(FindAction(cAWindowNextToolbarNm));
   FtbxNextForm.DropdownCombo := True;
   FtbxNextForm.OnPopup := DoToolButtonFormPopup;
   FtbxNextForm.DisplayMode := nbdmImageAndText;
 
   AddToolBarSeparator;
-  AddToolButton(FindAction(caFileExitNm), nbdmImageAndText);
+  AddToolButton(FindAction(caFileExitToolbarNm), nbdmImageAndText);
 
 end;
 
@@ -732,8 +755,8 @@ begin
   FtbxHelp := AddToolBar('Help');
   FtbxHelp.OnDockChanged := OnMainFormReSize;
   FtbxHelp.OnVisibleChanged := OnMainFormReSize;
-  AddToolButton(FindAction(caHelpWhatsThisNm), nbdmTextOnlyInMenus);
-  AddToolButton(FindAction(caHelpActiveFormNm), nbdmTextOnlyInMenus);
+  AddToolButton(FindAction(caHelpWhatsThisToolbarNm), nbdmTextOnlyInMenus);
+  AddToolButton(FindAction(caHelpActiveFormToolbarNm), nbdmTextOnlyInMenus);
 end;
 
 procedure TtiApplicationMenuSystem.CreateMainMenuBar;
@@ -765,7 +788,7 @@ begin
   FMainMenuBar.OnResize := OnMainMenuBarResize;
 
   FtbxFileMenu := AddMainMenuItem('&File');
-  AddMenuItem(FindAction(cAFileExitNm));
+  AddMenuItem(FindAction(cAFileExitMenuNm));
 
 //  FtbxViewMenu := AddMainMenuItem('&View');
 //  FLastTBXSubItem.OnPopup := DoOnViewMenuPopup;
@@ -779,14 +802,16 @@ begin
 //  lTBXItem.ImageIndex := -1;
 
   FtbxWindowMenu := AddMainMenuItem('&Window');
-  AddMenuItem(FindAction(cAWindowPreviousNm));
-  AddMenuItem(FindAction(cAWindowNextNm));
+  AddMenuItem(FindAction(cAWindowPreviousMenuNm));
+  AddMenuItem(FindAction(cAWindowNextMenuNm));
   AddMenuItemSeparator;
 
   FtbxHelpMenu := AddMainMenuItem('&Help');
   AddMenuItem(FindAction(cAHelpContentsNm));
-  AddMenuItem(FindAction(caHelpActiveFormNm));
-  AddMenuItem(FindAction(caHelpWhatsThisNm));
+  AddMenuItem(FindAction(caHelpActiveFormMenuNm));
+  AddMenuItem(FindAction(caHelpWhatsThisMenuNm));
+  if (FContactName <> '') and (FContactEmailAddress <> '') then
+    AddMenuItem(FindAction(caHelpContactNm));
   if Assigned(FAboutFormClass) then
     AddMenuItem(FindAction(caHelpAboutNm));
 
@@ -1369,26 +1394,38 @@ var
   lAction : TAction;
 begin
 
-  AddAction24(cAFileExitNm, cAFileExitCptn, cAFileExitHnt, cResTI_Exit, DoFileExit);
+  AddAction16(cAFileExitMenuNm, cAFileExitCptn, cAFileExitHnt, cResTI_Exit, DoFileExit);
+  AddAction24(cAFileExitToolbarNm, cAFileExitCptn, cAFileExitHnt, cResTI_Exit, DoFileExit);
 
   FAViewAppToolBarNm    := AddAction(cAViewAppToolBarNm,     cAViewAppToolBarCptn,     cAViewAppToolBarHnt,     FDefHelpContext, DoToggleApplicationToolbarVisible);
   FAViewHelpToolbarNm   := AddAction(cAViewHelpToolbarNm,    cAViewHelpToolbarCptn,    cAViewHelpToolbarHnt,    FDefHelpContext, DoToggleHelpToolbarVisible);
   FAViewMenuSidebarNm   := AddAction(cAViewMenuSidebarNm,    cAViewMenuSidebarCptn,    cAViewMenuSidebarHnt,    FDefHelpContext, DoToggleMenuSidebarVisible);
   FAViewProgressWindowNm := AddAction(cAViewProgressWindowNm, cAViewProgressWindowCptn, cAViewProgressWindowHnt, FDefHelpContext, DoToggleProgressWindowVisible);
 
-  FActionWindowPrevious := AddAction24(cAWindowPreviousNm, cAWindowPreviousCptn, cAWindowPreviousHnt, cResTI_ArrowLeft,        DoWindowPrevious);
-  FActionWindowPrevious.ShortCut := ShortCut(VK_LEFT, [ssAlt]);
+  FActionWindowPreviousMenu := AddAction16(cAWindowPreviousMenuNm, cAWindowPreviousCptn, cAWindowPreviousHnt, cResTI_ArrowLeft,        DoWindowPrevious);
+  FActionWindowPreviousMenu.ShortCut := ShortCut(VK_LEFT, [ssAlt]);
+  FActionWindowPreviousToolbar := AddAction24(cAWindowPreviousToolbarNm, cAWindowPreviousCptn, cAWindowPreviousHnt, cResTI_ArrowLeft,        DoWindowPrevious);
+  FActionWindowPreviousToolbar.ShortCut := ShortCut(VK_LEFT, [ssAlt]);
 
-  FActionWindowNext    := AddAction24(cAWindowNextNm,     cAWindowNextCptn,     cAWindowNextHnt,     cResTI_ArrowRight,       DoWindowNext);
-  FActionWindowNext.ShortCut := ShortCut(VK_Right, [ssAlt]);
+  FActionWindowNextMenu := AddAction16(cAWindowNextMenuNm,     cAWindowNextCptn,     cAWindowNextHnt,     cResTI_ArrowRight,       DoWindowNext);
+  FActionWindowNextMenu.ShortCut := ShortCut(VK_Right, [ssAlt]);
+  FActionWindowNextToolbar := AddAction24(cAWindowNextToolbarNm,     cAWindowNextCptn,     cAWindowNextHnt,     cResTI_ArrowRight,       DoWindowNext);
+  FActionWindowNextToolbar.ShortCut := ShortCut(VK_Right, [ssAlt]);
 
-  lAction := AddAction24(cAHelpActiveFormNm,      cAHelpActiveFormCptn,      cAHelpActiveFormHnt,      cResTI_Help,               DoHelpActiveForm);
+  lAction := AddAction16(cAHelpActiveFormMenuNm,    cAHelpActiveFormCptn, cAHelpActiveFormHnt, cResTI_Help,          DoHelpActiveForm);
   lAction.ShortCut := ShortCut(VK_F1, []);
-  lAction := AddAction24(cAHelpWhatsThisNm, cAHelpWhatsThisCptn, cAHelpWhatsThisHnt, cResTI_HelpWhatsThis,      DoHelpWhatsThis);
+  lAction := AddAction24(cAHelpActiveFormToolbarNm, cAHelpActiveFormCptn, cAHelpActiveFormHnt, cResTI_Help,          DoHelpActiveForm);
+  lAction.ShortCut := ShortCut(VK_F1, []);
+  lAction := AddAction16(cAHelpWhatsThisMenuNm,     cAHelpWhatsThisCptn,  cAHelpWhatsThisHnt,  cResTI_HelpWhatsThis, DoHelpWhatsThis);
   lAction.ShortCut := ShortCut(VK_F1, [ssShift]);
-  AddAction24(cAHelpAboutNm,     cAHelpAboutCptn,     cAHelpAboutHnt,     cResTI_HelpAbout,          DoHelpAbout);
+  lAction := AddAction24(cAHelpWhatsThisToolbarNm,  cAHelpWhatsThisCptn,  cAHelpWhatsThisHnt,  cResTI_HelpWhatsThis, DoHelpWhatsThis);
+  lAction.ShortCut := ShortCut(VK_F1, [ssShift]);
 
-  AddAction24(cAHelpContentsNm,      cAHelpContentsCptn,      cAHelpContentsHnt,      cResTI_Help,               DoHelpContents);
+  if (FContactName <> '') and (FContactEmailAddress <> '') then
+    AddAction16(cAHelpContactNm, Format(cAHelpContactCptn, [FContactName]), Format(cAHelpContactHnt, [FContactName]), cResTI_Email, DoHelpContact);
+  AddAction16(cAHelpAboutNm,     cAHelpAboutCptn,     cAHelpAboutHnt,     cResTI_HelpAbout,          DoHelpAbout);
+
+  AddAction16(cAHelpContentsNm,  cAHelpContentsCptn,  cAHelpContentsHnt,  cResTI_Help,               DoHelpContents);
 end;
 
 procedure TtiApplicationMenuSystem.DoToggleApplicationToolbarVisible(Sender: TObject);
@@ -1463,6 +1500,13 @@ begin
   end;
 end;
 
+procedure TtiApplicationMenuSystem.DoHelpContact(Sender: TObject);
+begin
+  Assert(FContactName <> '', 'Contact name must be assigned');
+  Assert(FContactEmailAddress <> '', 'Contact email address must be assigned');
+  tiShellExecute(Format('mailto: <%s> %s?Subject=Enquiry', [FContactName, FContactEmailAddress]));
+end;
+
 procedure TtiApplicationMenuSystem.DoHelpContents(Sender: TObject);
 begin
   Application.HelpShowTableOfContents;
@@ -1479,8 +1523,10 @@ begin
   if not FileExists(FHelpFileName) then
   begin
     FHelpAvailable := False;
-    FindAction(cAHelpActiveFormNm).Visible := false;
-    FindAction(cAHelpWhatsThisNm).Visible := false;
+    FindAction(cAHelpActiveFormMenuNm).Visible := false;
+    FindAction(cAHelpActiveFormToolbarNm).Visible := false;
+    FindAction(cAHelpWhatsThisMenuNm).Visible := false;
+    FindAction(cAHelpWhatsThisToolbarNm).Visible := false;
     FindAction(cAHelpContentsNm).Visible := false;
     FtbxHelp.Visible := false;
     FAViewHelpToolbarNm.Visible := false;
@@ -1667,8 +1713,10 @@ begin
            (not FApplicationBusyToolbarImage.IsBusyItem(FMainMenuBar.Items[i]))) then
         FMainMenuBar.Items[i].Visible := AValue;
 
-    FActionWindowNext.Enabled    := (FormMgr.FormCount > 1)   and (AValue);
-    FActionWindowPrevious.Enabled := (FormMgr.FormCount > 1)   and (AValue);
+    FActionWindowNextMenu.Enabled        := (FormMgr.FormCount > 1)   and (AValue);
+    FActionWindowNextToolbar.Enabled     := (FormMgr.FormCount > 1)   and (AValue);
+    FActionWindowPreviousMenu.Enabled    := (FormMgr.FormCount > 1)   and (AValue);
+    FActionWindowPreviousToolbar.Enabled := (FormMgr.FormCount > 1)   and (AValue);
 
     if Assigned(FApplicationBusyToolbarImage) then
       FApplicationBusyToolbarImage.Resize;

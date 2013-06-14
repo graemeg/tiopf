@@ -74,6 +74,7 @@ const
   cResTI_Edit24D                 = 'ti_Edit_24D';
   cResTI_Edit24H                 = 'ti_Edit_24H';
   cResTI_Edit24N                 = 'ti_Edit_24N';
+  cResTI_Email                   = 'ti_Email';
   cResTI_Execute16D              = 'ti_Execute_16D';
   cResTI_Execute16H              = 'ti_Execute_16H';
   cResTI_Execute16N              = 'ti_Execute_16N';
