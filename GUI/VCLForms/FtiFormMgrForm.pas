@@ -452,6 +452,7 @@ begin
   if FActiveForm <> nil then
     FActiveForm.Visible := false;
   FActiveForm := pForm;
+  FActiveForm.ContextActionsEnabled:= true;
   DoOnShowForm(FActiveForm);
 end;
 
@@ -899,6 +900,7 @@ begin
     if FActiveForm.ContainsControl(Screen.ActiveControl) then
       FActiveForm.LastActiveControl := Screen.ActiveControl;
     FActiveForm.Visible := False;
+    FActiveForm.ContextActionsEnabled:= False;
     FActiveForm := nil;
   end;
 end;
