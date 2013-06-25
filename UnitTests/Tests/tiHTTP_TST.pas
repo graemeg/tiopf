@@ -130,7 +130,7 @@ const
   cTestParams  = 'prop1=value1,prop2=2,prop3=1.234';
   cExpectedResponseText = 'HTTP/1.1 200 OK';
   cExpectedResponseErrorText = 'HTTP/1.1 500 Internal Server Error';
-  cExpectedResponseErrorTextCountAttempts = 'HTTP/1.1 500 Internal Server Error';
+  cExpectedResponseErrorTextCountAttempts = 'HTTP/1.1 500 Internal Server Error (After 1 attempts)';
 
   cIndyTimePerCall    = 50;
   cMSXMLTimePerCall   = 65;

@@ -100,6 +100,7 @@ end;
 
 const
   cPort= 81;
+  cExpectedResponseErrorTextCountAttempts = 'HTTP/1.1 404 Not Found (After 1 attempts)';
 
 { TTestTIWebServer }
 
@@ -310,7 +311,7 @@ begin
       on e:exception do
       begin
         CheckIs(e, Exception);
-        CheckEquals('HTTP/1.1 404 Not Found', e.message);
+        CheckEquals(cExpectedResponseErrorTextCountAttempts, e.message);
       end;
     end;
     CheckEquals('', LResult);
@@ -323,7 +324,7 @@ begin
       begin
         CheckIs(e, Exception);
         CheckEquals(
-          'HTTP/1.1 404 Not Found',
+          cExpectedResponseErrorTextCountAttempts,
           e.message);
       end;
     end;
