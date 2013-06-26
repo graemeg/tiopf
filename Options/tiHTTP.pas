@@ -28,11 +28,15 @@ const
   ctiOPFHTTPBlockHeader= 'tiOPFBlockID';
   ctiOPFHTTPBlockDelim = '/';
   ctiOPDHTTPNullBlockSize = 0;
+  ctiOPDHTTPNullTransID = '';
   ctiOPFHTTPErrorCode= 'tiOPFErrorCode';
   ctiOPFHTTPPassThroughHeader = 'tiOPFPassThrough';
   ctiOPFHTTPIsPassThroughContent = 'true';
 
-  CErrorHTTPRetryLimiteExceded = '%s (After %d attempts)';
+  CErrorHTTPRetryLimitExceeded = '%s (After %d attempts)';
+
+  ctiOPFHTTPDefaultRetryLimit = 1;
+  ctiOPFHTTPDefaultRetryWaitMS = 5000;
 
 type
 
@@ -56,6 +60,7 @@ type
     FOnProgress: TtiHTTPProgressEvent;
     FOnCheckTerminated: TtiHTTPCheckTerminatedEvent;
     FRetryLimit: Byte;
+    FRetryWaitMS: integer;
     FBlockSize: Longword;
     FResolveTimeout: Longword;
     FConnectTimeout: Longword;
@@ -68,6 +73,7 @@ type
     function    GetResponseTIOPFErrorCode: Byte;
     procedure   DoProgressEvent(ABlockIndex, ABlockCount, ABlockSize: Longword);
     function    IsTerminated: Boolean;
+    function    CreateTransID: string;
 
   protected
     procedure   DoGetOrPostBlock(
@@ -76,7 +82,8 @@ type
       const AInput: TStringStream;
       const AOutput: TStringStream;
       const ABlockIndex: LongWord;
-      var   ATransID: LongWord;
+//      var   ATransID: LongWord;
+      const   ATransID: string;
       out   ABlockCRC: LongWord;
       out   ABlockCount: LongWord); virtual;
     procedure   DoGetOrPostBlockWithRetry(
@@ -85,7 +92,8 @@ type
       const AInput: TStringStream;
       const AOutput: TStringStream;
       const ABlockIndex: LongWord;
-      var   ATransID: LongWord;
+//      var   ATransID: LongWord;
+      const   ATransID: string;
       out   ABlockCRC: LongWord;
       out   ABlockCount: LongWord); virtual;
     procedure   DoGetOrPost(const AURL : string; AGetOrPostMethod: TtiHTTPGetOrPostMethod);
@@ -123,6 +131,7 @@ type
     property    ResponseText: string  read GetResponseText;
     property    FormatExceptions: Boolean read FFormatExceptions Write FFormatExceptions;
     property    RetryLimit: Byte read FRetryLimit write FRetryLimit;
+    property    RetryWaitMS: integer read FRetryWaitMS write FRetryWaitMS;
     property    BlockSize: Longword read FBlockSize write FBlockSize;
     property    ResolveTimeout: Longword read FResolveTimeout write FResolveTimeout;
     property    ConnectTimeout: Longword read FConnectTimeout write FConnectTimeout;
@@ -162,9 +171,13 @@ type
 function  GTIHTTPFactory: TtiHTTPFactory;
 procedure SetDefaultHTTPClass(const pMappingName: string);
 function  tiMakeTIOPFHTTPBlockHeader(
-  const ABlockIndex, ABlockCount, ABlockSize, ATransID, ABlockCRC: LongWord): string;
+//  const ABlockIndex, ABlockCount, ABlockSize, ATransID, ABlockCRC: LongWord): string;
+  const ABlockIndex, ABlockCount, ABlockSize: LongWord; const ATransID: string; const ABlockCRC: LongWord): string;
+
 procedure tiParseTIOPFHTTPBlockHeader(
   const AValue: string;
+//  var ABlockIndex, ABlockCount, ABlockSize, ATransID, ABlockCRC: LongWord);
+  out ABlockIndex, ABlockCount, ABlockSize: LongWord; out ATransID: string; out ABlockCRC: LongWord);
   var ABlockIndex, ABlockCount, ABlockSize, ATransID, ABlockCRC: LongWord);
 function  tiGetTIOPFHTTPBlockIndex(const AValue: string): LongWord;
 {$IFDEF DELPHIXEORABOVE}
@@ -213,35 +226,33 @@ begin
 end;
 
 function  tiMakeTIOPFHTTPBlockHeader(
-  const ABlockIndex, ABlockCount, ABlockSize, ATransID, ABlockCRC: LongWord): string;
+  const ABlockIndex, ABlockCount, ABlockSize: LongWord; const ATransID: string; const ABlockCRC: LongWord): string;
 begin
   Result:=
     IntToStr(ABlockIndex) + ctiOPFHTTPBlockDelim +
     IntToStr(ABlockCount) + cTIOPFHTTPBlockDelim +
     IntToStr(ABlockSize)  + cTIOPFHTTPBlockDelim +
-    IntToStr(ATransID)    + cTIOPFHTTPBlockDelim +
+    ATransID + cTIOPFHTTPBlockDelim +
     IntToStr(ABlockCRC);
 end;
 
 procedure tiParseTIOPFHTTPBlockHeader(
   const AValue: string;
-  var ABlockIndex, ABlockCount, ABlockSize, ATransID, ABlockCRC: LongWord);
+  out ABlockIndex, ABlockCount, ABlockSize: LongWord; out ATransID: string; out ABlockCRC: LongWord);
 var
   LBlockCount: string;
   LBlockIndex: string;
   LBlockSize:  string;
-  LTransID:    string;
   LBlockCRC:   string;
 begin
   LBlockIndex:=  tiToken(AValue, ctiOPFHTTPBlockDelim, 1);
   LBlockCount:=  tiToken(AValue, ctiOPFHTTPBlockDelim, 2);
   LBlockSize:=   tiToken(AValue, ctiOPFHTTPBlockDelim, 3);
-  LTransID:=     tiToken(AValue, ctiOPFHTTPBlockDelim, 4);
+  ATransID:=     tiToken(AValue, ctiOPFHTTPBlockDelim, 4);
   LBlockCRC:=    tiToken(AValue, ctiOPFHTTPBlockDelim, 5);
   ABlockIndex:=  StrToInt64Def(LBlockIndex,  0);
   ABlockCount:=  StrToInt64Def(LBlockCount,  1);
   ABlockSize:=   StrToInt64Def(LBlockSize,   ctiOPDHTTPNullBlockSize);
-  ATransID:=     StrToInt64Def(LTransID,     0);
   ABlockCRC:=    StrToInt64Def(LBlockCRC,    0);
 end;
 
@@ -288,8 +299,16 @@ begin
   FOutput          := TStringStream.Create('');
   FFormatExceptions := True;
   FDeriveRequestTIOPFBlockHeader:= True;
-  FRetryLimit:= 1;
+  FRetryLimit:= ctiOPFHTTPDefaultRetryLimit;
+  FRetryWaitMS:= ctiOPFHTTPDefaultRetryWaitMS;
   FBlockSize:= 0;
+end;
+
+function TtiHTTPAbs.CreateTransID: string;
+var
+  LGUID: TGUID;
+begin
+  Result := tiUtils.tiCreateGUIDString;
 end;
 
 destructor TtiHTTPAbs.Destroy;
@@ -463,7 +482,8 @@ end;
 procedure TtiHTTPAbs.DoGetOrPost(const AURL: string; AGetOrPostMethod: TtiHTTPGetOrPostMethod);
 var
   LBlockCount: Longword;
-  LTransID: Longword;
+//  LTransID: Longword;
+  LTransID: string;
   LBlockCRC: LongWord;
   i: Integer;
   LInput: TStringStream;
@@ -475,7 +495,8 @@ begin
   //       This will involve storing a TtiBlockedStream and managing the variable order the blocks
   //       may be returned.
 
-  LTransID:= 0;
+//  LTransID:= 0;
+  LTransID := CreateTransID;
   LBlockCRC:= 0;
   LBlockCount:= 0;
 
@@ -510,26 +531,27 @@ procedure TtiHTTPAbs.DoGetOrPostBlock(
   const AInput: TStringStream;
   const AOutput: TStringStream;
   const ABlockIndex: LongWord;
-  var   ATransID: LongWord;
+  const   ATransID: string;
   out   ABlockCRC: LongWord;
   out   ABlockCount: LongWord);
 var
   LReturnBlockIndex: LongWord;
   LReturnBlockSize: LongWord;
+  LTransID: string;
 begin
 Log('DoGetOrPostBlock block %d', [ABlockIndex]);
   if FDeriveRequestTIOPFBlockHeader then
     RequestTIOPFBlockHeader:= tiMakeTIOPFHTTPBlockHeader(ABlockIndex, ABlockCount, FBlockSize, ATransID, 0);
   AGetOrPostMethod(AURL, AInput, AOutput);
   tiParseTIOPFHTTPBlockHeader(ResponseTIOPFBlockHeader, LReturnBlockIndex, ABlockCount,
-    LReturnBlockSize, ATransID, ABlockCRC);
+    LReturnBlockSize, LTransID, ABlockCRC);
   DoProgressEvent(ABlockIndex, ABlockCount, FBlockSize);
 end;
 
 procedure TtiHTTPAbs.DoGetOrPostBlockWithRetry(const AURL: string;
   const AGetOrPostMethod: TtiHTTPGetOrPostMethod; const AInput,
   AOutput: TStringStream; const ABlockIndex: LongWord;
-  var ATransID: LongWord; out ABlockCRC, ABlockCount: LongWord);
+  const ATransID: string; out ABlockCRC, ABlockCount: LongWord);
 var
   i: integer;
   LSuccess: Boolean;
@@ -553,7 +575,7 @@ Log('DoGetOrPostBlockWithRetry attempt %d', [i+1]);
         on e:exception do
         begin
 Log('DoGetOrPostBlockWithRetry fail: %s', [e.Message]);
-          Sleep(2000); // ToDo: Parameterise the retry wait period
+          Sleep(FRetryWaitMS); // (was 2000)
           LSuccess:= false;
         end;
       end;
@@ -571,7 +593,7 @@ Log('DoGetOrPostBlockWithRetry fail: %s', [e.Message]);
         on e:exception do
         begin
 Log('DoGetOrPostBlockWithRetry fail final: %s', [e.Message]);
-          raise EtiOPFHTTPException.CreateFmt(CErrorHTTPRetryLimiteExceded, [e.message, i+1])
+          raise EtiOPFHTTPException.CreateFmt(CErrorHTTPRetryLimitExceeded, [e.message, i+1])
         end;
       end;
     end;

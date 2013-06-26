@@ -56,7 +56,8 @@ type
 
     function  MakeXMLResponse(const pDocName, AParams: string): string;
     procedure CheckTIOPFBlockHeader(const ABlockHeader: string;
-                                    const ABlockIndex, ABlockCount, ABlockSize, ATransID: Longword);
+                                    const ABlockIndex, ABlockCount, ABlockSize: LongWord;
+                                    const ATransID: string);
     function  GetRandom: string;
 
 
@@ -243,7 +244,7 @@ begin
       CheckEquals(lExpected, lActual, 'Response');
       CheckEquals(200, LHTTP.ResponseCode, 'ResponseCode');
       CheckEquals(cExpectedResponseText, LHTTP.ResponseText, 'ResponseText');
-      CheckTIOPFBlockHeader(LHTTP.ResponseTIOPFBlockHeader, 0, 1, ctiOPDHTTPNullBlockSize, 0);
+      CheckTIOPFBlockHeader(LHTTP.ResponseTIOPFBlockHeader, 0, 1, ctiOPDHTTPNullBlockSize, ctiOPDHTTPNullTransID);
     finally
       LHTTP.Free;
     end;
@@ -277,7 +278,7 @@ begin
       CheckEquals(lExpected, lActual, 'Response');
       CheckEquals(200, LHTTP.ResponseCode, 'ResponseCode');
       CheckEquals(cExpectedResponseText, LHTTP.ResponseText, 'ResponseText');
-      CheckTIOPFBlockHeader(LHTTP.ResponseTIOPFBlockHeader, 0, 1, ctiOPDHTTPNullBlockSize, 0);
+      CheckTIOPFBlockHeader(LHTTP.ResponseTIOPFBlockHeader, 0, 1, ctiOPDHTTPNullBlockSize, ctiOPDHTTPNullTransID);
     finally
       LHTTP.Free;
     end;
@@ -328,7 +329,7 @@ begin
       end;
       CheckEquals(500, LHTTP.ResponseCode, 'ResponseCode');
       CheckEquals(cExpectedResponseErrorText, LHTTP.ResponseText, 'ResponseText');
-      CheckTIOPFBlockHeader(LHTTP.ResponseTIOPFBlockHeader, 0, 1, ctiOPDHTTPNullBlockSize, 0);
+      CheckTIOPFBlockHeader(LHTTP.ResponseTIOPFBlockHeader, 0, 1, ctiOPDHTTPNullBlockSize, ctiOPDHTTPNullTransID);
     finally
       LHTTP.Free;
     end;
@@ -362,7 +363,7 @@ begin
       lExpected := MakeXMLResponse(cTestDocName, cTestParams);
       CheckEquals(500, LHTTP.ResponseCode, 'ResponseCode');
       CheckEquals(cExpectedResponseErrorText, LHTTP.ResponseText, 'ResponseText');
-      CheckTIOPFBlockHeader(LHTTP.ResponseTIOPFBlockHeader, 0, 1, ctiOPDHTTPNullBlockSize, 0);
+      CheckTIOPFBlockHeader(LHTTP.ResponseTIOPFBlockHeader, 0, 1, ctiOPDHTTPNullBlockSize, ctiOPDHTTPNullTransID);
     finally
       LHTTP.Free;
     end;
@@ -486,7 +487,7 @@ begin
       lMSPer10Calls := (GetTickCount - lStart) / ACount;
       Check(lMSPer10Calls < ATimePerCall, Format('Not fast enough %f ms per call. Should be %d ms per call.',
                                         [lMSPer10Calls, ATimePerCall]));
-      CheckTIOPFBlockHeader(LHTTP.ResponseTIOPFBlockHeader, 0, 1, ctiOPDHTTPNullBlockSize, 0);
+      CheckTIOPFBlockHeader(LHTTP.ResponseTIOPFBlockHeader, 0, 1, ctiOPDHTTPNullBlockSize, ctiOPDHTTPNullTransID);
     finally
       LHTTP.Free;
     end;
@@ -514,7 +515,7 @@ begin
       lMSPer10Calls := (GetTickCount - lStart) / ACount;
       if ATimePerCall <> 0 then
         Check(lMSPer10Calls < ATimePerCall, Format('Not fast enough %f ms per call. Should be %d ms per call.', [lMSPer10Calls, ATimePerCall]));
-      CheckTIOPFBlockHeader(LHTTP.ResponseTIOPFBlockHeader, 0, 1, ctiOPDHTTPNullBlockSize, 0);
+      CheckTIOPFBlockHeader(LHTTP.ResponseTIOPFBlockHeader, 0, 1, ctiOPDHTTPNullBlockSize, ctiOPDHTTPNullTransID);
     finally
       LHTTP.Free;
     end;
@@ -597,7 +598,7 @@ begin
       CheckEquals(' ' + ctiOPFBlockIDValue, LHTTP.ResponseHeaders.Values[ctiOPFHTTPBlockHeader]);
       CheckEquals(ctiOPFBlockIDValue, LHTTP.ResponseHeader[ctiOPFHTTPBlockHeader]);
       CheckEquals(LHTTP.ResponseHeader[ctiOPFHTTPBlockHeader], LHTTP.ResponseTIOPFBlockHeader);
-      CheckTIOPFBlockHeader(LHTTP.ResponseTIOPFBlockHeader, 2, 3, 4, 5);
+      CheckTIOPFBlockHeader(LHTTP.ResponseTIOPFBlockHeader, 2, 3, 4, '5');
     finally
       LHTTP.Free;
     end;
@@ -620,7 +621,7 @@ begin
       CheckEquals(' ' + ctiOPFBlockIDValue, LHTTP.ResponseHeaders.Values[ctiOPFHTTPBlockHeader]);
       CheckEquals(ctiOPFBlockIDValue, LHTTP.ResponseHeader[ctiOPFHTTPBlockHeader]);
       CheckEquals(LHTTP.ResponseHeader[ctiOPFHTTPBlockHeader], LHTTP.ResponseTIOPFBlockHeader);
-      CheckTIOPFBlockHeader(LHTTP.ResponseTIOPFBlockHeader, 2, 3, 4, 5);
+      CheckTIOPFBlockHeader(LHTTP.ResponseTIOPFBlockHeader, 2, 3, 4, '5');
     finally
       LHTTP.Free;
     end;
@@ -660,7 +661,7 @@ end;
 
 procedure TTestTIHTTP.tiMakeTIOPFHTTPBlockHeader;
 begin
-  CheckEquals('1/2/3/4/5', tiHTTP.tiMakeTIOPFHTTPBlockHeader(1, 2, 3, 4, 5));
+  CheckEquals('1/2/3/4/5', tiHTTP.tiMakeTIOPFHTTPBlockHeader(1, 2, 3, '4', 5));
 end;
 
 procedure TTestTIHTTP.tiParseTIOPFHTTPBlockHeader;
@@ -668,56 +669,56 @@ var
   LBlockIndex: LongWord;
   LBlockCount:  LongWord;
   LBlockSize:   LongWord;
-  LTransID:     LongWord;
+  LTransID:     string;
   LBlockCRC:    LongWord;
 begin
   tiHTTP.tiParseTIOPFHTTPBlockHeader('1/2/3/4/5', LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
   CheckEquals(1, LBlockIndex);
   CheckEquals(2, LBlockCount);
   CheckEquals(3, LBlockSize);
-  CheckEquals(4, LTransID);
+  CheckEquals('4', LTransID);
   CheckEquals(5, LBlockCRC);
 
   tiHTTP.tiParseTIOPFHTTPBlockHeader('1/2/3', LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
   CheckEquals(1, LBlockIndex);
   CheckEquals(2, LBlockCount);
   CheckEquals(3, LBlockSize);
-  CheckEquals(0, LTransID);
+  CheckEquals('', LTransID);
   CheckEquals(0, LBlockCRC);
 
   tiHTTP.tiParseTIOPFHTTPBlockHeader('1/2', LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
   CheckEquals(1, LBlockIndex);
   CheckEquals(2, LBlockCount);
   CheckEquals(ctiOPDHTTPNullBlockSize, LBlockSize);
-  CheckEquals(0, LTransID);
+  CheckEquals('', LTransID);
   CheckEquals(0, LBlockCRC);
 
   tiHTTP.tiParseTIOPFHTTPBlockHeader('1/', LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
   CheckEquals(1, LBlockIndex);
   CheckEquals(1, LBlockCount);
   CheckEquals(ctiOPDHTTPNullBlockSize, LBlockSize);
-  CheckEquals(0, LTransID);
+  CheckEquals('', LTransID);
   CheckEquals(0, LBlockCRC);
 
   tiHTTP.tiParseTIOPFHTTPBlockHeader('1', LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
   CheckEquals(1, LBlockIndex);
   CheckEquals(1, LBlockCount);
   CheckEquals(ctiOPDHTTPNullBlockSize, LBlockSize);
-  CheckEquals(0, LTransID);
+  CheckEquals('', LTransID);
   CheckEquals(0, LBlockCRC);
 
   tiHTTP.tiParseTIOPFHTTPBlockHeader('', LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
   CheckEquals(0, LBlockIndex);
   CheckEquals(1, LBlockCount);
   CheckEquals(ctiOPDHTTPNullBlockSize, LBlockSize);
-  CheckEquals(0, LTransID);
+  CheckEquals('', LTransID);
   CheckEquals(0, LBlockCRC);
 
   tiHTTP.tiParseTIOPFHTTPBlockHeader('a/b/c/d', LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
   CheckEquals(0, LBlockIndex);
   CheckEquals(1, LBlockCount);
   CheckEquals(ctiOPDHTTPNullBlockSize, LBlockSize);
-  CheckEquals(0, LTransID);
+  CheckEquals('d', LTransID);
   CheckEquals(0, LBlockCRC);
 
 end;
@@ -750,7 +751,7 @@ var
   LBlockIndex: Longword;
   LBlockCount: Longword;
   LBlockSize:  LongWord;
-  LTransID:    Longword;
+  LTransID:    string;
   LBlockCRC:   Longword;
 begin
   LText:= ARequestInfo.RawHeaders.Values[ctiOPFHTTPBlockHeader];
@@ -778,7 +779,7 @@ begin
     LHTTP := AClass.Create;
     try
       LHTTP.DeriveRequestTIOPFBlockHeader:= False;
-      LHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(2, 3, 4, 5, 0);
+      LHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(2, 3, 4, '5', 0);
       LHTTP.RequestTIOPFBlockHeader:= LHeader;
       LHTTP.Get(MakeTestURL(cTestDocName+LRandom));
       CheckEquals(LHeader, LHTTP.Output.DataString);
@@ -792,12 +793,13 @@ begin
 end;
 
 procedure TTestTIHTTP.CheckTIOPFBlockHeader(const ABlockHeader: string;
-  const ABlockIndex, ABlockCount, ABlockSize, ATransID: Longword);
+  const ABlockIndex, ABlockCount, ABlockSize: LongWord;
+  const ATransID: string);
 var
   LBlockIndex: Longword;
   LBlockCount: Longword;
   LBlockSize:  LongWord;
-  LTransID:    Longword;
+  LTransID:    string;
   LBlockCRC:   Longword;
 begin
   tiHTTP.tiParseTIOPFHTTPBlockHeader(ABlockHeader, LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
@@ -819,7 +821,7 @@ begin
     LHTTP := AClass.Create;
     try
       LHTTP.DeriveRequestTIOPFBlockHeader:= False;
-      LHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(2, 3, 4, 5, 0);
+      LHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(2, 3, 4, '5', 0);
       LHTTP.RequestTIOPFBlockHeader:= LHeader;
       LHTTP.Post(MakeTestURL(cTestDocName));
       CheckEquals(LHeader, LHTTP.Output.DataString);
@@ -853,7 +855,7 @@ var
   LBlockIndex: Longword;
   LBlockCount: Longword;
   LBlockSize:  Longword;
-  LTransID:    Longword;
+  LTransID:    string;
   LBlockCRC:   Longword;
 begin
   LText:= ARequestInfo.RawHeaders.Values[ctiOPFHTTPBlockHeader];

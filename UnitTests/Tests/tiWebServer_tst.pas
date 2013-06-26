@@ -19,16 +19,22 @@ type
   private
     procedure DotiWebServer_Default(const APageName: string);
   protected
-    procedure SetUp; override;
-    procedure TearDown; override;
     function  TestHTTPRequest(const ADocument: string;
       const AFormatException: boolean = True;
       const AParams: string = ''): string;
-    function  TestHTTPRequestInBlocks(
+//    function  TestHTTPRequestInBlocks(
+//      const ADocument: string;
+//      const ABlockSize: Longword;
+//      const ABlockIndex: Longword;
+//      var   ABlockCount, ATransID, ABlockCRC: Longword): string;
+    function TestHTTPRequestInBlocks(
       const ADocument: string;
       const ABlockSize: Longword;
       const ABlockIndex: Longword;
-      var   ABlockCount, ATransID, ABlockCRC: Longword): string;
+      var   ABlockCount: LongWord;
+      const ATransID: string;
+      var ABlockCRC: Longword): string;
+
     procedure TestRunCGIExtension(const AParam: string);
   published
     procedure tiBlockStreamCache_AddRead;
@@ -103,18 +109,6 @@ const
   cExpectedResponseErrorTextCountAttempts = 'HTTP/1.1 404 Not Found (After 1 attempts)';
 
 { TTestTIWebServer }
-
-procedure TtiWebServerTestCase.SetUp;
-begin
-  inherited;
-
-end;
-
-procedure TtiWebServerTestCase.TearDown;
-begin
-  inherited;
-
-end;
 
 type
   TtiWebServerForTesting = class(TtiWebServer)
@@ -590,8 +584,8 @@ procedure TtiWebServerTestCase.tiWebServer_PageInBlocks;
 var
   LO: TtiWebServerForTesting;
   LBlockContent: string;
-  LFileName: string;
-  LBlockCount, LTransID, LBlockCRC: Longword;
+  LFileName, LTransID: string;
+  LBlockCount, LBlockCRC: Longword;
   LDir: string;
 const
   CBlockSize = 3;
@@ -616,41 +610,41 @@ begin
     LO.SetStaticPageLocation(LDir);
 
     LBlockCount:= 0;
-    LTransID:=    0;
+    LTransID:=    '0';
 
     CheckEquals(0, LO.BlockStreamCache.Count, 'LO.BlockStreamCache.Count');
     LBlockContent:= TestHTTPRequestInBlocks('testpage.htm', CBlockSize, 0, LBlockCount, LTransID, LBlockCRC);
     CheckEquals(CBlock0, LBlockContent, 'BlockContent #0');
     CheckEquals(5, LBlockCount, 'BlockCount #0');
-    CheckEquals(1, LTransID,    'TransID #0');
+    CheckEquals('0', LTransID,    'TransID #0');
     CheckEquals(tiCRC32FromString(CBlock0), LBlockCRC,   'BlockCRC #0');
     CheckEquals(1, LO.BlockStreamCache.Count, 'LO.BlockStreamCache.Count');
 
     LBlockContent:= TestHTTPRequestInBlocks('testpage.htm', CBlockSize, 1, LBlockCount, LTransID, LBlockCRC);
     CheckEquals(CBlock1, LBlockContent, 'BlockContent #1');
     CheckEquals(5, LBlockCount, 'BlockCount #1');
-    CheckEquals(1, LTransID,    'TransID #1');
+    CheckEquals('0', LTransID,    'TransID #1');
     CheckEquals(tiCRC32FromString(CBlock1), LBlockCRC,   'BlockCRC #1');
     CheckEquals(1, LO.BlockStreamCache.Count, 'LO.BlockStreamCache.Count');
 
     LBlockContent:= TestHTTPRequestInBlocks('testpage.htm', CBlockSize, 2, LBlockCount, LTransID, LBlockCRC);
     CheckEquals(CBlock2, LBlockContent, 'BlockContent #2');
     CheckEquals(5, LBlockCount, 'BlockCount #2');
-    CheckEquals(1, LTransID,    'TransID #2');
+    CheckEquals('0', LTransID,    'TransID #2');
     CheckEquals(tiCRC32FromString(CBlock2), LBlockCRC,   'BlockCRC #2');
     CheckEquals(1, LO.BlockStreamCache.Count, 'LO.BlockStreamCache.Count');
 
     LBlockContent:= TestHTTPRequestInBlocks('testpage.htm', CBlockSize, 3, LBlockCount, LTransID, LBlockCRC);
     CheckEquals(CBlock3, LBlockContent, 'BlockContent #3');
     CheckEquals(5, LBlockCount, 'BlockCount #3');
-    CheckEquals(1, LTransID,    'TransID #3');
+    CheckEquals('0', LTransID,    'TransID #3');
     CheckEquals(tiCRC32FromString(CBlock3), LBlockCRC,   'BlockCRC #3');
     CheckEquals(1, LO.BlockStreamCache.Count, 'LO.BlockStreamCache.Count');
 
     LBlockContent:= TestHTTPRequestInBlocks('testpage.htm', CBlockSize, 4, LBlockCount, LTransID, LBlockCRC);
     CheckEquals(CBlock4, LBlockContent, 'BlockContent #4');
     CheckEquals(5, LBlockCount, 'BlockCount #4');
-    CheckEquals(1, LTransID,    'TransID #4');
+    CheckEquals('0', LTransID,    'TransID #4');
     CheckEquals(tiCRC32FromString(CBlock4), LBlockCRC,   'BlockCRC #4');
     CheckEquals(1, LO.BlockStreamCache.Count, 'LO.BlockStreamCache.Count');
 
@@ -668,7 +662,8 @@ type
       const AInput: TStringStream;
       const AOutput: TStringStream;
       const ABlockIndex: LongWord;
-      var   ATransID: LongWord;
+//      var   ATransID: LongWord;
+      const   ATransID: string;
       out   ABlockCRC: LongWord;
       out   ABlockCount: LongWord); override;
     procedure   DoPost(const AURL : string; AInput, AOutput: TStringStream); override;
@@ -677,7 +672,8 @@ type
   procedure TtiHTTPIndyForTesting.DoGetOrPostBlockWithRetry(const AURL: string;
   const AGetOrPostMethod: TtiHTTPGetOrPostMethod; const AInput,
   AOutput: TStringStream; const ABlockIndex: LongWord;
-  var ATransID: LongWord; out ABlockCRC, ABlockCount: LongWord);
+//  var ATransID: LongWord; out ABlockCRC, ABlockCount: LongWord);
+  const ATransID: string; out ABlockCRC, ABlockCount: LongWord);
   begin
     inherited;
   end;
@@ -692,7 +688,9 @@ function TtiWebServerTestCase.TestHTTPRequestInBlocks(
   const ADocument: string;
   const ABlockSize: Longword;
   const ABlockIndex: Longword;
-  var   ABlockCount, ATransID, ABlockCRC: Longword): string;
+  var   ABlockCount: LongWord;
+  const ATransID: string;
+  var ABlockCRC: Longword): string;
 var
   LInput: TStringStream;
   LOutput: TStringStream;
@@ -756,38 +754,38 @@ var
   L: TtiBlockStreamCacheForTesting;
   LBlockText: string;
   LBlockCount: Longword;
-  LTransID: Longword;
+  LTransID: string;
 begin
   L:= TtiBlockStreamCacheForTesting.Create;
   try
-    L.AddBlockStream('abcDEFgh', 3, LBlockText, LBlockCount, LTransID);
+    CheckEquals(true, L.AddBlockStream('1', 'abcDEFgh', 3, LBlockCount));
     CheckEquals(1, L.Count);
-    CheckEquals('abc', LBlockText);
     CheckEquals(3, LBlockCount);
-    CheckEquals(1, LTransID);
-    CheckEquals(1, L.Count);
 
-    L.AddBlockStream('jklMNOpq', 3, LBlockText, LBlockCount, LTransID);
+    CheckEquals(true, L.AddBlockStream('2', 'jklMNOpq', 3, LBlockCount));
     CheckEquals(2, L.Count);
+    CheckEquals(3, LBlockCount);
+
+    CheckEquals(true, L.ReadBlock('2', 0, LBlockCount, LBlockText));
     CheckEquals('jkl', LBlockText);
     CheckEquals(3, LBlockCount);
-    CheckEquals(2, LTransID);
-    CheckEquals(2, L.Count);
-
-    L.ReadBlock(2, 0, LBlockText);
-    CheckEquals('jkl', LBlockText);
-    L.ReadBlock(2, 1, LBlockText);
+    CheckEquals(true, L.ReadBlock('2', 1, LBlockCount, LBlockText));
     CheckEquals('MNO', LBlockText);
-    L.ReadBlock(2, 2, LBlockText);
+    CheckEquals(3, LBlockCount);
+    CheckEquals(true, L.ReadBlock('2', 2, LBlockCount, LBlockText));
     CheckEquals('pq', LBlockText);
+    CheckEquals(3, LBlockCount);
     CheckEquals(2, L.Count);
 
-    L.ReadBlock(1, 0, LBlockText);
+    CheckEquals(true, L.ReadBlock('1', 0, LBlockCount, LBlockText));
     CheckEquals('abc', LBlockText);
-    L.ReadBlock(1, 1, LBlockText);
+    CheckEquals(3, LBlockCount);
+    CheckEquals(true, L.ReadBlock('1', 1, LBlockCount, LBlockText));
     CheckEquals('DEF', LBlockText);
-    L.ReadBlock(1, 2, LBlockText);
+    CheckEquals(3, LBlockCount);
+    CheckEquals(true, L.ReadBlock('1', 2, LBlockCount, LBlockText));
     CheckEquals('gh', LBlockText);
+    CheckEquals(3, LBlockCount);
     CheckEquals(2, L.Count);
 
   finally
@@ -800,21 +798,21 @@ var
   L: TtiBlockStreamCacheForTesting;
   LBlockText: string;
   LBlockCount: Longword;
-  LTransID: Longword;
+  LTransID: string;
 begin
   L:= TtiBlockStreamCacheForTesting.Create;
   try
     L.SleepSec:= 1;
     L.SweepEverySec:= 1;
     L.Start;
-    L.AddBlockStream('abcDEFgh', 3, LBlockText, LBlockCount, LTransID);
-    L.AddBlockStream('jklMNOpq', 3, LBlockText, LBlockCount, LTransID);
+    CheckEquals(true, L.AddBlockStream('1', 'abcDEFgh', 3, LBlockCount));
+    CheckEquals(true, L.AddBlockStream('2', 'jklMNOpq', 3, LBlockCount));
     Sleep(2000);
     CheckEquals(2, L.Count);
     L.TimeOutSec:= 1;
     Sleep(2000);
     CheckEquals(0, L.Count);
-    
+
   finally
     L.Free;
   end;

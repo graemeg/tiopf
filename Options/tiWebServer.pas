@@ -12,14 +12,12 @@ uses
   IdHTTPServer,
   IdCustomHTTPServer,
   IdContext,
-  // HTTPS/SSL Support:
-  //IdSSLOpenSSL,
   Contnrs,
   Classes;
 
 const
   CFavIconFileName = 'favicon.ico';
-  cErrorInvalidCachedBlockStreamTransID = 'Invalid cached block TransID "%d"';
+  cErrorInvalidCachedBlockStreamTransID = 'Invalid cached block TransID "%s"';
   cDefaultBlockStreamCacheTimeout= 120;
   cDefaultBlockStreamCacheSweepEvery= 120;
   cDefaultSleepSec= 10;
@@ -165,11 +163,11 @@ type
 
   TtiCachedBlockStream = class(TtiBlockStream)
   private
-    FTransID: Longword;
+    FTransID: string;
     FLastAccessed: TDateTime;
     function GetSecInUse: Word;
   public
-    property TransID: Longword Read FTransID Write FTransID;
+    property TransID: string Read FTransID Write FTransID;
     property LastAccessed: TDateTime Read FLastAccessed Write FLastAccessed;
     property SecInUse: Word Read GetSecInUse;
   end;
@@ -201,16 +199,17 @@ type
     FSweepEverySec: Longword;
     FSleepSec: Longword;
     FStarted: Boolean;
-    function    FindByTransID(ATransID: Longword): TtiCachedBlockStream;
+    function    FindByTransID(ATransID: string): TtiCachedBlockStream;
     function    GetCount: Longword;
   protected
     procedure   SweepForTimeOuts;
   public
     constructor Create;
     destructor  Destroy; override;
-    procedure   AddBlockStream(const AData: string; const ABlockSize: Longword;
-                               var   AFirstBlockAsString: string; var ABlockCount, ATransID: Longword);
-    procedure   ReadBlock(ATransID: Longword; ABlockIndex: Longword; var ABlockAsString: string);
+    function    AddBlockStream(const ATransID: string; const AData: string; const ABlockSize: Longword;
+                               out ABlockCount: LongWord): boolean;
+    function    ReadBlock(const ATransID: string; const ABlockIndex: Longword;
+                          out ABlockCount: LongWord; out ABlockContent: string): boolean;
     property    TimeOutSec: Longword Read FTimeOutSec Write FTimeOutSec;
     property    SweepEverySec: Longword Read FSweepEverySec Write FSweepEverySec;
     property    SleepSec: Longword Read FSleepSec Write FSleepSec;
@@ -328,17 +327,6 @@ begin
   FIdHTTPServer.OnCommandGet := DoIDHTTPServerCommandGet;
   FIdHTTPServer.KeepAlive := False;
   Port:= APort;
-  // HTTPS/SSL Support:
-  //FServerIOHandler := TIdServerIOHandlerSSLOpenSSL.Create(nil);
-  //FServerIOHandler.SSLOptions.CertFile := ASSLCertFile; // e.g. 'C:\domain.name.cer';
-  //FServerIOHandler.SSLOptions.KeyFile := ASSLKeyFile; // e.g. 'C:\domain.name.key';
-  //FServerIOHandler.SSLOptions.RootCertFile := ASSLRootCertFile; // e.g. 'C:\domain.name.cer';
-  //FServerIOHandler.SSLOptions.Method := sslvSSLv23;
-  //FServerIOHandler.SSLOptions.Mode := sslmServer;
-  ////FServerIOHandler.SSLOptions.VerifyDepth := 1;
-  ////FServerIOHandler.SSLOptions.VerifyMode := [sslvrfPeer,sslvrfFailIfNoPeerCert,sslvrfClientOnce];
-  //FIdHTTPServer.IOHandler := FServerIOHandler;
-
   FBlockStreamCache:= TtiBlockStreamCache.Create;
 end;
 
@@ -371,8 +359,6 @@ end;
 
 destructor TtiWebServer.Destroy;
 begin
-  // HTTPS/SSL Support:
-  //FServerIOHandler.Free;
   FIdHTTPServer.Free;
   FServerActions.Free;
   FBlockStreamCache.Free;
@@ -395,10 +381,11 @@ var
   LBlockIndex: Longword;
   LBlockCount: Longword;
   LBlockSize:  LongWord;
-  LTransID:    Longword;
+  LTransID:    string;
   LBlockCRC:   Longword;
   LResponseTIOPFBlockHeader: string;
-  LTemp: string; // Change to a stream - might be a little faster
+  LBlockContent: string; // Change to a stream - might be a little faster
+  LCreatedBlockStream: boolean;
 
 begin
   Log('Request from %s:%d (proxy client and servers: %s)',
@@ -417,11 +404,6 @@ begin
     Log(ARequestInfo.Document);
     Log('--- Request Headers');
     Log(ARequestInfo.RawHeaders.Text);
-//    if Assigned(ARequestInfo.PostStream) then
-//    begin
-//      Log('--- PostStream');
-//      Log(tiStreamToString(ARequestInfo.PostStream));
-//    end;
   end;
 
   try
@@ -438,36 +420,55 @@ begin
     LContentType:= cHTTPContentTypeTextHTML;
     LResponse:= TMemoryStream.Create;
     try
-      // BlockSize = 0, so don't block result
-      if (LBlockSize = 0) then
+
+      if not FBlockStreamCache.ReadBlock(LTransID, LBlockIndex, LBlockCount, LBlockContent) then
       begin
-        ProcessHTTPGet(LDocument, ARequestInfo, LParams, LResponse, LContentType, LResponseCode, AResponseInfo);
-        LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(0, 0, 0, 0, 0);
+        if LBlockCount = 0 then
+        begin
+          // cache miss on LTransID, pass new request through
+          ProcessHTTPGet(LDocument, ARequestInfo, LParams, LResponse, LContentType, LResponseCode, AResponseInfo);
+
+          if (LBlockSize = 0) then
+          begin
+            // BlockSize = 0, so don't block result
+            LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(0, 0, 0, LTransID, 0);
+          end
+          else
+          begin
+            LCreatedBlockStream := FBlockStreamCache.AddBlockStream(LTransID, tiStreamToString(LResponse), LBlockSize, LBlockCount);
+            Assert(LCreatedBlockStream, 'Failed to create new BlockStream (BlockStream exists or invalid new TransID)');
+            Log('HTTP Trans ID: ' + LTransID + '. Failed to create new BlockStream (BlockStream exists or invalid new TransID)', lsError);
+            if FBlockStreamCache.ReadBlock(LTransID, LBlockIndex, LBlockCount, LBlockContent) then
+            begin
+              tiStringToStream(LBlockContent, LResponse);
+              LBlockCRC:= tiCRC32FromStream(LResponse);
+              LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
+              if LBlockCount > 1 then
+                Log('HTTP Trans ID: ' + LTransID + '. Returning block '+ IntToStr(LBlockIndex) +
+                    '  of ' + IntToStr(LBlockCount), lsQueryTiming);
+            end
+            else
+            begin
+              // LBlockCount <> 0 - range error for arg LBlockIndex on new request
+              Log('HTTP Trans ID (new request): ' + LTransID + '. Requested block '+ IntToStr(LBlockIndex) +
+                  ' of ' + IntToStr(LBlockCount), lsError);
+            end;
+          end;
+        end
+        else
+        begin
+          // LBlockCount <> 0 - range error for arg LBlockIndex on cached response
+          Log('HTTP Trans ID (cached response): ' + LTransID + '. Requested block '+ IntToStr(LBlockIndex) +
+              ' of ' + IntToStr(LBlockCount), lsError);
+        end;
       end
-      // BlockSize <> 0 and TransID = 0, a new blocked request
-      else if (LBlockSize <> 0) and (LTransID = 0) then
+      // return an existing block from the cache
+      else
       begin
-        ProcessHTTPGet(LDocument, ARequestInfo, LParams, LResponse, LContentType, LResponseCode, AResponseInfo);
-        // To fix http://meldeopd1:8080/browse/BR-242:
-        //   "Error reading response from remote server: Transaction ID#39096 timed out.",
-        // we need to reset the corresponding transaction in the StatelessDBConnection's
-        // LastUsed value to Now. This will involve passing the transaction ID back
-        // and hitting the StatelessDBConnectionPool from  here. Hard to do.
-        FBlockStreamCache.AddBlockStream(tiStreamToString(LResponse), LBlockSize, LTemp, LBlockCount, LTransID);
-        tiStringToStream(LTemp, LResponse);
+        tiStringToStream(LBlockContent, LResponse);
         LBlockCRC:= tiCRC32FromStream(LResponse);
-        if LBlockCount > 1 then
-          Log('HTTP Trans ID: ' + IntToStr(LTransID) + '. Returning block 0 of ' + IntToStr(LBlockCount), lsQueryTiming);
-        LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(0, LBlockCount, LBlockSize, LTransID, LBlockCRC);
-      end
-      // BlockSize <> 0 and TransID <> 0, Retrun and existing block from the cache
-      else if (LBlockSize <> 0) and (LTransID <> 0) then
-      begin
-        FBlockStreamCache.ReadBlock(LTransID, LBlockIndex, LTemp);
-        tiStringToStream(LTemp, LResponse);
-        LBlockCRC:= tiCRC32FromStream(LResponse);
-        Log('HTTP Trans ID: ' + IntToStr(LTransID) + '. Returning block ' + IntToStr(LBlockIndex) + ' of ' + IntToStr(LBlockCount), lsQueryTiming);
         LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
+        Log('HTTP Trans ID: ' + LTransID + '. Returning block ' + IntToStr(LBlockIndex) + ' of ' + IntToStr(LBlockCount), lsQueryTiming);
       end;
 
       LPassThroughValue := AResponseInfo.CustomHeaders.Values[ctiOPFHTTPPassThroughHeader];
@@ -1003,23 +1004,27 @@ end;
 
 { TtiBlockStreamCache }
 
-procedure TtiBlockStreamCache.AddBlockStream(
-  const AData: string; const ABlockSize: Longword;
-  var   AFirstBlockAsString: string; var ABlockCount, ATransID: Longword);
+function TtiBlockStreamCache.AddBlockStream(
+  const ATransID: string; const AData: string; const ABlockSize: Longword;
+  out ABlockCount: LongWord): boolean;
 var
   L: TtiCachedBlockStream;
+  LTransID: string;
 begin
+  ABlockCount := 0;
   FCritSect.Enter;
   try
-    Inc(FLastTransID);
-    L:= TtiCachedBlockStream.Create(AData, ABlockSize);
-    FList.Add(L);
-    L.TransID:= FLastTransID;
-    L.LastAccessed:= Now;
-    ATransID:= FLastTransID;
-    ABlockCount:= L.BlockCount;
-    if ABlockCount > 0 then
-      AFirstBlockAsString:= L.BlockAsString[0];
+    LTransID := Trim(ATransID);
+    Result := (Length(LTransID) > 0) and (ABlockSize > 0) and
+      (FindByTransID(LTransID) = nil);
+    if Result then
+    begin
+      L:= TtiCachedBlockStream.Create(AData, ABlockSize);
+      FList.Add(L);
+      L.TransID := LTransID;
+      L.LastAccessed:= Now;
+      ABlockCount:= L.BlockCount;
+    end;
   finally
     FCritSect.Leave;
   end;
@@ -1050,7 +1055,7 @@ begin
   inherited;
 end;
 
-function TtiBlockStreamCache.FindByTransID(ATransID: Longword): TtiCachedBlockStream;
+function TtiBlockStreamCache.FindByTransID(ATransID: string): TtiCachedBlockStream;
 var
   i: Integer;
 begin
@@ -1073,17 +1078,34 @@ begin
   end;
 end;
 
-procedure TtiBlockStreamCache.ReadBlock(ATransID, ABlockIndex: Longword; var ABlockAsString: string);
+function TtiBlockStreamCache.ReadBlock(const ATransID: string; const ABlockIndex: Longword;
+  out ABlockCount: LongWord; out ABlockContent: string): boolean;
 var
   L: TtiCachedBlockStream;
+  LTransID: string;
 begin
   FCritSect.Enter;
   try
-    L:= FindByTransID(ATransID);
-    if L = nil then
-      raise EtiOPFDataException.CreateFmt(cErrorInvalidCachedBlockStreamTransID, [ATransID]);
-    ABlockAsString:= L.BlockAsString[ABlockIndex];
-    L.LastAccessed:= Now;
+    LTransID := Trim(ATransID);
+    Result := false;
+    ABlockContent := '';
+    L:= FindByTransID(LTransID);
+    if (L <> nil) then
+    begin
+      ABlockCount := L.BlockCount;
+      if (ABlockIndex < ABlockCount) and (ABlockIndex >= 0) then
+      begin
+         ABlockContent := L.BlockAsString[ABlockIndex];
+         Result := true;
+      end;
+      L.LastAccessed := Now;
+    end
+    else
+    begin
+      // Return ABlockCount = 0 for miss on stream TransID
+      ABlockCount := 0;
+    end;
+
   finally
     FCritSect.Leave;
   end;
