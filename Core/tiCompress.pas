@@ -82,7 +82,7 @@ implementation
 uses
    SysUtils
   ,tiUtils
- ;
+  ,tiExcept;
 
 // A var to hold our single instance of the TtiCompressFactory
 var
