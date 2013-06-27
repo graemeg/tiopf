@@ -305,8 +305,6 @@ begin
 end;
 
 function TtiHTTPAbs.CreateTransID: string;
-var
-  LGUID: TGUID;
 begin
   Result := tiUtils.tiCreateGUIDString;
 end;
@@ -539,7 +537,7 @@ var
   LReturnBlockSize: LongWord;
   LTransID: string;
 begin
-Log('DoGetOrPostBlock block %d', [ABlockIndex]);
+  Log('DoGetOrPostBlock block %d', [ABlockIndex], lsDebug);
   if FDeriveRequestTIOPFBlockHeader then
     RequestTIOPFBlockHeader:= tiMakeTIOPFHTTPBlockHeader(ABlockIndex, ABlockCount, FBlockSize, ATransID, 0);
   AGetOrPostMethod(AURL, AInput, AOutput);
@@ -561,7 +559,7 @@ begin
   while (not LSuccess) and
     (i< FRetryLimit) do
   begin
-Log('DoGetOrPostBlockWithRetry attempt %d', [i+1]);
+    Log('DoGetOrPostBlockWithRetry attempt %d', [i+1], lsDebug);
     // Within the retry range
     if i < FRetryLimit - 1 then
     begin
@@ -574,7 +572,7 @@ Log('DoGetOrPostBlockWithRetry attempt %d', [i+1]);
       except
         on e:exception do
         begin
-Log('DoGetOrPostBlockWithRetry fail: %s', [e.Message]);
+          Log('DoGetOrPostBlockWithRetry fail: %s', [e.Message], lsDebug);
           Sleep(FRetryWaitMS); // (was 2000)
           LSuccess:= false;
         end;
@@ -592,7 +590,7 @@ Log('DoGetOrPostBlockWithRetry fail: %s', [e.Message]);
       except
         on e:exception do
         begin
-Log('DoGetOrPostBlockWithRetry fail final: %s', [e.Message]);
+          Log('DoGetOrPostBlockWithRetry fail final: %s', [e.Message], lsDebug);
           raise EtiOPFHTTPException.CreateFmt(CErrorHTTPRetryLimitExceeded, [e.message, i+1])
         end;
       end;

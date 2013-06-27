@@ -19,8 +19,7 @@ const
   CFavIconFileName = 'favicon.ico';
   cErrorInvalidCachedBlockStreamTransID = 'Invalid cached block TransID "%s"';
   cDefaultBlockStreamCacheTimeout= 120;
-  cDefaultBlockStreamCacheSweepEvery= 120;
-  cDefaultSleepSec= 10;
+  cDefaultBlockStreamCacheSweepEvery= 10;
   CProxyClientServersHeaderField = 'X-Forwarded-For';
 
 type
@@ -193,11 +192,9 @@ type
   private
     FList: TObjectList;
     FCritSect: TCriticalSection;
-    FLastTransID: Longword;
     FTimeOutSec: Longword;
     FSweeper: TtiThreadBlockStreamCacheSweepForTimeouts;
     FSweepEverySec: Longword;
-    FSleepSec: Longword;
     FStarted: Boolean;
     function    FindByTransID(ATransID: string): TtiCachedBlockStream;
     function    GetCount: Longword;
@@ -212,7 +209,6 @@ type
                           out ABlockCount: LongWord; out ABlockContent: string): boolean;
     property    TimeOutSec: Longword Read FTimeOutSec Write FTimeOutSec;
     property    SweepEverySec: Longword Read FSweepEverySec Write FSweepEverySec;
-    property    SleepSec: Longword Read FSleepSec Write FSleepSec;
     property    Count: Longword Read GetCount;
     procedure   Start;
   end;
@@ -1037,7 +1033,6 @@ begin
   FCritSect:= TCriticalSection.Create;
   FTimeOutSec:= cDefaultBlockStreamCacheTimeout;
   FSweepEverySec:= cDefaultBlockStreamCacheSweepEvery;
-  FSleepSec:= cDefaultSleepSec;
   FSweeper:= TtiThreadBlockStreamCacheSweepForTimeouts.Create(Self);
   FStarted:= False;
 end;
@@ -1047,6 +1042,7 @@ begin
   if FStarted then
   begin
     FSweeper.Terminate;
+    FSweeper.WakeUp;
     FSweeper.WaitFor;
   end;
   FSweeper.Free;
@@ -1093,7 +1089,7 @@ begin
     if (L <> nil) then
     begin
       ABlockCount := L.BlockCount;
-      if (ABlockIndex < ABlockCount) and (ABlockIndex >= 0) then
+      if ABlockIndex < ABlockCount then
       begin
          ABlockContent := L.BlockAsString[ABlockIndex];
          Result := true;
@@ -1123,6 +1119,7 @@ var
 begin
   FCritSect.Enter;
   try
+    Log('SweepForTimeOuts: BlockStreamCache count=%d', [FList.Count], lsDebug);
     for i:= FList.Count-1 downto 0 do
       if (FList.Items[i] as TtiCachedBlockStream).SecInUse > FTimeOutSec then
         FList.Delete(i);
@@ -1149,17 +1146,9 @@ begin
 end;
 
 procedure TtiThreadBlockStreamCacheSweepForTimeouts.Execute;
-var
-  LStart: TDateTime;
 begin
-  while not Terminated do
-  begin
-    LStart:= Now;
-    while (not Terminated) and
-          ((Now - LStart) < (cdtOneSecond * FBlockStreamCache.SweepEverySec)) do
-      Sleep(FBlockStreamCache.SleepSec*1000); // Higher value uses less resouce, but will take longer to shut down.
-      FBlockStreamCache.SweepForTimeOuts;
-  end;
+  while SleepAndCheckTerminated(FBlockStreamCache.SweepEverySec) do
+    FBlockStreamCache.SweepForTimeOuts;
 end;
 
 { TtiWebServerAction_ForceException }

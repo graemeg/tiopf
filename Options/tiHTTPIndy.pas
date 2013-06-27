@@ -104,17 +104,17 @@ begin
     FHTTP.Request.CustomHeaders.Values[ctiOPFHTTPBlockHeader]:= RequestTIOPFBlockHeader;
     AOutput.Size:= 0;
     LURL := CorrectURL(AddURLParams(AURL, AInput.DataString));
-    Log('Request INDY %d: GET START [%s]', [LRequestID, LURL]);
+    Log('Request INDY %d: GET START [%s]', [LRequestID, LURL], lsDebug);
     try
       FHTTP.Get(LURL, AOutput);
-      Log('Response INDY %d: GET [%s]', [LRequestID, FHTTP.Response.ResponseText]);
+      Log('Response INDY %d: GET [%s]', [LRequestID, FHTTP.Response.ResponseText], lsDebug);
     finally
-      Log('Request INDY %d: GET END', [LRequestID]);
+      Log('Request INDY %d: GET END', [LRequestID], lsDebug);
     end;
   except
     on e:exception do
     begin
-      Log('Request INDY %d: GET ERROR [%s]', [LRequestID, e.message]);
+      Log('Request INDY %d: GET ERROR [%s]', [LRequestID, e.message], lsDebug);
       raise EtiOPFHTTPException.Create(e.message);
     end;
   end;
@@ -138,17 +138,17 @@ begin
     // http://groups.google.com.au/group/borland.public.delphi.internet.winsock/browse_thread/thread/21285265e0ab0f69/a6d9c0608aeb691e?lnk=st&q=TidHTTP+%22Socket+Error+%23+10054+Connection+reset+by+peer%22&rnum=1&hl=en#a6d9c0608aeb691e
     FHTTP.Response.KeepAlive:= False;
     FHTTP.Request.CustomHeaders.Values[ctiOPFHTTPBlockHeader]:= RequestTIOPFBlockHeader;
-    Log('Request INDY %d: POST START [%s]', [LRequestID, AURL]);
+    Log('Request INDY %d: POST START [%s]', [LRequestID, AURL], lsDebug);
     try
       FHTTP.Post(AURL, AInput, AOutput);
-      Log('Response INDY %d: POST [%s]', [LRequestID, FHTTP.Response.ResponseText]);
+      Log('Response INDY %d: POST [%s]', [LRequestID, FHTTP.Response.ResponseText], lsDebug);
     finally
-      Log('Request INDY %d: POST END', [LRequestID]);
+      Log('Request INDY %d: POST END', [LRequestID], lsDebug);
     end;
   except
     on e:exception do
     begin
-      Log('Request INDY %d: POST ERROR [%s]', [LRequestID, e.message]);
+      Log('Request INDY %d: POST ERROR [%s]', [LRequestID, e.message], lsDebug);
       raise EtiOPFHTTPException.Create(e.message);
     end;
   end;

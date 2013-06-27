@@ -591,11 +591,12 @@ function TtiSleepThread.SleepAndCheckTerminated(ASleepFor: Cardinal): boolean;
 var
   LStart: DWord;
 begin
+  // Sleep with instant wake up capability
   LStart := tiGetTickCount;
   while ((tiGetTickCount - LStart) <= ASleepFor) and (not Terminated) and
         (not Finished) do
-    Sleep(FSleepResponse);
-  //Call wakeup if terminated
+    if FUpdateEvent.WaitFor(FSleepResponse) = wrSignaled
+      then FUpdateEvent.ResetEvent;
   Result := (not Terminated) and (not Finished);
 end;
 

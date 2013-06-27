@@ -153,7 +153,6 @@ begin
   try
     LConfig:= TtiWebServerConfig.Create;
     LO:= TtiWebServerForTesting.Create(cPort);
-    LO.BlockStreamCache.SleepSec:= 0;
     LExpectedStaticPageDir:= tiAddTrailingSlash(LConfig.PathToStaticPages);
     LExpectedCGIBinDir:= tiAddTrailingSlash(LConfig.PathToCGIBin);
     LO.Start;
@@ -266,9 +265,6 @@ begin
 
   LO:= TtiWebServerForTesting.Create(cPort);
   try
-    // ToDo: This is too fragile. SleepSec must be set before the web server is
-    //       started but StaticPageLocation must be set after web server is started
-    LO.BlockStreamCache.SleepSec:= 0;
     LO.Start;
     LO.SetStaticPageLocation(LDir);
 
@@ -344,9 +340,6 @@ begin
     tiStringToFile(LPage, LFileName);
     LO:= TtiWebServerForTesting.Create(cPort);
     try
-      // ToDo: This is too fragile. SleepSec must be set before the web server is
-      //       started but StaticPageLocation must be set after web server is started
-      LO.BlockStreamCache.SleepSec:= 0;
       LO.Start;
       LO.SetStaticPageLocation(TempDirectory);
 
@@ -448,7 +441,6 @@ begin
     LPage:= 'test log file';
     LO:= TtiWebServerForTesting.Create(cPort);
     try
-      LO.BlockStreamCache.SleepSec:= 0;
       LO.Start;
       LTryCount:= 0 ;
       while not _WaitForLogFile(LFileName) and (LTryCount <= 10) do
@@ -605,7 +597,6 @@ begin
 
   LO:= TtiWebServerForTesting.Create(cPort);
   try
-    LO.BlockStreamCache.SleepSec:= 0;
     LO.Start;
     LO.SetStaticPageLocation(LDir);
 
@@ -754,7 +745,6 @@ var
   L: TtiBlockStreamCacheForTesting;
   LBlockText: string;
   LBlockCount: Longword;
-  LTransID: string;
 begin
   L:= TtiBlockStreamCacheForTesting.Create;
   try
@@ -796,13 +786,10 @@ end;
 procedure TtiWebServerTestCase.tiBlockStreamCache_SweepForTimeOuts;
 var
   L: TtiBlockStreamCacheForTesting;
-  LBlockText: string;
   LBlockCount: Longword;
-  LTransID: string;
 begin
   L:= TtiBlockStreamCacheForTesting.Create;
   try
-    L.SleepSec:= 1;
     L.SweepEverySec:= 1;
     L.Start;
     CheckEquals(true, L.AddBlockStream('1', 'abcDEFgh', 3, LBlockCount));
