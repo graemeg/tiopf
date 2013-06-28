@@ -82,7 +82,6 @@ type
       const AInput: TStringStream;
       const AOutput: TStringStream;
       const ABlockIndex: LongWord;
-//      var   ATransID: LongWord;
       const   ATransID: string;
       out   ABlockCRC: LongWord;
       out   ABlockCount: LongWord); virtual;
@@ -92,7 +91,6 @@ type
       const AInput: TStringStream;
       const AOutput: TStringStream;
       const ABlockIndex: LongWord;
-//      var   ATransID: LongWord;
       const   ATransID: string;
       out   ABlockCRC: LongWord;
       out   ABlockCount: LongWord); virtual;
@@ -171,12 +169,10 @@ type
 function  GTIHTTPFactory: TtiHTTPFactory;
 procedure SetDefaultHTTPClass(const pMappingName: string);
 function  tiMakeTIOPFHTTPBlockHeader(
-//  const ABlockIndex, ABlockCount, ABlockSize, ATransID, ABlockCRC: LongWord): string;
   const ABlockIndex, ABlockCount, ABlockSize: LongWord; const ATransID: string; const ABlockCRC: LongWord): string;
 
 procedure tiParseTIOPFHTTPBlockHeader(
   const AValue: string;
-//  var ABlockIndex, ABlockCount, ABlockSize, ATransID, ABlockCRC: LongWord);
   out ABlockIndex, ABlockCount, ABlockSize: LongWord; out ATransID: string; out ABlockCRC: LongWord);
   var ABlockIndex, ABlockCount, ABlockSize, ATransID, ABlockCRC: LongWord);
 function  tiGetTIOPFHTTPBlockIndex(const AValue: string): LongWord;
@@ -480,7 +476,6 @@ end;
 procedure TtiHTTPAbs.DoGetOrPost(const AURL: string; AGetOrPostMethod: TtiHTTPGetOrPostMethod);
 var
   LBlockCount: Longword;
-//  LTransID: Longword;
   LTransID: string;
   LBlockCRC: LongWord;
   i: Integer;
