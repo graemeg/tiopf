@@ -1127,7 +1127,7 @@ begin
     if (L <> nil) then
     begin
       ABlockCount := L.BlockCount;
-      if ABlockIndex < ABlockCount then
+      if (ABlockIndex < ABlockCount) then
       begin
          ABlockContent := L.BlockAsString[ABlockIndex];
          Result := true;
