@@ -38,7 +38,7 @@ type
     procedure TestRunCGIExtension(const AParam: string);
   published
     procedure tiBlockStreamCache_AddRead;
-    procedure tiBlockStreamCache_SweepForTimeOuts;
+    procedure tiBlockStreamCache_GarbageCollection;
 
     procedure tiWebServer_Create;
     procedure tiWebServer_CreateStartAndStop;
@@ -783,22 +783,23 @@ begin
   end;
 end;
 
-procedure TtiWebServerTestCase.tiBlockStreamCache_SweepForTimeOuts;
+procedure TtiWebServerTestCase.tiBlockStreamCache_GarbageCollection;
 var
   L: TtiBlockStreamCacheForTesting;
   LBlockCount: Longword;
 begin
   L:= TtiBlockStreamCacheForTesting.Create;
   try
-    L.SweepEverySec:= 1;
+    L.SweepIntervalMS:= 250;
+    L.EntryIdleLimitMS:= 2 * L.SweepIntervalMS;
     L.Start;
     CheckEquals(true, L.AddBlockStream('1', 'abcDEFgh', 3, LBlockCount));
     CheckEquals(true, L.AddBlockStream('2', 'jklMNOpq', 3, LBlockCount));
-    Sleep(2000);
-    CheckEquals(2, L.Count);
-    L.TimeOutSec:= 1;
-    Sleep(2000);
-    CheckEquals(0, L.Count);
+    Sleep(L.SweepIntervalMS);
+    CheckEquals(2, L.Count, 'idle limit > sweep interval - none expired');
+    L.EntryIdleLimitMS:= L.SweepIntervalMS;
+    Sleep(L.SweepIntervalMS);
+    CheckEquals(0, L.Count, 'idle limit = sweep interval, both expired');
 
   finally
     L.Free;

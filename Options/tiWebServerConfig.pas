@@ -31,6 +31,8 @@ type
     function  GetAppServerSeverityToLog: string;
     function  GetCGIExtensionLogging: boolean;
     function  GetCGIExtensionSeverityToLog: string;
+    function  GetCacheSweepIntervalMS: integer;
+    function  GetCacheEntryIdleLimitMS: integer;
 
   public
     constructor Create;
@@ -53,6 +55,10 @@ type
     property    PathToPassThrough: string Read GetPathToPassThrough;
 
     property    Port: integer read GetPort;
+
+    property    CacheSweepIntervalMS: integer read GetCacheSweepIntervalMS;
+    property    CacheEntryIdleLimitMS: integer read GetCacheEntryIdleLimitMS;
+
 
     property    SendBugReportEmailOnCGIFailure: boolean read GetSendBugReportEmailOnCGIFailure;
     function    INIFileName: string;
@@ -101,6 +107,12 @@ const
 
   cINIService_IdentPort = 'Port';
   cINIService_DefaultPort = 80;
+
+  cINIService_CacheEntryIdleLimitMS = 'CacheEntryIdleLimitMS';
+  cINIService_CacheSweepIntervalMS = 'CacheSweepIntervalMS';
+  cINIService_DefaultCacheEntryIdleLimitMS = 120 * 1000;
+  cINIService_DefaultCacheSweepIntervalMS = 10 * 1000;
+
   // HTTPS/SSL Support:
   //cINIService_IdentSSLPort = 'SSLPort';
   //cINIService_DefaultSSLPort = 443;
@@ -191,6 +203,18 @@ end;
 function TtiWebServerConfig.GetAppServerSeverityToLog: string;
 begin
   Result := INI.ReadString(cINILog, cINILog_AppServerSeverityToLog, '');
+end;
+
+function TtiWebServerConfig.GetCacheEntryIdleLimitMS: integer;
+begin
+  Result:= INI.ReadInteger(cINIService, cINIService_CacheEntryIdleLimitMS,
+    cINIService_DefaultCacheEntryIdleLimitMS);
+end;
+
+function TtiWebServerConfig.GetCacheSweepIntervalMS: integer;
+begin
+  Result:= INI.ReadInteger(cINIService, cINIService_CacheSweepIntervalMS,
+    cINIService_DefaultCacheSweepIntervalMS);
 end;
 
 function TtiWebServerConfig.GetCGIExtensionLogging: boolean;
