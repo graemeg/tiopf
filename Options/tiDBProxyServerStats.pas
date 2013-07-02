@@ -7,7 +7,8 @@ uses
   tiPool,
   tiQueryRemote_Svr,
   tiQuery,
-  tiDataBuffer_bom;
+  tiDataBuffer_bom,
+  tiWebServer;
 
 type
 
@@ -18,6 +19,7 @@ type
     FDBConPool: TtiDataBuffer;
     FDBStatefulConPool: TtiDataBuffer;
     FTestRefreshRate: integer;
+    FWebServer: TtiWebServer;
     procedure InsertSummary;
     procedure InsertDBConnectionPool;
     procedure InsertStatefulDBConPool;
@@ -29,6 +31,7 @@ type
     function  GetTimeToLiveText(
       const AStaticConnection, ALocked, APendingRemoval: boolean;
       const ATimeToLive: integer): string;
+    procedure SetWebServer(const AWebServer: TtiWebServer);
   public
     constructor Create;
     destructor  Destroy; override;
@@ -36,6 +39,7 @@ type
     function    AsHTML : string;
     function    AsXML : string;
     property    TestRefreshRate : integer read FTestRefreshRate write SetTestRefreshRate;
+    property    WebServer: TtiWebServer read FWebServer write SetWebServer;
   end;
 
 implementation
@@ -62,6 +66,9 @@ const
   CFieldSummaryDBConPoolSweepInterval             = 'DB Connection Pool - Sweep interval (sec)';
   CFieldSummaryStatefulDBConPoolTimeOut       = 'Stateful DB Connection Pool - Time out (sec)';
   CFieldSummaryStatefulDBConPoolSweepInterval = 'Stateful DB Connection Pool - Sweep interval (sec)';
+  CFieldSummaryHTTPResponseCacheCurrentSize  = 'Current HTTP Cache Size (MB)';
+  CFieldSummaryHTTPResponseCacheMaxSize      = 'Max HTTP Cache Size (MB)';
+  CFieldSummaryHTTPResponseCacheMaxSizeTime      = 'Max HTTP Cache Size Time';
 
   CTableNameDBConnectionPool       = 'Database Connection Pool';
   CFieldDBConPoolID                = 'Connection ID';
@@ -133,9 +140,12 @@ begin
   FDBSummary.Fields.AddInstance(CFieldSummaryDBConPoolMaxPoolSize,           qfkInteger,  0);
   FDBSummary.Fields.AddInstance(CFieldSummaryDBConPoolWaitTime,              qfkInteger,  0);
   FDBSummary.Fields.AddInstance(CFieldSummaryDBConPoolTimeOut,               qfkInteger,  0);
-  FDBSummary.Fields.AddInstance(CFieldSummaryDBConPoolSweepInterval,             qfkInteger,  0);
+  FDBSummary.Fields.AddInstance(CFieldSummaryDBConPoolSweepInterval,         qfkInteger,  0);
   FDBSummary.Fields.AddInstance(CFieldSummaryStatefulDBConPoolTimeOut,       qfkInteger,  0);
   FDBSummary.Fields.AddInstance(CFieldSummaryStatefulDBConPoolSweepInterval, qfkInteger,  0);
+  FDBSummary.Fields.AddInstance(CFieldSummaryHTTPResponseCacheCurrentSize,   qfkInteger,  0);
+  FDBSummary.Fields.AddInstance(CFieldSummaryHTTPResponseCacheMaxSize,       qfkInteger,  0);
+  FDBSummary.Fields.AddInstance(CFieldSummaryHTTPResponseCacheMaxSizeTime,   qfkDateTIme, 0);
 
   FDBConPool:= FDBList.AddInstance(CTableNameDBConnectionPool);
   FDBConPool.Fields.AddInstance(CFieldDBConPoolID,           qfkInteger, 0);
@@ -182,6 +192,9 @@ begin
   LRow.FieldAsInteger[CFieldSummaryDBConPoolSweepInterval]  := GTIOPFManager.DefaultDBConnectionPool.SweepTime;
   LRow.FieldAsInteger[CFieldSummaryStatefulDBConPoolTimeOut]:= Trunc(gStatefulDBConnectionPool.TimeOut * 60);
   LRow.FieldAsInteger[CFieldSummaryStatefulDBConPoolSweepInterval]:= gStatefulDBConnectionPool.SweepInterval;
+  LRow.FieldAsInteger[CFieldSummaryHTTPResponseCacheCurrentSize]:= WebServer.CacheCurrentSize div 1000000;
+  LRow.FieldAsInteger[CFieldSummaryHTTPResponseCacheMaxSize]:= WebServer.CacheMaxSize div 1000000;
+  LRow.FieldAsDateTime[CFieldSummaryHTTPResponseCacheMaxSizeTime]:= WebServer.CacheMaxSizeTime;
 end;
 
 procedure TtiDBProxyServerStats.ForEachDBConnectionPoolItem(const AItem : TtiPooledItem);
@@ -261,6 +274,11 @@ begin
     FTestRefreshRate := CDefaultRefreshRate
   else
     FTestRefreshRate := AValue;
+end;
+
+procedure TtiDBProxyServerStats.SetWebServer(const AWebServer: TtiWebServer);
+begin
+  FWebServer := AWebServer;
 end;
 
 function TtiDBProxyServerStats.GetStatsPageTitle: string;

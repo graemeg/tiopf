@@ -194,8 +194,12 @@ type
     FSweeper: TtiThreadBlockStreamCacheSweepForTimeouts;
     FSweepIntervalMS: Longword;
     FStarted: Boolean;
+    FCurrentSize: LongWord;
+    FMaxSize: LongWord;
+    FMaxSizeTime: TDateTime;
     function    FindByTransID(ATransID: string): TtiCachedBlockStream;
     function    GetCount: Longword;
+    procedure   Clear;
   protected
     procedure   SweepForTimeOuts;
   public
@@ -207,6 +211,9 @@ type
                           out ABlockCount: LongWord; out ABlockContent: string): boolean;
     property    EntryIdleLimitMS: Longword Read FEntryIdleLimitMS Write FEntryIdleLimitMS;
     property    SweepIntervalMS: Longword Read FSweepIntervalMS Write FSweepIntervalMS;
+    property    CurrentSize: LongWord read FCurrentSize;
+    property    MaxSize: LongWord read FMaxSize;
+    property    MaxSizeTime: TDateTime read FMaxSizeTime;
     property    Count: Longword Read GetCount;
     procedure   Start;
   end;
@@ -227,6 +234,9 @@ type
     function GetActive: Boolean;
     function  GetPort: Integer;
     procedure SetPort(const AValue: Integer);
+    function GetCacheCurrentSize: LongWord;
+    function GetCacheMaxSize: LongWord;
+    function GetCacheMaxSizeTime: TDateTime;
   protected
     procedure SetStaticPageLocation(const AValue: string); virtual;
     procedure SetCGIBinLocation(const AValue: string); virtual;
@@ -265,6 +275,9 @@ type
     property    PassThroughLocation : string read FPassThroughLocation;
     property    OnServerException: TtiWebServerExceptionEvent read FOnServerException write FOnServerException;
 
+    property    CacheCurrentSize: LongWord read GetCacheCurrentSize;
+    property    CacheMaxSize: LongWord read GetCacheMaxSize;
+    property    CacheMaxSizeTime: TDateTime read GetCacheMaxSizeTime;
 
     procedure   Start;
     procedure   Stop;
@@ -668,6 +681,21 @@ begin
   result:= FIdHTTPServer.Active;
 end;
 
+function TtiWebServer.GetCacheCurrentSize: LongWord;
+begin
+  Result := FBlockStreamCache.CurrentSize;
+end;
+
+function TtiWebServer.GetCacheMaxSize: LongWord;
+begin
+  Result := FBlockStreamCache.MaxSize;
+end;
+
+function TtiWebServer.GetCacheMaxSizeTime: TDateTime;
+begin
+  Result := FBlockStreamCache.MaxSizeTime;
+end;
+
 function _CompareWebServerActions(AItem1, AItem2: Pointer): Integer;
 var
   LItem1: TtiWebServerAction;
@@ -1056,6 +1084,10 @@ begin
     if Result then
     begin
       L:= TtiCachedBlockStream.Create(AData, ABlockSize);
+      Inc(FCurrentSize, Length(AData));
+      if FCurrentSize > FMaxSize then
+        FMaxSizeTime := Now;
+      FMaxSize := Max(FMaxSize, FCurrentSize);
       FList.Add(L);
       L.TransID := LTransID;
       L.LastAccessed:= Now;
@@ -1064,6 +1096,28 @@ begin
   finally
     FCritSect.Leave;
   end;
+end;
+
+procedure TtiBlockStreamCache.Clear;
+var
+  i: Integer;
+begin
+  FCritSect.Enter;
+  try
+    i := FList.Count;
+    while i > 0 do
+    begin
+      Dec(i);
+      FList.Delete(i);
+    end;
+    FCurrentSize := 0;
+    FMaxSize := 0;
+    FMaxSizeTime := Now;
+  finally
+    FCritSect.Leave;
+  end;
+  // Logging operations too long/expensive to be in critical section
+  Log('tiWebServer cache cleared.', lsDebug);
 end;
 
 constructor TtiBlockStreamCache.Create;
@@ -1147,6 +1201,7 @@ end;
 
 procedure TtiBlockStreamCache.Start;
 begin
+  Clear;
   FStarted:= True;
   FSweeper.Start;
 end;
@@ -1154,16 +1209,26 @@ end;
 procedure TtiBlockStreamCache.SweepForTimeOuts;
 var
   i: Integer;
+  LStream: TtiCachedBlockStream;
 begin
   FCritSect.Enter;
   try
     Log('SweepForTimeOuts: BlockStreamCache count=%d', [FList.Count], lsDebug);
     for i:= FList.Count-1 downto 0 do
-      if (FList.Items[i] as TtiCachedBlockStream).IdleMS > EntryIdleLimitMS then
+    begin
+      LStream := FList.Items[i] as TtiCachedBlockStream;
+      if LStream.IdleMS > EntryIdleLimitMS then
+      begin
+        Dec(FCurrentSize, Length(LStream.AsString));
         FList.Delete(i);
+      end;
+    end;
   finally
     FCritSect.Leave;
   end;
+  // Logging operations too long/expensive to be in critical section
+  Log('tiWebServer current cache size: %d MB.   Max cache size: %d MB, occurred at: %s',
+      [FCurrentSize div 1000000, FMaxSize div 1000000, tiDateTimeToStr(FMaxSizeTime)], lsDebug);
 end;
 
 { TtiCachedBlockStream }

@@ -242,6 +242,7 @@ begin
   try
     // ToDo: Read RefreshRate from RequestInfo
     lDBProxyServerStats.TestRefreshRate := 1;
+    lDBProxyServerStats.WebServer := Owner;
     lDBProxyServerStats.Execute;
     tiStringToStream(lDBProxyServerStats.AsHTML, AResponse);
   finally
