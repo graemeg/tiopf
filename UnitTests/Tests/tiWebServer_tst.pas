@@ -879,6 +879,7 @@ const
   CConnectTimeout = 8;
   CSendTimeout = 9;
   CReceiveTimeout = 10;
+  CRetryWaitMS = 11;
 
 begin
   LA:= nil;
@@ -894,6 +895,7 @@ begin
     LA.ProxyServerPort:= CProxyServerPort;
     LA.BlockSize:= CBlockSize;
     LA.RetryLimit:= CRetryLimit;
+    LA.RetryWaitMS:= CRetryWaitMS;
     LA.ResolveTimeout := CResolveTimeout;
     LA.ConnectTimeout := CConnectTimeout;
     LA.SendTimeout := CSendTimeout;
@@ -906,6 +908,7 @@ begin
     LB.ProxyServerPort:= CProxyServerPort;
     LB.BlockSize:= CBlockSize;
     LB.RetryLimit:= CRetryLimit;
+    LB.RetryWaitMS:= CRetryWaitMS;
     LB.ResolveTimeout := CResolveTimeout;
     LB.ConnectTimeout := CConnectTimeout;
     LB.SendTimeout := CSendTimeout;
@@ -943,6 +946,11 @@ begin
 
     Check(LA.Equals(LB));
     LB.RetryLimit:= LB.RetryLimit+1;
+    Check(not LA.Equals(LB));
+    LB.RetryLimit:= CRetryLimit;
+
+    Check(LA.Equals(LB));
+    LB.RetryWaitMS:= LB.RetryWaitMS+1;
     Check(not LA.Equals(LB));
     LB.RetryLimit:= CRetryLimit;
 

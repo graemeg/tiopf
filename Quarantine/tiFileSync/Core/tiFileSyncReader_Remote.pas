@@ -155,7 +155,8 @@ begin
     FHTTP := gTIHTTPFactory.CreateInstance(lHTTPClassMapping);
   end ;
   FHTTP.BlockSize:= StrToInt64Def(Params.Values[CHTTPBlockSize], 0);
-  FHTTP.RetryLimit:= StrToIntDef(Params.Values[CHTTPRetryLimit], 1);
+  FHTTP.RetryLimit:= StrToIntDef(Params.Values[CHTTPRetryLimit], ctiOPFHTTPDefaultRetryLimit);
+  FHTTP.RetryWaitMS:= StrToIntDef(Params.Values[CHTTPRetryWaitMS], ctiOPFHTTPDefaultRetryWaitMS);
   FHTTP.ResolveTimeout:= StrToIntDef(Params.Values[CHTTPResolveTimeout], 0);
   FHTTP.ConnectTimeout:= StrToIntDef(Params.Values[CHTTPConnectTimeout], 0);
   FHTTP.SendTimeout:= StrToIntDef(Params.Values[CHTTPSendTimeout], 0);

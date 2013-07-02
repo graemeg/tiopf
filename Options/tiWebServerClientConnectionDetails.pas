@@ -21,6 +21,7 @@ type
     FSendTimeout: Longword;
     FReceiveTimeout: Longword;
     FSSLLibraryPath: string;
+    FRetryWaitMS: LongWord;
   public
     constructor Create;
     property AppServerURL: string read FAppServerURL write FAppServerURL;
@@ -30,6 +31,7 @@ type
     property ProxyServerPort: Integer read FProxyServerPort write FProxyServerPort;
     property BlockSize: Longword read FLongword write FLongword;
     property RetryLimit: byte read FRetryLimit write FRetryLimit;
+    property RetryWaitMS: LongWord read FRetryWaitMS write FRetryWaitMS;
     property ResolveTimeout: Longword read FResolveTimeout write FResolveTimeout;
     property ConnectTimeout: Longword read FConnectTimeout write FConnectTimeout;
     property SendTimeout: Longword read FSendTimeout write FSendTimeout;
@@ -58,6 +60,7 @@ begin
   ProxyServerPort:=   ASource.ProxyServerPort;
   BlockSize:=         ASource.BlockSize;
   RetryLimit:=        ASource.RetryLimit;
+  RetryWaitMS:=        ASource.RetryWaitMS;
   ResolveTimeout:=    ASource.ResolveTimeout;
   ConnectTimeout:=    ASource.ConnectTimeout;
   SendTimeout:=       ASource.SendTimeout;
@@ -69,6 +72,7 @@ constructor TtiWebServerClientConnectionDetails.Create;
 begin
   inherited Create;
   FRetryLimit:= 1;
+  FRetrywaitMS:= 5000;
 end;
 
 function TtiWebServerClientConnectionDetails.Equals(
@@ -82,6 +86,7 @@ begin
     (ProxyServerPort = ACompareWith.ProxyServerPort) and
     (BlockSize = ACompareWith.BlockSize) and
     (RetryLimit = ACompareWith.RetryLimit) and
+    (RetryWaitMS = ACompareWith.RetryWaitMS) and
     (ResolveTimeout = ACompareWith.ResolveTimeout) and
     (ConnectTimeout = ACompareWith.ConnectTimeout) and
     (SendTimeout = ACompareWith.SendTimeout) and

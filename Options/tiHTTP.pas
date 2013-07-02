@@ -60,7 +60,7 @@ type
     FOnProgress: TtiHTTPProgressEvent;
     FOnCheckTerminated: TtiHTTPCheckTerminatedEvent;
     FRetryLimit: Byte;
-    FRetryWaitMS: integer;
+    FRetryWaitMS: Longword;
     FBlockSize: Longword;
     FResolveTimeout: Longword;
     FConnectTimeout: Longword;
@@ -129,7 +129,7 @@ type
     property    ResponseText: string  read GetResponseText;
     property    FormatExceptions: Boolean read FFormatExceptions Write FFormatExceptions;
     property    RetryLimit: Byte read FRetryLimit write FRetryLimit;
-    property    RetryWaitMS: integer read FRetryWaitMS write FRetryWaitMS;
+    property    RetryWaitMS: Longword read FRetryWaitMS write FRetryWaitMS;
     property    BlockSize: Longword read FBlockSize write FBlockSize;
     property    ResolveTimeout: Longword read FResolveTimeout write FResolveTimeout;
     property    ConnectTimeout: Longword read FConnectTimeout write FConnectTimeout;
@@ -197,6 +197,7 @@ uses
   {$IFDEF DELPHIXEORABOVE}
   ,RegularExpressions
   {$ENDIF}
+  ,Math
  ;
 
 var
@@ -548,6 +549,9 @@ procedure TtiHTTPAbs.DoGetOrPostBlockWithRetry(const AURL: string;
 var
   i: integer;
   LSuccess: Boolean;
+const
+  CMaxRetryWaitMS = 30000;
+  CMinRetryWaitMS = 50;
 begin
   i:= 0;
   LSuccess:= False;
@@ -564,11 +568,16 @@ begin
           AOutput, ABlockIndex, ATransID,
           ABlockCRC, ABlockCount);
         LSuccess:= (ABlockCRC = 0) or (tiCRC32FromStream(AOutput) = ABlockCRC);
+        // halve the retry wait
+        FRetryWaitMS := Min(CMinRetryWaitMS, FRetryWaitMS div 2);
       except
         on e:exception do
         begin
-          Log('DoGetOrPostBlockWithRetry fail: %s', [e.Message], lsDebug);
-          Sleep(FRetryWaitMS); // (was 2000)
+          Log('DoGetOrPostBlockWithRetry fail (retrywaitms=%d): %s',
+            [FRetryWaitMS, e.Message], lsDebug);
+          Sleep(FRetryWaitMS);
+          // double the retry wait
+          FRetryWaitMS := Max(CMaxRetryWaitMS, FRetryWaitMS * 2);
           LSuccess:= false;
         end;
       end;
@@ -582,9 +591,13 @@ begin
           AOutput, ABlockIndex, ATransID,
           ABlockCRC, ABlockCount);
         LSuccess:= (ABlockCRC = 0) or (tiCRC32FromStream(AOutput) = ABlockCRC);
+        // halve the retry wait
+        FRetryWaitMS := Min(CMinRetryWaitMS, FRetryWaitMS div 2);
       except
         on e:exception do
         begin
+          // double the retry wait
+          FRetryWaitMS := Max(CMaxRetryWaitMS, FRetryWaitMS * 2);
           Log('DoGetOrPostBlockWithRetry fail final: %s', [e.Message], lsDebug);
           raise EtiOPFHTTPException.CreateFmt(CErrorHTTPRetryLimitExceeded, [e.message, i+1])
         end;

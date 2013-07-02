@@ -138,6 +138,7 @@ const
   cHTTPProxyPort          = 'proxyport';
   CHTTPBlockSize          = 'blocksize';
   CHTTPRetryLimit         = 'retrylimit';
+  CHTTPRetryWaitMS        = 'retrywaitms';
   CHTTPResolveTimeout     = 'resolvetimeout';
   CHTTPConnectTimeout     = 'connecttimeout';
   CHTTPSendTimeout        = 'sendtimeout';
