@@ -2,8 +2,6 @@ unit tiDialogs;
 
 {$mode objfpc}{$H+}
 
-{ TODO: Port tiProcessing and tiEndProcessing }
-
 interface
 
 uses
