@@ -272,63 +272,72 @@ begin
 end;
 
 function TtiQueryFBL.GetParamAsBoolean(const AName: string): boolean;
-//var
-  //lValue: string;
-  //idx: integer;
+var
+  i: integer;
+  lBoolStr: string;
 begin
-  Assert(false, 'Under construction');
-  Result:= False;
-//  idx := FQuery.ParamNames.IndexOf(AName);
-
-(*
-  lValue := FQuery.Params.ByName(UpperCase(AName)).AsString;
-{$IFDEF BOOLEAN_CHAR_1}
-  result := SameText(lValue, 'T');
-{$ELSE}
-  result := SameText(lValue, 'TRUE');
-{$ENDIF} // BOOLEAN_CHAR_1
-*)
+  i := FQuery.ParamNameToIndex(AName);
+  lBoolStr := FQuery.ParamValueAsString(i);
+  Result := (lBoolStr = 'T') or
+    (lBoolStr = 'TRUE') or
+    (lBoolStr = 'Y') or
+    (lBoolStr = 'YES') or
+    (lBoolStr = '1');
 end;
 
 function TtiQueryFBL.GetParamAsFloat(const AName: string): extended;
+var
+  i: integer;
 begin
-  Assert(false, 'Under construction');
-  Result:= 0;
-//  result := FQuery.Params.ByName(UpperCase(AName)).AsDouble;
+  i := FQuery.ParamNameToIndex(AName);
+  if i >= 0 then
+    result := StrToFloat(FQuery.ParamValueAsString(i))
+  else
+    Result := 0;
 end;
 
 function TtiQueryFBL.GetParamAsInteger(const AName: string): Int64;
+var
+  i: integer;
 begin
-  Assert(false, 'Under construction');
-  Result:= 0;
-//  result := FQuery.Params.ByName(UpperCase(AName)).AsInt64;
+  i := FQuery.ParamNameToIndex(AName);
+  if i >= 0 then
+    result := StrToInt(FQuery.ParamValueAsString(i))
+  else
+    Result := 0;
 end;
 
 function TtiQueryFBL.GetParamAsDateTime(const AName: string): TDateTime;
+var
+  i: integer;
 begin
-  Assert(false, 'Under construction');
-  Result:= 0;
-//  result := FQuery.Params.ByName(UpperCase(AName)).AsDateTime;
+  i := FQuery.ParamNameToIndex(AName);
+  if i >= 0 then
+    result := tiIntlDateStorAsDateTime(FQuery.ParamValueAsString(i))
+  else
+    Result := 0;
 end;
 
 function TtiQueryFBL.GetParamAsTextBLOB(const AName: string): string;
+var
+  i: integer;
 begin
-//  Assert(false, 'Under construction');
-//  result := FQuery.Params.ByName(UpperCase(AName)).AsString;
+  i := FQuery.ParamNameToIndex(AName);
+  if i >= 0 then
+    result := FQuery.ParamValueAsString(i)
+  else
+    result := '';
 end;
 
 function TtiQueryFBL.GetParamAsString(const AName: string): string;
 var
   i: integer;
 begin
-  {$IFDEF FBL_Params_Mod}
   i := FQuery.ParamNameToIndex(AName);
   if i >= 0 then
     result := FQuery.ParamValueAsString(i)
   else
-  {$ELSE}
-    result := '* not supported *';
-  {$ENDIF}
+    result := '';
 end;
 
 function TtiQueryFBL.GetSQL: TStrings;
