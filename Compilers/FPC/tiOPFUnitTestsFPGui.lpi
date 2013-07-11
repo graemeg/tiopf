@@ -18,6 +18,12 @@
     <VersionInfo>
       <StringTable ProductVersion=""/>
     </VersionInfo>
+    <MacroValues Count="4">
+      <Macro1 Name="fpgui" Value="/data/devel/fpgui/"/>
+      <Macro2 Name="tiopf" Value="/data/devel/tiopf/"/>
+      <Macro3 Name="fblib" Value="/data/devel/opensource/FBLib/"/>
+      <Macro4 Name="fptest" Value="/data/devel/fptest/"/>
+    </MacroValues>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
     </BuildModes>
@@ -32,14 +38,6 @@
         <LaunchingApplication PathPlusParams="/usr/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="2">
-      <Item1>
-        <PackageName Value="tiOPF"/>
-      </Item1>
-      <Item2>
-        <PackageName Value="fptest_fpgui"/>
-      </Item2>
-    </RequiredPackages>
     <Units Count="3">
       <Unit0>
         <Filename Value="tiOPFUnitTestsFPGui.lpr"/>
@@ -64,10 +62,25 @@
       <Filename Value="tiOPFUnitTestsFPGui"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="../../Core"/>
-      <OtherUnitFiles Value="../../UnitTests/Common;../../UnitTests/Tests"/>
-      <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+      <IncludeFiles Value="$(tiopf)Core;$(fpgui)src/corelib/x11;$(fblib);$(ProjOutDir);$(fpgui)src"/>
+      <OtherUnitFiles Value="$(tiopf)UnitTests/Common;$(tiopf)UnitTests/Tests;$(tiopf)Core;$(tiopf)Options;$(tiopf)GUI/fpGUI;$(fpgui)src;$(fpgui)src/corelib;$(fpgui)src/corelib/x11;$(fpgui)src/gui;$(fpgui)src/reportengine;$(fptest)src;$(fptest)src/fpGUI;$(fptest)3rdparty/epiktimer;$(fblib)"/>
+      <UnitOutputDirectory Value="units/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
+    <BuildMacros>
+      <Count Value="4"/>
+      <Item1>
+        <Identifier Value="fpgui"/>
+      </Item1>
+      <Item2>
+        <Identifier Value="tiopf"/>
+      </Item2>
+      <Item3>
+        <Identifier Value="fblib"/>
+      </Item3>
+      <Item4>
+        <Identifier Value="fptest"/>
+      </Item4>
+    </BuildMacros>
     <CodeGeneration>
       <Optimizations>
         <OptimizationLevel Value="2"/>
