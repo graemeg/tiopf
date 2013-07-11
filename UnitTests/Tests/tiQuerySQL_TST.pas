@@ -36,9 +36,6 @@ type
 implementation
 uses
   Classes
-  {$IFDEF MSWINDOWS}
-  ,Windows
-  {$ENDIF}
   ,Contnrs
   ,SysUtils
   ,tiUtils
@@ -166,7 +163,6 @@ begin
   end;
 end;
 
-
 procedure TTestTIQuerySQL.ParamAsDateTime;
 var
   lDate : TDateTime;
@@ -184,7 +180,6 @@ begin
   end;
 end;
 
-
 procedure TTestTIQuerySQL.ParamAsFloat;
 const
   cValue = 12345.6789;
@@ -201,7 +196,6 @@ begin
   end;
 end;
 
-
 procedure TTestTIQuerySQL.ParamAsInteger;
 begin
   CreateTableInteger(Database);
@@ -216,7 +210,6 @@ begin
   end;
 end;
 
-
 procedure TTestTIQuerySQL.ParamAsMacro;
 const
   cFields = 'Item_Str_Field';
@@ -229,7 +222,6 @@ begin
                    'select ' + cFields + ' from ' + cTable),
          'ParamAsMacro failed');
 end;
-
 
 procedure TTestTIQuerySQL.ParamAsString;
 begin
@@ -244,7 +236,6 @@ begin
     Database.Commit;
   end;
 end;
-
 
 procedure TTestTIQuerySQL.ParamCount;
 begin
@@ -286,7 +277,6 @@ begin
   end;
 end;
 
-
 procedure TTestTIQuerySQL.ParamIsNull;
 begin
   CreateTableTestGroup(Database);
@@ -301,7 +291,6 @@ begin
     Database.Commit;
   end;
 end;
-
 
 procedure TTestTIQuerySQL.ParamName;
 begin
@@ -327,7 +316,6 @@ begin
     Database.Commit;
   end;
 end;
-
 
 procedure TTestTIQuerySQL.ParamsAsString;
 var
@@ -375,7 +363,6 @@ begin
   end;
 end;
 
-
 procedure TTestTIQuerySQL.QueryType;
 begin
   // This should be extended to:
@@ -393,7 +380,6 @@ begin
   Query.SQLText := 'delete from test_group where group_int_field = 1';
   Check(Query.QueryType = qtDelete, 'Error testing QueryType with DELETE');
 end;
-
 
 procedure TTestTIQuerySQL.ParamAsStream;
 var
@@ -422,7 +408,6 @@ begin
     lStreamFrom.Free;
   end;
 end;
-
 
 procedure TTestTIQuerySQL.RowsAffected;
 const
@@ -462,9 +447,4 @@ begin
 end;
 
 end.
-
-
-
-
-
 
