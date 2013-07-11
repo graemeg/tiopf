@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, fpg_form, fpg_button, fpg_label, fpg_edit, fpg_trackbar,
   fpg_combobox, fpg_checkbox, fpg_listbox, Model,
-  tiGenericEditMediators, tiGenericListMediators;
+  tiMediators, tiListMediators;
 
 type
   TMainForm = class(TfpgForm)
@@ -31,11 +31,11 @@ type
     FPersonList: TPersonList;
 
     { Mediators }
-    FComboBoxMediator: TComboBoxMediator;
-    FListBoxMediator: TListBoxMediator;
-    FNameMediator: TMediatorEditView;
+    FComboBoxMediator: TtiComboBoxMediatorView;
+    FListBoxMediator: TtiListBoxMediatorView;
+    FNameMediator: TtiEditMediatorView;
 //    FAgeMediator: TMediatorSpinEditView;
-    FTrackBarAgeMediator: TMediatorTrackBarView;
+    FTrackBarAgeMediator: TtiTrackBarMediatorView;
 
     procedure   btnCloseClick(Sender: TObject);
     procedure   btnShowModelClick(Sender: TObject);
@@ -59,7 +59,7 @@ implementation
 
 uses
   Model_View
-  ,gfxbase
+  ,fpgbase
   ,tiObject
   ,tiDialogs
   ;
