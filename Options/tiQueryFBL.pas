@@ -638,13 +638,19 @@ begin
     {$IFDEF BOOLEAN_CHAR_1}
       if SameText(lValue, 'T') or
          SameText(lValue, 'F') then
-        result := qfkLogical;
+        Result := qfkLogical;
     {$ELSE}
+      {$IFDEF BOOLEAN_NUM_1}
+      if SameText(lValue, '1') or
+         SameText(lValue, '0') then
+        Result := qfkLogical;
+      {$ELSE}
       if SameText(lValue, 'TRUE') or
-         SameText(lValue, 'TRUE ') or
          SameText(lValue, 'FALSE') then
-    {$ENDIF} // BOOLEAN_CHAR_1
-  end;
+        Result := qfkLogical;
+      {$ENDIF}
+   {$ENDIF}
+ end;
 end;
 
 function TtiQueryFBL.IBFieldKindToTIFieldKind(AData: TXSQLVar): TtiQueryFieldKind;
@@ -664,8 +670,8 @@ begin
     SQL_D_FLOAT:  result := qfkFloat;
     SQL_BLOB:     begin
                     case AData.sqlsubtype of
-                    isc_blob_untyped:   result := qfkBinary;
-                    isc_blob_text:      result := qfkLongString;
+                      isc_blob_untyped: result := qfkBinary;
+                      isc_blob_text:    result := qfkLongString;
                     else
                       raise EtiOPFInternalException.Create('Invalid FireBird sqlsubtype');
                     end;
@@ -909,25 +915,31 @@ var
 begin
   lFieldName := AFieldMetaData.Name;
   case AFieldMetaData.Kind of
-    qfkString: result := 'VarChar(' + IntToStr(AFieldMetaData.Width) + ')';
-    qfkInteger: result := 'Integer';
-//    qfkFloat: result := 'Decimal(10, 5)';
-    qfkFloat: result := 'DOUBLE PRECISION';
-    // Just for new version of IB (6.x)
-    // DATE holds only DATE without TIME...
-    qfkDateTime: if IBDatabase.SQLDialect <> 1 then
-        result := 'TIMESTAMP'
-      else
-        result := 'Date';
+    qfkString:  Result := 'VarChar(' + IntToStr(AFieldMetaData.Width) + ')';
+    qfkInteger: Result := 'Integer';
+    qfkFloat:   Result := 'DOUBLE PRECISION';  // or Decimal(10,5)
+    qfkDateTime:
+        // Take into account dialect
+        if IBDatabase.SQLDialect <> 1 then
+          Result := 'TIMESTAMP'
+        else
+          Result := 'Date';
     {$IFDEF BOOLEAN_CHAR_1}
-    qfkLogical   : result := 'Char(1) default ''F'' check(' + lFieldName + ' in (''T'', ''F''))';
+    qfkLogical: Result    := 'Char(1) default ''F'' check(' +
+        lFieldName + ' in (''T'', ''F''))';
     {$ELSE}
-    qfkLogical   : result := 'VarChar(5) default ''FALSE'' check(' + lFieldName + ' in (''TRUE'', ''FALSE'')) ';
+      {$IFDEF BOOLEAN_NUM_1}
+    qfkLogical: Result    := 'SmallInt default 0 check(' +
+        lFieldName + ' in (1, 0)) ';
+      {$ELSE}
+    qfkLogical: Result    := 'VarChar(5) default ''FALSE'' check(' +
+        lFieldName + ' in (''TRUE'', ''FALSE'')) ';
+      {$ENDIF}
     {$ENDIF}
-    qfkBinary: result := 'Blob sub_type 0';
-    qfkLongString: result := 'Blob sub_type 1';
-  else
-    raise EtiOPFInternalException.Create('Invalid FieldKind');
+    qfkBinary:     Result := 'Blob sub_type 0';
+    qfkLongString: Result := 'Blob sub_type 1';
+    else
+      raise EtiOPFInternalException.Create('Invalid FieldKind');
   end;
 end;
 
