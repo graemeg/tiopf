@@ -1,22 +1,20 @@
 {
   This persistence layer uses the FBLib 0.85 Firebird Library of components.
   See [http://fblib.altervista.org] for more details.
-  
+
   FBLib runs under Delphi, Kylix and Free Pascal.  FBLib also has support for
   the Firebird Services. Remote backup and restore, Stats, User maintenance,
   etc...
-  
-  The connection string format used is a little bit different to the standard
-  Interbase/Firebird persistence layers.  FBLib uses a separate property for
-  the Server Host and Database File on the server.  As a result, I needed to
-  split the ADatabaseName param passed into the ConnectDatabase procedure.
 
   eg:
-    GTIOPFManager.ConnectDatabase('192.168.0.20|E:\Databases\Test.fdb',
+    GTIOPFManager.ConnectDatabase('192.168.0.20:E:\Databases\Test.fdb',
         'sysdba', 'masterkey', '');
-        
-  Note the | (pipe) sign between the IP address and the database name.
-  
+   or
+
+    GTIOPFManager.ConnectDatabase('192.168.0.20:/data/test.fdb',
+        'sysdba', 'masterkey', '');
+
+
   Author:  Graeme Geldenhuys (graemeg@gmail.com) - Feb 2006
 }
 unit tiQueryFBL;
@@ -709,19 +707,20 @@ begin
       Exit; //==>
     end;
 
-    { DatabaseName = <host>|<database> }
-    if tiNumToken(DataBaseName, '|') = 1 then
+    { DatabaseName = <host>:<database> }
+    if tiNumToken(DataBaseName, ':') = 1 then
     begin
       Log('*** Local connection ***', lsConnectionPool);
-      FDBase.Host    := tiToken(DatabaseName, '|', 1);
-      FDBase.DBFile  := tiToken(DatabaseName, '|', 1);
+      FDBase.Host    := tiToken(DatabaseName, ':', 1);
+      FDBase.DBFile  := tiToken(DatabaseName, ':', 1);
       FDBase.Protocol := ptLocal;
     end
     else
     begin
       Log('*** remote connection ***', lsConnectionPool);
-      FDBase.Host    := tiToken(DatabaseName, '|', 1);
-      FDBase.DBFile  := tiToken(DatabaseName, '|', 2);
+      FDBase.Host    := tiToken(DatabaseName, ':', 1);
+      { we can't use tiToken(x,y,2) because Windows paths contain a : after the drive letter }
+      FDBase.DBFile  := Copy(DatabaseName, Length(FDBase.Host)+2, Length(DatabaseName));
     end;
 
     FDBase.User      := UserName;
@@ -944,7 +943,7 @@ begin
   Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;
 
-// Test is an Interbase server is available. Will not test for the existance of a GDB
+// Test if an Interbase server is available. Will not test for the existance of a GDB
 // file, just if the server is up. Will also return the server version.
 // Problem is, that this routine takes an IP address and an interbase connection
 // string comprises an IPAddress:PathName. So this will have to be parsed into
