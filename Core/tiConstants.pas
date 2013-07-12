@@ -149,9 +149,7 @@ const
 
   cTIOPFExcMsgConnectionConfirmationFormatWrong = 'Server did not return correctly formatted connection confirmation Expected <%s> Found <%s>';
   cTIOPFExcMsgWrongServerVersion = 'The client and server are incompatable versions.'#13#13 +
-                                   'Please upgrade your software by following the'#13 +
-                                   'instructions at %s'#13#13+
-                                   '(When you click <OK>, your web browser will be launched pointing to the application''s web site.)';
+                                   'Please upgrade your client software or contact technical support.';
   cTIOPFExcMsgErrorOnServer = 'There was an unknown error on the application server. Please try again later.';
   cNullOIDInteger = 0;
 
