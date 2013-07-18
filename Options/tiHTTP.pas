@@ -165,7 +165,9 @@ procedure tiParseTIOPFHTTPBlockHeader(
   const AValue: string;
   var ABlockIndex, ABlockCount, ABlockSize, ATransID, ABlockCRC: LongWord);
 function  tiGetTIOPFHTTPBlockIndex(const AValue: string): LongWord;
+{$IFDEF DELPHIXEORABOVE}
 function  tiPortFromURL(const AURL: string; const ADef: Word): Word;
+{$ENDIF}
 
 const
   cLocalHost = 'http://localhost';
@@ -180,7 +182,9 @@ uses
   ,tiUtils
   ,tiCRC32
   ,tiExcept
+  {$IFDEF DELPHIXEORABOVE}
   ,RegularExpressions
+  {$ENDIF}
  ;
 
 var
@@ -238,6 +242,7 @@ begin
   ABlockCRC:=    StrToInt64Def(LBlockCRC,    0);
 end;
 
+{$IFDEF DELPHIXEORABOVE}
 function tiPortFromURL(const AURL: string; const ADef: Word) : Word;
 var
   LMatcher : TRegEx;
@@ -263,6 +268,7 @@ begin
     end;
   end;
 end;
+{$ENDIF}
 
 function  tiGetTIOPFHTTPBlockIndex(const AValue: string): LongWord;
 var
