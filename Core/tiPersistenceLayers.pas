@@ -46,7 +46,7 @@ type
   public
     constructor Create; override;
     destructor  Destroy; override;
-    property    Items[i:integer]: TtiPersistenceLayer read GetItems write SetItems;
+    property    Items[i:integer]: TtiPersistenceLayer read GetItems write SetItems; default;
     procedure   Add(AObject : TtiPersistenceLayer); reintroduce;
 
     // These manage the loading and unloading of the packages
