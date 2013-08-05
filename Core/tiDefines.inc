@@ -1,3 +1,6 @@
+// Hack for OPMDS - remove once SLF solve-on-demand sorted - PVS 20130805
+{$DEFINE SLF_OLD}
+
 //Delphi 20 (XE6)
 {$IFDEF VER270}
   {$DEFINE DELPHIXE6ORABOVE}
