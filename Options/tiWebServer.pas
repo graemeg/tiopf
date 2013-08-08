@@ -999,7 +999,8 @@ begin
   try
     LCGIApp := CGIBinLocation + ADocument;
     LResponse := '';
-    Log('About to call ' + LCGIApp + ' ' + ARequestParams);
+    Log('About to call ' + LCGIApp);
+    Log('Parameters: ' + ARequestParams, lsDebug);
 
     LExitCode := ExecuteCGIApp(LCGIApp, ARequestParams, LResponse);
     if LExitCode = 0 then
@@ -1021,6 +1022,8 @@ begin
       tiStringToStream(LResponse, AResponse);
       AResponseInfo.CustomHeaders.Values[ctiOPFHTTPErrorCode]:= IntToStr(LExitCode);
     end;
+    Log(LCGIApp + ' completed');
+    Log('Response: ' + LResponse, lsDebug);
   except
     on e:exception do
     begin
