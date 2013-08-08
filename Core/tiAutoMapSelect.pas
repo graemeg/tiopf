@@ -11,6 +11,7 @@ uses
 {$IFDEF DELPHI2010ORABOVE}
   ,tiGenericList
 {$ENDIF}
+  ,tiSmartPointer
   ;
 
 type
@@ -71,6 +72,7 @@ type
     function OrderBy(AField: string; AAscending: Boolean = true): ItiAutoMapSelect<T>; overload;
     function OrderBy(AFields: TArrayOfString; AAscending: Boolean = true): ItiAutoMapSelect<T>; overload;
     function List: TtiObjectList<T>;
+    function IList: ItiSmartPointer<TtiObjectList<T>>;
   end;
 {$ENDIF}
 
@@ -89,6 +91,7 @@ type
     function OrderBy(AField: string; AAscending: Boolean = true): ItiAutoMapSelect<T>; overload;
     function OrderBy(AFields: TArrayOfString; AAscending: Boolean = true): ItiAutoMapSelect<T>; overload;
     function List: TtiObjectList<T>;
+    function IList: ItiSmartPointer<TtiObjectList<T>>;
   end;
 {$ENDIF}
 
@@ -105,6 +108,7 @@ type
     function OrderBy(AFields: TArrayOfString; AAscending: Boolean = true): ItiAutoMapSelect<T>; overload;
     {: This returns a new list instance that the caller must free }
     function List: TtiObjectList<T>;
+    function IList: ItiSmartPointer<TtiObjectList<T>>;
   end;
 {$ENDIF}
 
@@ -298,6 +302,11 @@ begin
   // Return the now populated list
   Result := FList;
 end;
+
+function TtiAutoMapSelectInt<T>.IList: ItiSmartPointer<TtiObjectList<T>>;
+begin
+  result := TtiSmartPointer<TtiObjectList<T>>.Create(List);
+end;
 {$ENDIF}
 
 { TtiAutoMapSelectExt<T> }
@@ -336,6 +345,11 @@ begin
     raise;
   end;
   Result := LList;
+end;
+
+function TtiAutoMapSelectExt<T>.IList: ItiSmartPointer<TtiObjectList<T>>;
+begin
+  result := TtiSmartPointer<TtiObjectList<T>>.Create(List);
 end;
 {$ENDIF}
 
