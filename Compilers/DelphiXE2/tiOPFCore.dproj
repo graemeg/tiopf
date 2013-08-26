@@ -155,6 +155,7 @@
 			<DCCReference Include="..\..\Core\tiBaseMediator.pas"/>
 			<DCCReference Include="..\..\Core\tiModelMediator.pas"/>
 			<DCCReference Include="..\..\Core\tiAutoMapSelect.pas"/>
+			<DCCReference Include="..\..\Core\tiSmartPointer.pas"/>
 			<DCCReference Include="..\..\Core\tiGenericBase.pas"/>
 			<DCCReference Include="..\..\Core\tiGenericList.pas"/>
 			<DCCReference Include="..\..\Core\tiSemaphore.pas"/>

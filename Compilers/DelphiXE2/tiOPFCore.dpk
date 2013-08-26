@@ -68,6 +68,7 @@ contains
   tiBaseMediator in '..\..\Core\tiBaseMediator.pas',
   tiModelMediator in '..\..\Core\tiModelMediator.pas',
   tiAutoMapSelect in '..\..\Core\tiAutoMapSelect.pas',
+  tiSmartPointer in '..\..\Core\tiSmartPointer.pas',
   tiGenericBase in '..\..\Core\tiGenericBase.pas',
   tiGenericList in '..\..\Core\tiGenericList.pas',
   tiSemaphore in '..\..\Core\tiSemaphore.pas';
