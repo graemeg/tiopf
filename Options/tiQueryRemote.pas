@@ -652,12 +652,15 @@ procedure TtiDatabaseRemoteXML.SetConnected(AValue: boolean);
     try
       FHTTP.Post(DatabaseName + cgTIDBProxyServerVersion);
       //FHTTP.Post(DatabaseName + 'version');
-      ls := FHTTP.Output.DataString;
+      if FHTTP.ResponseCode = 200 then
+        ls := SysUtils.Trim(FHTTP.Output.DataString)
+      else
+        ls := '';
     except
       on e:exception do
         raise EtiOPFDBExceptionCanNotConnect.Create(cTIPersistRemote, DatabaseName, UserName, Password, cTIOPFExcMsgCanNotConnectToServer);
     end;
-    if ls <> uXMLTags.XMLVersion then
+    if (ls <> '') and (ls <> uXMLTags.XMLVersion) then
       raise EtiOPFDBExceptionWrongServerVersion.Create(cTIPersistRemote, DatabaseName, UserName, Password, cTIOPFExcMsgWrongServerVersion);
   end;
 begin

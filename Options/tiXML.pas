@@ -927,7 +927,7 @@ constructor TtiXMLTags.Create;
 begin
   inherited Create;
   FDocHeader      := DefaultDocHeader;
-  FXMLVersion        := 'xmlversion';
+  FXMLVersion     := cTIOPFXMLVersion;
   SetOptXMLDBSize(gDefaultOptXMLDBSize);
 end;
 
