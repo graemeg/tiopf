@@ -148,7 +148,7 @@ const
   CPathToCachedDataRoot       = 'CachedData';
 
   cTIOPFExcMsgConnectionConfirmationFormatWrong = 'Server did not return correctly formatted connection confirmation Expected <%s> Found <%s>';
-  cTIOPFExcMsgWrongServerVersion = 'The client and server are incompatable versions.'#13#13 +
+  cTIOPFExcMsgWrongServerVersion = 'The client and server are incompatible versions.'#13#13 +
                                    'Please upgrade your client software or contact technical support.';
   cTIOPFExcMsgErrorOnServer = 'There was an unknown error on the application server. Please try again later.';
   cNullOIDInteger = 0;
