@@ -380,6 +380,7 @@ var
   LDocument: string;
   LParams: string;
   LResponse: TMemoryStream;
+  LResponseStr: string;
   LContentType: string;
   LResponseCode: Integer;
   LPassThroughValue: string;
@@ -450,10 +451,11 @@ begin
           // Cache miss on LTransID, pass new request through
           ProcessHTTPGet(LDocument, ARequestInfo, LParams, LResponse, LContentType,
             LResponseCode, AResponseInfo);
+          LResponseStr := tiStreamToString(LResponse);
 
-          if (not LIsTIOPFClientRequest) or (LBlockSize = 0) then
+          if (not LIsTIOPFClientRequest) or (Length(LResponseStr) = 0) or (LBlockSize = 0) then
           begin
-            // Non-tiOPF HTTP request, or BlockSize = 0: => don't block result
+            // Non-tiOPF HTTP request, or empty HTTP response, or BlockSize = 0: => don't block result
             LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(
               0, 0, 0, LTransID, 0);
           end
@@ -461,7 +463,7 @@ begin
           begin
             // tiOPF HTTP request
             LCreatedBlockStream := FBlockStreamCache.AddBlockStream(LTransID,
-              tiStreamToString(LResponse), LBlockSize, LBlockCount);
+              LResponseStr, LBlockSize, LBlockCount);
 
             if not LCreatedBlockStream then
               Log('HTTP Trans ID: ' + LTransID + '. Failed to create new BlockStream ' +
