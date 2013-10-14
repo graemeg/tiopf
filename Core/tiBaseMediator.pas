@@ -20,6 +20,7 @@ uses
 {$ENDIF IOS}
   ,Classes
   ,tiObject
+  ,tiRTTI
   ;
 
 type
@@ -55,6 +56,8 @@ type
     FViewHelper: TtiMediatorViewComponentHelper;
     FCopyingCount: integer;
     FOnAfterGUIToObject: TtiAfterGUIToObjectEvent;
+    FValidateGUIValueType: Boolean;
+    FValidGUIValue: Boolean;
     procedure ViewNotification(AComponent: TComponent; Operation: TOperation);
     // ItiObserverHandlesErrorState interface implementation
     procedure ProcessErrorState(const ASubject: TtiObject; const AOperation: TNotifyOperation; const AErrors: TtiObjectErrors);
@@ -81,6 +84,8 @@ type
     // Copy object property to GUI. By default it copies published GUIFieldName to published FieldName
     procedure DoObjectToGUI; virtual;
     procedure DoObjectToGUIDefault; virtual;
+    // Allow mediator views to know what kind of data they are working with
+    function GetObjectPropType: TtiTypeKind;
     // Allow descendants to change or format the displayed value
     procedure GetObjectPropValue(var AValue: Variant); virtual;
     // Set value list object. Override to provide additional handling.
@@ -136,6 +141,8 @@ type
     {: Get/set the selected object. List mediator views use the selected item
        in the list if appropriate. Get/Set subject by default. }
     property SelectedObject: TtiObject read GetSelectedObject write SetSelectedObject;
+    // Is the current value in the GUI valid (consistent with the field type)
+    property ValidGUIValue: Boolean read FValidGUIValue;
   published
     // Property of subject.
     property FieldName: string read FFieldName write SetFieldName;
@@ -153,6 +160,8 @@ type
     property OnBeforeGUIToObject: TtiBeforeGUIToObjectEvent read FOnBeforeGUIToObject write FOnBeforeGUIToObject;
     property OnAfterGUIToObject: TtiAfterGUIToObjectEvent read FOnAfterGUIToObject write FOnAfterGUIToObject;
     property OnObjectToGUI: TtiObjectToGUIEvent read FOnObjectToGUI write FOnObjectToGUI;
+    // Should we validate the type of the GUI value before assigning it to the object?
+    property ValidateGUIValueType: Boolean read FValidateGUIValueType write FValidateGUIValueType;
     // Observing or not ?
     property Active: Boolean read FActive write SetActive;
   end;
@@ -374,7 +383,6 @@ implementation
 uses
   tiUtils
   ,tiLog
-  ,tiRTTI
   ;
 
 var
@@ -390,6 +398,7 @@ resourcestring
   SErrNoGUIFieldName        = 'no gui fieldname set';
   SErrNoSubjectFieldName    = 'no subject fieldname set';
   SErrInvalidPropertyName   = '<%s> is not a property of <%s>';
+  SErrInvalidGUIValue       = 'Invalid value entered';
 
 const
   DefFieldWidth = 75;   // default width
@@ -456,6 +465,8 @@ begin
   FActive := True;
   FObjectUpdateMoment := ouDefault;
   FSettingUp := False;
+  FValidateGUIValueType := true;
+  FValidGUIValue := true;
 end;
 
 constructor TtiMediatorView.CreateCustom(AView: TComponent; ASubject: TtiObject; AFieldName: string; AGUIFieldName: string);
@@ -545,11 +556,22 @@ end;
 procedure TtiMediatorView.TestIfValid;
 var
   Errors: TtiObjectErrors;
+  LError: TtiObjectError;
 begin
   Errors := TtiObjectErrors.Create;
   try
     if Assigned(Subject) then
       Subject.IsValid(Errors);
+
+    // Type check the value in the GUI that is not in the Subject
+    if FValidateGUIValueType and not FValidGUIValue then
+    begin
+      LError := TtiObjectError.Create;
+      Errors.Add(LError);
+      LError.ErrorProperty := FieldName;
+      LError.ErrorMessage := SErrInvalidGUIValue;
+    end;
+
     UpdateGUIValidStatus(Errors); // always execute this as it also resets View
   finally
     Errors.Free;
@@ -743,9 +765,30 @@ begin
 end;
 
 procedure TtiMediatorView.DoGUIToObjectDefault;
+var
+  LGUIValue: Variant;
+  LInt: Int64;
+  LFloat: Extended;
+  LDateTime: TDateTime;
+  LBoolean: Boolean;
 begin
   CheckFieldNames;
-  Subject.PropValue[FieldName] := TypInfo.GetPropValue(View, GUIFieldName);
+  LGUIValue := TypInfo.GetPropValue(View, GUIFieldName);
+  // Validate the data type
+  FValidGUIValue := true;
+  if ValidateGUIValueType then
+  begin
+    case GetObjectPropType of
+      tiTKInteger: FValidGUIValue := TryStrToInt64(LGUIValue, LInt);
+      tiTKFloat: FValidGUIValue := TryStrToFloat(LGUIValue, LFloat);
+      tiTKString: ; // Type is valid
+      tiTKDateTime: FValidGUIValue := TryStrToDateTime(LGUIValue, LDateTime);
+      tiTKBoolean:  FValidGUIValue := TryStrToBool(LGUIValue, LBoolean);
+      tiTKBinary: ; // Unknown
+    end;
+  end;
+  if FValidGUIValue then
+    Subject.PropValue[FieldName] := LGUIValue;
 end;
 
 procedure TtiMediatorView.GUIToObject;
@@ -783,6 +826,7 @@ begin
       FOnObjectToGUI(Self, Subject, View, B);
     if not B then
       DoObjectToGUI;
+    FValidGUIValue := true;
   finally
     Dec(FCopyingCount);
   end;
@@ -806,6 +850,12 @@ begin
     LValue := Subject.PropValue[FieldName];
   GetObjectPropValue(LValue);
   TypInfo.SetPropValue(View, GUIFieldName, LValue);
+end;
+
+function TtiMediatorView.GetObjectPropType: TtiTypeKind;
+begin
+  CheckFieldNames;
+  result := tiGetSimplePropType(Subject, FieldName);
 end;
 
 procedure TtiMediatorView.GetObjectPropValue(var AValue: Variant);

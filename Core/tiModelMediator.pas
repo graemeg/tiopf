@@ -39,6 +39,7 @@ type
     procedure SetOnAfterGUIToObject(const AValue: TtiAfterGUIToObjectEvent);
     procedure SetOnObjectToGUI(const AValue: TtiObjectToGUIEvent);
     procedure SetValueList(const AValue: TtiObjectList);
+    function GetValidGUIValue: Boolean;
   protected
     function GetDisplayName: string; override;
     procedure CreateMediator; virtual;
@@ -50,6 +51,7 @@ type
     function ModelMediator: TtiModelMediator;
     property Mediator: TtiMediatorView read FMediator;
     property ValueList: TtiObjectList read FValueList write SetValueList;
+    property ValidGUIValue: Boolean read GetValidGUIValue;
   published
     property Composite: Boolean read FComposite write SetComposite;
     // Format: FieldName[:RootFieldName] (see TtiMediatorView.FieldName/RootFieldName)
@@ -101,6 +103,7 @@ type
     function GetMediatorView(AComponent: TComponent): TtiMediatorView;
     function GetSelectedObject(AComponent: TComponent): TtiObject;
     procedure SetSelectedObject(AComponent: TComponent; AObject: TtiObject);
+    function GetValidGUIValues: Boolean;
   protected
     function CreatePropertyDefs: TtiPropertyLinkDefs; virtual;
     function CreateProperty(const AFieldName: string; const AGUIComponent: TComponent; AGUIFieldName: string = ''): TtiPropertyLinkDef; virtual;
@@ -128,6 +131,8 @@ type
 
     property Subject: TtiObject read FSubject write SetSubject;
     property Active: Boolean read FActive write SetActive;
+
+    property ValidGUIValues: Boolean read GetValidGUIValues;
 
     {: Find the mediator view for the given component. If the component is not found an exception is raised. }
     property MediatorView[AComponent: TComponent]: TtiMediatorView read GetMediatorView;
@@ -478,6 +483,11 @@ begin
     result := inherited GetDisplayName;
 end;
 
+function TtiPropertyLinkDef.GetValidGUIValue: Boolean;
+begin
+  Result := Assigned(FMediator) and FMediator.ValidGUIValue;
+end;
+
 function TtiPropertyLinkDef.ModelMediator: TtiModelMediator;
 begin
   Result := nil;
@@ -719,6 +729,16 @@ begin
     result := LView.SelectedObject
   else
     MediatorError(nil, SErrNoMediatorViewForComponent, [AComponent.Name, AComponent.ClassName]);
+end;
+
+function TtiModelMediator.GetValidGUIValues: Boolean;
+var
+  i: Integer;
+begin
+  for i := 0 to FDefs.Count - 1 do
+    if not FDefs[i].ValidGUIValue then
+      Exit(false); //==>
+  result := true;
 end;
 
 function TtiModelMediator.FindMediatorView(AComponent: TComponent): TtiMediatorView;
