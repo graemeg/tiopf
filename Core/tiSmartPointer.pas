@@ -78,6 +78,17 @@ type
     class operator Implicit(const Value: RtiSmartPointer<T>): ItiSmartPointer<T>;
   end;
 
+  type
+    // A very simple garbage collector
+    ItiGC = interface
+      ['{53FF38BA-BCBA-45D1-AE64-80BF5C738FEE}']
+      // Add object named AName to garbage collector
+      // AValue is constructor call for AName
+      procedure Add(out AName; const AValue: TObject);
+    end;
+
+  function CreateGC: ItiGC;
+
 implementation
 
 { TtiSmartPointer<T> }
@@ -118,6 +129,51 @@ end;
 class operator RtiSmartPointer<T>.Implicit(const Value: RtiSmartPointer<T>): ItiSmartPointer<T>;
 begin
   Result := Value.FPointer;
+end;
+
+
+type
+    // A very simple, low-ink garbage collector
+    TtiGC = class (TInterfacedObject, ItiGC)
+    private
+      FObjects: array of TObject;
+    public
+      procedure Add(out AName; const AValue: TObject);
+      destructor Destroy; override;
+    end;
+
+  function CreateGC: ItiGC;
+  begin
+    Result := TtiGC.Create;
+  end;
+
+{ TtiGC }
+
+procedure TtiGC.Add(out AName; const AValue: TObject);
+var
+  i: integer;
+  O: TObject;
+  duplicate: boolean;
+begin
+  duplicate := false;
+  for O in FObjects do
+    if O = AValue then duplicate := true;
+  if not duplicate then
+  begin
+    i := Length(FObjects);
+    SetLength(FObjects, i+1);
+    FObjects[i] := AValue;
+  end;
+  TObject(AName) := AValue;
+end;
+
+destructor TtiGC.Destroy;
+var
+  O: TObject;
+begin
+ for O in FObjects do
+   O.Free;
+ inherited;
 end;
 
 end.
