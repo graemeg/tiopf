@@ -2649,15 +2649,13 @@ function  tiAddEllipsis(const AString : string; AWidth : integer = 20): string;
 var
   lLen : integer;
 begin
-
   lLen := Length(AString);
   if lLen <= AWidth then
     result := AString
   else if (lLen > AWidth) then
-    result := Copy(AString, 1, AWidth - 3) + '...'
+    result := TrimRight(Copy(AString, 1, AWidth - 3)) + '...'
   else
-    result := Copy(AString, 1, lLen - 3) + '...'
-
+    result := TrimRight(Copy(AString, 1, lLen - 3)) + '...'
 end;
 
 

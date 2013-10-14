@@ -649,15 +649,16 @@ end;
 
 procedure TTestTIUtils.tiAddEllipsis;
 begin
-  Check(tiUtils.tiAddEllipsis('XXXXXXXXXX', 13) = 'XXXXXXXXXX', 'Failed on 13');
-  Check(tiUtils.tiAddEllipsis('XXXXXXXXXX', 12) = 'XXXXXXXXXX', 'Failed on 12');
-  Check(tiUtils.tiAddEllipsis('XXXXXXXXXX', 11) = 'XXXXXXXXXX', 'Failed on 11');
-  Check(tiUtils.tiAddEllipsis('XXXXXXXXXX', 10) = 'XXXXXXXXXX', 'Failed on 10');
-  Check(tiUtils.tiAddEllipsis('XXXXXXXXXX',  9) = 'XXXXXX...',  'Failed on 9' );
-  Check(tiUtils.tiAddEllipsis('XXXXXXXXXX',  8) = 'XXXXX...',   'Failed on 8' );
-  Check(tiUtils.tiAddEllipsis('XXXXXXXXXX',  7) = 'XXXX...',    'Failed on 7' );
-  Check(tiUtils.tiAddEllipsis('XXXXXXXXXX',  6) = 'XXX...',     'Failed on 6' );
-  Check(tiUtils.tiAddEllipsis('XXXXXXXXXX',  5) = 'XX...',      'Failed on 5' );
+  CheckEquals('XXXXXXXXXX', tiUtils.tiAddEllipsis('XXXXXXXXXX', 13), 'Failed on 13');
+  CheckEquals('XXXXXXXXXX', tiUtils.tiAddEllipsis('XXXXXXXXXX', 12), 'Failed on 12');
+  CheckEquals('XXXXXXXXXX', tiUtils.tiAddEllipsis('XXXXXXXXXX', 11), 'Failed on 11');
+  CheckEquals('XXXXXXXXXX', tiUtils.tiAddEllipsis('XXXXXXXXXX', 10), 'Failed on 10');
+  CheckEquals('XXXXXX...',  tiUtils.tiAddEllipsis('XXXXXXXXXX',  9), 'Failed on 9' );
+  CheckEquals('XXXXX...',   tiUtils.tiAddEllipsis('XXXXXXXXXX',  8), 'Failed on 8' );
+  CheckEquals('XXXX...',    tiUtils.tiAddEllipsis('XXXXXXXXXX',  7), 'Failed on 7' );
+  CheckEquals('XXX...',     tiUtils.tiAddEllipsis('XXXXXXXXXX',  6), 'Failed on 6' );
+  CheckEquals('XX...',      tiUtils.tiAddEllipsis('XXXXXXXXXX',  5), 'Failed on 5' );
+  CheckEquals('X...',       tiUtils.tiAddEllipsis('X XXXXXXXX',  5), 'Failed on 5 (space)' );
 end;
 
 
