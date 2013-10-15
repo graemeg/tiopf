@@ -22,6 +22,7 @@ type
     FComposite: Boolean;
     FObjectUpdateMoment: TtiObjectUpdateMoment;
     FFieldName: string;
+    FDisplayFieldName: string;
     FGUIFieldName: string;
     FMediator: TtiMediatorView;
     FMediatorDef: TtiMediatorDef;
@@ -41,7 +42,7 @@ type
     procedure SetValueList(const AValue: TtiObjectList);
     function GetValidGUIValue: Boolean;
   protected
-    function GetDisplayName: string; override;
+    function GetDisplayName: string; override; // Displayed in Property Inspector
     procedure CreateMediator; virtual;
     procedure FreeMediator(FreeDef: Boolean = True); virtual;
     property MediatorDef: TtiMediatorDef read FMediatorDef;
@@ -56,6 +57,8 @@ type
     property Composite: Boolean read FComposite write SetComposite;
     // Format: FieldName[:RootFieldName] (see TtiMediatorView.FieldName/RootFieldName)
     property FieldName: string read FFieldName write SetFieldName;
+    // Subject field name to display to the user (e.g. validation errors)
+    property DisplayFieldName: string read FDisplayFieldName write FDisplayFieldName;
     property GUIFieldName: string read FGUIFieldName write SetGUIFieldName;
     property Component: TComponent read FComponent write SetComponent;
     property ObjectUpdateMoment: TtiObjectUpdateMoment read FObjectUpdateMoment write SetObjectUpdateMoment;
@@ -103,10 +106,9 @@ type
     function GetMediatorView(AComponent: TComponent): TtiMediatorView;
     function GetSelectedObject(AComponent: TComponent): TtiObject;
     procedure SetSelectedObject(AComponent: TComponent; AObject: TtiObject);
-    function GetValidGUIValues: Boolean;
   protected
     function CreatePropertyDefs: TtiPropertyLinkDefs; virtual;
-    function CreateProperty(const AFieldName: string; const AGUIComponent: TComponent; AGUIFieldName: string = ''): TtiPropertyLinkDef; virtual;
+    function CreateProperty(const AFieldName: string; const AGUIComponent: TComponent; const ADisplayFieldName: string; AGUIFieldName: string = ''): TtiPropertyLinkDef; virtual;
     procedure AfterPropertyCreated(ADef: TtiPropertyLinkDef);
     procedure CheckSubject;
     procedure CheckInactive;
@@ -118,7 +120,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-    function AddProperty(const AFieldName: string; const AGUIComponent: TComponent; AGUIFieldName: string = ''): TtiPropertyLinkDef;
+    function AddProperty(const AFieldName: string; const AGUIComponent: TComponent; const ADisplayFieldName: string = ''; AGUIFieldName: string = ''): TtiPropertyLinkDef;
     function AddComposite(const ADisplayNames: string; const AGUIComponent: TComponent): TtiPropertyLinkDef;
     function FindByComponent(AComponent: TComponent): TtiPropertyLinkDef;
     function FindByMediator(AMediator: TtiMediatorView): TtiPropertyLinkDef;
@@ -132,7 +134,9 @@ type
     property Subject: TtiObject read FSubject write SetSubject;
     property Active: Boolean read FActive write SetActive;
 
-    property ValidGUIValues: Boolean read GetValidGUIValues;
+    function IsGUIValid(const AErrors: TtiObjectErrors): boolean; overload; virtual;
+    function IsGUIValid: boolean; overload;
+    function IsGUIValid(var AErrorMessage: string): boolean; overload;
 
     {: Find the mediator view for the given component. If the component is not found an exception is raised. }
     property MediatorView[AComponent: TComponent]: TtiMediatorView read GetMediatorView;
@@ -238,13 +242,16 @@ type
 
     {: Add a field-component mapping for a model by name }
     function AddProperty(const AModelMediatorName: string;
-        const AFieldName: string; const AGUIComponent: TComponent): TtiPropertyLinkDef; overload;
+        const AFieldName: string; const AGUIComponent: TComponent;
+        const ADisplayFieldName: string = ''): TtiPropertyLinkDef; overload;
     {: Add a list field-component mapping for a model by name }
     function AddComposite(const AModelMediatorName: string;
-        const ADisplayNames: string; const AGUIComponent: TComponent): TtiPropertyLinkDef; overload;
+        const ADisplayNames: string;
+        const AGUIComponent: TComponent): TtiPropertyLinkDef; overload;
     {: Add a field-component mapping for a model by class (one model per class) }
     function AddProperty(const ASubjectClass: TtiObjectClass;
-        const AFieldName: string; const AGUIComponent: TComponent): TtiPropertyLinkDef; overload;
+        const AFieldName: string; const AGUIComponent: TComponent;
+        const ADisplayFieldName: string = ''): TtiPropertyLinkDef; overload;
     {: Add a list field-component mapping for a model by class (one model per class) }
     function AddComposite(const ASubjectClass: TtiObjectClass;
         const ADisplayNames: string; const AGUIComponent: TComponent): TtiPropertyLinkDef; overload;
@@ -252,7 +259,8 @@ type
        multiple model mediators for the same model instance then the property
        is added to the first found in the list }
     function AddProperty(const ASubject: TtiObject;
-        const AFieldName: string; const AGUIComponent: TComponent): TtiPropertyLinkDef; overload;
+        const AFieldName: string; const AGUIComponent: TComponent;
+        const ADisplayFieldName: string = ''): TtiPropertyLinkDef; overload;
     {: Add a list field-component mapping for a model by instance. If there are
        multiple model mediators for the same model instance then the property
        is added to the first found in the list }
@@ -309,7 +317,8 @@ type
 implementation
 
 uses
-  tiConstants
+  tiConstants,
+  tiUtils
   ;
 
 const
@@ -416,9 +425,11 @@ begin
   if FMediator.CompositeMediator then
   begin
     FMediator.FieldName := FieldName;
+    FMediator.DisplayFieldName := DisplayFieldName;
     FMediator.RootFieldName := '';
   end else begin
     FMediator.FieldName := tiValueFieldName(FieldName);
+    FMediator.DisplayFieldName := DisplayFieldName;
     if GUIFieldName <> '' then
       FMediator.GUIFieldName := GUIFieldName;
     FMediator.RootFieldName := tiRootFieldName(FieldName);
@@ -458,6 +469,7 @@ begin
     FComponent := D.Component;
     FObjectUpdateMoment := D.ObjectUpdateMoment;
     FFieldName := D.FieldName;
+    FDisplayFieldName := D.DisplayFieldName;
     FOnBeforeGUIToObject := D.OnBeforeGUIToObject;
     FOnAfterGUIToObject := D.OnAfterGUIToObject;
     FOnObjectToGUI := D.OnObjectToGUI;
@@ -652,10 +664,14 @@ begin
   inherited Destroy;
 end;
 
-function TtiModelMediator.CreateProperty(const AFieldName: string; const AGUIComponent: TComponent; AGUIFieldName: string = ''): TtiPropertyLinkDef;
+function TtiModelMediator.CreateProperty(const AFieldName: string; const AGUIComponent: TComponent; const ADisplayFieldName: string; AGUIFieldName: string = ''): TtiPropertyLinkDef;
 begin
   Result           := FDefs.AddPropertyLinkDef;
   Result.FieldName := AFieldName;
+  if ADisplayFieldName <> '' then
+    Result.DisplayFieldName := ADisplayFieldName
+  else
+    Result.DisplayFieldName := AFieldName;
   Result.GUIFieldName:= AGUIFieldName;
   Result.Component := AGUICOmponent;
 end;
@@ -683,15 +699,15 @@ begin
   end;
 end;
 
-function TtiModelMediator.AddProperty(const AFieldName: string; const AGUIComponent: TComponent; AGUIFieldName: string = ''): TtiPropertyLinkDef;
+function TtiModelMediator.AddProperty(const AFieldName: string; const AGUIComponent: TComponent; const ADisplayFieldName: string = ''; AGUIFieldName: string = ''): TtiPropertyLinkDef;
 begin
-  Result := CreateProperty(AFieldName, AGUIComponent, AGUIFieldName);
+  Result := CreateProperty(AFieldName, AGUIComponent, ADisplayFieldName, AGUIFieldName);
   AfterPropertyCreated(Result);
 end;
 
 function TtiModelMediator.AddComposite(const ADisplayNames: string; const AGUIComponent: TComponent): TtiPropertyLinkDef;
 begin
-  Result           := CreateProperty(ADisplayNames, AGUIComponent);
+  Result           := CreateProperty(ADisplayNames, AGUIComponent, '');
   Result.Composite := True;
   AfterPropertyCreated(Result);
 end;
@@ -731,14 +747,49 @@ begin
     MediatorError(nil, SErrNoMediatorViewForComponent, [AComponent.Name, AComponent.ClassName]);
 end;
 
-function TtiModelMediator.GetValidGUIValues: Boolean;
+function TtiModelMediator.IsGUIValid(const AErrors: TtiObjectErrors): Boolean;
 var
   i: Integer;
+  LDef: TtiPropertyLinkDef;
 begin
+  Result := true;
   for i := 0 to FDefs.Count - 1 do
-    if not FDefs[i].ValidGUIValue then
-      Exit(false); //==>
-  result := true;
+  begin
+    LDef := FDefs[i];
+    if not LDef.ValidGUIValue then
+    begin
+      AErrors.AddError(LDef.FieldName,
+          Format(SErrInvalidGUIValue, [LDef.DisplayFieldName]));
+      Result := false;
+    end;
+  end;
+end;
+
+function TtiModelMediator.IsGUIValid: Boolean;
+var
+  LErrors: TtiObjectErrors;
+begin
+  LErrors := TtiObjectErrors.Create;
+  try
+    Result := IsGUIValid(LErrors);
+  finally
+    LErrors.Free;
+  end;
+end;
+
+function TtiModelMediator.IsGUIValid(var AErrorMessage: string): Boolean;
+var
+  LErrors: TtiObjectErrors;
+  i: integer;
+begin
+  LErrors := TtiObjectErrors.Create;
+  try
+    Result := IsGUIValid(LErrors);
+    for i := 0 to LErrors.Count - 1 do
+      AErrorMessage := tiAppendStr(AErrorMessage, LErrors.Items[i].ErrorMessage, Cr);
+  finally
+    LErrors.Free;
+  end;
 end;
 
 function TtiModelMediator.FindMediatorView(AComponent: TComponent): TtiMediatorView;
@@ -1057,23 +1108,27 @@ begin
 end;
 
 function TtiModelMediatorList.AddProperty(const ASubjectClass: TtiObjectClass;
-  const AFieldName: string;
-  const AGUIComponent: TComponent): TtiPropertyLinkDef;
+  const AFieldName: string; const AGUIComponent: TComponent;
+  const ADisplayFieldName: string): TtiPropertyLinkDef;
 begin
-  result := AddProperty(ASubjectClass.ClassName, AFieldName, AGUIComponent);
+  result := AddProperty(ASubjectClass.ClassName, AFieldName, AGUIComponent,
+      ADisplayFieldName);
 end;
 
 function TtiModelMediatorList.AddProperty(const AModelMediatorName,
-  AFieldName: string; const AGUIComponent: TComponent): TtiPropertyLinkDef;
+  AFieldName: string; const AGUIComponent: TComponent;
+  const ADisplayFieldName: string): TtiPropertyLinkDef;
 begin
-  result := FindCreate(AModelMediatorName).AddProperty(AFieldName, AGUIComponent);
+  result := FindCreate(AModelMediatorName).AddProperty(AFieldName,
+      AGUIComponent, ADisplayFieldName);
 end;
 
 function TtiModelMediatorList.AddProperty(const ASubject: TtiObject;
-  const AFieldName: string;
-  const AGUIComponent: TComponent): TtiPropertyLinkDef;
+  const AFieldName: string; const AGUIComponent: TComponent;
+  const ADisplayFieldName: string): TtiPropertyLinkDef;
 begin
-  result := FindCreate(ASubject).AddProperty(AFieldName, AGUIComponent);
+  result := FindCreate(ASubject).AddProperty(AFieldName, AGUIComponent,
+      ADisplayFieldName);
 end;
 
 function TtiModelMediatorList.AddComposite(const ASubjectClass: TtiObjectClass;

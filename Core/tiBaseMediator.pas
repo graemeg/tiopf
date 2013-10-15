@@ -50,6 +50,7 @@ type
     FSettingUp: Boolean;
     FFieldName: string; // Published property of model used to get/set value
     FRootFieldName: string; // The underlying property used by FieldName (usually the same)
+    FDisplayFieldName: string;
     FSubject: TtiObject;
     FView: TComponent;
     FGUIFieldName: string;
@@ -57,7 +58,6 @@ type
     FCopyingCount: integer;
     FOnAfterGUIToObject: TtiAfterGUIToObjectEvent;
     FValidateGUIValueType: Boolean;
-    FValidGUIValue: Boolean;
     procedure ViewNotification(AComponent: TComponent; Operation: TOperation);
     // ItiObserverHandlesErrorState interface implementation
     procedure ProcessErrorState(const ASubject: TtiObject; const AOperation: TNotifyOperation; const AErrors: TtiObjectErrors);
@@ -78,6 +78,8 @@ type
     procedure UpdateGUIValidStatus(pErrors: TtiObjectErrors); virtual;
     // Check whether data and GUI property are OK. Not used in this class
     function DataAndPropertyValid: Boolean;
+    // Retrieve the GUI value (can be different to subject field if invalid)
+    function GUIValue: Variant;
     // By default, copies published FieldName to published GUIFieldName.
     procedure DoGUIToObject; virtual;
     procedure DoGUIToObjectDefault; virtual;
@@ -142,7 +144,7 @@ type
        in the list if appropriate. Get/Set subject by default. }
     property SelectedObject: TtiObject read GetSelectedObject write SetSelectedObject;
     // Is the current value in the GUI valid (consistent with the field type)
-    property ValidGUIValue: Boolean read FValidGUIValue;
+    function ValidGUIValue: Boolean;
   published
     // Property of subject.
     property FieldName: string read FFieldName write SetFieldName;
@@ -152,6 +154,8 @@ type
     // but MyProperty is the root property that is read/modified through
     // MyPropertyAsGUIString. Defaults to FieldName.
     property RootFieldName: string read FRootFieldName write FRootFieldName;
+    // Subject field name to display to the user (e.g. validation errors)
+    property DisplayFieldName: string read FDisplayFieldName write FDisplayFieldName;
     // Property of GUI to handle.
     property GUIFieldName: string read FGUIFieldName write FGUIFieldName;
     // Property ObjectUpdateMoment : Do action e.g. in OnExit instead of OnChange.
@@ -378,10 +382,14 @@ function tiRootFieldName(const AFieldName: string): string;
 procedure MediatorError(Sender: TObject; const Msg: string); overload;
 procedure MediatorError(Sender: TObject; Fmt: string; Args: array of const); overload;
 
+resourcestring
+  SErrInvalidGUIValue = 'Invalid value entered for %s';
+
 implementation
 
 uses
-  tiUtils
+  Variants
+  ,tiUtils
   ,tiLog
   ;
 
@@ -398,7 +406,6 @@ resourcestring
   SErrNoGUIFieldName        = 'no gui fieldname set';
   SErrNoSubjectFieldName    = 'no subject fieldname set';
   SErrInvalidPropertyName   = '<%s> is not a property of <%s>';
-  SErrInvalidGUIValue       = 'Invalid value entered';
 
 const
   DefFieldWidth = 75;   // default width
@@ -466,7 +473,6 @@ begin
   FObjectUpdateMoment := ouDefault;
   FSettingUp := False;
   FValidateGUIValueType := true;
-  FValidGUIValue := true;
 end;
 
 constructor TtiMediatorView.CreateCustom(AView: TComponent; ASubject: TtiObject; AFieldName: string; AGUIFieldName: string);
@@ -564,12 +570,12 @@ begin
       Subject.IsValid(Errors);
 
     // Type check the value in the GUI that is not in the Subject
-    if FValidateGUIValueType and not FValidGUIValue then
+    if ValidateGUIValueType and not ValidGUIValue then
     begin
       LError := TtiObjectError.Create;
       Errors.Add(LError);
       LError.ErrorProperty := FieldName;
-      LError.ErrorMessage := SErrInvalidGUIValue;
+      LError.ErrorMessage := Format(SErrInvalidGUIValue, [DisplayFieldName]);
     end;
 
     UpdateGUIValidStatus(Errors); // always execute this as it also resets View
@@ -759,12 +765,17 @@ begin
   end;
 end;
 
-procedure TtiMediatorView.DoGUIToObject;
+function TtiMediatorView.GUIValue: Variant;
 begin
-  DoGUIToObjectDefault;
+  CheckFieldNames;
+  Result := TypInfo.GetPropValue(View, GUIFieldName);
+  // Allow blank to mean 0 for numerical fields
+  if (GetObjectPropType in [tiTKInteger, tiTKFloat, tiTKBoolean]) and
+     VarIsStr(Result) and (VarToStr(Result) = '') then
+    Result := '0';
 end;
 
-procedure TtiMediatorView.DoGUIToObjectDefault;
+function TtiMediatorView.ValidGUIValue: Boolean;
 var
   LGUIValue: Variant;
   LInt: Int64;
@@ -772,23 +783,29 @@ var
   LDateTime: TDateTime;
   LBoolean: Boolean;
 begin
-  CheckFieldNames;
-  LGUIValue := TypInfo.GetPropValue(View, GUIFieldName);
-  // Validate the data type
-  FValidGUIValue := true;
-  if ValidateGUIValueType then
-  begin
+  Result := true;
+  // Validate the data type when the user is entering a string
+  LGUIValue := GUIValue;
+  if VarIsStr(LGUIValue) then
     case GetObjectPropType of
-      tiTKInteger: FValidGUIValue := TryStrToInt64(LGUIValue, LInt);
-      tiTKFloat: FValidGUIValue := TryStrToFloat(LGUIValue, LFloat);
-      tiTKString: ; // Type is valid
-      tiTKDateTime: FValidGUIValue := TryStrToDateTime(LGUIValue, LDateTime);
-      tiTKBoolean:  FValidGUIValue := TryStrToBool(LGUIValue, LBoolean);
-      tiTKBinary: ; // Unknown
+      tiTKInteger: Result := TryStrToInt64(LGUIValue, LInt);
+      tiTKFloat: Result := TryStrToFloat(LGUIValue, LFloat);
+      tiTKString: ; // Assume valid
+      tiTKDateTime: Result := TryStrToDateTime(LGUIValue, LDateTime);
+      tiTKBoolean:  Result := TryStrToBool(LGUIValue, LBoolean);
+      tiTKBinary: ; // Assume valid
     end;
-  end;
-  if FValidGUIValue then
-    Subject.PropValue[FieldName] := LGUIValue;
+end;
+
+procedure TtiMediatorView.DoGUIToObject;
+begin
+  DoGUIToObjectDefault;
+end;
+
+procedure TtiMediatorView.DoGUIToObjectDefault;
+begin
+  if (not ValidateGUIValueType) or ValidGUIValue then
+    Subject.PropValue[FieldName] := GUIValue;
 end;
 
 procedure TtiMediatorView.GUIToObject;
@@ -826,7 +843,6 @@ begin
       FOnObjectToGUI(Self, Subject, View, B);
     if not B then
       DoObjectToGUI;
-    FValidGUIValue := true;
   finally
     Dec(FCopyingCount);
   end;
