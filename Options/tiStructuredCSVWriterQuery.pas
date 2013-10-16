@@ -7,6 +7,7 @@ uses
   tiQuery;
 
 type
+  TtiDRowCSVWriterMethod = procedure of object;
 
   TtiStructuredCSVWriterQueryList = class(TtiStructuredCSVWriter)
   private
@@ -17,6 +18,11 @@ type
     procedure LockDatabaseConnection; virtual;
     procedure UnLockDatabaseConnection; virtual;
     function DatabaseAlias: string; virtual; abstract;
+    procedure WriteDRowList(
+      const ASQL: string;
+      const ADataGroup: string;
+      const AWriterMethod: TtiDRowCSVWriterMethod);
+
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -88,6 +94,20 @@ procedure TtiStructuredCSVWriterQueryList.UnLockDatabaseConnection;
 begin
   FDatabase.Commit;
   GTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(DatabaseAlias, FDatabase);
+end;
+
+procedure TtiStructuredCSVWriterQueryList.WriteDRowList(const ASQL,
+  ADataGroup: string; const AWriterMethod: TtiDRowCSVWriterMethod);
+begin
+  Query.SQLText := ASQL;
+  Query.Open;
+  while not Query.EOF do
+  begin
+    WriteD(ADataGroup);
+    AWriterMethod;
+    Query.Next;
+  end;
+  Query.Close;
 end;
 
 { TtiStructuredCSVWriterSingleQuery }
