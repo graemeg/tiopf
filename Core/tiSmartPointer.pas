@@ -53,6 +53,8 @@ end;
 
 interface
 
+{$I tiDefines.inc}
+
 uses
   SysUtils
   ;
