@@ -8,6 +8,7 @@ uses
    tiObject
   ,tiObjectCacheAbs
   ,tiCGIParams
+  ,tiStructuredCSVReader
   ,tiWebServerClientConnectionDetails
   // Delphi
   ,SyncObjs
@@ -30,7 +31,7 @@ type
     procedure   Init; override ;
 
     function    CGIEXEName: string; virtual ; abstract ;
-    procedure   CacheToBOM(const AData: TtiObject);virtual; abstract;
+    procedure   CacheToBOM(const AData: TtiObject); virtual; abstract;
 
     procedure   ResponseToFile(const AResponse: string); virtual;
     procedure   DoExecute(const AData: TtiObject); virtual ;
@@ -45,6 +46,17 @@ type
 
   end ;
 
+  // PH: October 2013.
+  // TtiCGIObjectCacheClient1 has the code in CacheToBOM that is often cloned
+  // between concreate classes abstracted up. Better to use
+  // TtiCGIObjectCacheClient1 for new work, and to replace classes that use
+  // TtiCGIObjectCacheClient as their parent over time.
+  TtiCGIObjectCacheClient1 = class(TtiCGIObjectCacheClient)
+  protected
+    procedure   CacheToBOM(const AData: TtiObject); override;
+    function    ParserClass: TtiStructuredCSVtoBOMFileParserClass; virtual; abstract;
+  end;
+
   TtiCGIObjectCacheClientVisitor = class( TtiCGIObjectCacheClient )
   protected
     procedure   CacheToBOM(const AData: TtiObject); override;
@@ -55,18 +67,18 @@ type
 
 implementation
 uses
-  // tiOPF
-   tiCGIExtensionRequest
+   tiXML
+  ,tiLog
   ,tiUtils
   ,tiStreams
-  ,tiXML
-  ,tiLog
+  ,tiCompress
   ,tiConstants
+  ,tiCGIExcept
+  ,tiOPFManager
   ,tiQueryXMLLight
   ,tiXMLToTIDataSet
-  ,tiOPFManager
-  ,tiCGIExcept
   ,tiWebServerConstants
+  ,tiCGIExtensionRequest
   // Delphi
   ,SysUtils
   ,Classes
@@ -239,6 +251,29 @@ begin
   Log('  :) Finished loading ' + AData.ClassName +
       '. (' + IntToStr(GetTickCount - lStart) + 'ms)', lsQueryTiming);
 
+end;
+
+{ TtiCGIObjectCacheClient1 }
+
+procedure TtiCGIObjectCacheClient1.CacheToBOM(const AData: TtiObject);
+ var
+  lFileName: string;
+  LFileParser: TtiStructuredCSVtoBOMFileParser;
+  LCSVStream: TMemoryStream;
+begin
+  Assert(AData.TestValid, CTIErrorInvalidObject );
+  lFileName := GetCachedFileDirAndName;
+  LFileParser := nil;
+  LCSVStream := nil;
+  try
+    LFileParser := ParserClass.Create(AData);
+    LCSVStream := TMemoryStream.Create;
+    tiDecompressFileToStream(lFileName, LCSVStream);
+    LFileParser.ParseStream(LCSVStream);
+  finally
+    LFileParser.Free;
+    LCSVStream.Free;
+  end;
 end;
 
 end.
