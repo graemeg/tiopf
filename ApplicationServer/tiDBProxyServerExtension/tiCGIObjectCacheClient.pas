@@ -57,6 +57,10 @@ type
     function    ParserClass: TtiStructuredCSVtoBOMFileParserClass; virtual; abstract;
   end;
 
+  // PH: October 2013.
+  // Do not use TtiCGIObjectCacheClientVisitor as the parent in new work, use
+  // TtiCGIObjectCacheClient1 instead. Replace code that uses
+  // TtiCGIObjectCacheClient1 over time.
   TtiCGIObjectCacheClientVisitor = class( TtiCGIObjectCacheClient )
   protected
     procedure   CacheToBOM(const AData: TtiObject); override;
