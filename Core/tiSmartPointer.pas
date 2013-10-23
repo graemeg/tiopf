@@ -137,10 +137,12 @@ end;
 
 
 type
-    // A very simple, low-ink garbage collector
+    // A very simple, low-ink, un-thread-safe garbage collector
     TtiGC = class (TInterfacedObject, ItiGC)
     private
+      FCapacity, FCount: integer;
       FObjects: array of TObject;
+      procedure CheckCapacity;
     public
       function Add(out AName; const AValue: TObject): boolean; overload;
       function Add(const AValue: TObject): boolean; overload;
@@ -164,27 +166,26 @@ end;
 function TtiGC.Add(const AValue: TObject): boolean;
 var
   i: integer;
-  O: TObject;
   duplicate: boolean;
 begin
   duplicate := false;
-  for O in FObjects do
-    if O = AValue then duplicate := true;
+  for i := 0 to FCount - 1 do
+    if FObjects[i] = AValue then duplicate := true;
   if not duplicate then
   begin
-    i := Length(FObjects);
-    SetLength(FObjects, i+1);
-    FObjects[i] := AValue;
+    CheckCapacity;
+    FObjects[FCount] := AValue;
+    Inc(FCount);
   end;
   Result := not duplicate;
 end;
 
 destructor TtiGC.Destroy;
 var
-  O: TObject;
+  i: integer;
 begin
- for O in FObjects do
-   O.Free;
+  for i := 0 to FCount - 1 do
+   FObjects[i].Free;
  inherited;
 end;
 
@@ -193,7 +194,7 @@ var
   i,hi: integer;
 begin
   Result := false;
-  hi := High(FObjects);
+  hi := FCount - 1;
   if Assigned(AValue) then
   for i := 0 to hi do
     if AValue = FObjects[i] then
@@ -201,10 +202,34 @@ begin
       if i < hi then
         // Move remainder of FObjects down one slot to cover removed AValue
         Move(FObjects[i+1], FObjects[i], (hi-i)*SizeOf(TObject));
-      // Truncate FObjects by 1
-      SetLength(FObjects, hi);
-      Exit (true);
+      Dec(FCount);
+      // Prune on lucky 7!
+      if (FCount mod 7) = 0 then
+      begin
+        SetLength(FObjects, FCount);
+        FCapacity := FCount;
+      end;
+      Exit(true);
     end;
+end;
+
+procedure TtiGC.CheckCapacity;
+var
+  delta: Integer;
+begin
+  if FCount = FCapacity then
+  begin
+    if FCapacity > 64 then
+      delta := FCapacity div 4
+    else
+      if FCapacity > 8 then
+        delta := 16
+      else
+        delta := 4;
+
+    Inc(FCapacity, delta);
+    SetLength(FObjects, FCapacity);
+  end;
 end;
 
 end.
