@@ -176,7 +176,7 @@ begin
     SetLength(FObjects, i+1);
     FObjects[i] := AValue;
   end;
-  Result := duplicate;
+  Result := not duplicate;
 end;
 
 destructor TtiGC.Destroy;

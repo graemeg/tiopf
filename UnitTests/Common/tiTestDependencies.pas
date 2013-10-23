@@ -86,6 +86,7 @@ uses
   ,tiApplicationServer_TST
   {$ENDIF}
   {$ENDIF}
+  ,tiSmartPointer_TST
 
   // Persistent test fixtures (in alpha order)
   ,tiOPFADOAccess_TST
@@ -176,7 +177,7 @@ begin
   tiApplicationServer_TST.RegisterTests;
   {$ENDIF}
   {$ENDIF}
-
+  tiSmartPointer_TST.RegisterTests;
 
 
   // Persistent test fixtures (in alpha order)
