@@ -82,6 +82,9 @@ type
                                 AStringList : TStringList;
                                 APropFilter : TTypeKinds = ctkSimple); overload;
 
+  function tiGetPropertyCount(const AObject : TtiBaseObject;
+                              const APropFilter : TTypeKinds = ctkAll): integer;
+
   // Is a property a read & write property
   function tiIsReadWriteProp(const AData : TtiBaseObject; const APropName : string): boolean; overload;
   function tiIsReadWriteProp(const AData : TtiBaseObjectClass; const APropName : string): boolean; overload;
@@ -478,6 +481,12 @@ begin
   end;
 end;
 
+function tiGetPropertyCount(
+  const AObject : TtiBaseObject;
+  const APropFilter : TTypeKinds = ctkAll): integer;
+begin
+  result:= GetPropList(AObject.ClassInfo, APropFilter, nil ,false);
+end;
 
 function tiIsReadWriteProp(const AData: TtiBaseObject;
     const APropName: string): boolean;

@@ -30,6 +30,7 @@ type
     procedure tiIsReadWritePropClass;
     procedure tiIsPublishedProp_Simple;
     procedure tiIsPublishedProp_PropertyPath;
+    procedure tiGetPropertyCount;
     procedure SetProperty_Simple;
     procedure SetProperty_PropertyPath;
     procedure GetProperty_Simple;
@@ -114,6 +115,22 @@ end;
 procedure TTesttiRTTI.TestGetPropertyException;
 begin
   tiGetProperty(nil, 'BoolField');
+end;
+
+procedure TTesttiRTTI.tiGetPropertyCount;
+var
+  LObj : TtiBaseObject;
+begin
+  LObj := TTestGetPropNames.Create;
+  try
+    CheckEquals(23, tiRTTI.tiGetPropertyCount(LObj),             'No prop type');
+    CheckEquals(23, tiRTTI.tiGetPropertyCount(LObj, ctkAll),     'ctkAll');
+    CheckEquals(19, tiRTTI.tiGetPropertyCount(LObj, ctkSimple),  'ctkSimple');
+    CheckEquals( 8, tiRTTI.tiGetPropertyCount(LObj, ctkNumeric), 'ctkNumeric');
+    CheckEquals(11, tiRTTI.tiGetPropertyCount(LObj, ctkString),  'ctkString');
+  finally
+    LObj.Free;
+  end;
 end;
 
 procedure TTesttiRTTI.tiGetPropertyNamesClass;
