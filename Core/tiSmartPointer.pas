@@ -191,9 +191,6 @@ end;
 function TtiGC.Remove(const AValue: TObject): boolean;
 var
   i,hi: integer;
-  O: TObject;
-  duplicate: boolean;
-begin
 begin
   Result := false;
   hi := High(FObjects);
@@ -208,7 +205,6 @@ begin
       SetLength(FObjects, hi);
       Exit (true);
     end;
-end;
 end;
 
 end.
