@@ -86,7 +86,9 @@ type
       ['{53FF38BA-BCBA-45D1-AE64-80BF5C738FEE}']
       // Add object named AName to garbage collector
       // AValue is constructor call for AName
-      procedure Add(out AName; const AValue: TObject);
+      function Add(out AName; const AValue: TObject): boolean; overload;
+      function Add(const AValue: TObject): boolean; overload;
+      function Remove(const AValue: TObject): boolean;
     end;
 
   function CreateGC: ItiGC;
@@ -140,7 +142,9 @@ type
     private
       FObjects: array of TObject;
     public
-      procedure Add(out AName; const AValue: TObject);
+      function Add(out AName; const AValue: TObject): boolean; overload;
+      function Add(const AValue: TObject): boolean; overload;
+      function Remove(const AValue: TObject): boolean;
       destructor Destroy; override;
     end;
 
@@ -151,7 +155,13 @@ type
 
 { TtiGC }
 
-procedure TtiGC.Add(out AName; const AValue: TObject);
+function TtiGC.Add(out AName; const AValue: TObject): boolean;
+begin
+  Result := Add(AValue);
+  TObject(AName) := AValue;
+end;
+
+function TtiGC.Add(const AValue: TObject): boolean;
 var
   i: integer;
   O: TObject;
@@ -166,7 +176,7 @@ begin
     SetLength(FObjects, i+1);
     FObjects[i] := AValue;
   end;
-  TObject(AName) := AValue;
+  Result := duplicate;
 end;
 
 destructor TtiGC.Destroy;
@@ -176,6 +186,29 @@ begin
  for O in FObjects do
    O.Free;
  inherited;
+end;
+
+function TtiGC.Remove(const AValue: TObject): boolean;
+var
+  i,hi: integer;
+  O: TObject;
+  duplicate: boolean;
+begin
+begin
+  Result := false;
+  hi := High(FObjects);
+  if Assigned(AValue) then
+  for i := 0 to hi do
+    if AValue = FObjects[i] then
+    begin
+      if i < hi then
+        // Move remainder of FObjects down one slot to cover removed AValue
+        Move(FObjects[i+1], FObjects[i], (hi-i)*SizeOf(TObject));
+      // Truncate FObjects by 1
+      SetLength(FObjects, hi);
+      Exit (true);
+    end;
+end;
 end;
 
 end.
