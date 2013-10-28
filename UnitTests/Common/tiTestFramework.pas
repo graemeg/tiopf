@@ -11,6 +11,7 @@ uses
   ,tiExcept
   ,tiOID
   ,tiConstants
+  ,tiSmartPointer
   ,TestFramework
   ,TestExtensions
   ,inifiles
@@ -60,9 +61,11 @@ type
   private
     FPerformanceCounter: TtiPerformanceCounter;
     FTempDirectory: string;
+    FGC: ItiGC;
     function GetLongString: string;
     function  MakeDifferenceMessage(const AField1, AField2: TtiFieldAbs): string;
   protected
+    property    GC: ItiGC read FGC;
     procedure   SetUpOnce; override;
     procedure   SetUp; override;
     procedure   TearDown; override;
@@ -477,6 +480,7 @@ begin
   {$IFDEF FPC}
   SetupOnce;
   {$ENDIF}
+  FGC := CreateGC;
 end;
 
 procedure TtiTestCase.SetUpOnce;
