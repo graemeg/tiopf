@@ -495,6 +495,7 @@ begin
   if DirectoryExists(FTempDirectory) then
     try tiForceRemoveDir(FTempDirectory) except end;
   GLog.Purge;
+  FGC:= nil;
 end;
 
 procedure TtiTestCase.TearDownOnce;
