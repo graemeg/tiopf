@@ -72,6 +72,8 @@ type
     procedure   TearDownOnce;override;
     function    TempFileName(const AFilename: string = ''): string;
     procedure   UnderConstruction(const AMessage: string = '');
+    procedure   IgnoreSlowUnitTest(const AMessage: string = '');
+
     property    LongString : string read GetLongString;
     // ToDo: Merge with TtiTestSetup Seed value generation methods
     function    tstIntToStr(pInt:Integer):string;
@@ -638,6 +640,16 @@ end;
 function TtiTestCase.GetLongString: string;
 begin
   result:= ULongString;
+end;
+
+procedure TtiTestCase.IgnoreSlowUnitTest(const AMessage: string);
+begin
+{$IFDEF IGNORE_SLOW_UNIT_TESTS}
+  if AMessage = '' then
+    Fail('Slow unit test ignored', CallerAddr)
+  else
+    Fail(AMessage, CallerAddr);
+{$ENDIF}
 end;
 
 procedure TtiTestCase.LoadConfiguration(const iniFile: TCustomIniFile;
