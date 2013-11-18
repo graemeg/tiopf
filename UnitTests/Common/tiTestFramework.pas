@@ -96,10 +96,14 @@ type
     function  PerformanceCounter: TtiPerformanceCounter;
 
     procedure Check(const ACondition: Boolean; AMessage: string; const AArgs: array of const); reintroduce; overload;
-    function  AreStreamContentsSame(const pStream1, pStream2 : TStream; var AMessage : string): boolean;
-    procedure CheckStreamContentsSame(const pStream1, pStream2 : TStream);
+    function  AreStreamContentsSame(const AStream1, AStream2 : TStream; var AMessage : string; const AStartPosition: integer = 0): boolean;
+    procedure CheckStreamContentsSame(const AStream1, AStream2 : TStream; const AMessage: string = ''; const AStartPosition: integer = 0);
     procedure CheckFormattedMessage(const AFormat: string; const AArgs: array of const; const AActual: string; const AMessage: string = '');
     procedure CheckObjectState(const AObjectState : TPerObjectState; const AData : TtiObject; const AMessage: string = '');
+    procedure CheckFileContents(const AFileNameExpected, AFileNameActual: string);
+    procedure CheckDirectoryTree(const APathToExpected, APathToActual: string);
+    procedure CheckBinaryFileContents(const AFileNameExpected, AFileNameActual: string; const AStartPosition: integer = 0);
+    procedure CheckGIFFileContents(const AFileNameExpected, AFileNameActual: string);
     procedure CheckNotifyOperation(const AExpected, AActual: TNotifyOperation; const AMessage: string = '');
     procedure CheckNearEnough(AExpected, AActual: Extended; const AMessage: string = ''); overload;
     procedure CheckNearEnough(const AExpected, AActual: Double); overload;
@@ -416,53 +420,163 @@ begin
   Result := TempDirectory + PathDelim + LFilename;
 end;
 
-procedure TtiTestCase.CheckStreamContentsSame(const pStream1, pStream2: TStream);
+procedure TtiTestCase.CheckStreamContentsSame(
+  const AStream1, AStream2: TStream;
+  const AMessage: string = '';
+  const AStartPosition: integer = 0);
 var
-  lResult : boolean;
-  lMessage : string;
+  LResult : boolean;
+  LMessage : string;
 begin
   Check(True); // To Force OnCheckCalled to be called
-  lMessage := '';
-  lResult := AreStreamContentsSame(pStream1, pStream2, lMessage);
-  Check(lResult,  lMessage);
+  LMessage := '';
+  LResult := AreStreamContentsSame(AStream1, AStream2, LMessage, AStartPosition);
+  Check(LResult,  Trim(AMessage + CrLf + LMessage));
 end;
 
 
-function TtiTestCase.AreStreamContentsSame(const pStream1, pStream2: TStream; var AMessage : string): boolean;
+function TtiTestCase.AreStreamContentsSame(
+ const AStream1, AStream2: TStream;
+  var AMessage : string;
+  const AStartPosition: integer = 0): boolean;
 var
    LByte1, LByte2 : byte;
 begin
    result := true;
 
-   if pStream1.Size <> pStream2.Size then
+   if AStream1.Size <> AStream2.Size then
    begin
      result := false;
-     AMessage := 'Streams have different sizes ('+inttostr(pStream1.Size)+'/'+
-                 inttostr(pStream2.Size)+')';
+     AMessage := 'Streams have different sizes ('+inttostr(AStream1.Size)+'/'+
+                 inttostr(AStream2.Size)+')';
      exit; //==>
    end;
 
-   pStream1.Position := 0;
-   pStream2.Position := 0;
-   while (pStream1.Size - pStream1.Position > 0) do
+{
+   AStream1.Position := AStream1.Size-1;
+   AStream2.Position := AStream1.Size-1;
+   while (AStream1.Position >= 0) do
    begin
-     pStream1.Read(LByte1, 1);
-     pStream2.Read(LByte2, 1);
+     AStream1.Read(LByte1, 1);
+     AStream2.Read(LByte2, 1);
      if LByte1 <> LByte2 then
      begin
        result := false;
        AMessage := 'Streams Differ at position '+
-                   inttostr(pStream1.Position)+' of '+
-                   inttostr(pStream1.Size)+
+                   inttostr(AStream1.Position)+' of '+
+                   inttostr(AStream1.Size)+
+                   ':'+inttostr(LByte1)+'/'+inttostr(LByte2);
+       exit; //==>
+     end;
+     AStream1.Position := AStream1.Position-2;
+     AStream2.Position := AStream2.Position-2;
+   end;
+}
+
+   AStream1.Position := AStartPosition;
+   AStream2.Position := AStartPosition;
+   while (AStream1.Size - AStream1.Position > 0) do
+   begin
+     AStream1.Read(LByte1, 1);
+     AStream2.Read(LByte2, 1);
+     if LByte1 <> LByte2 then
+     begin
+       result := false;
+       AMessage := 'Streams Differ at position '+
+                   inttostr(AStream1.Position)+' of '+
+                   inttostr(AStream1.Size)+
                    ':'+inttostr(LByte1)+'/'+inttostr(LByte2);
        exit; //==>
      end;
    end;
+
 end;
 
 procedure TtiTestCase.Check(const ACondition: Boolean; AMessage: string; const AArgs: array of const);
 begin
   Check(ACondition, Format(AMessage, AArgs));
+end;
+
+procedure TtiTestCase.CheckFileContents(const AFileNameExpected,
+  AFileNameActual: string);
+var
+  LFileContentsExpected: string;
+  LFileContentsActual: string;
+begin
+  LFileContentsExpected:= tiFileToString(AFileNameExpected);
+  LFileContentsActual:= tiFileToString(AFileNameActual);
+  if Length(LFileContentsExpected) < 1024 then
+    CheckEquals(
+      LFileContentsExpected, LFileContentsActual,
+      Format('File "%s" contents <> "%s" contents', [AFileNameExpected, AFileNameActual]))
+  else
+    Check(
+      LFileContentsExpected = LFileContentsActual,
+      Format('File "%s" contents <> "%s" contents', [AFileNameExpected, AFileNameActual]));
+
+end;
+
+procedure TtiTestCase.CheckDirectoryTree(
+  const APathToExpected, APathToActual: string);
+var
+  LExpected: TStringList;
+  LActual: TStringList;
+  LFileNameExpected: string;
+  LFileNameActual: string;
+  LFileExt: string;
+  i: integer;
+begin
+  LExpected:= nil;
+  LActual:= nil;
+  try
+    LExpected:= TStringList.Create;
+    LActual:= TStringList.Create;
+
+    tiFilesToStringList(APathToExpected, '*.*', LExpected, true);
+    tiFilesToStringList(APathToActual, '*.*', LActual, true);
+
+    CheckEquals(LExpected.Count, LActual.Count, 'File Count');
+    for i := 0 to LExpected.Count-1 do
+    begin
+      LFileNameExpected:= LExpected.Strings[i];
+      LFileNameActual:= LActual.Strings[i];
+      CheckEquals(ExtractFileName(LFileNameExpected), ExtractFileName(LFileNameActual), 'File name');
+      LFileExt:= tiExtractExtension(LFileNameExpected);
+      if SameText(LFileExt, 'gif') then
+        CheckGIFFileContents(LFileNameExpected, LFileNameActual)
+      else
+        CheckFileContents(LFileNameExpected, LFileNameActual);
+    end;
+
+  finally
+    LExpected.Free;
+    LActual.Free;
+  end;
+end;
+
+procedure TtiTestCase.CheckBinaryFileContents(const AFileNameExpected,
+  AFileNameActual: string; const AStartPosition: integer = 0);
+var
+  LStreamExpected: TMemoryStream;
+  LStreamActual: TMemoryStream;
+  LMessage: string;
+begin
+  LMessage:= Format(
+    'Expected = "%s",' + CrLf + 'Actual = "%s',
+    [AFileNameExpected, AFileNameActual]);
+
+  LStreamExpected:= nil;
+  LStreamActual:= nil;
+  try
+    LStreamExpected:= TMemoryStream.Create;
+    LStreamActual:= TMemoryStream.Create;
+    LStreamExpected.LoadFromFile(AFileNameExpected);
+    LStreamActual.LoadFromFile(AFileNameActual);
+    CheckStreamContentsSame(LStreamExpected, LStreamActual, LMessage, AStartPosition);
+  finally
+    LStreamExpected.Free;
+    LStreamActual.Free;
+  end;
 end;
 
 procedure TtiTestCase.CheckDateTimeEquals(const AExpected, AActual: TDateTime; const AMessage: string = '');
@@ -576,6 +690,14 @@ procedure TtiTestCase.CheckFormattedMessage(const AFormat: string;
   const AMessage: string = '');
 begin
   CheckEquals(Format(AFormat, AArgs), AActual, AMessage);
+end;
+
+procedure TtiTestCase.CheckGIFFileContents(
+  const AFileNameExpected,  AFileNameActual: string);
+begin
+  // There can be noise somewhere in the first 792 bytes of a GIF.
+  // Not sure why.
+  CheckBinaryFileContents(AFileNameExpected, AFileNameActual, 791)
 end;
 
 procedure TtiTestCase.CheckINIFileEntry(const AExpected: string;
