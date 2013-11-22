@@ -540,7 +540,10 @@ begin
     begin
       LFileNameExpected:= LExpected.Strings[i];
       LFileNameActual:= LActual.Strings[i];
-      CheckEquals(ExtractFileName(LFileNameExpected), ExtractFileName(LFileNameActual), 'File name');
+      CheckEquals(
+        UpperCase(ExtractFileName(LFileNameExpected)),
+        UpperCase(ExtractFileName(LFileNameActual)),
+        'File name');
       LFileExt:= tiExtractExtension(LFileNameExpected);
       if SameText(LFileExt, 'gif') then
         CheckGIFFileContents(LFileNameExpected, LFileNameActual)
