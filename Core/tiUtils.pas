@@ -463,6 +463,8 @@ type
   function  tiBooleanToStr(     const AValue : boolean)  : string;
   // Convert a boolean to 'True' or 'False'
   function  tiBoolToStr(        const AValue : boolean)  : string;
+  // Convert a boolean to Y or N
+  function  tiBoolToYNString( const AValue : boolean)  : string;
   // Convert a string to a boolean
   function  tiStrToBool(const AValue : string): boolean;
 
@@ -1519,6 +1521,13 @@ begin
   result := tiBooleanToStr(AValue);
 end;
 
+function  tiBoolToYNString( const AValue : boolean)  : string;
+begin
+  if AValue then
+    result := 'Y'
+  else
+    result := 'N';
+end;
 
 function  tiStrToBool(const AValue : string): boolean;
 var
