@@ -166,25 +166,26 @@ end;
 function TtiGC.Add(const AValue: TObject): boolean;
 var
   i: integer;
-  duplicate: boolean;
+  isDuplicate: boolean;
 begin
-  duplicate := false;
+  isDuplicate := false;
   for i := 0 to FCount - 1 do
-    if FObjects[i] = AValue then duplicate := true;
-  if not duplicate then
+    if FObjects[i] = AValue then isDuplicate := true;
+  if not isDuplicate then
   begin
     CheckCapacity;
     FObjects[FCount] := AValue;
     Inc(FCount);
   end;
-  Result := not duplicate;
+  Result := not isDuplicate;
 end;
 
 destructor TtiGC.Destroy;
 var
   i: integer;
 begin
-  for i := 0 to FCount - 1 do
+  // Delete in reverse order of addition in case there are dependencies between items in GC
+  for i := FCount - 1 downto 0 do
    FObjects[i].Free;
  inherited;
 end;
@@ -215,7 +216,7 @@ end;
 
 procedure TtiGC.CheckCapacity;
 var
-  delta: Integer;
+  delta: integer;
 begin
   if FCount = FCapacity then
   begin
