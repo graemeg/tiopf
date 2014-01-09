@@ -174,6 +174,7 @@ type
     FOnFilter: TtiVTTVOnFilterDataEvent;
     FOnNodeCheckboxClick: TtiVTTVNodeCheckboxClickEvent;
     FOnGetImageIndex: TtiVTGetImageIndexEvent;
+    FShowEmptyRootNode: boolean;
 ///
     FpmiShowFind: TMenuItem;
     FSearching: boolean;
@@ -214,6 +215,7 @@ type
     procedure SelectObjectOrOwner(AValue: TtiObject);
     function  GetDefaultText: WideString;
     procedure SetDefaultText(const AValue: WideString);
+    procedure SetShowEmptyRootNode(const AValue: boolean);
 
   protected
     procedure SetEnabled(AValue: Boolean); override;
@@ -227,8 +229,10 @@ type
     procedure SetData(const AValue: TtiObject); virtual;
     procedure SetReadOnly(const AValue: boolean); virtual;
 
-    function  CalcIfNodeHasChildren(Node: PVirtualNode): Boolean;
-    function  CalcNodeChildren(Node: PVirtualNode): Integer;
+    function  CalcIfObjectHasChildren(AObject: TtiObject): Boolean;
+    function  CalcNodeChildren(AObject: TtiObject): Integer; overload;
+    function  CalcNodeChildren(Node: PVirtualNode): Integer; overload;
+    function  CalcNodeChildren(AObject: TtiObject; AChildList: TtiObjectList): Integer; overload;
     function  IsMappingForObject(AtiVTTVDataMapping: TtiVTTVDataMapping; AObj: TtiObject): Boolean;
     function  CalcMappingForObject(pObj: TtiObject): TtiVTTVDataMapping;
 ///
@@ -290,6 +294,7 @@ type
     property Images: TCustomImageList read GetImages write SetImages;
     property SelectedAddress: string read GetSelectedAddress write SetSelectedAddress;
     property TreeOptions: TStringTreeOptions read GetTreeOptions write SetTreeOptions;
+    property ShowEmptyRootNode: boolean read FShowEmptyRootNode write SetShowEmptyRootNode default true;
 
     property OnDblClick: TtiVTTVNodeEvent read FOnDblClick Write FOnDblClick;
     property OnFilter: TtiVTTVOnFilterDataEvent read FOnFilter write FOnFilter;
@@ -422,6 +427,7 @@ begin
   FVTDefaultDataMapping.ImageIndex := 0;
 
   FReadOnly := false;
+  FShowEmptyRootNode := true;
   SetButtonStyle(lvbsNormalButtons);
 end;
 
@@ -442,7 +448,12 @@ begin
 
   FData := AValue;
 
-  if  Assigned(FData) and (DataMappings.Count > 0) then
+  // We always have a single root node under which all other nodes appear. It
+  // doesn't need to be like this as the virtual treeview has it's own internal
+  // root node but can display many top level nodes without a single visible
+  // parent. Allow this some day...
+  if Assigned(FData) and (DataMappings.Count > 0) and
+     (FShowEmptyRootNode or CalcIfObjectHasChildren(FData)) then
     VT.RootNodeCount := 1 //FData --- probably should have a "ShowRootNode" property like the TTreeView.  ipk: See TODO below.
   else
     VT.RootNodeCount := 0;
@@ -1088,6 +1099,15 @@ begin
   end;
 end;
 
+procedure TtiVTTreeView.SetShowEmptyRootNode(const AValue: boolean);
+begin
+  if AValue <> FShowEmptyRootNode then
+  begin
+    FShowEmptyRootNode := AValue;
+    Refresh;
+  end;
+end;
+
 function TtiVTTreeView.GetOnKeyDown: TKeyEvent;
 begin
   result := VT.OnKeyDown;
@@ -1273,7 +1293,7 @@ begin
 
   SetObjectForNode(Node, LData);
 
-  LNodeHasChildren := CalcIfNodeHasChildren(Node);
+  LNodeHasChildren := CalcIfObjectHasChildren(LData);
 
   if LNodeHasChildren then
     Include(InitialStates, ivsHasChildren);
@@ -1290,14 +1310,23 @@ begin
       Node.CheckType := ctCheckBox;
 end;
 
-function TtiVTTreeView.CalcIfNodeHasChildren(Node: PVirtualNode): Boolean;
-begin
-  Result := CalcNodeChildren(Node) <> 0;  // TODO: Optimise this. Don't fill out the children here, just look for the first child, then return true
-end;
-
 procedure TtiVTTreeView.DoOnInitChildren(Sender: TBaseVirtualTree; Node: PVirtualNode; var ChildCount: Cardinal);
 begin
   ChildCount := CalcNodeChildren(Node);
+end;
+
+function TtiVTTreeView.CalcNodeChildren(AObject: TtiObject): Integer;
+var
+  LChildList: TtiObjectList;
+begin
+  LChildList := TtiObjectList.Create;
+  try
+    LChildList.OwnsObjects := False;
+    LChildList.AutoSetItemOwner := False;
+    Result := CalcNodeChildren(AObject, LChildList);
+  finally
+    LChildList.Free;
+  end;
 end;
 
 function TtiVTTreeView.CalcNodeChildren(Node: PVirtualNode): Integer;
@@ -1305,13 +1334,6 @@ var
   LNodeRec: PNodeDataRec;
   LObj: TtiObject;
   LChildList: TtiObjectList;
-  LPropList: TPropInfoArray;
-  LPropClass: TClass;
-  LPropIndex: Integer;
-
-  LCandidateList: TtiObjectList;
-  LCandidateIndex: Integer;
-  LCandidate: TtiObject;
 begin
 {
   A node can have the following children;
@@ -1330,43 +1352,106 @@ begin
   LChildList.Clear;
 
   LObj := LNodeRec.NodeData;
+  Result := CalcNodeChildren(LObj, LChildList);
+end;
 
-  if LObj is TtiObjectList then
+// Quickly determine if the given item in the tree has child items
+function TtiVTTreeView.CalcIfObjectHasChildren(AObject: TtiObject): Boolean;
+var
+  LPropList: TPropInfoArray;
+  LPropClass: TClass;
+  LPropIndex: Integer;
+
+  LCandidateList: TtiObjectList;
+  LCandidateIndex: Integer;
+  LCandidate: TtiObject;
+begin
+  Result := false;
+
+  if AObject is TtiObjectList then
   begin
-    for LCandidateIndex := 0 to Pred(TtiObjectList(LObj).Count) do
+    for LCandidateIndex := 0 to Pred(TtiObjectList(AObject).Count) do
     begin
-      LCandidate := TtiObjectList(LObj).Items[LCandidateIndex];
+      LCandidate := TtiObjectList(AObject).Items[LCandidateIndex];
       if Assigned(CalcMappingForObject(LCandidate)) and
          TestObjectAgainstFilter(LCandidate) then
-        LChildList.Add(LCandidate);
+        Exit(true); //==>
     end;
   end;
 
-  GetObjectPropInfos(LObj, LPropList);
+  GetObjectPropInfos(AObject, LPropList);
   for LPropIndex := 0 to High(LPropList) do
   begin
     LPropClass := GetObjectPropClass(LPropList[LPropIndex]);
     if LPropClass.InheritsFrom(TtiObjectList) then
     begin
-      LCandidateList := TtiObjectList(GetObjectProp(LObj, LPropList[LPropIndex]));
+      LCandidateList := TtiObjectList(GetObjectProp(AObject, LPropList[LPropIndex]));
       for LCandidateIndex := 0 to Pred(LCandidateList.Count) do
       begin
         LCandidate:= LCandidateList[LCandidateIndex];
         if Assigned(CalcMappingForObject(LCandidate)) and
            TestObjectAgainstFilter(LCandidate) then
-          LChildList.Add(LCandidate);
+          Exit(true); //==>
       end;
     end
     else if LPropClass.InheritsFrom(TtiObject) then
     begin
-      LCandidate := TtiObject(GetObjectProp(LObj, LPropList[LPropIndex]));
+      LCandidate := TtiObject(GetObjectProp(AObject, LPropList[LPropIndex]));
       if Assigned(CalcMappingForObject(LCandidate)) and
          TestObjectAgainstFilter(LCandidate) then
-        LChildList.Add(LCandidate);
+        Exit(true); //==>
+    end;
+  end;
+end;
+
+// Count the number of child items for the given item in the tree
+function TtiVTTreeView.CalcNodeChildren(AObject: TtiObject;
+  AChildList: TtiObjectList): Integer;
+var
+  LPropList: TPropInfoArray;
+  LPropClass: TClass;
+  LPropIndex: Integer;
+
+  LCandidateList: TtiObjectList;
+  LCandidateIndex: Integer;
+  LCandidate: TtiObject;
+begin
+  if AObject is TtiObjectList then
+  begin
+    for LCandidateIndex := 0 to Pred(TtiObjectList(AObject).Count) do
+    begin
+      LCandidate := TtiObjectList(AObject).Items[LCandidateIndex];
+      if Assigned(CalcMappingForObject(LCandidate)) and
+         TestObjectAgainstFilter(LCandidate) then
+        AChildList.Add(LCandidate);
     end;
   end;
 
-  Result := LChildList.Count;
+  GetObjectPropInfos(AObject, LPropList);
+  for LPropIndex := 0 to High(LPropList) do
+  begin
+    LPropClass := GetObjectPropClass(LPropList[LPropIndex]);
+    if LPropClass.InheritsFrom(TtiObjectList) then
+    begin
+      LCandidateList := TtiObjectList(GetObjectProp(AObject, LPropList[LPropIndex]));
+      for LCandidateIndex := 0 to Pred(LCandidateList.Count) do
+      begin
+        LCandidate:= LCandidateList[LCandidateIndex];
+        if Assigned(CalcMappingForObject(LCandidate)) and
+           TestObjectAgainstFilter(LCandidate) then
+          AChildList.Add(LCandidate);
+      end;
+    end
+    else if LPropClass.InheritsFrom(TtiObject) then
+    begin
+      LCandidate := TtiObject(GetObjectProp(AObject, LPropList[LPropIndex]));
+      if Assigned(CalcMappingForObject(LCandidate)) and
+         TestObjectAgainstFilter(LCandidate) then
+        AChildList.Add(LCandidate);
+    end;
+  end;
+
+  Result := AChildList.Count;
 end;
 
 procedure TtiVTTreeView.DoOnFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
