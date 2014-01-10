@@ -49,6 +49,7 @@ type
   public
     constructor Create(const AIncrement: integer = 4); virtual;
     procedure   Add(const AValue: TtiOID);
+    procedure   Clear;
     function    IndexOf(const AValue: TtiOID): Integer;
     function    Remove(const AValue: TtiOID): Integer;
     property    Items[const i: Integer]: TtiOID Read GetItems Write SetItems; default;
@@ -290,6 +291,13 @@ begin
 
   FOIDs[FSize] := AValue;
   Inc(FSize);
+end;
+
+
+procedure TtiOIDList.Clear;
+begin
+  SetLength(FOIDs, 0);
+  FSize := 0;
 end;
 
 
