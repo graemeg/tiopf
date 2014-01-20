@@ -114,7 +114,7 @@ begin
   d := tiGetCommonAppDataDir('');
   Result:= tiFixPathDelim(tiAddTrailingSlash(d) + 'tiopf\webserver.ini');
   if not DirectoryExists(d) then
-    ForceDirectories(d);
+    tiForceDirectories(d);
 end;
 
 function TtiWebServerConfig.INIFilePath: string;
