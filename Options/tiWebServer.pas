@@ -1128,7 +1128,7 @@ type
 
   constructor TTestExceptionThread.Create(ASuspended: boolean);
   begin
-    inherited;
+    inherited Create(ASuspended);
     FreeOnTerminate:= True;
   end;
 
@@ -1249,7 +1249,7 @@ begin
         begin
           tiFileToStream(LContentFileName, AResponse);
           tiDeleteFile(LContentFileName);
-        end
+        end;
         // else empty response
       end
       else

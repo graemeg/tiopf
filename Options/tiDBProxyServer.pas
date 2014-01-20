@@ -185,8 +185,8 @@ procedure TtiDBPS_TestAlive1.Execute(
   var   AResponseCode: Integer;
   const AResponseInfo: TIdHTTPResponseInfo);
 var
-  lResult  : string;
-  lDBConnectionName : string;
+  LResult: string;
+  lDBConnectionName: string;
   LAppServerVersion: TtiAppServerVersionAbs;
   LDatabase: TtiDatabase;
 begin
@@ -208,7 +208,7 @@ begin
     end;
     LResult:= LAppServerVersion.AsString;
   finally
-   LAppServerVersion.Free;
+    LAppServerVersion.Free;
   end;
   tiStringToStream(LResult, AResponse);
 end;

@@ -212,7 +212,7 @@ type
   procedure tiSetFileReadOnly(AFileName: string; AReadOnly: boolean);
   // Is a file's readonly attribute set?
   function  tiIsFileReadOnly(AValue: string): boolean;
-  // Copy all the directories, starting at pStrStartDir to the stringList slTree
+  // Copy all the directories, starting at pStrStartDir to the StringList slTree
   procedure tiDirectoryTreeToStringList(const AStartDir: string; const ADirList: TStringList; ARecurse: boolean);
   // Copy all the files, from the directory pStrStartDir, matching the wildcard pStrWildCard
   // to the stringList slResult
@@ -1351,7 +1351,7 @@ var
   {$ENDIF}
 begin
 {$IFNDEF FPC}
-  copyFile(pChar(AFrom), pChar(ATo), false);
+  CopyFile(pChar(AFrom), pChar(ATo), false);
   LResultCode := getLastError();
 {$ELSE}
   if fpcCopyFile(AFrom, ATo) then
