@@ -46,8 +46,11 @@ type
     function    GetCount: Integer;
     procedure SetParent(const AValue: TtiBaseObject);
     procedure Delete(const i: integer);
+    function GetAsString: string;
+    procedure SetAsString(const AValue: string);
   public
     constructor Create(const AIncrement: integer = 4); virtual;
+    procedure   Assign(const ASource: TtiOIDList);
     procedure   Add(const AValue: TtiOID);
     procedure   Clear;
     function    IndexOf(const AValue: TtiOID): Integer;
@@ -55,6 +58,7 @@ type
     property    Items[const i: Integer]: TtiOID Read GetItems Write SetItems; default;
     property    Count: Integer Read GetCount;
     property    Parent: TtiBaseObject read FParent write SetParent;
+    property    AsString: string read GetAsString write SetAsString;
   end;
 
   function OIDToString(AOID : TtiOID): string;
@@ -294,6 +298,15 @@ begin
 end;
 
 
+procedure TtiOIDList.Assign(const ASource: TtiOIDList);
+var
+  i: Integer;
+begin
+  Clear;
+  for i := 0 to ASource.Count - 1 do
+    Add(ASource.Items[i]);
+end;
+
 procedure TtiOIDList.Clear;
 begin
   SetLength(FOIDs, 0);
@@ -322,6 +335,21 @@ begin
 
 end;
 
+function TtiOIDList.GetAsString: string;
+var
+  i: integer;
+  LOIDs: TStringList;
+begin
+  LOIDs := TStringList.Create;
+  try
+    for i := 0 to Count - 1 do
+      LOIDs.Add(IntToStr(Items[i]));
+    result := LOIDs.CommaText;
+  finally
+    LOIDs.Free;
+  end;
+end;
+
 function TtiOIDList.GetCount: Integer;
 begin
   Result := FSize;
@@ -330,7 +358,7 @@ end;
 
 function TtiOIDList.GetItems(const i: Integer): TtiOID;
 begin
-  Assert( (i > 0) and (i < FSize) );
+  Assert( (i >= 0) and (i < FSize) );
   Result := FOIDs[i];
 end;
 
@@ -360,6 +388,25 @@ begin
       [ClassName, AValue]);
   Delete(LIndex);
   Result:= LIndex;
+end;
+
+
+procedure TtiOIDList.SetAsString(const AValue: string);
+var
+  i: integer;
+  LOIDs: TStringList;
+  LOID: TtiOID;
+begin
+  Clear;
+  LOIDs := TStringList.Create;
+  try
+    LOIDs.CommaText := AValue;
+    for i := 0 to LOIDs.Count - 1 do
+      if TryStrToInt64(LOIDs.Strings[i], LOID) and (LOID <> cNullOIDInteger) then
+        Add(LOID);
+  finally
+    LOIDs.Free;
+  end;
 end;
 
 
