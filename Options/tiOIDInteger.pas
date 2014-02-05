@@ -75,6 +75,7 @@ type
     function CanSupportMultiUser: boolean;
   end;
 
+  { This visitor is use for SQL and non-SQL persistence layers. }
   TVisDBNextOIDAmblerRead = class(TVisDBNextOIDAmbler)
   protected
     function AcceptVisitor: boolean; override;
@@ -89,12 +90,13 @@ type
     procedure Execute(const AData: TtiVisited); override;
   end;
 
-  TVisDBNextOIDSql = class(TVisDBNextOIDAmbler)
+  TVisDBNextOIDSqlAmblerUpdate = class(TVisDBNextOIDAmbler)
   protected
     function AcceptVisitor: boolean; override;
   public
     procedure Execute(const AData: TtiVisited); override;
   end;
+
 
 implementation
 
@@ -103,6 +105,7 @@ uses
   tiOPFManager,
   tiConstants,
   tiPersistenceLayers,
+  tiLog,
   SysUtils;
 
 { TOIDInteger }
@@ -273,12 +276,11 @@ end;
 
 function TVisDBNextOIDAmblerRead.AcceptVisitor: boolean;
 begin
-  Result := (Visited is TNextOIDData) and not CanSupportMultiUser;
+  Result := (Visited is TNextOIDData);
 end;
 
 procedure TVisDBNextOIDAmblerRead.Execute(const AData: TtiVisited);
 begin
-
   if GTIOPFManager.Terminated then
     Exit; //==>
 
@@ -323,16 +325,17 @@ begin
   end;
 end;
 
-{ TVisDBNextOIDSql }
+{ TVisDBNextOIDSqlAmblerUpdate }
 
-function TVisDBNextOIDSql.AcceptVisitor: boolean;
+function TVisDBNextOIDSqlAmblerUpdate.AcceptVisitor: boolean;
 begin
   Result := (Visited is TNextOIDData) and CanSupportMultiUser;
 end;
 
-procedure TVisDBNextOIDSql.Execute(const AData: TtiVisited);
+procedure TVisDBNextOIDSqlAmblerUpdate.Execute(const AData: TtiVisited);
 var
   i: integer;
+  lParams: TtiQueryParams;
 begin
   if GTIOPFManager.Terminated then
     Exit;
@@ -342,22 +345,27 @@ begin
   if not AcceptVisitor then
     Exit;
 
-  Query.SQL.Text := 'update Next_OID set OID = OID + 1';
-  for i := 0 to cMaxRetries do
-    try
-      Query.ExecSQL;
-      break;
-    except
-      // database may be locked, wait and try again later
-      Sleep(50);
-    end;
-
-  Query.SelectRow('Next_OID', nil);
   try
-    TNextOIDData(Visited).NextOID := Query.FieldAsInteger['OID'] - 1;
+    lParams := TtiQueryParams.Create;
+    lParams.SetValueAsInteger('OID', integer(TNextOIDData(Visited).NextOID + 1));
+
+    for i := 0 to cMaxRetries do
+    begin
+      try
+        Query.UpdateRow('Next_OID', lParams, nil);
+        break;
+      except
+        on e: exception do
+        begin
+          // database may be locked, wait and try again later
+          LogError(e.Message, False);
+          Sleep(50);
+        end;
+      end; { try/except }
+    end; { for }
   finally
-    Query.Close;
-  end;
+    lParams.Free;
+  end; { try/finally }
 end;
 
 { TVisDBNextOIDAmbler }
@@ -379,6 +387,6 @@ end;
 initialization
   GTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerRead);
   GTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerUpdate);
-  GTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDSql);
+  GTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDSqlAmblerUpdate);
 
 end.
