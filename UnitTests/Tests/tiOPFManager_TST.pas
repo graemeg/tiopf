@@ -1,4 +1,4 @@
-unit TiOPFManager_TST;
+unit tiOPFManager_TST;
 
 interface
 uses

@@ -59,11 +59,11 @@ uses
   {$IFDEF MSWINDOWS}
   ,tiWin32_TST
   ,tiGUIUtils_TST
-  ,tiOPFManager_TST
     {$IFNDEF FPC}
   ,tiDataSet_TST  // tiDataset not FPC ready yet
     {$ENDIF FPC}
   {$ENDIF MSWINDOWS}
+  ,tiOPFManager_TST
   ,tiDataBuffer_TST
   ,tiTextParser_TST
   ,tiTextParserStructCSV_TST
@@ -148,11 +148,11 @@ begin
   {$IFDEF MSWINDOWS}
   tiWin32_TST.RegisterTests;
   tiGUIUtils_TST.RegisterTests;
-  TiOPFManager_TST.RegisterTests;
   {$IFNDEF FPC}
   tiDataSet_TST.RegisterTests;
   {$ENDIF}
   {$ENDIF}
+  tiOPFManager_TST.RegisterTests;
   tiDataBuffer_TST.RegisterTests;
   tiTextParser_TST.RegisterTests;
   tiTextParserStructCSV_TST.RegisterTests;
