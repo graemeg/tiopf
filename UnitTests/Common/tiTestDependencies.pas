@@ -58,7 +58,7 @@ uses
   ,tiDataSet_TST  // tiDataset not FPC ready yet
     {$ENDIF FPC}
   {$ENDIF MSWINDOWS}
-  ,TiOPFManager_TST   // don't change the case, Linux is case sensitive, and that is how the file is named
+  ,tiOPFManager_TST
   ,tiDataBuffer_TST
   ,tiTextParser_TST
   ,tiTextParserStructCSV_TST
@@ -147,7 +147,7 @@ begin
   tiDataSet_TST.RegisterTests;
   {$ENDIF}
   {$ENDIF}
-  TiOPFManager_TST.RegisterTests;
+  tiOPFManager_TST.RegisterTests;
   tiDataBuffer_TST.RegisterTests;
   tiTextParser_TST.RegisterTests;
   tiTextParserStructCSV_TST.RegisterTests;
