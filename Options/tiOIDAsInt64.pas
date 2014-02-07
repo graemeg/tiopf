@@ -395,6 +395,7 @@ procedure TtiOIDList.SetAsString(const AValue: string);
 var
   i: integer;
   LOIDs: TStringList;
+  LOIDStr: string;
   LOID: TtiOID;
 begin
   Clear;
@@ -402,8 +403,11 @@ begin
   try
     LOIDs.CommaText := AValue;
     for i := 0 to LOIDs.Count - 1 do
-      if TryStrToInt64(LOIDs.Strings[i], LOID) and (LOID <> cNullOIDInteger) then
+    begin
+      LOIDStr := Trim(LOIDs.Strings[i]);
+      if (LOIDStr <> '') and TryStrToInt64(LOIDStr, LOID) then
         Add(LOID);
+    end;
   finally
     LOIDs.Free;
   end;
