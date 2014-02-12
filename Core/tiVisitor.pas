@@ -116,6 +116,8 @@ type
       Object instances exposed as published properties will be touched by the 
       TtiVisitor. Objects contained in a published TList will also be touched.}
   TtiVisited = class(TtiBaseObject)
+  private
+    FParentVisited: TtiVisited;
   protected
     {** @exclude}
     function GetCaption: string; virtual;
@@ -185,6 +187,7 @@ type
     procedure FindAllByClassType(const AClass: TtiVisitedClass; const AList: TList);
     {** @exclude}
     property Terminated: boolean read GetTerminated;
+    property ParentVisited: TtiVisited read FParentVisited;
   end;
 
   {** @exclude}
@@ -429,25 +432,30 @@ begin
     CheckContinueVisitingIfTopDownRecurse(AVisitor) then
   begin
     LIterationDepth := AIterationDepth + 1;
-    if AVisitor.AcceptVisitor(Self) then
-      ATouchMethod(Self, AVisitor, ATouchedByVisitorList, LIterationDepth);
-    LClassPropNames := TStringList.Create;
+    FParentVisited := ADerivedParent;
     try
-      tiGetPropertyNames(Self, LClassPropNames, [tkClass]);
-      i := 0;
-      while (i <= LClassPropNames.Count - 1) do
-      begin
-        LCandidate := GetObjectProp(Self, LClassPropNames.Strings[i]);
-        if (LCandidate is TtiVisited) then
-          (LCandidate as TtiVisited).IterateRecurse(AVisitor,
-            Self, ATouchedByVisitorList, ATouchMethod, LIterationDepth)
-        else if (LCandidate is TList) then
-          IterateOverList(AVisitor, (LCandidate as TList), Self,
-            ATouchedByVisitorList, ATouchMethod, LIterationDepth);
-        Inc(i);
+      if AVisitor.AcceptVisitor(Self) then
+        ATouchMethod(Self, AVisitor, ATouchedByVisitorList, LIterationDepth);
+      LClassPropNames := TStringList.Create;
+      try
+        tiGetPropertyNames(Self, LClassPropNames, [tkClass]);
+        i := 0;
+        while (i <= LClassPropNames.Count - 1) do
+        begin
+          LCandidate := GetObjectProp(Self, LClassPropNames.Strings[i]);
+          if (LCandidate is TtiVisited) then
+            (LCandidate as TtiVisited).IterateRecurse(AVisitor,
+              Self, ATouchedByVisitorList, ATouchMethod, LIterationDepth)
+          else if (LCandidate is TList) then
+            IterateOverList(AVisitor, (LCandidate as TList), Self,
+              ATouchedByVisitorList, ATouchMethod, LIterationDepth);
+          Inc(i);
+        end;
+      finally
+        LClassPropNames.Free;
       end;
     finally
-      LClassPropNames.Free;
+      FParentVisited := nil;
     end;
   end;
 end;
