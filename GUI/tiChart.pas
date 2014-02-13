@@ -212,29 +212,60 @@ type
   end;
 
   // Form to display a legend (a small graphic of the seris - with it's title)
-  TtiChartLegendForm = class(TCustomForm)
-  private
+  TtiChartLegendFormAbs = class(TCustomForm)
+  protected
     FChart: TtiTimeSeriesChart;
-    FList: TObjectList;
     FPopupMenu : TPopupMenu;
     FpmiSelectAll: TMenuItem;
     FpmiSelectNone: TMenuItem;
-    function GetSeriesVisible(const ASeriesName: string): boolean;
-    procedure SetSeriesVisible(const ASeriesName: string; const AValue: boolean);
+    function GetSeriesVisible(const ASeriesName: string): boolean; virtual; abstract;
+    procedure SetSeriesVisible(const ASeriesName: string; const AValue: boolean);  virtual; abstract;
+
+    procedure DoSelectAll(Sender: TObject);  virtual; abstract;
+    procedure DoSelectNone(Sender: TObject);  virtual; abstract;
+  public
+    Constructor CreateNew(const AChart: TtiTimeSeriesChart); reintroduce; overload;
+    destructor Destroy; override;
+    procedure ClearSeries; virtual; abstract;
+    procedure CreateSeries; virtual; abstract;
+    property  SeriesVisible[const ASeriesName: string]: boolean read GetSeriesVisible write SetSeriesVisible;
+    procedure SetSeriesVisibleByCaption(const ASeriesTitle: string; const AVisible: Boolean);  virtual; abstract;
+    function IsSeriesVisibleByCaption(const ASeriesTitle: string): boolean; virtual; abstract;
+  end;
+
+  TtiChartLegendForm = class(TtiChartLegendFormAbs)
+  private
+    FList: TObjectList;
     function FindBySeriesName(const ASeriesName: string): TtiChartLegendItem;
     function FindBySeriesTitle(const ASeriesTitle: string): TtiChartLegendItem;
 
-    procedure DoSelectAll(Sender: TObject);
-    procedure DoSelectNone(Sender: TObject);
+  protected
+    function GetSeriesVisible(const ASeriesName: string): boolean; override;
+    procedure SetSeriesVisible(const ASeriesName: string; const AValue: boolean); override;
+    procedure DoSelectAll(Sender: TObject); override;
+    procedure DoSelectNone(Sender: TObject); override;
   public
-    Constructor CreateNew(const AChartLegendPanel : TtiChartLegendPanel;
-      const AChart: TtiTimeSeriesChart); reintroduce; overload;
+    Constructor CreateNew(const AChart: TtiTimeSeriesChart);
     destructor Destroy; override;
-    procedure ClearSeries;
-    procedure CreateSeries;
-    property  SeriesVisible[const ASeriesName: string]: boolean read GetSeriesVisible write SetSeriesVisible;
-    procedure SetSeriesVisibleByCaption(const ASeriesTitle: string; const AVisible: Boolean);
-    function IsSeriesVisibleByCaption(const ASeriesTitle: string): boolean;
+    procedure ClearSeries; override;
+    procedure CreateSeries; override;
+    procedure SetSeriesVisibleByCaption(const ASeriesTitle: string; const AVisible: Boolean); override;
+    function IsSeriesVisibleByCaption(const ASeriesTitle: string): boolean; override;
+  end;
+
+  TtiChartLegendTreeViewForm = class(TtiChartLegendFormAbs)
+  protected
+    function GetSeriesVisible(const ASeriesName: string): boolean; override;
+    procedure SetSeriesVisible(const ASeriesName: string; const AValue: boolean); override;
+    procedure DoSelectAll(Sender: TObject); override;
+    procedure DoSelectNone(Sender: TObject); override;
+  public
+    Constructor CreateNew(const AChart: TtiTimeSeriesChart);
+    destructor Destroy; override;
+    procedure ClearSeries; override;
+    procedure CreateSeries; override;
+    procedure SetSeriesVisibleByCaption(const ASeriesTitle: string; const AVisible: Boolean); override;
+    function IsSeriesVisibleByCaption(const ASeriesTitle: string): boolean; override;
   end;
 
   TtiChartWithLegendPanel = class(TtiClearPanel)
@@ -1162,7 +1193,7 @@ begin
   FUserPanelTabSheet.PageControl := FPageControl;
   FPageControl.ActivePageIndex := 0;
 
-  FChartLegendForm := TtiChartLegendForm.CreateNew(Self, FParenttiChart);
+  FChartLegendForm := TtiChartLegendForm.CreateNew(FParenttiChart);
   FChartLegendForm.Name := 'FChartLegendForm';
   FChartLegendForm.Caption := 'Legend';
   FChartLegendForm.Parent := FLegendTabSheet;
@@ -1225,47 +1256,46 @@ end;
 //function TtiChartLegendForm.CloseQuery: Boolean;
 //begin
 //  result := false;
-//  
+//
 //end;
 
-constructor TtiChartLegendForm.CreateNew(const AChartLegendPanel : TtiChartLegendPanel;
-      const AChart: TtiTimeSeriesChart);
+constructor TtiChartLegendForm.CreateNew(const AChart: TtiTimeSeriesChart);
 begin
-  inherited CreateNew(Owner);
-//  Parent := Owner as TWinControl;
-  BorderStyle := bsNone;
-  DragKind  :=	dkDrag;
-  DragMode := dmManual;
-  FChart := AChart;
-  Color := clWhite;
-  Width := 0;
-  Visible:= True;
-  self.AutoScroll := true;
-  self.VertScrollBar.Tracking := true; 
+  inherited CreateNew(AChart);
+////  Parent := Owner as TWinControl;
+//  BorderStyle := bsNone;
+//  DragKind  :=	dkDrag;
+//  DragMode := dmManual;
+//  FChart := AChart;
+//  Color := clWhite;
+//  Width := 0;
+//  Visible:= True;
+//  self.AutoScroll := true;
+//  self.VertScrollBar.Tracking := true;
   FList:= TObjectList.Create(False);
-
-  FpmiSelectAll := TMenuItem.Create(self);
-  FpmiSelectAll.Caption := 'Select all';
-  FpmiSelectAll.OnClick := DoSelectAll;
-  FpmiSelectNone := TMenuItem.Create(self);
-  FpmiSelectNone.Caption := 'Select none';
-  FpmiSelectNone.OnClick := DoSelectNone;
-
-  FPopupMenu := TPopupMenu.Create(self);
-  with FPopupMenu do
-  begin
-    FPopupMenu.Items.Add(FpmiSelectAll);
-    FPopupMenu.Items.Add(FpmiSelectNone);
-  end;
-  PopupMenu := FPopupMenu;
+//
+//  FpmiSelectAll := TMenuItem.Create(self);
+//  FpmiSelectAll.Caption := 'Select all';
+//  FpmiSelectAll.OnClick := DoSelectAll;
+//  FpmiSelectNone := TMenuItem.Create(self);
+//  FpmiSelectNone.Caption := 'Select none';
+//  FpmiSelectNone.OnClick := DoSelectNone;
+//
+//  FPopupMenu := TPopupMenu.Create(self);
+//  with FPopupMenu do
+//  begin
+//    FPopupMenu.Items.Add(FpmiSelectAll);
+//    FPopupMenu.Items.Add(FpmiSelectNone);
+//  end;
+//  PopupMenu := FPopupMenu;
 end;
 
 destructor TtiChartLegendForm.Destroy;
 begin
   FList.Free;
-  FpmiSelectNone.Free;
-  FpmiSelectAll.Free;
-  FPopupMenu.Free;
+//  FpmiSelectNone.Free;
+//  FpmiSelectAll.Free;
+//  FPopupMenu.Free;
   inherited;
 end;
 
@@ -4222,6 +4252,104 @@ begin
   finally
     Canvas.Pen.Color := lColor;
   end;
+end;
+
+{ TtiChartLegendFormAbs }
+
+constructor TtiChartLegendFormAbs.CreateNew(const AChart: TtiTimeSeriesChart);
+begin
+  inherited CreateNew(Owner);
+//  Parent := Owner as TWinControl;
+  BorderStyle := bsNone;
+  DragKind  :=	dkDrag;
+  DragMode := dmManual;
+  FChart := AChart;
+  Color := clWhite;
+  Width := 0;
+  Visible:= True;
+  self.AutoScroll := true;
+  self.VertScrollBar.Tracking := true;
+
+  FpmiSelectAll := TMenuItem.Create(self);
+  FpmiSelectAll.Caption := 'Select all';
+  FpmiSelectAll.OnClick := DoSelectAll;
+  FpmiSelectNone := TMenuItem.Create(self);
+  FpmiSelectNone.Caption := 'Select none';
+  FpmiSelectNone.OnClick := DoSelectNone;
+
+  FPopupMenu := TPopupMenu.Create(self);
+  with FPopupMenu do
+  begin
+    FPopupMenu.Items.Add(FpmiSelectAll);
+    FPopupMenu.Items.Add(FpmiSelectNone);
+  end;
+  PopupMenu := FPopupMenu;
+end;
+
+destructor TtiChartLegendFormAbs.Destroy;
+begin
+  FpmiSelectNone.Free;
+  FpmiSelectAll.Free;
+  FPopupMenu.Free;
+  inherited;
+end;
+
+{ TtiChartLegendTreeViewForm }
+
+procedure TtiChartLegendTreeViewForm.ClearSeries;
+begin
+
+end;
+
+constructor TtiChartLegendTreeViewForm.CreateNew(
+  const AChart: TtiTimeSeriesChart);
+begin
+
+end;
+
+procedure TtiChartLegendTreeViewForm.CreateSeries;
+begin
+
+end;
+
+destructor TtiChartLegendTreeViewForm.Destroy;
+begin
+
+  inherited;
+end;
+
+procedure TtiChartLegendTreeViewForm.DoSelectAll(Sender: TObject);
+begin
+
+end;
+
+procedure TtiChartLegendTreeViewForm.DoSelectNone(Sender: TObject);
+begin
+
+end;
+
+function TtiChartLegendTreeViewForm.GetSeriesVisible(
+  const ASeriesName: string): boolean;
+begin
+
+end;
+
+function TtiChartLegendTreeViewForm.IsSeriesVisibleByCaption(
+  const ASeriesTitle: string): boolean;
+begin
+
+end;
+
+procedure TtiChartLegendTreeViewForm.SetSeriesVisible(const ASeriesName: string;
+  const AValue: boolean);
+begin
+
+end;
+
+procedure TtiChartLegendTreeViewForm.SetSeriesVisibleByCaption(
+  const ASeriesTitle: string; const AVisible: Boolean);
+begin
+
 end;
 
 end.
