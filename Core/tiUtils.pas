@@ -493,7 +493,8 @@ type
   // Simple pascal call to ShellExecute
   function tiShellExecute(const AEXE : string;
                            const AParameters : string = '';
-                           const AWinState : integer = SW_SHOWNORMAL): integer;
+                           const AWinState : integer = SW_SHOWNORMAL;
+                           const AOperation: string = ''): integer;
   procedure tiOpenFile(const AFileName: string);
 {$ENDIF MSWINDOWS}
   // Run an EXE and wait for it to finish

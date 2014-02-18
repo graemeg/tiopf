@@ -46,23 +46,25 @@ end;
 
 function tiShellExecute(const AEXE : string;
                          const AParameters : string = '';
-                         const AWinState : integer = SW_SHOWNORMAL): integer;
+                         const AWinState : integer = SW_SHOWNORMAL;
+                         const AOperation: string = ''): integer;
 var
-  lFileName  : array[0..255] of char;
-  lParameters : array[0..255] of char;
-  lHandle : THandle;
+  LFileName  : array[0..255] of char;
+  LParameters : array[0..255] of char;
+  LOperation : array[0..255] of char;
+  LHandle : THandle;
 begin;
-
-  strPCopy(lFileName,   AEXE);
-  strPCopy(lParameters, AParameters);
+  strPCopy(LFileName,   AEXE);
+  strPCopy(LParameters, AParameters);
+  strPCopy(LOperation, AOperation);
 
   // Screen.ActiveForm.Handle is not thread safe
-  //lHandle := screen.activeForm.handle;
-  lHandle := 0;
-  result := _tiShellExecute(lHandle,
-                             nil,
-                             lFileName,
-                             lParameters,
+  //LHandle := screen.activeForm.handle;
+  LHandle := 0;
+  result := _tiShellExecute(LHandle,
+                             LOperation,
+                             LFileName,
+                             LParameters,
                              nil,
                              AWinState);
 end;
