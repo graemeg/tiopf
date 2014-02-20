@@ -548,6 +548,7 @@ type
     procedure SetView3D(const AValue: Boolean);
     procedure SetVisibleSeriesAsString(const AValue: string);
     function  GetVisibleSeriesAsString: string;
+    function  GetVisibleSeriesCount: integer;
     procedure ShowDataPointHint;
 //    procedure SnapEditDialogToButton(pForm: TForm; pSender: TObject);
     procedure Zoom(const AZoomPercent: double);
@@ -634,6 +635,7 @@ public
         SetTimeSeriesChart;
     property VisibleSeriesAsString: string read GetVisibleSeriesAsString write
         SetVisibleSeriesAsString;
+    property VisibleSeriesCount: integer read GetVisibleSeriesCount;
     property XDataValueUnderMouse: Real read FXDataValueUnderMouse write
         FXDataValueUnderMouse;
     property XValueUnderMouse: Real read FXValueUnderMouse write
@@ -3120,6 +3122,16 @@ begin
   finally
     LStringList.Free;
   end;
+end;
+
+function TtiTimeSeriesChart.GetVisibleSeriesCount: integer;
+var
+  i: Integer;
+begin
+  result := 0;
+  for i:= 0 to FChart.SeriesCount - 1 do
+    if FChart.Series[i].Visible then
+      Inc(result);
 end;
 
 function TtiTimeSeriesChart.GetVisiblesSeriesMaxX: real;
