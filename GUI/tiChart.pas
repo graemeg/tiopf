@@ -8,7 +8,10 @@ uses
   Classes, Controls, Contnrs, Forms, Graphics, Menus, Series, Types, StdCtrls,
   ExtCtrls, Grids,
   TeeProcs, TeEngine, Chart, Tabs, DockTabSet, ComCtrls,
-  tiBaseObject, tiObject, tiSpeedButton, tiRoundedPanel, tiResources, tiPerAwareCtrls;
+  tiBaseObject, tiObject, tiSpeedButton, tiRoundedPanel, tiResources, tiPerAwareCtrls
+//  ,tiVirtualTrees
+  ,tiVTTreeView
+;
 
 const
   cZoomPercent = 10;
@@ -254,6 +257,8 @@ type
   end;
 
   TtiChartLegendTreeViewForm = class(TtiChartLegendFormAbs)
+  private
+    FTreeView: TtiVTTreeView;
   protected
     function GetSeriesVisible(const ASeriesName: string): boolean; override;
     procedure SetSeriesVisible(const ASeriesName: string; const AValue: boolean); override;
@@ -261,7 +266,6 @@ type
     procedure DoSelectNone(Sender: TObject); override;
   public
     Constructor CreateNew(const AChart: TtiTimeSeriesChart);
-    destructor Destroy; override;
     procedure ClearSeries; override;
     procedure CreateSeries; override;
     procedure SetSeriesVisibleByCaption(const ASeriesTitle: string; const AVisible: Boolean); override;
@@ -1264,40 +1268,12 @@ end;
 constructor TtiChartLegendForm.CreateNew(const AChart: TtiTimeSeriesChart);
 begin
   inherited CreateNew(AChart);
-////  Parent := Owner as TWinControl;
-//  BorderStyle := bsNone;
-//  DragKind  :=	dkDrag;
-//  DragMode := dmManual;
-//  FChart := AChart;
-//  Color := clWhite;
-//  Width := 0;
-//  Visible:= True;
-//  self.AutoScroll := true;
-//  self.VertScrollBar.Tracking := true;
   FList:= TObjectList.Create(False);
-//
-//  FpmiSelectAll := TMenuItem.Create(self);
-//  FpmiSelectAll.Caption := 'Select all';
-//  FpmiSelectAll.OnClick := DoSelectAll;
-//  FpmiSelectNone := TMenuItem.Create(self);
-//  FpmiSelectNone.Caption := 'Select none';
-//  FpmiSelectNone.OnClick := DoSelectNone;
-//
-//  FPopupMenu := TPopupMenu.Create(self);
-//  with FPopupMenu do
-//  begin
-//    FPopupMenu.Items.Add(FpmiSelectAll);
-//    FPopupMenu.Items.Add(FpmiSelectNone);
-//  end;
-//  PopupMenu := FPopupMenu;
 end;
 
 destructor TtiChartLegendForm.Destroy;
 begin
   FList.Free;
-//  FpmiSelectNone.Free;
-//  FpmiSelectAll.Free;
-//  FPopupMenu.Free;
   inherited;
 end;
 
@@ -4316,18 +4292,18 @@ end;
 constructor TtiChartLegendTreeViewForm.CreateNew(
   const AChart: TtiTimeSeriesChart);
 begin
-
+  inherited CreateNew(AChart);
+  FTreeView := TtiVTTreeView.Create(self);
+//  if Assigned(Parent) then
+//    Self.Name := tiGetUniqueComponentNameFromParent(Parent, 'TreeView');
+//  Align := alClient;
+//  BevelOuter := bvNone;
+//  Self.Caption := '';
 end;
 
 procedure TtiChartLegendTreeViewForm.CreateSeries;
 begin
 
-end;
-
-destructor TtiChartLegendTreeViewForm.Destroy;
-begin
-
-  inherited;
 end;
 
 procedure TtiChartLegendTreeViewForm.DoSelectAll(Sender: TObject);
