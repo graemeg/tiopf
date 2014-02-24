@@ -1464,6 +1464,28 @@ var
   LVal2: Variant;
   LColumn: TtiVTColumn;
   LDerived: Boolean;
+
+  function _DerivedTextToVariant(const AVal: string; const ADataType: TvtTypeKind): Variant;
+  begin
+    // It is better to compare using the actual derived column data type
+    // so that numbers etc are sorted correctly. This won't work if the
+    // derived text is formatted in such a way as to make it incompatible
+    // with data type conversion
+    if AVal = '' then
+      result := varNull;
+    case ADataType of
+      vttkString:   result := AVal;
+      vttkInt:      if AVal <> '' then result := StrToInt64Def(AVal, 0);
+      vttkFloat:    if AVal <> '' then result := StrToFloatDef(AVal, 0.0);
+      vttkDate:     if AVal <> '' then result := StrToDateDef(AVal, 0.0);
+      vttkDateTime: if AVal <> '' then result := StrToDateTimeDef(AVal, 0.0);
+      vttkTime:     if AVal <> '' then result := StrToTimeDef(AVal, 0.0);
+      vttkCurrency: if AVal <> '' then result := StrToCurrDef(AVal, 0.0);
+    else
+      raise EtiOPFProgrammerException.CreateFmt('Invalid data type=%d', [Ord(ADataType)]);
+    end
+  end;
+
 begin
   Assert(Assigned(AOrder), 'AOrder must be assigned');
   Assert(AData1.TestValid(TtiObject), CTIErrorInvalidObject);
@@ -1484,8 +1506,8 @@ begin
   if LDerived then
   begin
     // Derived column - call event hander to get values
-    LVal1 := GetTextFromObject(AData1, LColumn.Index);
-    LVal2 := GetTextFromObject(AData2, LColumn.Index);
+    LVal1 := _DerivedTextToVariant(GetTextFromObject(AData1, LColumn.Index), LColumn.DataType);
+    LVal2 := _DerivedTextToVariant(GetTextFromObject(AData2, LColumn.Index), LColumn.DataType);
   end
   else
   begin
@@ -1500,7 +1522,8 @@ begin
   if VarIsNull(LVal2) then
     _DoRaiseException(AOrder.FieldName, AData2.ClassName);
 
-  if LDerived or (AData1.PropType(AOrder.FieldName) = tiTKString) then
+  if (LColumn.DataType = vttkString) or
+     ((not LDerived) and (AData1.PropType(AOrder.FieldName) = tiTKString)) then
      Result := AnsiCompareText(LVal1, LVal2)
   else begin
     if LVal1 < LVal2 then
