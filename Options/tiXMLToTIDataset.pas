@@ -104,6 +104,8 @@ type
 
   // Provides Write only access to a tiOPF XML file
   TtiDataBufferToXMLWriter = class(TtiBaseObject)
+  private const
+    CRowCapacity = 200;
   private
     FState : TtiXMLWriterState;
     FRow : TStringBuilder;
@@ -746,7 +748,7 @@ begin
     raise EtiOPFProgrammerException.Create(cErrorInvalidXMLWriterState);
   end;
   FPreSizedStream.Write(ls + FXMLTags.RowStart);
-  FRow.Clear;
+  FRow.Length := 0; // Retain capacity for performance
   FState := xwsRow;
   FCellIndex:= 0;
 end;
@@ -1019,7 +1021,7 @@ begin
   FXMLRCTrans:= CreateXMLReservedCharsTranslator;
   FPreSizedStream := TtiPreSizedStream.Create(AInitialSize, AGrowBy);
   FState := xwsEmpty;
-  FRow := TStringBuilder.Create;
+  FRow := TStringBuilder.Create(CRowCapacity); // Larger capacity for performance
   FCellIndex:= 0;
 end;
 
