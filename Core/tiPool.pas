@@ -241,9 +241,11 @@ begin
 
   Result:= nil;
   // A semaphore was available, so get a PooledItem
+  Log('TtiPool.Lock: Attempting LockList', lsConnectionPool);
   LPool := FPool.LockList;
 
   try
+    Log('TtiPool.Lock: LockList OK', lsConnectionPool);
     LItem := FindAvailableItemInPool(LPool);
 
     // There was a semaphore available, but no PooledItem, so there is room
@@ -264,6 +266,7 @@ begin
         CErrorSemaphoreAvailableButNoItemsInPool, [FMaxPoolSize, LPool.Count]);
     Result := LItem.Data;
   finally
+    Log('TtiPool.Lock: UnLockList', lsConnectionPool);
     FPool.UnLockList;
   end;
 end;
@@ -271,7 +274,9 @@ end;
 
 function TtiPool.LockPoolSemaphore: boolean;
 begin
+  Log('LockPoolSemaphore locking', lsConnectionPool);
   Result := FSemaphore.Acquire;
+  Log('LockPoolSemaphore locked: %s', [BoolToStr(Result, true {UseBoolStrs})], lsConnectionPool);
 end;
 
 procedure TtiPool.UnLock(const APooledItemData: TtiBaseObject);
@@ -281,6 +286,7 @@ var
   LItem: TtiPooledItem;
 begin
   Assert(APooledItemData.TestValid, CTIErrorInvalidObject);
+  Log('TtiPool.UnLock: Attempting LockList', lsConnectionPool);
   LList := FPool.LockList;
   try
     for i := 0 to LList.Count-1 do
@@ -293,6 +299,7 @@ begin
       end;
       raise EtiOPFProgrammerException.Create(CErrorFailedToUnlockPooledItem);
   finally
+    Log('TtiPool.Lock: UnLockList', lsConnectionPool);
     FPool.UnLockList;
   end;
 end;
@@ -441,12 +448,15 @@ end;
 
 procedure TtiPool.UnlockPoolSemaphore;
 begin
+  Log('UnlockPoolSemaphore unlocking', lsConnectionPool);
   FSemaphore.Release;
+  Log('UnlockPoolSemaphore unlocked', lsConnectionPool);
 end;
 
 procedure TtiPool.CreatePoolSemaphore;
 begin
   FSemaphore := TtiSemaphore.Create(FMaxPoolSize);
+  Log('CreatePoolSemaphore created', lsConnectionPool);
 end;
 
 

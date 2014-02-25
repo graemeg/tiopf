@@ -313,14 +313,19 @@ var
   LDBConnectionPool : TtiDBConnectionPool;
 begin
   result:= nil;
+  Log('About to lock: %s', [ADatabaseAlias], lsConnectionPool);
   FCritSect.Enter;
   try
+    Log('Finding pool: %s', [ADatabaseAlias], lsConnectionPool);
     LDBConnectionPool := Find(ADatabaseAlias);
     if LDBConnectionPool = nil then
       raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindDBConnectionPool, [ADatabaseAlias]);
+    Log('Locking: %s', [ADatabaseAlias], lsConnectionPool);
     result := LDBConnectionPool.Lock;
   finally
+    Log('Completing lock: %s', [ADatabaseAlias], lsConnectionPool);
     FCritSect.Leave;
+    Log('Lock complete: %s', [ADatabaseAlias], lsConnectionPool);
   end;
 end;
 
@@ -329,15 +334,20 @@ procedure TtiDBConnectionPools.UnLock(const ADatabaseAlias: string;
 var
   LDBConnectionPool : TtiDBConnectionPool;
 begin
+  Log('About to unlock: %s', [ADatabaseAlias], lsConnectionPool);
   FCritSect.Enter;
   try
+    Log('Finding pool: %s', [ADatabaseAlias], lsConnectionPool);
     LDBConnectionPool := Find(ADatabaseAlias);
     Assert(LDBConnectionPool.TestValid(TtiDBConnectionPool, True), CTIErrorInvalidObject);
     if LDBConnectionPool = nil then
       raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindDBConnectionPool, [ADatabaseAlias]);
+    Log('Unlocking: %s', [ADatabaseAlias], lsConnectionPool);
     LDBConnectionPool.UnLock(ADatabase);
   finally
+    Log('Completing unlock: %s', [ADatabaseAlias], lsConnectionPool);
     FCritSect.Leave;
+    Log('Unlock complete: %s', [ADatabaseAlias], lsConnectionPool);
   end;
 end;
 
