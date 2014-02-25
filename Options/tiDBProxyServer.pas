@@ -97,6 +97,17 @@ type
                       const AResponseInfo: TIdHTTPResponseInfo); override;
   end;
 
+  TtiDBPS_StackTrace = class(TtiWebServerAction)
+  public
+    function  CanExecute(const ADocument: string): boolean; override;
+    procedure Execute(const ADocument: string;
+                      const ARequestInfo: TIdHTTPRequestInfo;
+                      const ARequestParams: string;
+                      const AResponse: TStream; var AContentType: string;
+                      var   AResponseCode: Integer;
+                      const AResponseInfo: TIdHTTPResponseInfo); override;
+  end;
+
   TtiDBProxyServer = class(TtiWebServer)
   private
     FXMLTags: TtiXMLTags;
@@ -125,7 +136,8 @@ uses
   ,tiWebServerVersion
   ,SysUtils
   ,Math
-
+  {$IFDEF MADEXCEPT_STACK_TRACE} ,madExcept, madStackTrace {$ENDIF}
+  {$IFDEF JCL_STACK_TRACE} ,JclDebug {$ENDIF}
 ;
 
 { TtiDBProxyServer }
@@ -143,6 +155,7 @@ begin
   ServerActions.Add(TtiDBPS_TestXML.Create(         Self, 14));
   ServerActions.Add(TtiDBPS_TestAlive.Create(       Self, 15));
   ServerActions.Add(TtiDBPS_ForceException.Create(  Self, 16));
+  ServerActions.Add(TtiDBPS_StackTrace.Create(      Self, 17));
   Sort;
 
 end;
@@ -368,4 +381,41 @@ begin
     [DateTimeToStr(now)]);
 end;
 
+{ TtiDBPS_StackTrace }
+
+function TtiDBPS_StackTrace.CanExecute(const ADocument: string): boolean;
+begin
+  result := SameText(ADocument, cgTIDBProxyStackTrace);
+end;
+
+procedure TtiDBPS_StackTrace.Execute(const ADocument: string;
+  const ARequestInfo: TIdHTTPRequestInfo; const ARequestParams: string;
+  const AResponse: TStream; var AContentType: string;
+  var AResponseCode: Integer; const AResponseInfo: TIdHTTPResponseInfo);
+var
+  LTrace: TStrings;
+begin
+  LTrace := TStringList.Create;
+  try
+    {$IFDEF MADEXCEPT_STACK_TRACE}
+      LTrace.Text := string(madExcept.CreateBugReport(etNormal));
+    {$ELSE}
+    {$IFDEF JCL_STACK_TRACE}
+      JclDebug.JclLastExceptStackListToStrings(LTrace, true);
+    {$ELSE}
+      LTrace.Text := 'Stack trace not available';
+    {$ENDIF}
+    {$ENDIF}
+
+    tiStringToStream(
+        '<html><head></head><body><pre>' +
+        LTrace.Text +
+        '</pre></body></html>',
+        AResponse);
+  finally
+    LTrace.Free;
+  end;
+end;
+
 end.
+
