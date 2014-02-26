@@ -1522,7 +1522,7 @@ begin
   if VarIsNull(LVal2) then
     _DoRaiseException(AOrder.FieldName, AData2.ClassName);
 
-  if (LColumn.DataType = vttkString) or
+  if (Assigned(LColumn) and (LColumn.DataType = vttkString)) or
      ((not LDerived) and (AData1.PropType(AOrder.FieldName) = tiTKString)) then
      Result := AnsiCompareText(LVal1, LVal2)
   else begin
