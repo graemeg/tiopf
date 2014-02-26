@@ -9,8 +9,8 @@ uses
   ExtCtrls, Grids,
   TeeProcs, TeEngine, Chart, Tabs, DockTabSet, ComCtrls,
   tiBaseObject, tiObject, tiSpeedButton, tiRoundedPanel, tiResources, tiPerAwareCtrls
-//  ,tiVirtualTrees
   ,tiVTTreeView
+  ,tiVirtualTrees
 ;
 
 const
@@ -259,17 +259,35 @@ type
   TtiChartLegendTreeViewForm = class(TtiChartLegendFormAbs)
   private
     FTreeView: TtiVTTreeView;
+    procedure VTTVSelectNode(AtiVTTreeView: TtiVTTreeView; ANode: PVirtualNode;
+      AData: TtiObject);
+    function GetSelectedElement: TtiObject;
+    procedure SetSelectedElement(const AElement: TtiObject);
+    function GetShowEmptyRootNode: boolean;
+    procedure SetShowEmptyRootNode(const AShowNode: boolean);
+    function GetOnSelectNode: TtiVTTVNodeEvent;
+    procedure SetOnSelectNode(const ADelegate: TtiVTTVNodeEvent);
+    procedure SetData(const AData: TtiObject);
+    function GetData: TtiObject;
   protected
     function GetSeriesVisible(const ASeriesName: string): boolean; override;
     procedure SetSeriesVisible(const ASeriesName: string; const AValue: boolean); override;
     procedure DoSelectAll(Sender: TObject); override;
     procedure DoSelectNone(Sender: TObject); override;
   public
-    Constructor CreateNew(const AChart: TtiTimeSeriesChart);
+    constructor CreateNew(const AChart: TtiTimeSeriesChart);
     procedure ClearSeries; override;
     procedure CreateSeries; override;
     procedure SetSeriesVisibleByCaption(const ASeriesTitle: string; const AVisible: Boolean); override;
     function IsSeriesVisibleByCaption(const ASeriesTitle: string): boolean; override;
+    function AddDataMapping(const AClass: TtiClass): TtiVTTVDataMapping;
+
+    property DataCollection: TtiObject read GetData write SetData;
+
+  published
+    property SelectedElement: TtiObject read GetSelectedElement write SetSelectedElement;
+    property ShowEmptyRootNode: boolean read GetShowEmptyRootNode write SetShowEmptyRootNode;
+    property OnSelectNode: TtiVTTVNodeEvent read GetOnSelectNode write SetOnSelectNode;
   end;
 
   TtiChartWithLegendPanel = class(TtiClearPanel)
@@ -715,6 +733,7 @@ uses
   ,tiUtils
   ,tiConstants
   ,DateUtils
+  ,tiCtrlButtonPanel
 ;
 
 type
@@ -4284,6 +4303,14 @@ end;
 
 { TtiChartLegendTreeViewForm }
 
+function TtiChartLegendTreeViewForm.AddDataMapping(
+  const AClass: TtiClass): TtiVTTVDataMapping;
+begin
+  Result := FTreeView.DataMappings.Add;
+  Result.DataClass := AClass;
+//  Result.DisplayPropName := 'Caption' ;
+end;
+
 procedure TtiChartLegendTreeViewForm.ClearSeries;
 begin
 
@@ -4299,6 +4326,19 @@ begin
 //  Align := alClient;
 //  BevelOuter := bvNone;
 //  Self.Caption := '';
+  FTreeView.Parent      := self as TWinControl;
+  FTreeView.Left        := 0;
+  FTreeView.Top         := 0;
+  FTreeView.Align       := alClient;
+  FTreeView.DefaultText := '';
+  FTreeView.TreeOptions.PaintOptions := FTreeView.TreeOptions.PaintOptions - [toShowRoot];
+  FTreeView.ButtonStyle                  := lvbsNoButtons;
+  FTreeView.VisibleButtons               := [];
+  FTreeView.TreeOptions.AnimationOptions := [toAnimatedToggle];
+//  FTreeView.OnFilter     := VTTVFilter;
+//  FTreeView.ApplyFilter := True;
+  FTreeView.OnSelectNode := VTTVSelectNode;
+
 end;
 
 procedure TtiChartLegendTreeViewForm.CreateSeries;
@@ -4316,16 +4356,56 @@ begin
 
 end;
 
+function TtiChartLegendTreeViewForm.GetData: TtiObject;
+begin
+  Result := FTreeView.Data;
+end;
+
+function TtiChartLegendTreeViewForm.GetOnSelectNode: TtiVTTVNodeEvent;
+begin
+  Result:= FTreeView.OnSelectNode;
+end;
+
+function TtiChartLegendTreeViewForm.GetSelectedElement: TtiObject;
+begin
+  if FTreeView.SelectedData is TtiObject then
+    result := TtiObject(FTreeView.SelectedData)
+  else
+    result := nil;
+end;
+
 function TtiChartLegendTreeViewForm.GetSeriesVisible(
   const ASeriesName: string): boolean;
 begin
 
 end;
 
+function TtiChartLegendTreeViewForm.GetShowEmptyRootNode: boolean;
+begin
+  Result := FTreeView.ShowEmptyRootNode;
+end;
+
 function TtiChartLegendTreeViewForm.IsSeriesVisibleByCaption(
   const ASeriesTitle: string): boolean;
 begin
 
+end;
+
+procedure TtiChartLegendTreeViewForm.SetData(const AData: TtiObject);
+begin
+  FTreeView.Data := AData;
+end;
+
+procedure TtiChartLegendTreeViewForm.SetOnSelectNode(
+  const ADelegate: TtiVTTVNodeEvent);
+begin
+  FTreeView.OnSelectNode := ADelegate;
+end;
+
+procedure TtiChartLegendTreeViewForm.SetSelectedElement(const AElement: TtiObject);
+begin
+  if AElement is TtiObject then
+    FTreeView.SelectedData := AElement;
 end;
 
 procedure TtiChartLegendTreeViewForm.SetSeriesVisible(const ASeriesName: string;
@@ -4339,5 +4419,18 @@ procedure TtiChartLegendTreeViewForm.SetSeriesVisibleByCaption(
 begin
 
 end;
+
+procedure TtiChartLegendTreeViewForm.SetShowEmptyRootNode(const AShowNode: boolean);
+begin
+  FTreeView.ShowEmptyRootNode := AShowNode;
+end;
+
+procedure TtiChartLegendTreeViewForm.VTTVSelectNode(AtiVTTreeView: TtiVTTreeView;
+  ANode: PVirtualNode; AData: TtiObject);
+begin
+  inherited;
+  SelectedElement := AData;
+end;
+
 
 end.
