@@ -1,4 +1,4 @@
-	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
 			<ProjectGuid>{76ea9be1-08a3-4dcc-b6ac-ee3fe0ffb83d}</ProjectGuid>
 			<MainSource>tiOPFGUI.dpk</MainSource>
@@ -165,6 +165,7 @@
 			<DCCReference Include="..\..\GUI\VCL\tiListMediators.pas"/>
 			<DCCReference Include="..\..\GUI\tiVTSearch.pas"/>
 			<DCCReference Include="..\..\GUI\tiVTAccessibilityFactory.pas"/>
+			<DCCReference Include="..\..\GUI\tiChart.pas"/>
 			<BuildConfiguration Include="Debug">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

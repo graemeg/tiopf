@@ -157,6 +157,20 @@ type
     property VT: TtiVTTreeView read FVT write FVT;
   end;
 
+//  This class simplifies the presentation of a TtiOject/TtiOjectList-based hierarchy,
+//  the Container, as a treeview.
+//  Requirements:
+//  1) The Container must inherit from TtiObject, and:
+//     i) be or inherit from TtiObjectList, or
+//     ii) have published properties that could qualify as Containers (recursive definition)
+//  2) Each node-level on the treeview must have an associated TtiVTTVDataMapping
+//  3) For a node to have child-nodes, the associated data type in the TtiVTTVDataMappings 
+//     must qualify as a Container
+//  Usage:     
+//  1) Call TtiVTTreeView.DataMappings.Add(...) for each type in Container you wish to appear
+//     as a node in the treeview
+//  2) The root Container is assigned to TtiVTTreeView.Data
+
   TtiVTTreeView = class(TtiVTAbstract)
   private
     FData: TtiObject;
