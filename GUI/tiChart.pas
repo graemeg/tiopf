@@ -21,6 +21,7 @@ const
 type
 
   TtiChartLegendPanel = class;
+  TtiChartLegendFormAbs = class;
   TtiChartLegendForm = class;
 
   TtiClearPanel = class(TCustomPanel)
@@ -208,7 +209,7 @@ type
 //    FLegendFormPanel: TtiClearPanel;
 //    FlegendButton: TtiSpeedButton;
     FPageControl: TPageControl;
-    FChartLegendForm: TtiChartLegendForm;
+    FChartLegendForm: TtiChartLegendFormAbs;
     FParenttiChart: TtiTimeSeriesChart;
     FLegendTabSheet: TTabSheet;
     FUserPanelTabSheet: TTabSheet;
@@ -222,12 +223,17 @@ type
         ALegendPosition: TtiChartLegendPosition; Dummy : integer = 0); reintroduce; overload;
     destructor Destroy; override;
     procedure SelectUserPanel;
-    property ChartLegendForm: TtiChartLegendForm read FChartLegendForm;
+    property ChartLegendForm: TtiChartLegendFormAbs read FChartLegendForm;
     property UserPanel: TtiChartUserPanel read FUserPanel;
   end;
 
+  TtiChartLegendFormAbsEvent = procedure(const ASender: TtiChartLegendFormAbs) of object;
+
   // Form to display a legend (a small graphic of the seris - with it's title)
   TtiChartLegendFormAbs = class(TCustomForm)
+  private
+    FOnCreateSeries: TtiChartLegendFormAbsEvent;
+    procedure SetOnCreateSeries(const AEventHandler: TtiChartLegendFormAbsEvent);
   protected
     FChart: TtiTimeSeriesChart;
     FPopupMenu : TPopupMenu;
@@ -238,15 +244,18 @@ type
 
     procedure DoSelectAll(Sender: TObject);  virtual; abstract;
     procedure DoSelectNone(Sender: TObject);  virtual; abstract;
-    property Chart: TtiTimeSeriesChart read FChart;
   public
     Constructor CreateNew(const AChart: TtiTimeSeriesChart); reintroduce; overload;
     destructor Destroy; override;
     procedure ClearSeries; virtual; abstract;
-    procedure CreateSeries; virtual; abstract;
+    // we can override this method or provide a delegate via OnCreateSeries, or both(!)
+    procedure CreateSeries; virtual;
     property  SeriesVisible[const ASeriesName: string]: boolean read GetSeriesVisible write SetSeriesVisible;
     procedure SetSeriesVisibleByCaption(const ASeriesTitle: string; const AVisible: Boolean);  virtual; abstract;
     function IsSeriesVisibleByCaption(const ASeriesTitle: string): boolean; virtual; abstract;
+    property Chart: TtiTimeSeriesChart read FChart;
+  published
+    property OnCreateSeries: TtiChartLegendFormAbsEvent read FOnCreateSeries write SetOnCreateSeries;
   end;
 
   TtiChartLegendForm = class(TtiChartLegendFormAbs)
@@ -273,9 +282,8 @@ type
     const AChartSeries: ItiChartSeries; const AValue: string): boolean of object;
 
   TtiChartLegendTreeViewForm = class(TtiChartLegendFormAbs)
-    FTreeView: TtiVTTreeView;
   private
-    FData: TtiObject;
+    FTreeView: TtiVTTreeView;
 
     procedure VTTVSelectNode(AtiVTTreeView: TtiVTTreeView; ANode: PVirtualNode;
       AData: TtiObject);
@@ -285,8 +293,6 @@ type
     procedure SetShowEmptyRootNode(const AShowNode: boolean);
     function GetOnSelectNode: TtiVTTVNodeEvent;
     procedure SetOnSelectNode(const ADelegate: TtiVTTVNodeEvent);
-    procedure SetData(const AData: TtiObject);
-    function GetData: TtiObject;
     function SameSeriesName(const AChartSeries: ItiChartSeries;
       const ASeriesName: string): boolean;
     function SameSeriesTitle(const AChartSeries: ItiChartSeries;
@@ -303,12 +309,10 @@ type
   public
     constructor CreateNew(const AChart: TtiTimeSeriesChart);
     procedure ClearSeries; override;
-    procedure CreateSeries; override;
     procedure SetSeriesVisibleByCaption(const ASeriesTitle: string; const AVisible: Boolean); override;
     function IsSeriesVisibleByCaption(const ASeriesTitle: string): boolean; override;
     function AddDataMapping(const AClass: TtiClass): TtiVTTVDataMapping;
-
-    property DataCollection: TtiObject read GetData write SetData;
+    property TreeView: TtiVTTreeView read FTreeView;
 
   published
     property SelectedElement: TtiObject read GetSelectedElement write SetSelectedElement;
@@ -493,7 +497,7 @@ type
     FButtonsPosition: TtiChartButtonsPosition;
     FChart: TChart;
     FChartDataMappings: TtiChartDataMappings;
-    FChartLegendForm: TtiChartLegendForm;
+    FChartLegendForm: TtiChartLegendFormAbs;
     FChartPanel: TtiChartPanel;
     FChartWithLegendPanel: TtiChartWithLegendPanel;
     FConstrainViewToData: Boolean;
@@ -1244,7 +1248,8 @@ begin
   FUserPanelTabSheet.PageControl := FPageControl;
   FPageControl.ActivePageIndex := 0;
 
-  FChartLegendForm := TtiChartLegendForm.CreateNew(FParenttiChart);
+//  FChartLegendForm := TtiChartLegendForm.CreateNew(FParenttiChart);
+  FChartLegendForm := TtiChartLegendTreeViewForm.CreateNew(FParenttiChart);
   FChartLegendForm.Name := 'FChartLegendForm';
   FChartLegendForm.Caption := 'Legend';
   FChartLegendForm.Parent := FLegendTabSheet;
@@ -1413,6 +1418,7 @@ var
   LTop : integer;
   LSeriesEdit : TtiChartLegendItem;
 begin
+  inherited;
   Assert(FList.Count = 0, 'Attempt to call CreateSeries more than once');
   LWidth := 0;
   LTop := 20;
@@ -3523,6 +3529,7 @@ begin
     ClearSeries;
 
   FData := AValue;
+//  FChartLegendForm.SetData(FData);
   DoDrawChart(True {AZoomOut});
 
 end;
@@ -4324,12 +4331,24 @@ begin
   PopupMenu := FPopupMenu;
 end;
 
+procedure TtiChartLegendFormAbs.CreateSeries;
+begin
+  if Assigned(FOnCreateSeries) then
+    FOnCreateSeries(self);
+end;
+
 destructor TtiChartLegendFormAbs.Destroy;
 begin
   FpmiSelectNone.Free;
   FpmiSelectAll.Free;
   FPopupMenu.Free;
   inherited;
+end;
+
+procedure TtiChartLegendFormAbs.SetOnCreateSeries(
+  const AEventHandler: TtiChartLegendFormAbsEvent);
+begin
+  FOnCreateSeries := AEventHandler;
 end;
 
 { TtiChartLegendTreeViewForm }
@@ -4358,7 +4377,8 @@ begin
 //  Align := alClient;
 //  BevelOuter := bvNone;
 //  Self.Caption := '';
-//  FTreeView.Parent      := self as TWinControl;
+  FTreeView := TtiVTTreeView.Create(self);
+  FTreeView.Parent      := self as TWinControl;
   FTreeView.Left        := 0;
   FTreeView.Top         := 0;
   FTreeView.Align       := alClient;
@@ -4370,11 +4390,6 @@ begin
 //  FTreeView.OnFilter     := VTTVFilter;
 //  FTreeView.ApplyFilter := True;
   FTreeView.OnSelectNode := VTTVSelectNode;
-end;
-
-procedure TtiChartLegendTreeViewForm.CreateSeries;
-begin
-  FTreeView.Data := FData;
 end;
 
 procedure TtiChartLegendTreeViewForm.SelectAll(const ASelected: boolean);
@@ -4445,11 +4460,6 @@ begin
   end;
 end;
 
-function TtiChartLegendTreeViewForm.GetData: TtiObject;
-begin
-  Result := FData;
-end;
-
 function TtiChartLegendTreeViewForm.GetOnSelectNode: TtiVTTVNodeEvent;
 begin
   Result:= FTreeView.OnSelectNode;
@@ -4486,13 +4496,8 @@ var
   LFound: boolean;
 begin
   LFound := FindBySeriesProperty(SameSeriesTitle, ASeriesTitle, LNode);
-  Assert(LFound, 'SeriesTitle "' + ASeriesTitle + '" not found');
+//  Assert(LFound, 'SeriesTitle "' + ASeriesTitle + '" not found');
   Result := LFound and (LNode.CheckState in [csCheckedNormal]);
-end;
-
-procedure TtiChartLegendTreeViewForm.SetData(const AData: TtiObject);
-begin
-  FData := AData;
 end;
 
 procedure TtiChartLegendTreeViewForm.SetOnSelectNode(
