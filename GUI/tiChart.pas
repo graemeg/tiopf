@@ -287,6 +287,8 @@ type
 
     procedure VTTVSelectNode(AtiVTTreeView: TtiVTTreeView; ANode: PVirtualNode;
       AData: TtiObject);
+    procedure VTTVNodeCheckboxClick(AtiVTTreeView: TtiVTTreeView;
+      ANode: PVirtualNode; AData: TtiObject; ASetChecked: Boolean);
     function GetSelectedElement: TtiObject;
     procedure SetSelectedElement(const AElement: TtiObject);
     function GetShowEmptyRootNode: boolean;
@@ -301,8 +303,6 @@ type
       const ACompare: TtiChartSeriesPropertyComparator;
       const APropertyValue: string; out ANode: PVirtualNode): boolean;
     procedure SelectAll(const ASelected: boolean);
-    procedure VTTVNodeCheckboxClick(AtiVTTreeView: TtiVTTreeView;
-      ANode: PVirtualNode; AData: TtiObject; ASetChecked: Boolean);
   protected
     function GetSeriesVisible(const ASeriesName: string): boolean; override;
     procedure SetSeriesVisible(const ASeriesName: string; const AVisible: boolean); override;
@@ -4360,11 +4360,10 @@ function TtiChartLegendTreeViewForm.AddDataMapping(
 begin
   Result := FTreeView.DataMappings.Add;
   Result.DataClass := AClass;
-
-  // Override these defaults in returned mapping...
+  // Override these defaults in returned mapping as needed...
   Result.ImageIndex := -1; // No image
   Result.UseCheckBox := true; // Show check box
-  // can use dot notation to acces subelement properties
+  // We can use dot notation to acces subelement properties
   // - all properties ref'd in DisplayPropName string must be published
   Result.DisplayPropName := 'Caption' ;
 end;
@@ -4378,23 +4377,13 @@ constructor TtiChartLegendTreeViewForm.CreateNew(
   const AChart: TtiTimeSeriesChart);
 begin
   inherited CreateNew(AChart);
-//  if Assigned(Parent) then
-//    Self.Name := tiGetUniqueComponentNameFromParent(Parent, 'TreeView');
-//  Align := alClient;
-//  BevelOuter := bvNone;
-//  Self.Caption := '';
   FTreeView := TtiVTTreeView.Create(self);
   FTreeView.Parent      := self as TWinControl;
   FTreeView.Left        := 0;
   FTreeView.Top         := 0;
   FTreeView.Align       := alClient;
   FTreeView.DefaultText := '';
-//  FTreeView.TreeOptions.PaintOptions := FTreeView.TreeOptions.PaintOptions - [toShowRoot];
-  FTreeView.ButtonStyle                  := lvbsNoButtons;
-  FTreeView.VisibleButtons               := [];
-  FTreeView.TreeOptions.AnimationOptions := [toAnimatedToggle];
-//  FTreeView.OnFilter     := VTTVFilter;
-//  FTreeView.ApplyFilter := True;
+  FTreeView.ButtonStyle := lvbsNoButtons;
   FTreeView.OnSelectNode := VTTVSelectNode;
   FTreeView.OnNodeCheckboxClick := VTTVNodeCheckboxClick;
 end;
