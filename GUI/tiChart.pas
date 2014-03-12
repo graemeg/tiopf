@@ -301,6 +301,8 @@ type
       const ACompare: TtiChartSeriesPropertyComparator;
       const APropertyValue: string; out ANode: PVirtualNode): boolean;
     procedure SelectAll(const ASelected: boolean);
+    procedure VTTVNodeCheckboxClick(AtiVTTreeView: TtiVTTreeView;
+      ANode: PVirtualNode; AData: TtiObject; ASetChecked: Boolean);
   protected
     function GetSeriesVisible(const ASeriesName: string): boolean; override;
     procedure SetSeriesVisible(const ASeriesName: string; const AVisible: boolean); override;
@@ -665,7 +667,7 @@ public
 
     function SeriesByName(const ASeriesName : string): TChartSeries;
     function SeriesByTitle(const ASeriesTitle : string): TChartSeries;
-    procedure ShowSeries(var ASeries: TChartSeries; const AVisible: Boolean);
+    procedure ShowSeries(const ASeries: TChartSeries; const AVisible: Boolean);
 
     procedure AddButton(const AButtonHint: string; const AImageResName: string;
         const ADoButtonClick: TNotifyEvent; const AButtonOrder: Integer);
@@ -3832,7 +3834,7 @@ begin
   FDataPointHintForm.Show;
 end;
 
-procedure TtiTimeSeriesChart.ShowSeries(var ASeries: TChartSeries;
+procedure TtiTimeSeriesChart.ShowSeries(const ASeries: TChartSeries;
   const AVisible: Boolean);
 var
   LChartSeries: TtiChartSeries;
@@ -4394,6 +4396,23 @@ begin
 //  FTreeView.OnFilter     := VTTVFilter;
 //  FTreeView.ApplyFilter := True;
   FTreeView.OnSelectNode := VTTVSelectNode;
+  FTreeView.OnNodeCheckboxClick := VTTVNodeCheckboxClick;
+end;
+
+
+procedure TtiChartLegendTreeViewForm.VTTVNodeCheckboxClick(AtiVTTreeView: TtiVTTreeView;
+  ANode: PVirtualNode; AData: TtiObject; ASetChecked: Boolean);
+var
+  LNodeData: TtiObject;
+  LChartSeries: ItiChartSeries;
+begin
+  // Respond to click on the legend - set related chartseries
+  Assert(FChart <> nil, 'FChart not assigned');
+  Assert(ANode <> nil, 'ANode not assigned');
+  LNodeData := FTreeView.GetObjectFromNode(ANode);
+  Assert(LNodeData.TestValid(TtiObject), CTIErrorInvalidObject);
+  if Supports(LNodeData, ItiChartSeries, LChartSeries) then
+    FChart.ShowSeries(LChartSeries.GetChartSeries(FChart), ASetChecked);
 end;
 
 procedure TtiChartLegendTreeViewForm.SelectAll(const ASelected: boolean);
@@ -4501,7 +4520,7 @@ var
 begin
   LFound := FindBySeriesProperty(SameSeriesTitle, ASeriesTitle, LNode);
 //  Assert(LFound, 'SeriesTitle "' + ASeriesTitle + '" not found');
-  Result := LFound and (LNode.CheckState in [csCheckedNormal]);
+  Result := LFound and (LNode.CheckState in [csCheckedNormal, csCheckedPressed, csMixedPressed]);
 end;
 
 procedure TtiChartLegendTreeViewForm.SetOnSelectNode(
@@ -4520,25 +4539,45 @@ procedure TtiChartLegendTreeViewForm.SetSeriesVisible(const ASeriesName: string;
   const AVisible: boolean);
 var
   LNode: PVirtualNode;
+  LNodeData: TtiObject;
+  LChartSeries: ItiChartSeries;
 begin
   if FindBySeriesProperty(SameSeriesName, ASeriesName, LNode) then
-      if AVisible then
-        LNode.CheckState := csCheckedNormal
-      else
-        LNode.CheckState := csUncheckedNormal;
-end;
+  begin
+    if AVisible then
+      LNode.CheckState := csCheckedNormal
+    else
+      LNode.CheckState := csUncheckedNormal;
 
+    LNodeData := FTreeView.GetObjectFromNode(LNode);
+    Assert(LNodeData.TestValid(TtiObject), CTIErrorInvalidObject);
+
+    if Supports(LNodeData, ItiChartSeries, LChartSeries) then
+      FChart.ShowSeries(LChartSeries.GetChartSeries(FChart), AVisible);
+  end;
+
+end;
 
 procedure TtiChartLegendTreeViewForm.SetSeriesVisibleByCaption(
   const ASeriesTitle: string; const AVisible: Boolean);
 var
   LNode: PVirtualNode;
+  LNodeData: TtiObject;
+  LChartSeries: ItiChartSeries;
 begin
   if FindBySeriesProperty(SameSeriesTitle, ASeriesTitle, LNode) then
-      if AVisible then
-        LNode.CheckState := csCheckedNormal
-      else
-        LNode.CheckState := csUncheckedNormal;
+  begin
+    if AVisible then
+      LNode.CheckState := csCheckedNormal
+    else
+      LNode.CheckState := csUncheckedNormal;
+
+    LNodeData := FTreeView.GetObjectFromNode(LNode);
+    Assert(LNodeData.TestValid(TtiObject), CTIErrorInvalidObject);
+
+    if Supports(LNodeData, ItiChartSeries, LChartSeries) then
+      FChart.ShowSeries(LChartSeries.GetChartSeries(FChart), AVisible);
+  end;
 end;
 
 procedure TtiChartLegendTreeViewForm.SetShowEmptyRootNode(const AShowNode: boolean);
