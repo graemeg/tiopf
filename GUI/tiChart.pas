@@ -4358,9 +4358,13 @@ function TtiChartLegendTreeViewForm.AddDataMapping(
 begin
   Result := FTreeView.DataMappings.Add;
   Result.DataClass := AClass;
-  // override these defaults in returned mapping...
+
+  // Override these defaults in returned mapping...
+  Result.ImageIndex := -1; // No image
+  Result.UseCheckBox := true; // Show check box
+  // can use dot notation to acces subelement properties
+  // - all properties ref'd in DisplayPropName string must be published
   Result.DisplayPropName := 'Caption' ;
-  Result.ImageIndex := 0 ;
 end;
 
 procedure TtiChartLegendTreeViewForm.ClearSeries;
