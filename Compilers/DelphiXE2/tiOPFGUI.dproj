@@ -116,6 +116,7 @@
 			<DCCReference Include="dbrtl.dcp"/>
 			<DCCReference Include="xmlrtl.dcp"/>
 			<DCCReference Include="vclimg.dcp"/>
+			<DCCReference Include="Tee.dcp"/>
 			<DCCReference Include="..\..\GUI\tiDialogs.pas"/>
 			<DCCReference Include="..\..\GUI\tiVirtualTrees.pas"/>
 			<DCCReference Include="..\..\GUI\tiButtons.pas"/>

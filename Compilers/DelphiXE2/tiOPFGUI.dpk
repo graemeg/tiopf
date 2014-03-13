@@ -40,7 +40,8 @@ requires
   bdertl,
   dbrtl,
   xmlrtl,
-  vclimg;
+  vclimg,
+  Tee;
 
 contains
   tiDialogs in '..\..\GUI\tiDialogs.pas',
