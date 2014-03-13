@@ -202,6 +202,8 @@ type
     property OnSetForm: TOnSetUserPanelForm read FOnSetForm write FOnSetForm;
   end;
 
+  TtiChartLegendKind = (clList, clTree);
+
   TtiChartLegendPanel = class(TtiClearPanel)
   private
 //    FDockTabSet: TDockTabSet;
@@ -220,6 +222,7 @@ type
 //    procedure DoUnDock(Sender: TObject; Client: TControl; NewTarget: TWinControl; var Allow: Boolean);
   public
     constructor CreateNew(Owner : TComponent; AParenttiChart: TtiTimeSeriesChart;
+        const ALegendKind: TtiChartLegendKind;
         ALegendPosition: TtiChartLegendPosition; Dummy : integer = 0); reintroduce; overload;
     destructor Destroy; override;
     procedure SelectUserPanel;
@@ -332,7 +335,7 @@ type
     procedure SetShowLegend(const AValue: Boolean);
   public
     constructor Create(Owner : TComponent; ALegendPosition:
-        TtiChartLegendPosition); reintroduce; overload;
+        TtiChartLegendPosition; const ALegendKind: TtiChartLegendKind); reintroduce; overload;
     destructor Destroy; override;
     property ChartLegendPanel: TtiChartLegendPanel read FChartLegendPanel;
     property ShowLegend: Boolean read GetShowLegend write SetShowLegend;
@@ -638,7 +641,8 @@ type
     procedure Loaded; override;
 public
     constructor Create(Owner : TComponent; const AButtonsPosition:
-        TtiChartButtonsPosition; const ALegendPosition: TtiChartLegendPosition);
+        TtiChartButtonsPosition; const ALegendPosition: TtiChartLegendPosition;
+        const ALegendKind: TtiChartLegendKind = clList);
         reintroduce; overload;
     destructor Destroy; override;
     function AddDateTimeBarSeries(const ATitle : string;
@@ -1165,7 +1169,8 @@ end;
 ***************************** TtiChartLegendPanelForm ******************************
 }
 constructor TtiChartLegendPanel.CreateNew(Owner : TComponent; AParenttiChart:
-    TtiTimeSeriesChart; ALegendPosition: TtiChartLegendPosition; Dummy : integer = 0);
+    TtiTimeSeriesChart; const ALegendKind: TtiChartLegendKind;
+    ALegendPosition: TtiChartLegendPosition; Dummy : integer = 0);
 begin
   inherited Create(Owner);
   Parent := Owner as TWinControl;
@@ -1249,9 +1254,12 @@ begin
   FUserPanelTabSheet.BorderWidth := 0;
   FUserPanelTabSheet.PageControl := FPageControl;
   FPageControl.ActivePageIndex := 0;
-
-//  FChartLegendForm := TtiChartLegendForm.CreateNew(FParenttiChart);
-  FChartLegendForm := TtiChartLegendTreeViewForm.CreateNew(FParenttiChart);
+  case ALegendKind of
+    clList:
+      FChartLegendForm := TtiChartLegendForm.CreateNew(FParenttiChart);
+    clTree:
+      FChartLegendForm := TtiChartLegendTreeViewForm.CreateNew(FParenttiChart);
+  end;
   FChartLegendForm.Name := 'FChartLegendForm';
   FChartLegendForm.Caption := 'Legend';
   FChartLegendForm.Parent := FLegendTabSheet;
@@ -1586,7 +1594,7 @@ end;
 *************************** TtiChartWithLegendPanel ****************************
 }
 constructor TtiChartWithLegendPanel.Create(Owner : TComponent; ALegendPosition:
-    TtiChartLegendPosition);
+    TtiChartLegendPosition; const ALegendKind: TtiChartLegendKind);
 begin
   inherited Create(Owner);
   Parent := Owner as TWinControl;
@@ -1601,7 +1609,8 @@ begin
     Parent := self;
   end;
 
-  FChartLegendPanel := TtiChartLegendPanel.CreateNew(self, FParenttiChart, FLegendPosition);
+  FChartLegendPanel := TtiChartLegendPanel.CreateNew(self, FParenttiChart,
+    ALegendKind, FLegendPosition);
 
   FtiChartPanel.Align := alClient;
 end;
@@ -2042,7 +2051,8 @@ end;
 ****************************** TtiTimeSeriesChart ******************************
 }
 constructor TtiTimeSeriesChart.Create(Owner : TComponent; const AButtonsPosition:
-    TtiChartButtonsPosition; const ALegendPosition: TtiChartLegendPosition);
+    TtiChartButtonsPosition; const ALegendPosition: TtiChartLegendPosition;
+    const ALegendKind: TtiChartLegendKind);
 begin
   inherited Create(Owner);
   Parent := Owner as TWinControl;
@@ -2062,7 +2072,7 @@ begin
     end;
   end;
 
-  FChartWithLegendPanel := TtiChartWithLegendPanel.Create(self, FLegendPosition);
+  FChartWithLegendPanel := TtiChartWithLegendPanel.Create(self, FLegendPosition, ALegendKind);
 //  with FChartWithLegendPanel do
 //  begin
 //    Parent := self;
