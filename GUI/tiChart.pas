@@ -2515,14 +2515,12 @@ begin
   for i := 0 to FChart.SeriesCount - 1 do begin
     LSeries := FChart.Series[i];
     if LSeries.Active then
+    begin
       LSeriesIndex := LSeries.GetCursorValueIndex;
-// ToDo: Series.GetCursorValueIndex is returning a value offset by
-//       1 for each NullXY value that has been added.
-//       Action: TtiTimeSeriesChart.AddDateTimeValues and
-//               TtiTimeSeriesChart.AddDateTimeGap build up a data structure
-//               of the actual index values (Returned by calls to Series.AddXY
-//               and Series.AddNullXY, and the actual index value (calculated by
-//               keeping track of how many NullXY values have been added)
+      // Don't proceed for null points (gap markers)
+      if LSeries.IsNull(LSeriesIndex) then
+         LSeriesIndex := -1;
+    end;
 
     if LSeriesIndex <> -1 then
       Break; //==>
@@ -2530,7 +2528,7 @@ begin
 
   FDataUnderMouse := nil;
 
-  // A data point was found close to the mouse cursor, so set some values
+  // A non-null data point was found close to the mouse cursor, so set some values
   if (LSeriesIndex <> -1) and
      (LSeries <> nil) then
   begin
