@@ -284,6 +284,9 @@ type
   TtiChartSeriesPropertyComparator = function (
     const AChartSeries: ItiChartSeries; const AValue: string): boolean of object;
 
+  TtiChartSeriesPropertyTextComparator = function (
+    const APropertyValue: string; out ANode: PVirtualNode): boolean of object;
+
   TtiChartLegendTreeViewForm = class(TtiChartLegendFormAbs)
   private
     FTreeView: TtiVTTreeView;
@@ -305,7 +308,14 @@ type
     function FindBySeriesProperty(
       const ACompare: TtiChartSeriesPropertyComparator;
       const APropertyValue: string; out ANode: PVirtualNode): boolean;
+    function FindBySeriesName(const APropertyValue: string;
+      out ANode: PVirtualNode): boolean;
+    function FindBySeriesTitle(const APropertyValue: string;
+      out ANode: PVirtualNode): boolean;
     procedure SelectAll(const ASelected: boolean);
+    procedure SetSeriesVisibleByText(
+      const ATextComparator: TtiChartSeriesPropertyTextComparator;
+      const AValue: string; const AVisible: boolean);
   protected
     function GetSeriesVisible(const ASeriesName: string): boolean; override;
     procedure SetSeriesVisible(const ASeriesName: string; const AVisible: boolean); override;
@@ -4426,9 +4436,9 @@ begin
     // only select series nodes in treeview
     if Supports(LNodeData, ItiChartSeries, LChartSeries) then
       if ASelected then
-        LNode.CheckState := csCheckedNormal
+        FTreeView.VT.CheckState[LNode] := csCheckedNormal
       else
-        LNode.CheckState := csUncheckedNormal;
+        FTreeView.VT.CheckState[LNode] := csUncheckedNormal;
     LNode := FTreeView.VT.GetNext(LNode);
   end;
 end;
@@ -4480,6 +4490,18 @@ begin
   end;
 end;
 
+function TtiChartLegendTreeViewForm.FindBySeriesName(
+  const APropertyValue: string; out ANode: PVirtualNode): boolean;
+begin
+  Result := FindBySeriesProperty(SameSeriesName, APropertyValue, ANode);
+end;
+
+function TtiChartLegendTreeViewForm.FindBySeriesTitle(
+  const APropertyValue: string;  out ANode: PVirtualNode): boolean;
+begin
+  Result := FindBySeriesProperty(SameSeriesTitle, APropertyValue, ANode);
+end;
+
 function TtiChartLegendTreeViewForm.GetOnSelectNode: TtiVTTVNodeEvent;
 begin
   Result:= FTreeView.OnSelectNode;
@@ -4516,7 +4538,6 @@ var
   LFound: boolean;
 begin
   LFound := FindBySeriesProperty(SameSeriesTitle, ASeriesTitle, LNode);
-//  Assert(LFound, 'SeriesTitle "' + ASeriesTitle + '" not found');
   Result := LFound and (LNode.CheckState in [csCheckedNormal, csCheckedPressed, csMixedPressed]);
 end;
 
@@ -4532,19 +4553,22 @@ begin
     FTreeView.SelectedData := AElement;
 end;
 
-procedure TtiChartLegendTreeViewForm.SetSeriesVisible(const ASeriesName: string;
+procedure TtiChartLegendTreeViewForm.SetSeriesVisibleByText(
+  const ATextComparator: TtiChartSeriesPropertyTextComparator; const AValue: string;
   const AVisible: boolean);
 var
   LNode: PVirtualNode;
   LNodeData: TtiObject;
   LChartSeries: ItiChartSeries;
 begin
-  if FindBySeriesProperty(SameSeriesName, ASeriesName, LNode) then
+  if ATextComparator(AValue, LNode) then
   begin
+    // Setting LNode.CheckState indirectly in this way follows same code path as
+    // a check-box click, setting parents' check states as a side-effect
     if AVisible then
-      LNode.CheckState := csCheckedNormal
+      FTreeView.VT.CheckState[LNode] := csCheckedNormal
     else
-      LNode.CheckState := csUncheckedNormal;
+      FTreeView.VT.CheckState[LNode] := csUncheckedNormal;
 
     LNodeData := FTreeView.GetObjectFromNode(LNode);
     Assert(LNodeData.TestValid(TtiObject), CTIErrorInvalidObject);
@@ -4555,26 +4579,16 @@ begin
 
 end;
 
+procedure TtiChartLegendTreeViewForm.SetSeriesVisible(const ASeriesName: string;
+  const AVisible: boolean);
+begin
+  SetSeriesVisibleByText(FindBySeriesName, ASeriesName, AVisible);
+end;
+
 procedure TtiChartLegendTreeViewForm.SetSeriesVisibleByCaption(
   const ASeriesTitle: string; const AVisible: Boolean);
-var
-  LNode: PVirtualNode;
-  LNodeData: TtiObject;
-  LChartSeries: ItiChartSeries;
 begin
-  if FindBySeriesProperty(SameSeriesTitle, ASeriesTitle, LNode) then
-  begin
-    if AVisible then
-      LNode.CheckState := csCheckedNormal
-    else
-      LNode.CheckState := csUncheckedNormal;
-
-    LNodeData := FTreeView.GetObjectFromNode(LNode);
-    Assert(LNodeData.TestValid(TtiObject), CTIErrorInvalidObject);
-
-    if Supports(LNodeData, ItiChartSeries, LChartSeries) then
-      FChart.ShowSeries(LChartSeries.GetChartSeries(FChart), AVisible);
-  end;
+  SetSeriesVisibleByText(FindBySeriesTitle, ASeriesTitle, AVisible);
 end;
 
 procedure TtiChartLegendTreeViewForm.SetShowEmptyRootNode(const AShowNode: boolean);
