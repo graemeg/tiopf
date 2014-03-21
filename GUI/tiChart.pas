@@ -160,12 +160,12 @@ type
   // Wrapping VCLTee.* types in a local type solves the linking problem.
   TtiChartSeries2 = TChartSeries;
 
-  ItiChartSeries = interface
+  ItiChartLegendItemData = interface
     ['{C749B34A-331A-4863-A7EB-B414B81F607A}']
     function GetChartSeries(const AChart: TtiTimeSeriesChart): TtiChartSeries2;
   end;
 
-  TtiChartLegendItem = class(TtiClearPanel, ItiChartSeries)
+  TtiChartLegendItem = class(TtiClearPanel, ItiChartLegendItemData)
   private
     FChartSeries: TtiChartSeries2;
     FCheckBox: TCheckBox;
@@ -281,10 +281,10 @@ type
     function IsSeriesVisibleByCaption(const ASeriesTitle: string): boolean; override;
   end;
 
-  TtiChartSeriesPropertyComparator = function (
-    const AChartSeries: ItiChartSeries; const AValue: string): boolean of object;
+  TtiChartSeriesMatchByText = function (
+    const AChartLegendItemData: ItiChartLegendItemData; const APropertyValue: string): boolean of object;
 
-  TtiChartSeriesPropertyTextComparator = function (
+  TtiChartLegendTreeViewNodeByTextFinder = function (
     const APropertyValue: string; out ANode: PVirtualNode): boolean of object;
 
   TtiChartLegendTreeViewForm = class(TtiChartLegendFormAbs)
@@ -301,20 +301,20 @@ type
     procedure SetShowEmptyRootNode(const AShowNode: boolean);
     function GetOnSelectNode: TtiVTTVNodeEvent;
     procedure SetOnSelectNode(const ADelegate: TtiVTTVNodeEvent);
-    function SameSeriesName(const AChartSeries: ItiChartSeries;
+    function SameSeriesName(const AChartLegendItemData: ItiChartLegendItemData;
       const ASeriesName: string): boolean;
-    function SameSeriesTitle(const AChartSeries: ItiChartSeries;
+    function SameSeriesTitle(const AChartLegendItemData: ItiChartLegendItemData;
       const ASeriesTitle: string): boolean;
-    function FindBySeriesProperty(
-      const ACompare: TtiChartSeriesPropertyComparator;
+    function FindNodeBySeriesProperty(
+      const ACompare: TtiChartSeriesMatchByText;
       const APropertyValue: string; out ANode: PVirtualNode): boolean;
-    function FindBySeriesName(const APropertyValue: string;
+    function FindNodeBySeriesName(const ASeriesName: string;
       out ANode: PVirtualNode): boolean;
-    function FindBySeriesTitle(const APropertyValue: string;
+    function FindNodeBySeriesTitle(const ASeriesTitle: string;
       out ANode: PVirtualNode): boolean;
     procedure SelectAll(const ASelected: boolean);
     procedure SetSeriesVisibleByText(
-      const ATextComparator: TtiChartSeriesPropertyTextComparator;
+      const AFindNodeByText: TtiChartLegendTreeViewNodeByTextFinder;
       const AValue: string; const AVisible: boolean);
   protected
     function GetSeriesVisible(const ASeriesName: string): boolean; override;
@@ -4411,22 +4411,31 @@ procedure TtiChartLegendTreeViewForm.VTTVNodeCheckboxClick(AtiVTTreeView: TtiVTT
   ANode: PVirtualNode; AData: TtiObject; ASetChecked: Boolean);
 var
   LNodeData: TtiObject;
-  LChartSeries: ItiChartSeries;
+  LChartLegendItemData: ItiChartLegendItemData;
+  LSavedCursor: TCursor;
 begin
   // Respond to click on the legend - set related chartseries
   Assert(FChart <> nil, 'FChart not assigned');
   Assert(ANode <> nil, 'ANode not assigned');
   LNodeData := FTreeView.GetObjectFromNode(ANode);
   Assert(LNodeData.TestValid(TtiObject), CTIErrorInvalidObject);
-  if Supports(LNodeData, ItiChartSeries, LChartSeries) then
-    FChart.ShowSeries(LChartSeries.GetChartSeries(FChart), ASetChecked);
+  if Supports(LNodeData, ItiChartLegendItemData, LChartLegendItemData) then
+  begin
+    LSavedCursor := FChart.Cursor;
+    try
+      FChart.Cursor := crHourGlass;
+      FChart.ShowSeries(LChartLegendItemData.GetChartSeries(FChart), ASetChecked);
+    finally
+      FChart.Cursor := LSavedCursor;
+    end;
+  end;
 end;
 
 procedure TtiChartLegendTreeViewForm.SelectAll(const ASelected: boolean);
 var
   LNode: PVirtualNode;
   LNodeData: TtiObject;
-  LChartSeries: ItiChartSeries;
+  LChartLegendItemData: ItiChartLegendItemData;
 begin
   LNode := FTreeView.VT.GetFirst;
   while Assigned(LNode) do
@@ -4434,7 +4443,7 @@ begin
     LNodeData := FTreeView.GetObjectFromNode(LNode);
     Assert(LNodeData.TestValid(TtiObject), CTIErrorInvalidObject);
     // only select series nodes in treeview
-    if Supports(LNodeData, ItiChartSeries, LChartSeries) then
+    if Supports(LNodeData, ItiChartLegendItemData, LChartLegendItemData) then
       if ASelected then
         FTreeView.VT.CheckState[LNode] := csCheckedNormal
       else
@@ -4454,24 +4463,24 @@ begin
 end;
 
 function TtiChartLegendTreeViewForm.SameSeriesName(
-  const AChartSeries: ItiChartSeries; const ASeriesName: string): boolean;
+  const AChartLegendItemData: ItiChartLegendItemData; const ASeriesName: string): boolean;
 begin
-  Result := SameText(AChartSeries.GetChartSeries(Chart).Name, ASeriesName);
+  Result := SameText(AChartLegendItemData.GetChartSeries(Chart).Name, ASeriesName);
 end;
 
 function TtiChartLegendTreeViewForm.SameSeriesTitle(
-  const AChartSeries: ItiChartSeries; const ASeriesTitle: string): boolean;
+  const AChartLegendItemData: ItiChartLegendItemData; const ASeriesTitle: string): boolean;
 begin
-  Result := SameText(AChartSeries.GetChartSeries(Chart).Title, ASeriesTitle);
+  Result := SameText(AChartLegendItemData.GetChartSeries(Chart).Title, ASeriesTitle);
 end;
 
-function TtiChartLegendTreeViewForm.FindBySeriesProperty(
-  const ACompare: TtiChartSeriesPropertyComparator; const APropertyValue: string;
+function TtiChartLegendTreeViewForm.FindNodeBySeriesProperty(
+  const ACompare: TtiChartSeriesMatchByText; const APropertyValue: string;
   out ANode: PVirtualNode): boolean;
 var
   LNode: PVirtualNode;
   LNodeData: TtiObject;
-  LChartSeries: ItiChartSeries;
+  LChartLegendItemData: ItiChartLegendItemData;
 begin
   Result := false;
   LNode := FTreeView.VT.GetFirst;
@@ -4479,8 +4488,8 @@ begin
   begin
     LNodeData := FTreeView.GetObjectFromNode(LNode);
     Assert(LNodeData.TestValid(TtiObject), CTIErrorInvalidObject);
-    if Supports(LNodeData, ItiChartSeries, LChartSeries) and
-      ACompare(LChartSeries, APropertyValue) then
+    if Supports(LNodeData, ItiChartLegendItemData, LChartLegendItemData) and
+      ACompare(LChartLegendItemData, APropertyValue) then
     begin
       ANode := LNode;
       Result := true;
@@ -4490,16 +4499,16 @@ begin
   end;
 end;
 
-function TtiChartLegendTreeViewForm.FindBySeriesName(
-  const APropertyValue: string; out ANode: PVirtualNode): boolean;
+function TtiChartLegendTreeViewForm.FindNodeBySeriesName(
+  const ASeriesName: string; out ANode: PVirtualNode): boolean;
 begin
-  Result := FindBySeriesProperty(SameSeriesName, APropertyValue, ANode);
+  Result := FindNodeBySeriesProperty(SameSeriesName, ASeriesName, ANode);
 end;
 
-function TtiChartLegendTreeViewForm.FindBySeriesTitle(
-  const APropertyValue: string;  out ANode: PVirtualNode): boolean;
+function TtiChartLegendTreeViewForm.FindNodeBySeriesTitle(
+  const ASeriesTitle: string;  out ANode: PVirtualNode): boolean;
 begin
-  Result := FindBySeriesProperty(SameSeriesTitle, APropertyValue, ANode);
+  Result := FindNodeBySeriesProperty(SameSeriesTitle, ASeriesTitle, ANode);
 end;
 
 function TtiChartLegendTreeViewForm.GetOnSelectNode: TtiVTTVNodeEvent;
@@ -4521,9 +4530,9 @@ var
   LNode: PVirtualNode;
   LFound: boolean;
 begin
-  LFound := FindBySeriesProperty(SameSeriesName, ASeriesName, LNode);
+  LFound := FindNodeBySeriesName(ASeriesName, LNode);
   Assert(LFound, 'SeriesName "' + ASeriesName + '" not found');
-  Result := LFound and (LNode.CheckState in [csCheckedNormal]);
+  Result := LFound and (LNode.CheckState in [csCheckedNormal, csCheckedPressed, csMixedPressed]);
 end;
 
 function TtiChartLegendTreeViewForm.GetShowEmptyRootNode: boolean;
@@ -4537,7 +4546,8 @@ var
   LNode: PVirtualNode;
   LFound: boolean;
 begin
-  LFound := FindBySeriesProperty(SameSeriesTitle, ASeriesTitle, LNode);
+  LFound := FindNodeBySeriesTitle(ASeriesTitle, LNode);
+  Assert(LFound, 'Series with Title "' + ASeriesTitle + '" not found');
   Result := LFound and (LNode.CheckState in [csCheckedNormal, csCheckedPressed, csMixedPressed]);
 end;
 
@@ -4554,17 +4564,17 @@ begin
 end;
 
 procedure TtiChartLegendTreeViewForm.SetSeriesVisibleByText(
-  const ATextComparator: TtiChartSeriesPropertyTextComparator; const AValue: string;
+  const AFindNodeByText: TtiChartLegendTreeViewNodeByTextFinder; const AValue: string;
   const AVisible: boolean);
 var
   LNode: PVirtualNode;
   LNodeData: TtiObject;
-  LChartSeries: ItiChartSeries;
+  LChartLegendItemData: ItiChartLegendItemData;
 begin
-  if ATextComparator(AValue, LNode) then
+  if AFindNodeByText(AValue, LNode) then
   begin
-    // Setting LNode.CheckState indirectly in this way follows same code path as
-    // a check-box click, setting parents' check states as a side-effect
+  // Setting LNode.CheckState indirectly in this way follows same code path as
+  // a check-box click, setting parents' check states as a side-effect
     if AVisible then
       FTreeView.VT.CheckState[LNode] := csCheckedNormal
     else
@@ -4573,8 +4583,9 @@ begin
     LNodeData := FTreeView.GetObjectFromNode(LNode);
     Assert(LNodeData.TestValid(TtiObject), CTIErrorInvalidObject);
 
-    if Supports(LNodeData, ItiChartSeries, LChartSeries) then
-      FChart.ShowSeries(LChartSeries.GetChartSeries(FChart), AVisible);
+    if Supports(LNodeData, ItiChartLegendItemData, LChartLegendItemData) then
+      FChart.ShowSeries(LChartLegendItemData.GetChartSeries(FChart), AVisible);
+
   end;
 
 end;
@@ -4582,13 +4593,13 @@ end;
 procedure TtiChartLegendTreeViewForm.SetSeriesVisible(const ASeriesName: string;
   const AVisible: boolean);
 begin
-  SetSeriesVisibleByText(FindBySeriesName, ASeriesName, AVisible);
+  SetSeriesVisibleByText(FindNodeBySeriesName, ASeriesName, AVisible);
 end;
 
 procedure TtiChartLegendTreeViewForm.SetSeriesVisibleByCaption(
   const ASeriesTitle: string; const AVisible: Boolean);
 begin
-  SetSeriesVisibleByText(FindBySeriesTitle, ASeriesTitle, AVisible);
+  SetSeriesVisibleByText(FindNodeBySeriesTitle, ASeriesTitle, AVisible);
 end;
 
 procedure TtiChartLegendTreeViewForm.SetShowEmptyRootNode(const AShowNode: boolean);
