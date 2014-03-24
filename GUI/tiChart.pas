@@ -104,6 +104,7 @@ type
     procedure SetItems(Index: integer; const AValue: TtiChartSeries); reintroduce;
   public
     function FindByChartSeries(const AChartSeries: TChartSeries): TtiChartSeries;
+    function SeriesNameToTitle(const ASeriesName: string): string;
     property Items[Index: integer]: TtiChartSeries read GetItems write SetItems;
   end;
 
@@ -715,6 +716,7 @@ public
     property Zoomed: Boolean read GetZoomed;
     procedure SetSeriesVisibleByCaption(const ASeriesTitle: string; const AVisible: Boolean);
     function IsSeriesVisible(const ASeriesTitle: string): boolean;
+    function SeriesNameToTitle(const ASeriesName: string): string;
     function PointsVisible: Integer;
     procedure SelectUserPanel;
     procedure DeselectAllSeries;
@@ -2050,6 +2052,17 @@ end;
 function TtiChartSeriesList.GetItems(Index: integer): TtiChartSeries;
 begin
   result := TtiChartSeries(inherited GetItems(Index));
+end;
+
+function TtiChartSeriesList.SeriesNameToTitle(
+  const ASeriesName: string): string;
+var
+  i: integer;
+begin
+  result := '';
+  for i := 0 to Count - 1 do
+    if Items[i].ChartSeries.Name = ASeriesName then
+      Exit(Items[i].ChartSeries.Title);
 end;
 
 procedure TtiChartSeriesList.SetItems(Index: integer; const AValue: TtiChartSeries);
@@ -3464,6 +3477,12 @@ begin
   end;
 end;
 
+function TtiTimeSeriesChart.SeriesNameToTitle(
+  const ASeriesName: string): string;
+begin
+  result := FSeriesList.SeriesNameToTitle(ASeriesName);
+end;
+
 function TtiTimeSeriesChart.SeriesTitleToName(const ATitle: string): string;
 var
   I: Integer;
@@ -3870,12 +3889,16 @@ begin
   // Save zoom state. Showing a series can change this.
   LZoomed := Zoomed;
   ASeries.Active := AVisible;
+
+  // Note: Must do this before ResetZoom to allow the form to respond to
+  // OnVisibleSeriesChange before OnRangeChange
+  if Assigned(FOnVisibleSeriesChange) then
+    FOnVisibleSeriesChange(ASeries.Name, AVisible);
+
   if (not LZoomed) and AVisible then
     ResetZoom
   else
     RepositionChart;
-  if Assigned(FOnVisibleSeriesChange) then
-    FOnVisibleSeriesChange(ASeries.Name, AVisible);
 end;
 
 //procedure TtiTimeSeriesChart.SnapEditDialogToButton(pForm: TForm; pSender:

@@ -245,6 +245,8 @@ type
     property    Items[Index: integer ]: TtiVTSortOrder read GetItem write SetItem; default;
     function    Add(AFieldName: string; ADirection: TvtSortDirection = vtsdAscending): TtiVTSortOrder; overload;
     function    Add : TtiVTSortOrder; overload;
+    function    Remove(const ASortOrder: TtiVTSortOrder): Integer;
+    function    IndexOf(const ASortOrder: TtiVTSortOrder): Integer;
     function    ItemByFieldName(const AFieldName: string;
       out ASortOrder: TtiVTSortOrder): boolean;
 
@@ -1034,6 +1036,14 @@ begin
   inherited Items[Index]:= AValue;
 end;
 
+function TtiVTSortOrders.IndexOf(const ASortOrder: TtiVTSortOrder): Integer;
+begin
+  for Result := 0 to Count - 1 do
+    if Items[Result] = ASortOrder then
+      Exit;
+  Result := -1;
+end;
+
 function TtiVTSortOrders.ItemByFieldName(const AFieldName: string;
   out ASortOrder: TtiVTSortOrder): boolean;
 var
@@ -1049,6 +1059,13 @@ begin
   if Result then
     ASortOrder := Items[i];
 
+end;
+
+function TtiVTSortOrders.Remove(const ASortOrder: TtiVTSortOrder): Integer;
+begin
+  Result := IndexOf(ASortOrder);
+  if Result >= 0 then
+    Delete(Result);
 end;
 
 { TtiVTSortOrder }
