@@ -2,9 +2,13 @@ unit tiOIDInteger;
 
 {
   Usage:
-  Assign the TIOPFManager's Default OID Generator property like this:
-
-  GTIOPFManager.DefaultOIDGenerator := TtiOIDGeneratorInteger.Create;
+    1) Optional: Assign the TIOPFManager's Default OID Generator property like this:
+       GTIOPFManager.DefaultOIDGenerator := TtiOIDGeneratorInteger.Create;
+    2) Required: Make sure you have a Next_OID table with a OID field of type Integer
+         eg: CREATE TABLE NEXT_OID ( OID INTEGER NOT NULL, CONSTRAINT PK_NEXT_OID PRIMARY KEY (OID) );
+    3) Required: Make sure you have an initial record inserted into the Next_OID table,
+       and set the starting high value for the generator.
+         eg: INSERT INTO NEXT_OID VALUES (0);
 }
 
 {$I tiDefines.inc}
