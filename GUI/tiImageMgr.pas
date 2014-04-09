@@ -564,10 +564,12 @@ begin
     LoadImagesFromResource(cResTI_Print,                       [tiIS16]);
     LoadImagesFromResource(cResTI_PrintSetup,                  [tiIS16]);
     LoadImagesFromResource(cResTI_Query,                       [tiIS16]);
+    LoadImagesFromResource(cResTI_Record,                      [tiIS16]);
     LoadImagesFromResource(cResTI_Redo,                        [tiIS16]);
     LoadImagesFromResource(cResTI_Save,                        [tiIS16]);
     LoadImagesFromResource(cResTI_SelectCols,                  [tiIS16]);
     LoadImagesFromResource(cResTI_Sort,                        [tiIS16]);
+    LoadImagesFromResource(cResTI_Stop,                        [tiIS16]);
     LoadImagesFromResource(cResTI_Undo,                        [tiIS16]);
     LoadImagesFromResource(cResTI_View,                        [tiIS16]);
     LoadImagesFromResource(cResTI_Warning,                     [tiIS16]);

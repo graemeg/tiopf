@@ -168,6 +168,10 @@ const
   cResTI_RadioButtonChecked16N   = 'ti_RadioButtonChecked_16N';
   cResTI_RadioButtonUnChecked16D = 'ti_RadioButtonUnChecked_16D';
   cResTI_RadioButtonUnChecked16N = 'ti_RadioButtonUnChecked_16N';
+  cResTI_Record                  = 'ti_Record';
+  cResTI_Record16D               = 'ti_Record_16D';
+  cResTI_Record16H               = 'ti_Record_16H';
+  cResTI_Record16N               = 'ti_Record_16N';
   cResTI_ReDo                    = 'ti_ReDo';
   cResTI_ReDo16D                 = 'ti_ReDo_16D';
   cResTI_ReDo16H                 = 'ti_ReDo_16H';
@@ -191,6 +195,10 @@ const
   cResTI_Sort16D                 = 'ti_Sort_16D';
   cResTI_Sort16H                 = 'ti_Sort_16H';
   cResTI_Sort16N                 = 'ti_Sort_16N';
+  cResTI_Stop                    = 'ti_Stop';
+  cResTI_Stop16D                 = 'ti_Stop_16D';
+  cResTI_Stop16H                 = 'ti_Stop_16H';
+  cResTI_Stop16N                 = 'ti_Stop_16N';
   cResTI_Tick                    = 'ti_Tick';
   cResTI_Tick16D                 = 'ti_Tick_16D';
   cResTI_Tick16H                 = 'ti_Tick_16H';
