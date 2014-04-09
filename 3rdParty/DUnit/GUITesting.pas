@@ -1,7 +1,7 @@
-{ #(@)$Id: GUITesting.pas 97 2013-02-12 06:02:24Z jarrodh $ }
+{ #(@)$Id: GUITesting.pas 98 2014-02-07 10:19:25Z jarrodh $ }
 {: DUnit: An XTreme testing framework for Delphi programs.
    @author  The DUnit Group.
-   @version $Revision: 97 $
+   @version $Revision: 98 $
 }
 (*
  * The contents of this file are subject to the Mozilla Public
@@ -60,7 +60,7 @@ uses
   Classes;
 
 const
-  rcs_id: string = '#(@)$Id: GUITesting.pas 97 2013-02-12 06:02:24Z jarrodh $';
+  rcs_id: string = '#(@)$Id: GUITesting.pas 98 2014-02-07 10:19:25Z jarrodh $';
 
 type
   TGUITestCase = class(TTestCase, IGUITestCase)
@@ -119,6 +119,7 @@ implementation
 
 uses
   GUIActionRecorder
+  ,TestUtils
   ;
 
 // assertions are always on so we can check for own consistency

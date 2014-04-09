@@ -40,9 +40,6 @@ unit GUIAutomation;
 
 interface
 uses
-  TestFramework,
-  TestFrameworkIfaces,
-
 {$IFDEF LINUX}
   Types,
 {$ELSE}
@@ -107,7 +104,7 @@ type
 
   protected
     procedure SyncMessages;
-    procedure SyncSleep(const AInterval: Integer);
+//    procedure SyncSleep(const AInterval: Integer);
     function WaitForWindowEnabled(const AHwnd: HWND): boolean;
     function ControlAtActiveWindowCoord(const AX: Integer; const AY: Integer;
         out AControlHwnd: HWND; out APoint: TPoint): boolean;
@@ -176,6 +173,8 @@ type
     procedure SetFocus(Control :TControl; Addrs :Pointer = nil); overload;
     procedure SetFocus(ControlName :string);                    overload;
 
+    procedure SyncSleep(const AInterval: Integer);
+
     property ActionDelay: Integer read FActionDelay write FActionDelay;
     property MouseMoveDelay: Integer read FMouseMoveDelay write FMouseMoveDelay;
     property KeyDownDelay: Integer read FKeyDownDelay write FKeyDownDelay;
@@ -192,24 +191,16 @@ const
 
 implementation
 
-{$IF COMPILERVERSION >= 11} // D2007
 uses
+{$IF COMPILERVERSION >= 11} // D2007
   Dialogs
   ,Types
-  ;
+  ,
 {$IFEND}
+  TestUtils
+  ;
 
 type
-  // Provide a non-blocking call to Application.ProcessMessages.
-  TGUISyncMessagesThread = class(TThread)
-  private
-    procedure ProcessMessages;
-  protected
-    procedure Execute; override;
-  public
-    constructor Create(CreateSuspended: Boolean);
-    class procedure SyncMessages;
-  end;
 
 {$IFDEF DELPHI2009_UP}
   // Ability to run code in a separate thread. Required for GUI testing
@@ -229,29 +220,6 @@ type
 {$ASSERTIONS ON}
 // need stack frames to use CallerAddr
 {$STACKFRAMES ON}
-
-{ TGUISyncMessagesThread }
-
-class procedure TGUISyncMessagesThread.SyncMessages;
-begin
-  TGUISyncMessagesThread.Create(False {CreateSuspended});
-end;
-
-constructor TGUISyncMessagesThread.Create(CreateSuspended: Boolean);
-begin
-  inherited;
-  FreeOnTerminate := true;
-end;
-
-procedure TGUISyncMessagesThread.ProcessMessages;
-begin
-  Application.ProcessMessages;
-end;
-
-procedure TGUISyncMessagesThread.Execute;
-begin
-  Synchronize(ProcessMessages);
-end;
 
 { TGUITestThread }
 
@@ -298,10 +266,11 @@ end;
 
 procedure TGUIAutomation.SyncMessages;
 begin
-  if GetCurrentThreadId = MainThreadID then
-    Application.ProcessMessages
-  else
-    TGUISyncMessagesThread.SyncMessages;
+  TThread.Synchronize(nil,
+      procedure
+      begin
+        Application.ProcessMessages;
+      end);
 end;
 
 procedure TGUIAutomation.SyncSleep(const AInterval: Integer);
@@ -355,6 +324,12 @@ begin
     raise EGUIAutomation.Create('No control name') at Addrs;
 
   Result := DoFind(Comp, UpperCase(CtlName));
+  while (not Assigned(Result)) and ContinueExecution do
+  begin
+    Sleep(100);
+    SyncMessages;
+    Result := DoFind(Comp, UpperCase(CtlName));
+  end;
 
   if Result = nil then
     raise EGUIAutomation.Create(Format('Control named "%s" not found in active form %s',

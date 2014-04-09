@@ -96,30 +96,30 @@ type
 
   TMouseClickState = (mcsSingle, mcsDouble);
 
+  TGUIActionCommandFormat = (acfNative, acfScript);
+
   TGUIActionAbs = class {$IFDEF DELPHI2006_UP}abstract{$ENDIF} (TObject)
   private
     FControlName: string;
   protected
     function GetCommandName: string; virtual; abstract;
-    function GetCommandParameters: string; virtual;
-    function GetAsString: string;
+    function GetCommandParameters(const ACommandFormat: TGUIActionCommandFormat): string; virtual;
     function JoinParams(const AFirst: string; const ASecond: string): string;
   public
     constructor Create(const AControlName: string);
+    function AsString(const ACommandFormat: TGUIActionCommandFormat): string;
+    function CommandParameters(const ACommandFormat: TGUIActionCommandFormat = acfNative): string;
     property ControlName: string read FControlName;
     property CommandName: string read GetCommandName;
-    property CommandParameters: string read GetCommandParameters;
-    property AsString: string read GetAsString;
   end;
 
   TGUIActionList = class(TObjectList)
   protected
     function GetItem(AIndex: Integer): TGUIActionAbs;
     procedure SetItem(AIndex: Integer; AObject: TGUIActionAbs);
-    function GetAsString: string;
   public
+    function AsString(const ACommandFormat: TGUIActionCommandFormat = acfNative): string;
     property Items[AIndex: Integer]: TGUIActionAbs read GetItem write SetItem; default;
-    property AsString: string read GetAsString;
   end;
 
   // Singleton
@@ -131,6 +131,7 @@ type
     FControl: TControl;
     FGUI: TWinControl;
     FOnStopRecording: TGUITestCaseStopRecordingEvent;
+    FControlsToIgnore: TList;
     procedure AddAction(AAction: TGUIActionAbs);
     procedure FlushTextEntry;
     function CharFromVirtualKey(const AKey: Word): string;
@@ -140,6 +141,7 @@ type
     procedure SetControl(const AHwnd: HWND; var APoint: TPoint);
     function ControlByName(const AControl: TControl): boolean;
     function ControlName: string;
+    function ValidControl: boolean;
   public
     constructor Create;
     destructor Destroy; override;
@@ -149,6 +151,7 @@ type
         const AWParam: WPARAM; out AStopRecording: boolean;
         const AX: Integer = -1; const AY: Integer = -1);
     procedure StopRecording;
+    procedure AddControlToIgnore(const AControl: TComponent); overload;
 
     property GUI: TWinControl read FGUI write FGUI;
     property Active: boolean read FActive write SetActive;
@@ -162,7 +165,7 @@ type
     FText: string;
   protected
     function GetCommandName: string; override;
-    function GetCommandParameters: string; override;
+    function GetCommandParameters(const ACommandFormat: TGUIActionCommandFormat): string; override;
   public
     constructor Create(const AControlName: string; const AText: string);
     property Text: string read FText;
@@ -174,9 +177,10 @@ type
     FKeyState: string;
   protected
     function GetCommandName: string; override;
-    function GetCommandParameters: string; override;
+    function GetCommandParameters(const ACommandFormat: TGUIActionCommandFormat): string; override;
   public
-    constructor Create(const AControlName: string; const AKeyCode: Integer;
+    constructor Create(
+        const AControlName: string; const AKeyCode: Integer;
         const AKeyState: string);
     property KeyCode: Integer read FKeyCode;
     property KeyState: string read FKeyState;
@@ -190,9 +194,10 @@ type
     FClickState: TMouseClickState;
   protected
     function GetCommandName: string; override;
-    function GetCommandParameters: string; override;
+    function GetCommandParameters(const ACommandFormat: TGUIActionCommandFormat): string; override;
   public
-    constructor Create(const AControlName: string; const AX: Integer;
+    constructor Create(
+        const AControlName: string; const AX: Integer;
         const AY: Integer; const AButton: TMouseButton;
         const AClickState: TMouseClickState);
     property X: Integer read FX;
@@ -294,7 +299,8 @@ begin
   FControlName := AControlName;
 end;
 
-function TGUIActionAbs.GetCommandParameters: string;
+function TGUIActionAbs.GetCommandParameters(
+  const ACommandFormat: TGUIActionCommandFormat): string;
 begin
   if FControlName = '' then
     Result := ''
@@ -302,12 +308,18 @@ begin
     Result := Format('''%s''', [FControlName]);
 end;
 
-function TGUIActionAbs.GetAsString: string;
+function TGUIActionAbs.CommandParameters(
+  const ACommandFormat: TGUIActionCommandFormat): string;
+begin
+  Result := GetCommandParameters(ACommandFormat);
+end;
+
+function TGUIActionAbs.AsString(const ACommandFormat: TGUIActionCommandFormat): string;
 var
   LParameters: string;
 begin
   Result := CommandName;
-  LParameters := CommandParameters;
+  LParameters := CommandParameters(ACommandFormat);
   if LParameters <> '' then
     Result := Result + '(' + LParameters + ')';
 end;
@@ -333,7 +345,7 @@ begin
   inherited SetItem(AIndex, AObject);
 end;
 
-function TGUIActionList.GetAsString: string;
+function TGUIActionList.AsString(const ACommandFormat: TGUIActionCommandFormat): string;
 var
   LActions: TStringList;
   I: Integer;
@@ -341,7 +353,7 @@ begin
   LActions := TStringList.Create;
   try
     for I := 0 to Count - 1 do
-      LActions.Add(Items[I].AsString);
+      LActions.Add(Items[I].AsString(ACommandFormat));
     Result := LActions.Text;
   finally
     LActions.Free;
@@ -358,12 +370,14 @@ begin
   URecorder := Self;
 
   FActions := TGUIActionList.Create;
+  FControlsToIgnore := TList.Create;
   FActive := false;
 end;
 
 destructor TGUIActionRecorder.Destroy;
 begin
   Active := false; // Use setter
+  FControlsToIgnore.Free;
   FActions.Free;
   URecorder := nil;
   inherited;
@@ -526,6 +540,16 @@ begin
   end;
 end;
 
+procedure TGUIActionRecorder.AddControlToIgnore(const AControl: TComponent);
+begin
+  FControlsToIgnore.Add(AControl);
+end;
+
+function TGUIActionRecorder.ValidControl: boolean;
+begin
+  result := FControlsToIgnore.IndexOf(FControl) = -1;
+end;
+
 function TGUIActionRecorder.CharFromVirtualKey(const AKey: Word): string;
 var
   LState: TKeyboardState;
@@ -561,6 +585,7 @@ procedure TGUIActionRecorder.ProcessMessage(const AMessage: UINT;
   const AX: Integer; const AY: Integer);
 var
   LKeyState: string;
+  LText: string;
   LPoint: TPoint;
   LButton: TMouseButton;
   LClickState: TMouseClickState;
@@ -598,23 +623,30 @@ begin
         LPoint := Point(AX, AY);
         SetControl(AHwnd, LPoint);
 
-        if (AWParam <> VK_SHIFT) and (AWParam <> VK_CONTROL) and
-           (AWParam <> VK_MENU) then
+        if ValidControl then
         begin
-          LKeyState := '';
-          CheckKeyState(VK_SHIFT, LKeyState, 'ssShift');
-          CheckKeyState(VK_CONTROL, LKeyState, 'ssCtrl');
-          CheckKeyState(VK_MENU, LKeyState, 'ssAlt');
+          if (AWParam <> VK_SHIFT) and (AWParam <> VK_CONTROL) and
+             (AWParam <> VK_MENU) then
+          begin
+            LKeyState := '';
+            CheckKeyState(VK_SHIFT, LKeyState, 'ssShift');
+            CheckKeyState(VK_CONTROL, LKeyState, 'ssCtrl');
+            CheckKeyState(VK_MENU, LKeyState, 'ssAlt');
 
-          // Build up as much regular text to enter as possible
-          if ((LKeyState = '') or (LKeyState = 'ssShift')) and
-             // Regular characters: space to ~
-             (AWParam >= $20) and (AWParam <= $7E) then
-            FEnteredText := FEnteredText + CharFromVirtualKey(AWParam)
-          else
-          begin // Special characters
-            FlushTextEntry;
-            AddAction(TGUIActionEnterKey.Create(ControlName, AWParam, LKeyState));
+            // Build up as much regular text to enter as possible
+            if ((LKeyState = '') or (LKeyState = 'ssShift')) then
+              LText := CharFromVirtualKey(AWParam)
+            else
+              LText := '';
+            // Regular printable characters excluding single quote which we treat
+            // as a special key (alternatively we could escape it)
+            if (LText >= ' ') and (LText <= '~') and (LText <> '''') then
+              FEnteredText := FEnteredText + LText
+            else
+            begin // Special characters
+              FlushTextEntry;
+              AddAction(TGUIActionEnterKey.Create(ControlName, AWParam, LKeyState));
+            end;
           end;
         end;
       end;
@@ -627,23 +659,26 @@ begin
         SetControl(AHwnd, LPoint);
         FlushTextEntry;
 
-        if (AMessage = WM_LBUTTONDOWN) or (AMessage = WM_LBUTTONDBLCLK) then
-          LButton := mbLeft
-        else
-          LButton := mbRight;
+        if ValidControl then
+        begin
+          if (AMessage = WM_LBUTTONDOWN) or (AMessage = WM_LBUTTONDBLCLK) then
+            LButton := mbLeft
+          else
+            LButton := mbRight;
 
-        if (AMessage = WM_LBUTTONDBLCLK) or (AMessage = WM_RBUTTONDBLCLK) then
-          LClickState := mcsDouble
-        else
-          LClickState := mcsSingle;
+          if (AMessage = WM_LBUTTONDBLCLK) or (AMessage = WM_RBUTTONDBLCLK) then
+            LClickState := mcsDouble
+          else
+            LClickState := mcsSingle;
 
-        // If control cannot be identified by name then find the control
-        // at runtime based on co-ords from foreground window.
-        if not ControlByName(FControl) then
-          LPoint := _ControlToWindowCoords(LPoint);
+          // If control cannot be identified by name then find the control
+          // at runtime based on co-ords from foreground window.
+          if not ControlByName(FControl) then
+            LPoint := _ControlToWindowCoords(LPoint);
 
-        AddAction(TGUIActionClick.Create(ControlName, LPoint.X, LPoint.Y,
-            LButton, LClickState));
+          AddAction(TGUIActionClick.Create(ControlName, LPoint.X, LPoint.Y,
+              LButton, LClickState));
+        end;
       end;
   end;
 end;
@@ -665,9 +700,10 @@ begin
     Result := CEnterTextIntoCommandName;
 end;
 
-function TGUIActionEnterTextInto.GetCommandParameters: string;
+function TGUIActionEnterTextInto.GetCommandParameters(
+  const ACommandFormat: TGUIActionCommandFormat): string;
 begin
-  Result := JoinParams((inherited GetCommandParameters),
+  Result := JoinParams((inherited GetCommandParameters(ACommandFormat)),
       Format('''%s''', [FText]));
 end;
 
@@ -689,10 +725,16 @@ begin
     Result := CEnterKeyIntoCommandName;
 end;
 
-function TGUIActionEnterKey.GetCommandParameters: string;
+function TGUIActionEnterKey.GetCommandParameters(
+  const ACommandFormat: TGUIActionCommandFormat): string;
+var
+  LParams: string;
 begin
-  Result := JoinParams((inherited GetCommandParameters),
-      Format('%d, [%s]', [FKeyCode, FKeyState]));
+  if ACommandFormat = acfScript then
+    LParams := Format('%d, ''[%s]''', [FKeyCode, FKeyState])
+  else
+    LParams := Format('%d, [%s]', [FKeyCode, FKeyState]);
+  Result := JoinParams((inherited GetCommandParameters(ACommandFormat)), LParams);
 end;
 
 { TGUIActionClick }
@@ -730,9 +772,10 @@ begin
     Result := Result + CClickAtCommand;
 end;
 
-function TGUIActionClick.GetCommandParameters: string;
+function TGUIActionClick.GetCommandParameters(
+  const ACommandFormat: TGUIActionCommandFormat): string;
 begin
-  Result := JoinParams((inherited GetCommandParameters),
+  Result := JoinParams((inherited GetCommandParameters(ACommandFormat)),
       Format('%d, %d', [FX, FY]));
 end;
 

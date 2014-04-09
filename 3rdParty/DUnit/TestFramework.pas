@@ -1,4 +1,4 @@
-{#(@)$Id: TestFramework.pas 97 2013-02-12 06:02:24Z jarrodh $ }
+{#(@)$Id: TestFramework.pas 98 2014-02-07 10:19:25Z jarrodh $ }
 {  DUnit: An XTreme testing framework for Delphi programs. }
 (*
  * The contents of this file are subject to the Mozilla Public
@@ -615,7 +615,6 @@ function  RegisterProject(const AProject: ITestProject): Integer; overload;
 function  RegisterProject(const AName: string;
                           const AProject: ITestProject): Integer; overload;
 procedure UnRegisterProjectManager;
-function  CallerAddr: Pointer; {$IFNDEF CLR} assembler; {$ENDIF}
 
 {$BOOLEVAL OFF}
 {==============================================================================}
@@ -637,7 +636,8 @@ uses
   Math,
   ProjectsManagerIface,
   ProjectsManager,
-  TestListenerIface;
+  TestListenerIface,
+  TestUtils;
 
 {$STACKFRAMES ON} // Required to retrieve caller's address
 
@@ -2166,47 +2166,6 @@ procedure TTestProc.set_TestSetUpData(const IsTestSetUpData: ITestSetUpData);
 begin
   FTestSetUpData := IsTestSetUpData;
 end;
-
-function IsBadPointer(const P: Pointer):boolean; {$IFNDEF CLR} register; {$ENDIF}
-begin
-  try
-    Result := (P = nil)
-{$IFNDEF CLR}
-              or ((Pointer(P^) <> P) and (Pointer(P^) = P));
-{$ENDIF}
-  except
-    Result := true;
-  end
-end;
-
-function CallerAddr: Pointer; {$IFNDEF CLR} assembler; {$ENDIF}
-{$IFDEF CLR}
-begin
-  Result := nil;
-end;
-{$ELSE}
-const
-  CallerIP = $4;
-asm
-   mov   eax, ebp
-   call  IsBadPointer
-   test  eax,eax
-   jne   @@Error
-
-   mov   eax, [ebp].CallerIP
-   sub   eax, 5   // 5 bytes for call
-
-   push  eax
-   call  IsBadPointer
-   test  eax,eax
-   pop   eax
-   je    @@Finish
-
-@@Error:
-   xor eax, eax
-@@Finish:
-end;
-{$ENDIF}
 
 function TTestProc.get_ExecStatus: TExecutionStatus;
 begin

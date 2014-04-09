@@ -1,4 +1,4 @@
-{ $Id: GUITestRunner.pas 78 2010-10-07 11:32:50Z jarrodh $ }
+{ $Id: GUITestRunner.pas 98 2014-02-07 10:19:25Z jarrodh $ }
 {: DUnit: An XTreme testing framework for Delphi programs.
    @author  The DUnit Group.
 }
@@ -2564,7 +2564,7 @@ begin
       LCommands.Add('  ThreadedExecute(procedure begin');
       for I := 0 to GGUIActionRecorder.Actions.Count - 1 do
         LCommands.Add('    ' + CGUIAutomationCommandPrefix + '.' +
-            GGUIActionRecorder.Actions[I].AsString + ';');
+            GGUIActionRecorder.Actions[I].AsString(acfNative) + ';');
       LCommands.Add('  end);');
       Clipbrd.Clipboard.AsText := LCommands.Text;
       ErrorMessageRTF.Lines.AddStrings(LCommands);
