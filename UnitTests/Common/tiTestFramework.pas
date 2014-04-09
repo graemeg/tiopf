@@ -241,6 +241,7 @@ uses
   ,Windows
   ,tiConsoleApp
   {$ENDIF}
+  ,TestUtils
  ;
 
 { This lets us use a single include file for both the Interface and
