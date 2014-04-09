@@ -291,6 +291,10 @@ type
                              pHelpContext : integer = 0): TAction;
      function    FindAction(const AName : string): TAction; // TODO: We can remove FindAction by exposing the private Action fields as properties
 
+{$IFDEF DELPHI2010ORABOVE}
+     function    FindFormInstance<T: TForm>: T;
+{$ENDIF}
+
      // ToDo: AddActionUpdateHandler should add the handler to a list, which
      //       is scanned in the FAL.OnUpdate. Will also require a
      //       RemoveActionUpdateHandler method
@@ -1240,6 +1244,21 @@ procedure TtiApplicationMenuSystem.HintToStatusBar(Sender: TObject);
 begin
   FStatusPanelHint.Caption := '  ' + GetLongHint(Application.Hint);
 end;
+
+{$IFDEF DELPHI2010ORABOVE}
+function TtiApplicationMenuSystem.FindFormInstance<T>: T;
+var
+  i: Integer;
+begin
+  result := nil;
+  for i := 0 to Screen.FormCount - 1 do
+    if Screen.Forms[i] is T then
+    begin
+      result := Screen.Forms[i] as T;
+      break;
+    end;
+end;
+{$ENDIF}
 
 procedure TtiApplicationMenuSystem.WhatsThisGetContext(pSender, pHelpItem: TObject;
   pIsMenu: Boolean; var pHContext: THelpContext; pX, pY: Integer);
