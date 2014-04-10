@@ -48,6 +48,7 @@ uses
   TestFrameworkIfaces,
   Classes,
   SysUtils,
+{$IFNDEF CLR}  Graphics, {$ENDIF} // TBitmap
   IniFiles;
 
 type
@@ -291,17 +292,17 @@ type
     procedure CheckNotEqualsString(const expected, actual: string;
                                    const ErrorMsg: string = '');
 {$IFNDEF CLR}
-  {$IFNDEF UNICODE}
-    procedure CheckEquals(const expected, actual: WideString;
-                          const ErrorMsg: string= ''); overload;
-    procedure CheckNotEquals(const expected, actual: WideString;
-                             const ErrorMsg: string = ''); overload;
     procedure CheckEqualsMem(const expected, actual: pointer;
                              const size:longword;
                              const ErrorMsg: string= '');
     procedure CheckNotEqualsMem(const expected, actual: pointer;
                                 const size:longword;
                                 const ErrorMsg:string='');
+  {$IFNDEF UNICODE}
+    procedure CheckEquals(const expected, actual: WideString;
+                          const ErrorMsg: string= ''); overload;
+    procedure CheckNotEquals(const expected, actual: WideString;
+                             const ErrorMsg: string = ''); overload;
   {$ENDIF}
     procedure CheckEqualsWideString(const expected, actual: WideString;
                                     const ErrorMsg: string= '');
@@ -365,7 +366,15 @@ type
     procedure CheckEquals(const expected, actual: extended;
                           const delta: extended;
                           const ErrorMsg: string= ''); overload;
-  public
+
+    {$IFNDEF CLR} // calls CheckEqualsMem, pointer based, unsuitable for .NET
+
+    // NOTE: TBitmap type must be qualified below as Windows unit
+    // (appears later in implementation uses clause) also defines this type
+    procedure CheckEquals(const expected, actual: Graphics.TBitmap;
+                          const ErrorMsg: string= ''); overload;
+    {$ENDIF}
+
     constructor Create; overload; virtual;
     constructor Create(const AName: string); overload; virtual;
     constructor Create(const AOwnerMethod: TTestMethod;
@@ -3244,14 +3253,6 @@ begin
 end;
 
 {$IFNDEF CLR}
-  {$IFNDEF UNICODE}
-procedure TTestProc.CheckEquals(const expected, actual: WideString;
-                                const ErrorMsg: string);
-begin
-  OnCheckCalled;
-  if expected <> actual then
-    FailNotEquals(expected, actual, ErrorMsg, CallerAddr);
-end;
 
 procedure TTestProc.CheckEqualsMem(const expected, actual: pointer;
                                    const size: longword;
@@ -3260,14 +3261,6 @@ begin
   OnCheckCalled;
   if not CompareMem(expected, actual, size) then
     Fail(GetMemDiffStr(expected, actual, size, ErrorMsg), CallerAddr);
-end;
-
-procedure TTestProc.CheckNotEquals(const expected, actual: WideString;
-                                   const ErrorMsg: string);
-begin
-  OnCheckCalled;
-  if expected = actual then
-    FailEquals(expected, actual, ErrorMsg, CallerAddr);
 end;
 
 procedure TTestProc.CheckNotEqualsMem(const expected, actual: pointer;
@@ -3283,6 +3276,24 @@ begin
       Fail(ErrorMsg + 'Memory content was identical', CallerAddr)
   end;
 end;
+
+  {$IFNDEF UNICODE}
+procedure TTestProc.CheckEquals(const expected, actual: WideString;
+                                const ErrorMsg: string);
+begin
+  OnCheckCalled;
+  if expected <> actual then
+    FailNotEquals(expected, actual, ErrorMsg, CallerAddr);
+end;
+
+procedure TTestProc.CheckNotEquals(const expected, actual: WideString;
+                                   const ErrorMsg: string);
+begin
+  OnCheckCalled;
+  if expected = actual then
+    FailEquals(expected, actual, ErrorMsg, CallerAddr);
+end;
+
   {$ENDIF}
 procedure TTestProc.CheckEqualsWideString(const expected, actual: WideString;
                                           const ErrorMsg: string);
@@ -3575,6 +3586,39 @@ begin
     Result := IntToStr(Integer(ABool));
 end;
 {$ENDIF}
+
+{$IFNDEF CLR} // calls CheckEqualsMem, pointer based, unsuitable for .NET
+
+// A TBitmap streamed to memory contains more information
+// than just the pixel array. Two bitmaps may have similar pixel arrays
+// and yet not be identical when compared as memory streams.
+// To deal with this, we compare just the bitmap dimensions and the pixel array
+// portions of the two bitmaps
+
+// NOTE: TBitmap must be qualified below as Windows unit
+// (appears later in usues clause) redefines this type
+procedure TTestProc.CheckEquals(const expected, actual: Graphics.TBitmap;
+  const ErrorMsg: string);
+var
+  pixelRowLength: integer;
+  pixelsBaseAddress1, pixelsBaseAddress2: Pointer;
+  pixelsLength: integer;
+begin
+  Assert(Assigned(expected));
+  Assert(Assigned(actual));
+  Assert(expected.Height > 1);
+  CheckEquals(expected.Width, actual.Width, 'TBitmap.Width differs: ' + ErrorMsg);
+  CheckEquals(expected.Height, actual.Height, 'TBitmap.Height differs: '+ ErrorMsg);
+  // Implementation dependency:
+  // bitmap scanline with highest index is at lowest memory address
+  pixelsBaseAddress1 := expected.ScanLine[expected.Height - 1];
+  pixelsBaseAddress2 := actual.ScanLine[actual.Height - 1];
+  pixelRowLength := integer(expected.ScanLine[0]) - integer(expected.ScanLine[1]);
+  pixelsLength := expected.Height * pixelRowLength;
+  CheckEqualsMem(pixelsBaseAddress1, pixelsBaseAddress2, pixelsLength, ErrorMsg);
+end;
+{$ENDIF}
+
 
 { TTestSuite }
 

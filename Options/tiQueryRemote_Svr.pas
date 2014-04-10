@@ -666,6 +666,7 @@ var
   LDBConnectionHolder: TSavedDBConnectionHolder;
 begin
   Log('TtiStatefulDBConnectionPool.AcquireForQuery: Acquiring: %s', [pTransactionID], lsDebug);
+  result := nil;
   FCritSect.Enter;
   try
     LDBConnectionHolder := FindSavedDBConnectionHolder(pTransactionID);
