@@ -51,19 +51,29 @@ const
   rcs_id: string = '#(@)$Id$';
 
 type
+  TGUIScript = class;
+
+  TOnExecutionStateEvent = procedure(AScript: TGUIScript) of object;
 
   TGUIScript = class(TObject)
   private
     FGUIAutomation: TGUIAutomation;
-    FScript: TDelphiWebScript;
+    FDWScript: TDelphiWebScript;
     FUnit: TdwsUnit;
     FScriptSource: string;
     FScriptResult: string;
     FTerminated: Boolean;
     FRunSuccessful: Boolean;
+    FContinueExecution: Boolean;
+    FOnExecutionStarted: TOnExecutionStateEvent;
+    FOnExecutionEnded: TOnExecutionStateEvent;
     function GetRecordedScript: string;
     procedure RunScript;
     procedure TerminateScript(Info: TProgramInfo);
+    procedure AutomationContinueExecution(var AContinueExecution: boolean);
+    procedure ScriptExecutionStarted(exec : TdwsProgramExecution);
+    procedure ScriptExecutionEnded(exec : TdwsProgramExecution);
+
     function ControlName(Info: TProgramInfo): string;
     function Control(const AControlName: string): TControl; overload;
     function Control(Info: TProgramInfo): TControl; overload;
@@ -105,8 +115,13 @@ type
     property RecordedScript: string read GetRecordedScript;
     // Play back script and get result
     function Execute(const AScript: string): Boolean;
+    procedure StopExecution;
+
+    property OnExecutionStarted: TOnExecutionStateEvent read FOnExecutionStarted write FOnExecutionStarted;
+    property OnExecutionEnded: TOnExecutionStateEvent read FOnExecutionEnded write FOnExecutionEnded;
     property ScriptResult: string read FScriptResult;
     property Terminated: boolean read FTerminated;
+    property DWScript: TDelphiWebScript read FDWScript;
   end;
 
   EGUIScript = class(Exception);
@@ -257,11 +272,14 @@ begin
   inherited;
 
   FGUIAutomation := TGUIAutomation.Create;
-  FScript := TDelphiWebScript.Create(nil);
+  FGUIAutomation.OnGetContinueExecution := AutomationContinueExecution;
+  FDWScript := TDelphiWebScript.Create(nil);
+  FDWScript.OnExecutionStarted := ScriptExecutionStarted;
+  FDWScript.OnExecutionEnded := ScriptExecutionEnded;
   FUnit := TdwsUnit.Create(nil);
   FUnit.UnitName := 'GUIScriptExecution';
   FUnit.StaticSymbols := False;
-  FUnit.Script := FScript;
+  FUnit.Script := FDWScript;
 
   // Constants
 
@@ -396,7 +414,7 @@ end;
 destructor TGUIScript.Destroy;
 begin
   FUnit.Free;
-  FScript.Free;
+  FDWScript.Free;
   FGUIAutomation.Free;
   inherited;
 end;
@@ -409,7 +427,7 @@ begin
   FTerminated := false;
   FRunSuccessful := false;
   FScriptResult := '';
-  LProgram := FScript.Compile(FScriptSource);
+  LProgram := FDWScript.Compile(FScriptSource);
   if LProgram.Msgs.HasErrors then
     FScriptResult := LProgram.Msgs.AsInfo
   else
@@ -453,6 +471,12 @@ begin
   Result := FGUIAutomation.FindControl(AControlName);
 end;
 
+procedure TGUIScript.AutomationContinueExecution(
+  var AContinueExecution: boolean);
+begin
+  AContinueExecution := FContinueExecution;
+end;
+
 function TGUIScript.Control(Info: TProgramInfo): TControl;
 begin
   Result := Control(ControlName(Info));
@@ -475,9 +499,29 @@ begin
   end;
 end;
 
+procedure TGUIScript.ScriptExecutionEnded(exec: TdwsProgramExecution);
+begin
+  if Assigned(FOnExecutionEnded) then
+    FOnExecutionEnded(Self);
+end;
+
+procedure TGUIScript.ScriptExecutionStarted(exec: TdwsProgramExecution);
+begin
+  // Keep the automation running
+  FContinueExecution := true;
+
+  if Assigned(FOnExecutionStarted) then
+    FOnExecutionStarted(Self);
+end;
+
 procedure TGUIScript.SleepEval(Info: TProgramInfo);
 begin
   FGUIAutomation.SyncSleep(Info.ValueAsInteger['Milliseconds']);
+end;
+
+procedure TGUIScript.StopExecution;
+begin
+  FContinueExecution := false;
 end;
 
 procedure TGUIScript.RunScriptEval(Info: TProgramInfo);

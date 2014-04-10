@@ -102,9 +102,9 @@ type
         const AMouseDownMsg: UINT; const AMouseUpMsg: UINT;
         const AX: Integer; const AY: Integer);
 
+    procedure SynchronizeProcessMessages;
   protected
     procedure SyncMessages;
-//    procedure SyncSleep(const AInterval: Integer);
     function WaitForWindowEnabled(const AHwnd: HWND): boolean;
     function ControlAtActiveWindowCoord(const AX: Integer; const AY: Integer;
         out AControlHwnd: HWND; out APoint: TPoint): boolean;
@@ -264,13 +264,14 @@ begin
   FTextEntryDelay := CDefaultGUITextEntryDelay;
 end;
 
+procedure TGUIAutomation.SynchronizeProcessMessages;
+begin
+  Application.ProcessMessages;
+end;
+
 procedure TGUIAutomation.SyncMessages;
 begin
-  TThread.Synchronize(nil,
-      procedure
-      begin
-        Application.ProcessMessages;
-      end);
+  TThread.Synchronize(nil, SynchronizeProcessMessages);
 end;
 
 procedure TGUIAutomation.SyncSleep(const AInterval: Integer);
