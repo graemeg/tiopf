@@ -134,7 +134,7 @@ type
   public
     class function GetLanguageName: string; override;
     class function GetFriendlyLanguageName: UnicodeString; override;
-    function IsStringDelim(aChar : Char) : Boolean;
+    function IsStringDelim(aChar : WideChar) : Boolean;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -143,8 +143,8 @@ type
     function GetEol: Boolean; override;
     function GetRange: Pointer; override;
     function GetTokenID: TtkTokenKind;
-    function GetCharBeforeToken(offset : Integer = -1) : Char;
-    function GetCharAfterToken(offset : Integer = 1) : Char;
+    function GetCharBeforeToken(offset : Integer = -1) : WideChar;
+    function GetCharAfterToken(offset : Integer = 1) : WideChar;
     function GetTokenAttribute: TSynHighlighterAttributes; override;
     function GetTokenKind: integer; override;
     function IsIdentChar(AChar: WideChar): Boolean; override;
@@ -167,7 +167,7 @@ type
       write SetDetectPreprocessor;
     property IdentifierAttri: TSynHighlighterAttributes read fIdentifierAttri
       write fIdentifierAttri;
-    property IdentifierChars: String read GetIdentifierChars
+    property IdentifierChars: UnicodeString read GetIdentifierChars
       write SetIdentifierChars stored StoreIdentChars;
     property KeyAttri: TSynHighlighterAttributes read fKeyAttri write fKeyAttri;
     property KeyWords: TUnicodeStrings read fKeyWords write SetKeyWords;
@@ -574,7 +574,7 @@ end;
 
 procedure TSynGeneralSyn.StringProc;
 var
-   delim : Char;
+   delim : WideChar;
 begin
   fTokenID := tkString;
   if IsStringDelim(fLine[Run + 1]) and IsStringDelim(fLine[Run + 2]) then
@@ -657,7 +657,7 @@ end;
 
 // GetCharBeforeToken
 //
-function TSynGeneralSyn.GetCharBeforeToken(offset : Integer = -1) : Char;
+function TSynGeneralSyn.GetCharBeforeToken(offset : Integer = -1) : WideChar;
 begin
    if fTokenPos+offset>=0 then
       Result:=FLine[fTokenPos+offset]
@@ -666,7 +666,7 @@ end;
 
 // GetCharAfterToken
 //
-function TSynGeneralSyn.GetCharAfterToken(offset : Integer = 1) : Char;
+function TSynGeneralSyn.GetCharAfterToken(offset : Integer = 1) : WideChar;
 begin
    Result:=FLine[fTokenPos+offset];
 end;
@@ -716,7 +716,11 @@ begin
         Value[i] := SynWideUpperCase(Value[i]);
       Value.EndUpdate;
     end;
+
+  TUnicodeStringList(fKeyWords).Sorted:=False;
   fKeyWords.Assign(Value);
+  TUnicodeStringList(fKeyWords).Sorted:=True;
+
   DefHighLightChange(nil);
 end;
 
@@ -808,7 +812,7 @@ end;
 
 // IsStringDelim
 //
-function TSynGeneralSyn.IsStringDelim(aChar : Char) : Boolean;
+function TSynGeneralSyn.IsStringDelim(aChar : WideChar) : Boolean;
 begin
    case fStringDelim of
       sdSingleQuote : Result:=(aChar='''');

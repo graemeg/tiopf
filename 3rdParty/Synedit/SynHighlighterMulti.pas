@@ -48,7 +48,6 @@ unit SynHighlighterMulti;
 {$ENDIF}
 
 {$I SynEdit.inc}
-{$I SynWarn.inc}
 
 interface
 

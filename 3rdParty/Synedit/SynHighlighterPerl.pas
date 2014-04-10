@@ -51,7 +51,6 @@ unit SynHighlighterPerl;
 {$ENDIF}
 
 {$I SynEdit.inc}
-{$I SynWarn.inc}
 
 interface
 

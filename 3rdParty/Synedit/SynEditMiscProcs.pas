@@ -41,7 +41,6 @@ unit SynEditMiscProcs;
 {$ENDIF}
 
 {$I SynEdit.inc}
-{$I SynWarn.inc}
 
 interface
 

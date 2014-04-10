@@ -42,7 +42,6 @@ unit SynRegExpr;
 interface
 
 {$INCLUDE SynEdit.inc}
-{$I SynWarn.inc}
 
 // ======== Determine compiler
 {$IFDEF VER80} Sorry, TRegExpr is for 32-bits Delphi only. Delphi 1 is not supported (and whos really care today?!). {$ENDIF}
@@ -1297,7 +1296,9 @@ var AModifiersInt : integer) : boolean;
  begin
   Result := true;
   IsOn := true;
+{$IFDEF CPUX86}
   Mask := 0; // prevent compiler warning
+{$ENDIF}
   for i := 1 to length (AModifiers) do
    if AModifiers [i] = '-'
     then IsOn := false

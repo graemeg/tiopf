@@ -42,7 +42,6 @@ unit SynEditWordWrap;
 {$ENDIF}
 
 {$I SynEdit.inc}
-{$I SynWarn.inc}
 
 interface
 
