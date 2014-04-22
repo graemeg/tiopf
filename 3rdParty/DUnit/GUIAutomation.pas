@@ -55,7 +55,8 @@ uses
   Forms,
 {$ENDIF}
   SysUtils,
-  Classes;
+  Classes,
+  SyncObjs;
 
 const
   rcs_id: string = '#(@)$Id: GUIAutomation.pas,v 1.35 2010/05/04 09:55:00 jarrodh Exp $';
@@ -65,42 +66,59 @@ const
   VK_TAB = KEY_TAB;
 {$ENDIF}
 
+const
+  CDefaultControlWaitInterval = 5000; // Milliseconds
+  CDefaultMouseMovePixelsPerSecond = 1000;
+
 type
-  EGUIAutomation = class(Exception)
-  end;
+  EGUIAutomation = class(Exception);
+  EGUIAutomationControlNotFound = class(EGUIAutomation);
 
   TOnGetContinueExecutionEvent = procedure(var AContinueExecution: boolean) of object;
 
-  TGUIAutomation = class
+  TGUIAutomation = class(TObject)
   private
-    FActionDelay: Integer;
-    FMouseMoveDelay: Integer;
-    FKeyDownDelay: Integer;
-    FTextEntryDelay: Integer;
+    FWakeEvent: TEvent;
+    FActionDelay: Cardinal;
+    FMouseMoveDelay: Cardinal;
+    FKeyDownDelay: Cardinal;
+    FTextEntryDelay: Cardinal;
+    FControlWaitPeriod: Cardinal;
     FOnGetContinueExecution: TOnGetContinueExecutionEvent;
 
     function ContinueExecution: boolean;
+    procedure SleepAndCheckContinue(const AInterval: Cardinal);
+    function FindControlInstance(const AComp: TComponent; const AControlName: string): TControl; overload;
+    function FindControlInstance(const AComp: TComponent; const AControlName: string;
+        const AInterval: Cardinal): TControl; overload;
     function GetWinControl(var AControl: TControl; var AX: Integer;
         var AY: Integer): boolean;
-    procedure ClickLeftMouseButtonOn(Control: TControl;
-        const AX: Integer = -1; const AY: Integer = -1); overload;
-    procedure DoubleClickLeftMouseButtonOn(Control: TControl;
-        const AX: Integer = -1; const AY: Integer = -1); overload;
-    procedure ClickRightMouseButtonOn(Control: TControl;
-        const AX: Integer = -1; const AY: Integer = -1); overload;
-    procedure DoubleClickRightMouseButtonOn(Control: TControl;
-        const AX: Integer = -1; const AY: Integer = -1); overload;
-    procedure ClickLeftMouseButtonOn(const AHwnd: HWND;
+    // Low-level message sending
+    procedure MoveMouse(const AHwnd: HWND; const AX: Integer; const AY: Integer);
+    procedure MouseButtonDownOn(const AHwnd: HWND; const AMouseDownMsg: UINT;
         const AX: Integer; const AY: Integer); overload;
-    procedure DoubleClickLeftMouseButtonOn(const AHwnd: HWND;
-        const AX: Integer; const AY: Integer); overload;
-    procedure ClickRightMouseButtonOn(const AHwnd: HWND;
-        const AX: Integer; const AY: Integer); overload;
-    procedure DoubleClickRightMouseButtonOn(const AHwnd: HWND;
+    procedure MouseButtonUpOn(const AHwnd: HWND; const AMouseUpMsg: UINT;
         const AX: Integer; const AY: Integer); overload;
     procedure ClickMouseButtonOn(const AHwnd: HWND;
         const AMouseDownMsg: UINT; const AMouseUpMsg: UINT;
-        const AX: Integer; const AY: Integer);
+        const AX: Integer; const AY: Integer); overload;
+    // Mid-level mouse actions with action delay
+    procedure MouseButtonDownOn(const AHwnd: HWND; const AButton: TMouseButton;
+        const AX: Integer; const AY: Integer); overload;
+    procedure MouseButtonDownOn(const AControl: TControl; const AButton: TMouseButton;
+        const AX: Integer; const AY: Integer); overload;
+    procedure MouseButtonUpOn(const AHwnd: HWND; const AButton: TMouseButton;
+        const AX: Integer; const AY: Integer); overload;
+    procedure MouseButtonUpOn(const AControl: TControl; const AButton: TMouseButton;
+        const AX: Integer; const AY: Integer); overload;
+    procedure ClickMouseButtonOn(const AHwnd: HWND; const AButton: TMouseButton;
+        const AX: Integer; const AY: Integer); overload;
+    procedure ClickMouseButtonOn(const AControl: TControl; const AButton: TMouseButton;
+        const AX: Integer = -1; const AY: Integer = -1); overload;
+    procedure DoubleClickMouseButtonOn(const AHwnd: HWND; const AButton: TMouseButton;
+        const AX: Integer; const AY: Integer); overload;
+    procedure DoubleClickMouseButtonOn(const AControl: TControl; const AButton: TMouseButton;
+        const AX: Integer = -1; const AY: Integer = -1); overload;
 
     procedure SynchronizeProcessMessages;
   protected
@@ -108,7 +126,7 @@ type
     function WaitForWindowEnabled(const AHwnd: HWND): boolean;
     function ControlAtActiveWindowCoord(const AX: Integer; const AY: Integer;
         out AControlHwnd: HWND; out APoint: TPoint): boolean;
-    function  FindParentWinControl(Control :TControl):TWinControl;
+    function  FindParentWinControl(const AControl: TControl):TWinControl;
 
 {$IFNDEF DUNIT_CLX}
     { Windows specific keyboard state code }
@@ -118,67 +136,100 @@ type
 
   public
     constructor Create;
-    function  FindControl(const AName: string; Addrs :Pointer = nil): TControl;                      overload;
+    destructor Destroy; override;
 {$IFDEF DELPHI2009_UP}
     procedure ThreadedExecute(AProc: TThreadProcedure);
 {$ENDIF DELPHI2009_UP}
-    function  FindControl(Comp: TComponent; const CtlName: string; Addrs :Pointer = nil): TControl; overload;
+    // Find in active form
+    function FindControl(const AControlName: string; const AAddrs: Pointer = nil): TControl; overload;
+    // Find in given parent component
+    function FindControl(const AComp: TComponent; const AControlName: string; const AAddrs: Pointer = nil): TControl; overload;
 
-    // Control (VCL or other) under mouse cursor, position is relative to GUI
+    function WaitForControlExists(const AControlName: string; const AExists: Boolean = true; const AInterval: Cardinal = CDefaultControlWaitInterval): boolean;
+    function WaitForControlVisible(const AControlName: string; const AVisible: Boolean = true; const AInterval: Cardinal = CDefaultControlWaitInterval): boolean;
+    function WaitForControlEnabled(const AControlName: string; const AEnabled: Boolean = true; const AInterval: Cardinal = CDefaultControlWaitInterval): boolean;
+
+    // Given windowed Control
+    procedure MoveMouseTo(const AHwnd: HWND; const AX: Integer = -1; const AY: Integer = -1;
+        const APixelInterval: Integer = -1; const APixelsPerSecond: Integer = CDefaultMouseMovePixelsPerSecond); overload;
+
+    // AControl (VCL or other) under mouse cursor, position is relative to GUI
+    procedure LeftMouseDownAt(const AX: Integer; const AY: Integer);
+    procedure LeftMouseUpAt(const AX: Integer; const AY: Integer);
     procedure LeftClickAt(const AX: Integer; const AY: Integer);
     procedure LeftDoubleClickAt(const AX: Integer; const AY: Integer);
+    procedure RightMouseDownAt(const AX: Integer; const AY: Integer);
+    procedure RightMouseUpAt(const AX: Integer; const AY: Integer);
     procedure RightClickAt(const AX: Integer; const AY: Integer);
     procedure RightDoubleClickAt(const AX: Integer; const AY: Integer);
 
-    // Active control, default position is centre of control
+    // Active Control, default position is centre of AControl
+    procedure MoveMouseTo(const AX: Integer = -1; const AY: Integer = -1;
+        const APixelInterval: Integer = -1; const APixelsPerSecond: Integer = CDefaultMouseMovePixelsPerSecond); overload;
+    procedure LeftMouseDown(const AX: Integer = -1; const AY: Integer = -1); overload;
+    procedure LeftMouseUp(const AX: Integer = -1; const AY: Integer = -1); overload;
     procedure LeftClick(const AX: Integer = -1; const AY: Integer = -1); overload;
     procedure LeftDoubleClick(const AX: Integer = -1; const AY: Integer = -1); overload;
-    // Given control, default position is centre of control
-    procedure LeftClick(ControlName :string; const AX: Integer = -1; const AY: Integer = -1); overload;
-    procedure LeftDoubleClick(ControlName :string; const AX: Integer = -1; const AY: Integer = -1); overload;
-    procedure LeftClick(Control :TControl; const AX: Integer = -1; const AY: Integer = -1);   overload;
-    procedure LeftDoubleClick(Control :TControl; const AX: Integer = -1; const AY: Integer = -1); overload;
-    // Active control, default position is centre of control
+    procedure RightMouseDown(const AX: Integer = -1; const AY: Integer = -1); overload;
+    procedure RightMouseUp(const AX: Integer = -1; const AY: Integer = -1); overload;
     procedure RightClick(const AX: Integer = -1; const AY: Integer = -1); overload;
     procedure RightDoubleClick(const AX: Integer = -1; const AY: Integer = -1); overload;
-    // Given control, default position is centre of control
-    procedure RightClick(ControlName :string; const AX: Integer = -1; const AY: Integer = -1); overload;
-    procedure RightDoubleClick(ControlName :string; const AX: Integer = -1; const AY: Integer = -1); overload;
-    procedure RightClick(Control :TControl; const AX: Integer = -1; const AY: Integer = -1);   overload;
-    procedure RightDoubleClick(Control :TControl; const AX: Integer = -1; const AY: Integer = -1); overload;
+    // Given Control, default position is centre of AControl
+    procedure MoveMouseTo(const AControlName: string; const AX: Integer = -1; const AY: Integer = -1;
+        const APixelInterval: Integer = -1; const APixelsPerSecond: Integer = CDefaultMouseMovePixelsPerSecond); overload;
+    procedure MoveMouseTo(const AControl: TControl; const AX: Integer = -1; const AY: Integer = -1;
+        const APixelInterval: Integer = -1; const APixelsPerSecond: Integer = CDefaultMouseMovePixelsPerSecond); overload;
+    procedure LeftMouseDown(const AControlName: string; const AX: Integer = -1; const AY: Integer = -1); overload;
+    procedure LeftMouseDown(const AControl: TControl; const AX: Integer = -1; const AY: Integer = -1); overload;
+    procedure LeftMouseUp(const AControlName: string; const AX: Integer = -1; const AY: Integer = -1); overload;
+    procedure LeftMouseUp(const AControl: TControl; const AX: Integer = -1; const AY: Integer = -1); overload;
+    procedure LeftClick(const AControlName: string; const AX: Integer = -1; const AY: Integer = -1); overload;
+    procedure LeftClick(const AControl: TControl; const AX: Integer = -1; const AY: Integer = -1);   overload;
+    procedure LeftDoubleClick(const AControlName: string; const AX: Integer = -1; const AY: Integer = -1); overload;
+    procedure LeftDoubleClick(const AControl: TControl; const AX: Integer = -1; const AY: Integer = -1); overload;
+    procedure RightMouseDown(const AControlName: string; const AX: Integer = -1; const AY: Integer = -1); overload;
+    procedure RightMouseDown(const AControl: TControl; const AX: Integer = -1; const AY: Integer = -1); overload;
+    procedure RightMouseUp(const AControlName: string; const AX: Integer = -1; const AY: Integer = -1); overload;
+    procedure RightMouseUp(const AControl: TControl; const AX: Integer = -1; const AY: Integer = -1); overload;
+    procedure RightClick(const AControlName: string; const AX: Integer = -1; const AY: Integer = -1); overload;
+    procedure RightClick(const AControl: TControl; const AX: Integer = -1; const AY: Integer = -1);   overload;
+    procedure RightDoubleClick(const AControlName: string; const AX: Integer = -1; const AY: Integer = -1); overload;
+    procedure RightDoubleClick(const AControl: TControl; const AX: Integer = -1; const AY: Integer = -1); overload;
 
-    procedure EnterKey(Key :Word; const ShiftState :TShiftState = []); overload;
-    procedure EnterKeyInto(const AControlHwnd: HWND;  Key: Word; const ShiftState: TShiftState = []); overload;
-    procedure EnterKeyInto(Control :TControl;   Key :Word; const ShiftState :TShiftState = []); overload;
-    procedure EnterKeyInto(ControlName :string; Key :Word; const ShiftState :TShiftState = []); overload;
+    procedure EnterKey(AKey :Word; const AShiftState :TShiftState = []); overload;
+    procedure EnterKeyInto(const AControlHwnd: HWND;  AKey: Word; const AShiftState: TShiftState = []); overload;
+    procedure EnterKeyInto(const AControl: TControl;   AKey :Word; const AShiftState :TShiftState = []); overload;
+    procedure EnterKeyInto(const AControlName :string; AKey :Word; const AShiftState :TShiftState = []); overload;
 
-    procedure EnterKey(Key :Char; const ShiftState :TShiftState = []); overload;
-    procedure EnterKeyInto(const AControlHwnd: HWND;  Key: Char; const ShiftState: TShiftState = []); overload;
-    procedure EnterKeyInto(Control :TControl;   Key :Char; const ShiftState :TShiftState = []); overload;
-    procedure EnterKeyInto(ControlName :string; Key :Char; const ShiftState :TShiftState = []); overload;
+    procedure EnterKey(AKey :Char; const AShiftState :TShiftState = []); overload;
+    procedure EnterKeyInto(const AControlHwnd: HWND;  AKey: Char; const AShiftState: TShiftState = []); overload;
+    procedure EnterKeyInto(const AControl: TControl;   AKey :Char; const AShiftState :TShiftState = []); overload;
+    procedure EnterKeyInto(const AControlName :string; AKey :Char; const AShiftState :TShiftState = []); overload;
 
-    procedure EnterText(Text :string);
-    procedure EnterTextInto(const AControlHwnd: HWND; Text: string); overload;
-    procedure EnterTextInto(Control :TControl;   Text :string); overload;
-    procedure EnterTextInto(ControlName :string; Text :string); overload;
+    procedure EnterText(AText :string);
+    procedure EnterTextInto(const AControlHwnd: HWND; AText: string); overload;
+    procedure EnterTextInto(const AControl: TControl;   AText :string); overload;
+    procedure EnterTextInto(const AControlName: string; AText: string); overload;
 
-    procedure Show(Control :TControl; OnOff :boolean = true);   overload;
-    procedure Show(ControlName :string; OnOff :boolean = true); overload;
+    procedure Show(const AControl: TControl; AOnOff: boolean = true); overload;
+    procedure Show(const AControlName: string; AOnOff: boolean = true); overload;
 
-    procedure Hide(Control :TControl);   overload;
-    procedure Hide(ControlName :string); overload;
+    procedure Hide(const AControl: TControl); overload;
+    procedure Hide(const AControlName: string); overload;
 
     procedure Tab(n :Integer =1);
 
-    procedure SetFocus(Control :TControl; Addrs :Pointer = nil); overload;
-    procedure SetFocus(ControlName :string);                    overload;
+    procedure SetFocus(const AControl: TControl; const AAddrs: Pointer = nil); overload;
+    procedure SetFocus(const AControlName: string); overload;
 
-    procedure SyncSleep(const AInterval: Integer);
+    procedure SyncSleep(const AInterval: Cardinal);
+    procedure WakeUp;
 
-    property ActionDelay: Integer read FActionDelay write FActionDelay;
-    property MouseMoveDelay: Integer read FMouseMoveDelay write FMouseMoveDelay;
-    property KeyDownDelay: Integer read FKeyDownDelay write FKeyDownDelay;
-    property TextEntryDelay: Integer  read FTextEntryDelay write FTextEntryDelay;
+    property ActionDelay: Cardinal read FActionDelay write FActionDelay;
+    property MouseMoveDelay: Cardinal read FMouseMoveDelay write FMouseMoveDelay;
+    property KeyDownDelay: Cardinal read FKeyDownDelay write FKeyDownDelay;
+    property TextEntryDelay: Cardinal  read FTextEntryDelay write FTextEntryDelay;
+    property ControlWaitPeriod: Cardinal  read FControlWaitPeriod write FControlWaitPeriod;
     property OnGetContinueExecution: TOnGetContinueExecutionEvent read FOnGetContinueExecution write FOnGetContinueExecution;
   end;
 
@@ -187,6 +238,7 @@ const
   CDefaultGUIMouseMoveDelay = 100; // Milliseconds
   CDefaultGUIKeyDownDelay = 50; // Milliseconds
   CDefaultGUITextEntryDelay = 100; // Milliseconds
+  CDefaultGUIControlWaitPeriod = 1000; // Milliseconds
   CGUIPositionalClickDelay = 400; // Milliseconds
 
 implementation
@@ -220,6 +272,9 @@ type
 {$ASSERTIONS ON}
 // need stack frames to use CallerAddr
 {$STACKFRAMES ON}
+
+const
+  CControlRetryWaitPeriod = 100;
 
 { TGUITestThread }
 
@@ -258,10 +313,17 @@ end;
 constructor TGUIAutomation.Create;
 begin
   inherited;
+  FWakeEvent := TEvent.Create;
   FActionDelay := CDefaultGUIActionDelay;
   FMouseMoveDelay := CDefaultGUIMouseMoveDelay;
   FKeyDownDelay := CDefaultGUIKeyDownDelay;
   FTextEntryDelay := CDefaultGUITextEntryDelay;
+  FControlWaitPeriod := CDefaultGUIControlWaitPeriod;
+end;
+
+destructor TGUIAutomation.Destroy;
+begin
+  FWakeEvent.Free;
 end;
 
 procedure TGUIAutomation.SynchronizeProcessMessages;
@@ -274,10 +336,35 @@ begin
   TThread.Synchronize(nil, SynchronizeProcessMessages);
 end;
 
-procedure TGUIAutomation.SyncSleep(const AInterval: Integer);
+procedure TGUIAutomation.SleepAndCheckContinue(const AInterval: Cardinal);
+var
+  LNow: DWORD;
+  LWaitUntil: DWORD;
+const
+  CSleepCheckInterval = 50;
+begin
+  LNow := GetTickCount;
+  LWaitUntil := LNow + AInterval;
+  FWakeEvent.ResetEvent;
+  while (LNow < LWaitUntil) and ContinueExecution do
+  begin
+    if LWaitUntil - LNow < CSleepCheckInterval then
+      FWakeEvent.WaitFor(LWaitUntil - LNow)
+    else
+      FWakeEvent.WaitFor(CSleepCheckInterval);
+    LNow := GetTickCount;
+  end;
+end;
+
+procedure TGUIAutomation.SyncSleep(const AInterval: Cardinal);
 begin
   SyncMessages;
-  Sleep(AInterval);
+  SleepAndCheckContinue(AInterval);
+end;
+
+procedure TGUIAutomation.WakeUp;
+begin
+  FWakeEvent.SetEvent;
 end;
 
 {$IFDEF DELPHI2009_UP}
@@ -295,46 +382,61 @@ begin
 end;
 {$ENDIF DELPHI2009_UP}
 
-function TGUIAutomation.FindControl(Comp: TComponent; const CtlName: string; Addrs :Pointer): TControl;
-
-  function DoFind(C :TComponent; const CName :string) :TControl;
-  var
-    i: Integer;
+function TGUIAutomation.FindControlInstance(const AComp: TComponent;
+  const AControlName: string): TControl;
+var
+  LControlName: string;
+  i: Integer;
+begin
+  LControlName := UpperCase(AControlName);
+  if (AComp is TControl) and (UpperCase(AComp.Name) = LControlName) then
+    Result := AComp as TControl
+  else
   begin
     Result := nil;
     i := 0;
-    while (Result = nil) and (i < C.ComponentCount) do
+    while (Result = nil) and (i < AComp.ComponentCount) do
     begin
-      with C do
-      begin
-        if (Components[i] is TControl)
-        and (UpperCase(Components[i].Name) = CName) then
-          Result := Components[i] as TControl
-        else
-          Result := DoFind(Components[i], CName);
-      end;
+      Result := FindControlInstance(AComp.Components[i], AControlName);
       Inc(i);
     end;
   end;
+end;
+
+function TGUIAutomation.FindControlInstance(const AComp: TComponent;
+  const AControlName: string; const AInterval: Cardinal): TControl;
+var
+  LWaitUntil: DWORD;
 begin
-  if Addrs = nil then
-    Addrs := CallerAddr;
-
-
-  if Trim(CtlName) = '' then
-    raise EGUIAutomation.Create('No control name') at Addrs;
-
-  Result := DoFind(Comp, UpperCase(CtlName));
-  while (not Assigned(Result)) and ContinueExecution do
+  LWaitUntil := GetTickCount + AInterval;
+  Result := FindControlInstance(AComp, AControlName);
+  while (not Assigned(Result)) and ContinueExecution and
+        (GetTickCount < LWaitUntil) do
   begin
-    Sleep(100);
+    SleepAndCheckContinue(CControlRetryWaitPeriod);
     SyncMessages;
-    Result := DoFind(Comp, UpperCase(CtlName));
+    Result := FindControlInstance(AComp, AControlName);
   end;
+end;
 
+function TGUIAutomation.FindControl(const AComp: TComponent;
+  const AControlName: string; const AAddrs: Pointer): TControl;
+var
+  LAddrs: Pointer;
+begin
+  if AAddrs = nil then
+    LAddrs := CallerAddr
+  else
+    LAddrs := AAddrs;
+
+  if Trim(AControlName) = '' then
+    raise EGUIAutomation.Create('No control name') at LAddrs;
+
+  Result := FindControlInstance(AComp, AControlName, FControlWaitPeriod);
   if Result = nil then
-    raise EGUIAutomation.Create(Format('Control named "%s" not found in active form %s',
-        [CtlName, Screen.ActiveForm.Name]));
+    raise EGUIAutomationControlNotFound.Create(
+        Format('Control named "%s" not found in active form %s',
+            [AControlName, Screen.ActiveForm.Name])) at LAddrs;
 end;
 
 function TGUIAutomation.GetWinControl(var AControl: TControl; var AX: Integer;
@@ -347,8 +449,7 @@ begin
     // Translate actual control co-ords to parent window control co-ords
     if (AX <> -1) and (AY <> -1) then
     begin
-      LPoint.X := AX;
-      LPoint.Y := AY;
+      LPoint := Point(AX, AY);
       LPoint := AControl.ClientToScreen(LPoint);
     end;
     AControl := FindParentWinControl(AControl);
@@ -364,137 +465,176 @@ begin
   if result then
   begin
     if AX = -1 then
-      AX := AControl.Width  div 2;
+      AX := AControl.Width div 2;
     if AY = -1 then
-      AY := AControl.Height  div 2;
+      AY := AControl.Height div 2;
   end;
 end;
 
 function TGUIAutomation.WaitForWindowEnabled(const AHwnd: HWND): boolean;
+var
+  LWaitUntil: DWORD;
 begin
   if AHwnd <> 0 then
   begin
-    while ContinueExecution and
-        ((GetWindowLong(AHwnd, GWL_STYLE) and WS_DISABLED) = WS_DISABLED) do
+    if (GetWindowLong(AHwnd, GWL_STYLE) and WS_DISABLED) = WS_DISABLED then
     begin
-      Sleep(100);
-      SyncMessages;
-    end;
-    if ContinueExecution then
-    begin
-      Sleep(50);
-      SyncMessages;
+      LWaitUntil := GetTickCount + FControlWaitPeriod;
+      while ContinueExecution and (GetTickCount < LWaitUntil) and
+          ((GetWindowLong(AHwnd, GWL_STYLE) and WS_DISABLED) = WS_DISABLED) do
+      begin
+        SleepAndCheckContinue(CControlRetryWaitPeriod);
+        SyncMessages;
+      end;
+      // Fixed delay to let the dust settle
+      if ContinueExecution then
+      begin
+        SleepAndCheckContinue(CControlRetryWaitPeriod div 2);
+        SyncMessages;
+      end;
     end;
   end;
 
   result := ContinueExecution;
 end;
 
-// X, Y are in client co-ordinates
-procedure TGUIAutomation.ClickLeftMouseButtonOn(Control: TControl;
-  const AX: Integer; const AY: Integer);
+procedure TGUIAutomation.MouseButtonDownOn(const AHwnd: HWND;
+  const AButton: TMouseButton; const AX: Integer; const AY: Integer);
+begin
+{$IFDEF DUNIT_CLX}
+  if AButton = mbLeft then
+    MouseButtonDownOn(AHwnd, Integer(ButtonState_LeftButton), AX, AY)
+  else if AButton = mbRight then
+    MouseButtonDownOn(AHwnd, Integer(ButtonState_RightButton), AX, AY);
+{$ELSE}
+  if AButton = mbLeft then
+    MouseButtonDownOn(AHwnd, WM_LBUTTONDOWN, AX, AY)
+  else if AButton = mbRight then
+    MouseButtonDownOn(AHwnd, WM_RBUTTONDOWN, AX, AY);
+{$ENDIF}
+  SyncSleep(ActionDelay);
+end;
+
+procedure TGUIAutomation.MouseButtonDownOn(const AControl: TControl;
+  const AButton: TMouseButton; const AX: Integer; const AY: Integer);
 var
+  LControl: TControl;
   LX: Integer;
   LY: Integer;
 begin
-  Assert(Control <> nil, 'No control');
+  Assert(AControl <> nil, 'No control');
+  LControl := AControl;
   LX := AX;
   LY := AY;
-  if GetWinControl(Control, LX, LY) then
-    ClickLeftMouseButtonOn(TWinControl(Control).Handle, LX, LY);
+  if GetWinControl(LControl, LX, LY) then
+    MouseButtonDownOn(TWinControl(LControl).Handle, AButton, LX, LY);
 end;
 
-procedure TGUIAutomation.DoubleClickLeftMouseButtonOn(Control: TControl; const AX,
-  AY: Integer);
+procedure TGUIAutomation.MouseButtonUpOn(const AHwnd: HWND;
+  const AButton: TMouseButton; const AX: Integer; const AY: Integer);
+begin
+{$IFDEF DUNIT_CLX}
+  if AButton = mbLeft then
+    MouseButtonUpOn(AHwnd, Integer(ButtonState_LeftButton), AX, AY)
+  else if AButton = mbRight then
+    MouseButtonUpOn(AHwnd, Integer(ButtonState_RightButton), AX, AY);
+{$ELSE}
+  if AButton = mbLeft then
+    MouseButtonUpOn(AHwnd, WM_LBUTTONUP, AX, AY)
+  else if AButton = mbRight then
+    MouseButtonUpOn(AHwnd, WM_RBUTTONUP, AX, AY);
+{$ENDIF}
+  SyncSleep(ActionDelay);
+end;
+
+procedure TGUIAutomation.MouseButtonUpOn(const AControl: TControl;
+  const AButton: TMouseButton; const AX: Integer; const AY: Integer);
 var
+  LControl: TControl;
   LX: Integer;
   LY: Integer;
 begin
-  Assert(Control <> nil, 'No control');
+  Assert(AControl <> nil, 'No control');
+  LControl := AControl;
   LX := AX;
   LY := AY;
-  if GetWinControl(Control, LX, LY) then
-    DoubleClickLeftMouseButtonOn(TWinControl(Control).Handle, LX, LY);
+  if GetWinControl(LControl, LX, LY) then
+    MouseButtonUpOn(TWinControl(LControl).Handle, AButton, LX, LY);
 end;
 
 // X, Y are in client co-ordinates
-procedure TGUIAutomation.ClickRightMouseButtonOn(Control: TControl;
-  const AX: Integer; const AY: Integer);
+procedure TGUIAutomation.ClickMouseButtonOn(const AControl: TControl;
+  const AButton: TMouseButton; const AX: Integer; const AY: Integer);
 var
+  LControl: TControl;
   LX: Integer;
   LY: Integer;
 begin
-  Assert(Control <> nil, 'No control');
+  Assert(AControl <> nil, 'No control');
+  LControl := AControl;
   LX := AX;
   LY := AY;
-  if GetWinControl(Control, LX, LY) then
-    ClickRightMouseButtonOn(TWinControl(Control).Handle, LX, LY);
+  if GetWinControl(LControl, LX, LY) then
+    ClickMouseButtonOn(TWinControl(LControl).Handle, AButton, LX, LY);
 end;
 
-// X, Y are in client co-ordinates
-procedure TGUIAutomation.ClickLeftMouseButtonOn(const AHwnd: HWND;
-  const AX: Integer; const AY: Integer);
-begin
-{$IFDEF DUNIT_CLX}
-  ClickMouseButtonOn(AHwnd, Integer(ButtonState_LeftButton),
-      Integer(ButtonState_LeftButton), AX, AY);
-{$ELSE}
-  ClickMouseButtonOn(AHwnd, WM_LBUTTONDOWN, WM_LBUTTONUP, AX, AY);
-{$ENDIF}
-end;
-
-procedure TGUIAutomation.DoubleClickLeftMouseButtonOn(const AHwnd: HWND;
-  const AX: Integer; const AY: Integer);
-begin
-{$IFDEF DUNIT_CLX}
-//TODO: Work out how to do double click in CLX
-//  ClickMouseButtonOn(AHwnd, Integer(ButtonState_LeftButton),
-//      Integer(ButtonState_LeftButton), AX, AY);
-{$ELSE}
-  ClickMouseButtonOn(AHwnd, WM_LBUTTONDBLCLK, WM_LBUTTONUP, AX, AY);
-{$ENDIF}
-end;
-
-// X, Y are in client co-ordinates
-procedure TGUIAutomation.ClickRightMouseButtonOn(const AHwnd: HWND;
-  const AX: Integer; const AY: Integer);
-begin
-{$IFDEF DUNIT_CLX}
-  ClickMouseButtonOn(AHwnd, Integer(ButtonState_RightButton),
-      Integer(ButtonState_RightButton), AX, AY);
-{$ELSE}
-  ClickMouseButtonOn(AHwnd, WM_RBUTTONDOWN, WM_RBUTTONUP, AX, AY);
-{$ENDIF}
-end;
-
-procedure TGUIAutomation.DoubleClickRightMouseButtonOn(const AHwnd: HWND;
-  const AX, AY: Integer);
-begin
-{$IFDEF DUNIT_CLX}
-//TODO: Work out how to do double click in CLX
-//  ClickMouseButtonOn(AHwnd, Integer(ButtonState_RightButton),
-//      Integer(ButtonState_RightButton), AX, AY);
-{$ELSE}
-  ClickMouseButtonOn(AHwnd, WM_RBUTTONDBLCLK, WM_RBUTTONUP, AX, AY);
-{$ENDIF}
-end;
-
-procedure TGUIAutomation.DoubleClickRightMouseButtonOn(Control: TControl;
-  const AX, AY: Integer);
+procedure TGUIAutomation.DoubleClickMouseButtonOn(const AControl: TControl;
+  const AButton: TMouseButton; const AX, AY: Integer);
 var
+  LControl: TControl;
   LX: Integer;
   LY: Integer;
 begin
-  Assert(Control <> nil, 'No control');
+  Assert(AControl <> nil, 'No control');
+  LControl := AControl;
   LX := AX;
   LY := AY;
-  if GetWinControl(Control, LX, LY) then
-    DoubleClickRightMouseButtonOn(TWinControl(Control).Handle, LX, LY);
+  if GetWinControl(LControl, LX, LY) then
+    DoubleClickMouseButtonOn(TWinControl(LControl).Handle, AButton, LX, LY);
 end;
 
 // X, Y are in client co-ordinates
 procedure TGUIAutomation.ClickMouseButtonOn(const AHwnd: HWND;
-  const AMouseDownMsg: UINT; const AMouseUpMsg: UINT;
+  const AButton: TMouseButton; const AX: Integer; const AY: Integer);
+begin
+{$IFDEF DUNIT_CLX}
+  if AButton = mbLeft then
+    ClickMouseButtonOn(AHwnd, Integer(ButtonState_LeftButton),
+        Integer(ButtonState_LeftButton), AX, AY)
+  else if AButton = mbRight then
+    ClickMouseButtonOn(AHwnd, Integer(ButtonState_RightButton),
+        Integer(ButtonState_RightButton), AX, AY);
+{$ELSE}
+  if AButton = mbLeft then
+    ClickMouseButtonOn(AHwnd, WM_LBUTTONDOWN, WM_LBUTTONUP, AX, AY)
+  else if AButton = mbRight then
+    ClickMouseButtonOn(AHwnd, WM_RBUTTONDOWN, WM_RBUTTONUP, AX, AY);
+{$ENDIF}
+  SyncSleep(ActionDelay);
+end;
+
+procedure TGUIAutomation.DoubleClickMouseButtonOn(const AHwnd: HWND;
+  const AButton: TMouseButton;const AX: Integer; const AY: Integer);
+begin
+{$IFDEF DUNIT_CLX}
+//TODO: Work out how to do double click in CLX
+//  if AButton = mbLeft then
+//    ClickMouseButtonOn(AHwnd, Integer(ButtonState_LeftButton),
+//        Integer(ButtonState_LeftButton), AX, AY)
+//  else if AButton = mbRight then
+//    ClickMouseButtonOn(AHwnd, Integer(ButtonState_RightButton),
+//        Integer(ButtonState_RightButton), AX, AY);
+{$ELSE}
+  if AButton = mbLeft then
+    ClickMouseButtonOn(AHwnd, WM_LBUTTONDBLCLK, WM_LBUTTONUP, AX, AY)
+  else if AButton = mbRight then
+    ClickMouseButtonOn(AHwnd, WM_RBUTTONDBLCLK, WM_RBUTTONUP, AX, AY);
+{$ENDIF}
+  SyncSleep(ActionDelay);
+end;
+
+// X, Y are in client co-ordinates
+procedure TGUIAutomation.MoveMouse(const AHwnd: HWND;
   const AX: Integer; const AY: Integer);
 var
   LPoint: TPoint;
@@ -507,43 +647,108 @@ begin
   if not ContinueExecution then
     Exit; //==>
 
-  // Move mouse cursor to click position. X, Y are specified as client co-ords
+  // Move mouse cursor in screen co-ords. X, Y are specified as client co-ords
   LPoint := Point(AX, AY);
   ClientToScreen(AHwnd, LPoint);
   SetCursorPos(LPoint.X, LPoint.Y);
 
+  // Send move message to notify AControl
 {$IFDEF DUNIT_CLX}
   LPoint := Point(AX, AY);
   evMouse := QMouseEvent_create(QEventType_MouseMove, @LPoint, 1, 0);
   QApplication_sendEvent(AHwnd, evMouse);
+{$ELSE}
+  LSmallPoint := SmallPoint(AX, AY);
+  PostMessage(AHwnd, WM_MOUSEMOVE, 0, Longint(LSmallPoint));
+{$ENDIF}
+end;
+
+// X, Y are in client co-ordinates
+procedure TGUIAutomation.MouseButtonDownOn(const AHwnd: HWND;
+  const AMouseDownMsg: UINT; const AX: Integer; const AY: Integer);
+var
+{$IFDEF DUNIT_CLX}
+  LPoint: TPoint;
+  evMouse: QMouseEventH;
+{$ELSE}
+  LSmallPoint: TSmallPoint;
+{$ENDIF}
+begin
+  if not ContinueExecution then
+    Exit; //==>
+
+  // Move mouse cursor
+  MoveMouse(AHwnd, AX, AY);
   SyncSleep(MouseMoveDelay);
+
+{$IFDEF DUNIT_CLX}
+  LPoint := Point(AX, AY);
   evMouse := QMouseEvent_create(QEventType_MouseButtonPress, @LPoint,
-      AMouseDownMsg, AMouseDownMsg);
-  QApplication_sendEvent(AHwnd, evMouse);
-  evMouse := QMouseEvent_create(QEventType_MouseButtonRelease, @LPoint,
       AMouseDownMsg, AMouseDownMsg);
   QApplication_sendEvent(AHwnd, evMouse);
 {$ELSE}
   LSmallPoint := SmallPoint(AX, AY);
-  PostMessage(AHwnd, WM_MOUSEMOVE, 0, Longint(LSmallPoint));
-  SyncSleep(MouseMoveDelay);
   WaitForWindowEnabled(AHwnd);
   PostMessage(AHwnd, AMouseDownMsg, 0, Longint(LSmallPoint));
+{$ENDIF}
+end;
+
+// X, Y are in client co-ordinates
+procedure TGUIAutomation.MouseButtonUpOn(const AHwnd: HWND;
+  const AMouseUpMsg: UINT; const AX: Integer; const AY: Integer);
+var
+{$IFDEF DUNIT_CLX}
+  LPoint: TPoint;
+  evMouse: QMouseEventH;
+{$ELSE}
+  LSmallPoint: TSmallPoint;
+{$ENDIF}
+begin
+  if not ContinueExecution then
+    Exit; //==>
+
+  // Move mouse cursor
+  MoveMouse(AHwnd, AX, AY);
+  SyncSleep(MouseMoveDelay);
+
+{$IFDEF DUNIT_CLX}
+  LPoint := Point(AX, AY);
+  evMouse := QMouseEvent_create(QEventType_MouseButtonRelease, @LPoint,
+      AMouseUpMsg, AMouseUpMsg);
+  QApplication_sendEvent(AHwnd, evMouse);
+{$ELSE}
+  LSmallPoint := SmallPoint(AX, AY);
+  WaitForWindowEnabled(AHwnd);
   PostMessage(AHwnd, AMouseUpMsg, 0,   Longint(LSmallPoint));
 {$ENDIF}
-  SyncSleep(ActionDelay);
 end;
 
-function TGUIAutomation.FindControl(const AName: string; Addrs :Pointer): TControl;
+// X, Y are in client co-ordinates
+procedure TGUIAutomation.ClickMouseButtonOn(const AHwnd: HWND;
+  const AMouseDownMsg: UINT; const AMouseUpMsg: UINT;
+  const AX: Integer; const AY: Integer);
 begin
-  Result := FindControl(Screen.ActiveForm, AName, Addrs);
+  if not ContinueExecution then
+    Exit; //==>
+
+  MouseButtonDownOn(AHwnd, AMouseDownMsg, AX, AY);
+  MouseButtonUpOn(AHwnd, AMouseUpMsg, AX, AY);
 end;
 
-function TGUIAutomation.FindParentWinControl(Control: TControl): TWinControl;
+function TGUIAutomation.FindControl(const AControlName: string;
+  const AAddrs: Pointer): TControl;
 begin
-  while (Control <> nil) and not (Control is TWinControl) do
-    Control := Control.Parent;
-  Result := TWinControl(Control);
+  Result := FindControl(Screen.ActiveForm, AControlName, AAddrs);
+end;
+
+function TGUIAutomation.FindParentWinControl(const AControl: TControl): TWinControl;
+var
+  LControl: TControl;
+begin
+  LControl := AControl;
+  while (LControl <> nil) and not (LControl is TWinControl) do
+    LControl := LControl.Parent;
+  Result := TWinControl(LControl);
 end;
 
 {$ifndef DUNIT_CLX}
@@ -609,7 +814,7 @@ begin
 {$IF COMPILERVERSION >= 11} // D2007 or later
   // NOTE: Themeing in Vista and later doesn't set the foreground window handle
   //   until the window animation effect is complete (at least with task
-  //   dialogs) so if we are too fast we might get the control on the wrong
+  //   dialogs) so if we are too fast we might get the AControl on the wrong
   //   window.
   // TODO: Improve this: Know *if* we need to wait for a new window to appear
   //   and *wait* for it to appear (instead of always waiting and instead of
@@ -618,7 +823,7 @@ begin
   //   identify the target window (such as window caption).
   if Dialogs.UseLatestCommonDialogs then
   begin
-    Sleep(CGUIPositionalClickDelay);
+    SleepAndCheckContinue(CGUIPositionalClickDelay);
     SyncMessages;
   end;
 {$IFEND}
@@ -637,6 +842,180 @@ begin
   end;
 end;
 
+function TGUIAutomation.WaitForControlExists(const AControlName: string;
+  const AExists: Boolean; const AInterval: Cardinal): boolean;
+var
+  LWaitUntil: DWORD;
+  LControl: TControl;
+
+  function _CriteriaMet(const AControl: TControl): Boolean;
+  begin
+    Result :=
+        (AExists and Assigned(LControl)) or
+        ((not AExists) and (not Assigned(LControl)));
+  end;
+
+begin
+  if Trim(AControlName) = '' then
+    raise EGUIAutomation.Create('No control name') at CallerAddr;
+
+  LWaitUntil := GetTickCount + AInterval;
+  LControl := FindControlInstance(Screen.ActiveForm, AControlName);
+  while (not _CriteriaMet(LControl)) and
+        ContinueExecution and (GetTickCount < LWaitUntil) do
+  begin
+    SleepAndCheckContinue(CControlRetryWaitPeriod);
+    SyncMessages;
+    LControl := FindControlInstance(Screen.ActiveForm, AControlName);
+  end;
+
+  Result := _CriteriaMet(LControl);
+end;
+
+function TGUIAutomation.WaitForControlVisible(const AControlName: string;
+  const AVisible: Boolean; const AInterval: Cardinal): boolean;
+var
+  LWaitUntil: DWORD;
+  LControl: TControl;
+
+  function _CriteriaMet(const AControl: TControl): Boolean;
+  begin
+    Result :=
+        (AVisible and Assigned(AControl) and AControl.Visible) or
+        ((not AVisible) and ((not Assigned(AControl)) or (not AControl.Visible)));
+  end;
+
+begin
+  if Trim(AControlName) = '' then
+    raise EGUIAutomation.Create('No control name') at CallerAddr;
+
+  LWaitUntil := GetTickCount + AInterval;
+  LControl := FindControlInstance(Screen.ActiveForm, AControlName);
+  while (not _CriteriaMet(LControl)) and
+        ContinueExecution and (GetTickCount < LWaitUntil) do
+  begin
+    SleepAndCheckContinue(CControlRetryWaitPeriod);
+    SyncMessages;
+    LControl := FindControlInstance(Screen.ActiveForm, AControlName);
+  end;
+
+  Result := _CriteriaMet(LControl);
+end;
+
+function TGUIAutomation.WaitForControlEnabled(const AControlName: string;
+  const AEnabled: Boolean; const AInterval: Cardinal): boolean;
+var
+  LWaitUntil: DWORD;
+  LControl: TControl;
+
+  function _CriteriaMet(const AControl: TControl): Boolean;
+  begin
+    Result :=
+        (AEnabled and Assigned(AControl) and AControl.Visible and AControl.Enabled) or
+        ((not AEnabled) and ((not Assigned(AControl)) or (not AControl.Visible) or
+          (not AControl.Enabled)));
+  end;
+
+begin
+  if Trim(AControlName) = '' then
+    raise EGUIAutomation.Create('No control name') at CallerAddr;
+
+  LWaitUntil := GetTickCount + AInterval;
+  LControl := FindControlInstance(Screen.ActiveForm, AControlName);
+  while (not _CriteriaMet(LControl)) and
+        ContinueExecution and (GetTickCount < LWaitUntil) do
+  begin
+    SleepAndCheckContinue(CControlRetryWaitPeriod);
+    SyncMessages;
+    LControl := FindControlInstance(Screen.ActiveForm, AControlName);
+  end;
+
+  Result := _CriteriaMet(LControl);
+end;
+
+procedure TGUIAutomation.MoveMouseTo(const AHwnd: HWND; const AX: Integer;
+  const AY: Integer; const APixelInterval: Integer; const APixelsPerSecond: Integer);
+var
+  LInitialPoint: TPoint;
+  LFinalPoint: TPoint;
+  LDeltaX: double;
+  LDeltaY: double;
+  LX: Integer;
+  LY: Integer;
+  LIntervals: double;
+  LMoveIntervals: Cardinal;
+  LWaitPerInterval: Cardinal;
+  i: Cardinal;
+begin
+  if APixelInterval > 0 then
+  begin
+    // Move the cursor along the path to the specified position at the
+    // specified interval
+
+    if GetCursorPos(LInitialPoint) then
+    begin
+      // Start from the current cursor position relative to the windowed control
+      ScreenToClient(AHwnd, LInitialPoint);
+
+      // Move in steps to the specified position
+      LFinalPoint := Point(AX, AY);
+      LIntervals := LFinalPoint.Distance(LInitialPoint) / APixelInterval;
+      LMoveIntervals := Trunc(LIntervals);
+      if LMoveIntervals > 0 then
+      begin
+        if APixelsPerSecond > 0 then
+          LWaitPerInterval := Trunc((APixelInterval / APixelsPerSecond) * 1000)
+        else
+          LWaitPerInterval := 0;
+        LDeltaX := (AX - LInitialPoint.X) / LIntervals;
+        LDeltaY := (AY - LInitialPoint.Y) / LIntervals;
+        i := 1;
+        while (i <= LMoveIntervals) and ContinueExecution do
+        begin
+          LX := Trunc(LInitialPoint.X + (LDeltaX * i));
+          LY := Trunc(LInitialPoint.Y + (LDeltaY * i));
+          MoveMouse(AHwnd, LX, LY);
+          if (LWaitPerInterval > 0) and (i < LMoveIntervals) then
+            SyncSleep(LWaitPerInterval);
+          Inc(i);
+        end;
+      end;
+    end;
+  end;
+
+  // Move to the final position
+  MoveMouse(AHwnd, AX, AY);
+
+  SyncSleep(ActionDelay);
+end;
+
+procedure TGUIAutomation.MoveMouseTo(const AX: Integer; const AY: Integer;
+  const APixelInterval: Integer; const APixelsPerSecond: Integer);
+begin
+  MoveMouseTo(Screen.ActiveControl, AX, AY, APixelInterval, APixelsPerSecond);
+end;
+
+procedure TGUIAutomation.MoveMouseTo(const AControlName: string; const AX: Integer;
+  const AY: Integer; const APixelInterval: Integer; const APixelsPerSecond: Integer);
+begin
+  MoveMouseTo(FindControl(AControlName, CallerAddr), AX, AY, APixelInterval, APixelsPerSecond);
+end;
+
+procedure TGUIAutomation.MoveMouseTo(const AControl: TControl; const AX: Integer;
+  const AY: Integer; const APixelInterval: Integer; const APixelsPerSecond: Integer);
+var
+  LControl: TControl;
+  LX: Integer;
+  LY: Integer;
+begin
+  Assert(AControl <> nil, 'No control');
+  LControl := AControl;
+  LX := AX;
+  LY := AY;
+  if GetWinControl(LControl, LX, LY) then
+    MoveMouseTo(TWinControl(LControl).Handle, LX, LY, APixelInterval, APixelsPerSecond);
+end;
+
 // X, Y are in co-ords of the active window
 procedure TGUIAutomation.LeftClickAt(const AX, AY: Integer);
 var
@@ -644,7 +1023,7 @@ var
   LHwnd: HWND;
 begin
   if ControlAtActiveWindowCoord(AX, AY, LHwnd, LPoint) then
-    ClickLeftMouseButtonOn(LHwnd, LPoint.X, LPoint.Y);
+    ClickMouseButtonOn(LHwnd, mbLeft, LPoint.X, LPoint.Y);
 end;
 
 procedure TGUIAutomation.LeftDoubleClickAt(const AX, AY: Integer);
@@ -653,7 +1032,60 @@ var
   LHwnd: HWND;
 begin
   if ControlAtActiveWindowCoord(AX, AY, LHwnd, LPoint) then
-    DoubleClickLeftMouseButtonOn(LHwnd, LPoint.X, LPoint.Y);
+    DoubleClickMouseButtonOn(LHwnd, mbLeft, LPoint.X, LPoint.Y);
+end;
+
+procedure TGUIAutomation.LeftMouseDown(const AX, AY: Integer);
+begin
+  LeftMouseDown(Screen.ActiveControl, AX, AY);
+end;
+
+procedure TGUIAutomation.LeftMouseDown(const AControlName: string; const AX,
+  AY: Integer);
+begin
+  LeftMouseDown(FindControl(AControlName, CallerAddr), AX, AY);
+end;
+
+procedure TGUIAutomation.LeftMouseDown(const AControl: TControl; const AX,
+  AY: Integer);
+begin
+  Assert(AControl <> nil, 'No control');
+  MouseButtonDownOn(AControl, mbLeft, AX, AY);
+end;
+
+procedure TGUIAutomation.LeftMouseDownAt(const AX, AY: Integer);
+var
+  LPoint: TPoint;
+  LHwnd: HWND;
+begin
+  if ControlAtActiveWindowCoord(AX, AY, LHwnd, LPoint) then
+    MouseButtonDownOn(LHwnd, mbLeft, LPoint.X, LPoint.Y);
+end;
+
+procedure TGUIAutomation.LeftMouseUp(const AControl: TControl; const AX, AY: Integer);
+begin
+  Assert(AControl <> nil, 'No control');
+  MouseButtonUpOn(AControl, mbLeft, AX, AY);
+end;
+
+procedure TGUIAutomation.LeftMouseUp(const AControlName: string; const AX,
+  AY: Integer);
+begin
+  LeftMouseUp(FindControl(AControlName, CallerAddr), AX, AY);
+end;
+
+procedure TGUIAutomation.LeftMouseUp(const AX, AY: Integer);
+begin
+  LeftMouseUp(Screen.ActiveControl, AX, AY);
+end;
+
+procedure TGUIAutomation.LeftMouseUpAt(const AX, AY: Integer);
+var
+  LPoint: TPoint;
+  LHwnd: HWND;
+begin
+  if ControlAtActiveWindowCoord(AX, AY, LHwnd, LPoint) then
+    MouseButtonUpOn(LHwnd, mbLeft, LPoint.X, LPoint.Y);
 end;
 
 // X, Y are in co-ords of the active window
@@ -663,7 +1095,7 @@ var
   LHwnd: HWND;
 begin
   if ControlAtActiveWindowCoord(AX, AY, LHwnd, LPoint) then
-    ClickRightMouseButtonOn(LHwnd, LPoint.X, LPoint.Y);
+    ClickMouseButtonOn(LHwnd, mbRight, LPoint.X, LPoint.Y);
 end;
 
 procedure TGUIAutomation.RightDoubleClickAt(const AX, AY: Integer);
@@ -672,7 +1104,60 @@ var
   LHwnd: HWND;
 begin
   if ControlAtActiveWindowCoord(AX, AY, LHwnd, LPoint) then
-    DoubleClickRightMouseButtonOn(LHwnd, LPoint.X, LPoint.Y);
+    DoubleClickMouseButtonOn(LHwnd, mbRight, LPoint.X, LPoint.Y);
+end;
+
+procedure TGUIAutomation.RightMouseDown(const AX, AY: Integer);
+begin
+  RightMouseDown(Screen.ActiveControl, AX, AY);
+end;
+
+procedure TGUIAutomation.RightMouseDown(const AControlName: string; const AX,
+  AY: Integer);
+begin
+  RightMouseDown(FindControl(AControlName, CallerAddr), AX, AY);
+end;
+
+procedure TGUIAutomation.RightMouseDown(const AControl: TControl; const AX,
+  AY: Integer);
+begin
+  Assert(AControl <> nil, 'No control');
+  MouseButtonDownOn(AControl, mbRight, AX, AY);
+end;
+
+procedure TGUIAutomation.RightMouseDownAt(const AX, AY: Integer);
+var
+  LPoint: TPoint;
+  LHwnd: HWND;
+begin
+  if ControlAtActiveWindowCoord(AX, AY, LHwnd, LPoint) then
+    MouseButtonDownOn(LHwnd, mbRight, LPoint.X, LPoint.Y);
+end;
+
+procedure TGUIAutomation.RightMouseUp(const AControlName: string; const AX,
+  AY: Integer);
+begin
+  RightMouseUp(FindControl(AControlName, CallerAddr), AX, AY);
+end;
+
+procedure TGUIAutomation.RightMouseUp(const AControl: TControl; const AX, AY: Integer);
+begin
+  Assert(AControl <> nil, 'No control');
+  MouseButtonUpOn(AControl, mbRight, AX, AY);
+end;
+
+procedure TGUIAutomation.RightMouseUp(const AX, AY: Integer);
+begin
+  RightMouseUp(Screen.ActiveControl, AX, AY);
+end;
+
+procedure TGUIAutomation.RightMouseUpAt(const AX, AY: Integer);
+var
+  LPoint: TPoint;
+  LHwnd: HWND;
+begin
+  if ControlAtActiveWindowCoord(AX, AY, LHwnd, LPoint) then
+    MouseButtonUpOn(LHwnd, mbRight, LPoint.X, LPoint.Y);
 end;
 
 procedure TGUIAutomation.LeftClick(const AX: Integer; const AY: Integer);
@@ -680,17 +1165,17 @@ begin
   LeftClick(Screen.ActiveControl, AX, AY);
 end;
 
-procedure TGUIAutomation.LeftClick(ControlName: string; const AX: Integer;
+procedure TGUIAutomation.LeftClick(const AControlName: string; const AX: Integer;
   const AY: Integer);
 begin
-  LeftClick(FindControl(ControlName, CallerAddr), AX, AY);
+  LeftClick(FindControl(AControlName, CallerAddr), AX, AY);
 end;
 
-procedure TGUIAutomation.LeftClick(Control: TControl; const AX: Integer;
+procedure TGUIAutomation.LeftClick(const AControl: TControl; const AX: Integer;
   const AY: Integer);
 begin
-  Assert(Control <> nil, 'No control');
-  ClickLeftMouseButtonOn(Control, AX, AY);
+  Assert(AControl <> nil, 'No control');
+  ClickMouseButtonOn(AControl, mbLeft, AX, AY);
 end;
 
 procedure TGUIAutomation.LeftDoubleClick(const AX, AY: Integer);
@@ -698,17 +1183,17 @@ begin
   LeftDoubleClick(Screen.ActiveControl, AX, AY);
 end;
 
-procedure TGUIAutomation.LeftDoubleClick(ControlName: string; const AX,
+procedure TGUIAutomation.LeftDoubleClick(const AControlName: string; const AX,
   AY: Integer);
 begin
-  LeftDoubleClick(FindControl(ControlName, CallerAddr), AX, AY);
+  LeftDoubleClick(FindControl(AControlName, CallerAddr), AX, AY);
 end;
 
-procedure TGUIAutomation.LeftDoubleClick(Control: TControl; const AX,
+procedure TGUIAutomation.LeftDoubleClick(const AControl: TControl; const AX,
   AY: Integer);
 begin
-  Assert(Control <> nil, 'No control');
-  DoubleClickLeftMouseButtonOn(Control, AX, AY);
+  Assert(AControl <> nil, 'No control');
+  DoubleClickMouseButtonOn(AControl, mbLeft, AX, AY);
 end;
 
 procedure TGUIAutomation.RightClick(const AX: Integer; const AY: Integer);
@@ -721,48 +1206,48 @@ begin
   RightDoubleClick(Screen.ActiveControl, AX, AY);
 end;
 
-procedure TGUIAutomation.RightClick(ControlName: string; const AX: Integer;
+procedure TGUIAutomation.RightClick(const AControlName: string; const AX: Integer;
   const AY: Integer);
 begin
-  RightClick(FindControl(ControlName, CallerAddr), AX, AY);
+  RightClick(FindControl(AControlName, CallerAddr), AX, AY);
 end;
 
-procedure TGUIAutomation.RightDoubleClick(ControlName: string; const AX,
+procedure TGUIAutomation.RightDoubleClick(const AControlName: string; const AX,
   AY: Integer);
 begin
-  RightDoubleClick(FindControl(ControlName, CallerAddr), AX, AY);
+  RightDoubleClick(FindControl(AControlName, CallerAddr), AX, AY);
 end;
 
-procedure TGUIAutomation.RightClick(Control: TControl; const AX: Integer;
+procedure TGUIAutomation.RightClick(const AControl: TControl; const AX: Integer;
   const AY: Integer);
 begin
-  Assert(Control <> nil, 'No control');
-  ClickRightMouseButtonOn(Control, AX, AY);
+  Assert(AControl <> nil, 'No control');
+  ClickMouseButtonOn(AControl, mbRight, AX, AY);
 end;
 
-procedure TGUIAutomation.RightDoubleClick(Control: TControl; const AX,
+procedure TGUIAutomation.RightDoubleClick(const AControl: TControl; const AX,
   AY: Integer);
 begin
-  Assert(Control <> nil, 'No control');
-  DoubleClickRightMouseButtonOn(Control, AX, AY);
+  Assert(AControl <> nil, 'No control');
+  DoubleClickMouseButtonOn(AControl, mbRight, AX, AY);
 end;
 
-procedure TGUIAutomation.EnterKey(Key: Word; const ShiftState: TShiftState);
+procedure TGUIAutomation.EnterKey(AKey: Word; const AShiftState: TShiftState);
 begin
-  EnterKeyInto(GetFocus, Key, ShiftState);
+  EnterKeyInto(GetFocus, AKey, AShiftState);
 end;
 
-procedure TGUIAutomation.EnterKeyInto(const AControlHwnd: HWND; Key: Word;
-  const ShiftState: TShiftState);
+procedure TGUIAutomation.EnterKeyInto(const AControlHwnd: HWND; AKey: Word;
+  const AShiftState: TShiftState);
 {$IFDEF DUNIT_CLX}
 var
   E: QKeyEventH;
   Ch: char;
   S: WideString;
   state: integer;
-  function KeyChar(Key: word; Shift: boolean): char;
+  function KeyChar(AKey: word; Shift: boolean): char;
   begin
-    Result := Char(Key);
+    Result := Char(AKey);
     if Shift then
       Result := UpCase(Result)
     else
@@ -778,9 +1263,9 @@ begin
   begin
     WaitForWindowEnabled(AControlHwnd);
 {$IFDEF DUNIT_CLX}
-    if Key <= 255 then
+    if AKey <= 255 then
     begin
-      Ch := KeyChar(Key, ssShift in ShiftState);
+      Ch := KeyChar(AKey, ssShift in AShiftState);
       S := Ch;
     end
     else
@@ -789,93 +1274,93 @@ begin
       S := '';
     end;
     State := 0;
-    if ssAlt in ShiftState then
+    if ssAlt in AShiftState then
       State := integer(ButtonState_AltButton);
-    if ssCtrl in ShiftState then
+    if ssCtrl in AShiftState then
       State := State or Integer(ButtonState_ControlButton);
-    if ssShift in ShiftState then
+    if ssShift in AShiftState then
       State := State or Integer(ButtonState_ShiftButton);
 
-    E := QKeyEvent_create(QEventType_KeyPress, Key, Ord(Ch), State, @S, false, 1);
+    E := QKeyEvent_create(QEventType_KeyPress, AKey, Ord(Ch), State, @S, false, 1);
     try
       QApplication_sendEvent(AControlHwnd, E);
     finally
       QKeyEvent_destroy(E);
     end;
 {$ELSE}
-    SetKeyboardStateDown(ShiftState);
-    if ssAlt in ShiftState then
-      PostMessage(AControlHwnd, WM_SYSKEYDOWN, Key, integer($20000000))
+    SetKeyboardStateDown(AShiftState);
+    if ssAlt in AShiftState then
+      PostMessage(AControlHwnd, WM_SYSKEYDOWN, AKey, integer($20000000))
     else
-      PostMessage(AControlHwnd, WM_KEYDOWN, Key, 0);
+      PostMessage(AControlHwnd, WM_KEYDOWN, AKey, 0);
 {$ENDIF}
     SyncSleep(KeyDownDelay);
 {$IFDEF DUNIT_CLX}
-    E := QKeyEvent_create(QEventType_KeyRelease, Key, Ord(Ch), State, @S, false, 1);
+    E := QKeyEvent_create(QEventType_KeyRelease, AKey, Ord(Ch), State, @S, false, 1);
     try
       QApplication_sendEvent(AControlHwnd, E);
     finally
       QKeyEvent_destroy(E);
     end;
 {$ELSE}
-    if ssAlt in ShiftState then
-      PostMessage(AControlHwnd, WM_SYSKEYUP, Key, integer($E0000000))
+    if ssAlt in AShiftState then
+      PostMessage(AControlHwnd, WM_SYSKEYUP, AKey, integer($E0000000))
     else
-      PostMessage(AControlHwnd, WM_KEYUP, Key, integer($C0000000));
-    SetKeyboardStateUp(ShiftState);
+      PostMessage(AControlHwnd, WM_KEYUP, AKey, integer($C0000000));
+    SetKeyboardStateUp(AShiftState);
 {$ENDIF}
     SyncSleep(ActionDelay);
   end;
 end;
 
-procedure TGUIAutomation.EnterKeyInto(Control: TControl; Key: Word;
-  const ShiftState: TShiftState);
+procedure TGUIAutomation.EnterKeyInto(const AControl: TControl; AKey: Word;
+  const AShiftState: TShiftState);
 var
   LWinControl: TWinControl;
 begin
-  Assert(Control <> nil, 'No control');
-  LWinControl := FindParentWinControl(Control);
+  Assert(AControl <> nil, 'No control');
+  LWinControl := FindParentWinControl(AControl);
   if LWinControl <> nil then
-    EnterKeyInto(LWinControl.Handle, Key, ShiftState);
+    EnterKeyInto(LWinControl.Handle, AKey, AShiftState);
 end;
 
-procedure TGUIAutomation.EnterKeyInto(ControlName: string; Key: Word; const ShiftState: TShiftState);
+procedure TGUIAutomation.EnterKeyInto(const AControlName: string; AKey: Word; const AShiftState: TShiftState);
 begin
-  EnterKeyInto(FindControl(ControlName, CallerAddr), Key, ShiftState);
+  EnterKeyInto(FindControl(AControlName, CallerAddr), AKey, AShiftState);
 end;
 
-procedure TGUIAutomation.EnterKey(Key: Char; const ShiftState: TShiftState);
+procedure TGUIAutomation.EnterKey(AKey: Char; const AShiftState: TShiftState);
 begin
-  EnterKey(Ord(Key), ShiftState);
+  EnterKey(Ord(AKey), AShiftState);
 end;
 
-procedure TGUIAutomation.EnterKeyInto(const AControlHwnd: HWND; Key: Char;
-  const ShiftState: TShiftState);
+procedure TGUIAutomation.EnterKeyInto(const AControlHwnd: HWND; AKey: Char;
+  const AShiftState: TShiftState);
 begin
-  EnterKeyInto(AControlHwnd, Ord(Key), ShiftState);
+  EnterKeyInto(AControlHwnd, Ord(AKey), AShiftState);
 end;
 
-procedure TGUIAutomation.EnterKeyInto(Control: TControl; Key: Char; const ShiftState: TShiftState);
+procedure TGUIAutomation.EnterKeyInto(const AControl: TControl; AKey: Char; const AShiftState: TShiftState);
 begin
-  EnterKeyInto(Control, Ord(Key), ShiftState);
+  EnterKeyInto(AControl, Ord(AKey), AShiftState);
 end;
 
-procedure TGUIAutomation.EnterKeyInto(ControlName: string; Key: Char; const ShiftState: TShiftState);
+procedure TGUIAutomation.EnterKeyInto(const AControlName: string; AKey: Char; const AShiftState: TShiftState);
 begin
-  EnterKeyInto(ControlName, Ord(Key), ShiftState);
+  EnterKeyInto(AControlName, Ord(AKey), AShiftState);
 end;
 
-procedure TGUIAutomation.EnterText(Text: string);
+procedure TGUIAutomation.EnterText(AText: string);
 begin
-  EnterTextInto(GetFocus, Text);
+  EnterTextInto(GetFocus, AText);
 end;
 
-procedure TGUIAutomation.EnterTextInto(ControlName, Text: string);
+procedure TGUIAutomation.EnterTextInto(const AControlName: string; AText: string);
 begin
-  EnterTextInto(FindControl(ControlName, CallerAddr), Text);
+  EnterTextInto(FindControl(AControlName, CallerAddr), AText);
 end;
 
-procedure TGUIAutomation.EnterTextInto(const AControlHwnd: HWND; Text: string);
+procedure TGUIAutomation.EnterTextInto(const AControlHwnd: HWND; AText: string);
 var
   i :Integer;
 {$IFDEF DUNIT_CLX}
@@ -891,43 +1376,43 @@ begin
   begin
     WaitForWindowEnabled(AControlHwnd);
 
-    for i := 1 to Length(Text) do
+    for i := 1 to Length(AText) do
     begin
       if not ContinueExecution then
         Break;
 {$IFDEF DUNIT_CLX}
-      S := Text[i];
-      E := QKeyEvent_create(QEventType_KeyPress, Ord(Text[i]), Ord(Text[i]), 0, @S, false, 1);
+      S := AText[i];
+      E := QKeyEvent_create(QEventType_KeyPress, Ord(AText[i]), Ord(AText[i]), 0, @S, false, 1);
       QApplication_sendEvent(AControlHwnd, E);
       QKeyEvent_destroy(E);
 {$ELSE}
-      PostMessage(AControlHwnd, WM_CHAR, Ord(Text[i]), 0);
+      PostMessage(AControlHwnd, WM_CHAR, Ord(AText[i]), 0);
 {$ENDIF}
       SyncSleep(TextEntryDelay);
     end;
   end;
 end;
 
-procedure TGUIAutomation.EnterTextInto(Control: TControl; Text: string);
+procedure TGUIAutomation.EnterTextInto(const AControl: TControl; AText: string);
 var
   LWinControl: TWinControl;
 begin
-  Assert(Control <> nil, 'No control');
-  LWinControl := FindParentWinControl(Control);
+  Assert(AControl <> nil, 'No control');
+  LWinControl := FindParentWinControl(AControl);
   if LWinControl <> nil then
-    EnterTextInto(LWinControl.Handle, Text);
+    EnterTextInto(LWinControl.Handle, AText);
 end;
 
-procedure TGUIAutomation.Show(ControlName: string; OnOff: boolean);
+procedure TGUIAutomation.Show(const AControlName: string; AOnOff: boolean);
 begin
-  Show(FindControl(ControlName, CallerAddr), OnOff);
+  Show(FindControl(AControlName, CallerAddr), AOnOff);
 end;
 
-procedure TGUIAutomation.Show(Control: TControl; OnOff: boolean);
+procedure TGUIAutomation.Show(const AControl: TControl; AOnOff: boolean);
 begin
-  Assert(Control <> nil);
-  Control.Visible := OnOff;
-  Assert(Control.Visible = OnOff);
+  Assert(AControl <> nil);
+  AControl.Visible := AOnOff;
+  Assert(AControl.Visible = AOnOff);
   SyncSleep(ActionDelay);
 end;
 
@@ -938,14 +1423,14 @@ begin
     FOnGetContinueExecution(result);
 end;
 
-procedure TGUIAutomation.Hide(ControlName: string);
+procedure TGUIAutomation.Hide(const AControlName: string);
 begin
-  Show(ControlName, false);
+  Show(AControlName, false);
 end;
 
-procedure TGUIAutomation.Hide(Control: TControl);
+procedure TGUIAutomation.Hide(const AControl: TControl);
 begin
-  Show(Control, false);
+  Show(AControl, false);
 end;
 
 procedure TGUIAutomation.Tab(n: Integer);
@@ -970,25 +1455,30 @@ begin
   SyncSleep(ActionDelay);
 end;
 
-procedure TGUIAutomation.SetFocus(Control: TControl; Addrs: Pointer);
+procedure TGUIAutomation.SetFocus(const AControl: TControl;
+  const AAddrs: Pointer);
+var
+  LAddrs: Pointer;
 begin
-  if Addrs = nil then
-    Addrs := CallerAddr;
+  if AAddrs = nil then
+    LAddrs := CallerAddr
+  else
+    LAddrs := AAddrs;
 
-  if not (Control is TWinControl) then
+  if not (AControl is TWinControl) then
     raise EGUIAutomation.Create(
         Format('Expected a TWinControl, but %s is a %s',
-               [Control.Name, Control.ClassName])) at Addrs;
-  if not TWinControl(Control).CanFocus then
+               [AControl.Name, AControl.ClassName])) at LAddrs;
+  if not TWinControl(AControl).CanFocus then
     raise EGUIAutomation.Create(
         Format('Control %s:%s cannot focus',
-               [Control.Name, Control.ClassName])) at Addrs;
-  TWinControl(Control).SetFocus;
+               [AControl.Name, AControl.ClassName])) at LAddrs;
+  TWinControl(AControl).SetFocus;
 end;
 
-procedure TGUIAutomation.SetFocus(ControlName: string);
+procedure TGUIAutomation.SetFocus(const AControlName: string);
 begin
-  SetFocus(FindControl(ControlName, CallerAddr), CallerAddr);
+  SetFocus(FindControl(AControlName, CallerAddr), CallerAddr);
 end;
 
 end.

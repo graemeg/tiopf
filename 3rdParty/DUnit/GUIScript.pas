@@ -32,8 +32,6 @@
  *
  *)
 
-//TODO: Add dwScript debugger support
-//TODO: Add LoadStringFromFile and SaveStringToFile functions
 //TODO: Add a function to retrieve the value of any property of a control by property name
 //TODO: Bridge to model/objects/data presented in the UI
 
@@ -81,27 +79,45 @@ type
     procedure Check(const ACheckResult: Boolean; const AErrorMessage: string);
 
     procedure SleepEval(Info: TProgramInfo);
+    procedure StringToFileEval(Info: TProgramInfo);
+    procedure FileToStringEval(Info: TProgramInfo);
+
     procedure RunScriptEval(Info: TProgramInfo);
     procedure TerminateScriptEval(Info: TProgramInfo);
+
+    procedure WaitForControlExistsEval(Info: TProgramInfo);
+    procedure WaitForControlVisibleEval(Info: TProgramInfo);
+    procedure WaitForControlEnabledEval(Info: TProgramInfo);
+
+    procedure MoveMouseToEval(Info: TProgramInfo);
     procedure EnterTextIntoEval(Info: TProgramInfo);
     procedure EnterKeyIntoEval(Info: TProgramInfo);
     procedure EnterKeyEval(Info: TProgramInfo);
+    procedure LeftMouseDownEval(Info: TProgramInfo);
+    procedure LeftMouseUpEval(Info: TProgramInfo);
     procedure LeftClickEval(Info: TProgramInfo);
     procedure LeftClickAtEval(Info: TProgramInfo);
     procedure LeftClickControlEval(Info: TProgramInfo);
     procedure LeftDoubleClickEval(Info: TProgramInfo);
     procedure LeftDoubleClickAtEval(Info: TProgramInfo);
     procedure LeftDoubleClickControlEval(Info: TProgramInfo);
+    procedure RightMouseDownEval(Info: TProgramInfo);
+    procedure RightMouseUpEval(Info: TProgramInfo);
     procedure RightClickEval(Info: TProgramInfo);
     procedure RightClickAtEval(Info: TProgramInfo);
     procedure RightClickControlEval(Info: TProgramInfo);
     procedure RightDoubleClickEval(Info: TProgramInfo);
     procedure RightDoubleClickAtEval(Info: TProgramInfo);
     procedure RightDoubleClickControlEval(Info: TProgramInfo);
+    procedure ControlExistsEval(Info: TProgramInfo);
     procedure ControlTextEval(Info: TProgramInfo);
+
     procedure FailEval(Info: TProgramInfo);
     procedure CheckEqualsEval(Info: TProgramInfo);
     procedure CheckNotEqualsEval(Info: TProgramInfo);
+
+    procedure CheckExistsEval(Info: TProgramInfo);
+    procedure CheckNotExistsEval(Info: TProgramInfo);
     procedure CheckEnabledEval(Info: TProgramInfo);
     procedure CheckNotEnabledEval(Info: TProgramInfo);
     procedure CheckVisibleEval(Info: TProgramInfo);
@@ -135,6 +151,7 @@ uses
   StdCtrls,
   Buttons,
   Windows,
+  Forms,
   SyncObjs;
 
 {
@@ -259,13 +276,20 @@ var
     Result.OnEval := AOnEval;
   end;
 
-  procedure _AddParameter(const AFunction: TdwsFunction; const AName: string; const AType: string);
-  var
-    LParameter: TdwsParameter;
+  function _AddParameter(const AFunction: TdwsFunction; const AName: string;
+    const AType: string): TdwsParameter; overload;
   begin
-    LParameter := AFunction.Parameters.Add;
-    LParameter.Name := AName;
-    LParameter.DataType := AType;
+    Result := AFunction.Parameters.Add;
+    Result.Name := AName;
+    Result.DataType := AType;
+  end;
+
+  function _AddParameter(const AFunction: TdwsFunction; const AName: string;
+    const AType: string; const ADefaultValue: Variant): TdwsParameter; overload;
+  begin
+    Result := _AddParameter(AFunction, AName, AType);
+    Result.HasDefaultValue := true;
+    Result.DefaultValue := ADefaultValue;
   end;
 
 begin
@@ -300,6 +324,14 @@ begin
   LFunction := _AddFunction('Sleep', SleepEval);
   _AddParameter(LFunction, 'Milliseconds', 'Integer');
 
+  LFunction := _AddFunction('StringToFile', StringToFileEval);
+  _AddParameter(LFunction, 'String', 'String');
+  _AddParameter(LFunction, 'FileName', 'String');
+
+  LFunction := _AddFunction('FileToString', FileToStringEval);
+  LFunction.ResultType := 'String';
+  _AddParameter(LFunction, 'FileName', 'String');
+
   // General script control methods
 
   LFunction := _AddFunction('RunScript', RunScriptEval);
@@ -308,6 +340,31 @@ begin
   _AddFunction('TerminateScript', TerminateScriptEval);
 
   // GUI automation methods
+
+  LFunction := _AddFunction('WaitForControlExists', WaitForControlExistsEval);
+  LFunction.ResultType := 'Boolean';
+  _AddParameter(LFunction, 'ControlName', 'String');
+  _AddParameter(LFunction, 'ExistsOrNot', 'Boolean', true);
+  _AddParameter(LFunction, 'Milliseconds', 'Integer', CDefaultControlWaitInterval);
+
+  LFunction := _AddFunction('WaitForControlVisible', WaitForControlVisibleEval);
+  LFunction.ResultType := 'Boolean';
+  _AddParameter(LFunction, 'ControlName', 'String');
+  _AddParameter(LFunction, 'VisibleOrNot', 'Boolean', true);
+  _AddParameter(LFunction, 'Milliseconds', 'Integer', CDefaultControlWaitInterval);
+
+  LFunction := _AddFunction('WaitForControlEnabled', WaitForControlEnabledEval);
+  LFunction.ResultType := 'Boolean';
+  _AddParameter(LFunction, 'ControlName', 'String');
+  _AddParameter(LFunction, 'EnabledOrNot', 'Boolean', true);
+  _AddParameter(LFunction, 'Milliseconds', 'Integer', CDefaultControlWaitInterval);
+
+  LFunction := _AddFunction('MoveMouseTo', MoveMouseToEval);
+  _AddParameter(LFunction, 'ControlName', 'String');
+  _AddParameter(LFunction, 'X', 'Integer');
+  _AddParameter(LFunction, 'Y', 'Integer');
+  _AddParameter(LFunction, 'PixelInterval', 'Integer', -1);
+  _AddParameter(LFunction, 'PixelsPerSecond', 'Integer', CDefaultMouseMovePixelsPerSecond);
 
   LFunction := _AddFunction('EnterTextInto', EnterTextIntoEval);
   _AddParameter(LFunction, 'ControlName', 'String');
@@ -321,6 +378,16 @@ begin
   LFunction := _AddFunction('EnterKey', EnterKeyEval);
   _AddParameter(LFunction, 'Key', 'Integer');
   _AddParameter(LFunction, 'ShiftState', 'String');
+
+  LFunction := _AddFunction('LeftMouseDown', LeftMouseDownEval);
+  _AddParameter(LFunction, 'ControlName', 'String');
+  _AddParameter(LFunction, 'X', 'Integer');
+  _AddParameter(LFunction, 'Y', 'Integer');
+
+  LFunction := _AddFunction('LeftMouseUp', LeftMouseUpEval);
+  _AddParameter(LFunction, 'ControlName', 'String');
+  _AddParameter(LFunction, 'X', 'Integer');
+  _AddParameter(LFunction, 'Y', 'Integer');
 
   LFunction := _AddFunction('LeftClick', LeftClickEval);
   _AddParameter(LFunction, 'ControlName', 'String');
@@ -345,6 +412,16 @@ begin
 
   LFunction := _AddFunction('LeftDoubleClickControl', LeftDoubleClickControlEval);
   _AddParameter(LFunction, 'ControlName', 'String');
+
+  LFunction := _AddFunction('RightMouseDown', RightMouseDownEval);
+  _AddParameter(LFunction, 'ControlName', 'String');
+  _AddParameter(LFunction, 'X', 'Integer');
+  _AddParameter(LFunction, 'Y', 'Integer');
+
+  LFunction := _AddFunction('RightMouseUp', RightMouseUpEval);
+  _AddParameter(LFunction, 'ControlName', 'String');
+  _AddParameter(LFunction, 'X', 'Integer');
+  _AddParameter(LFunction, 'Y', 'Integer');
 
   LFunction := _AddFunction('RightClick', RightClickEval);
   _AddParameter(LFunction, 'ControlName', 'String');
@@ -371,6 +448,10 @@ begin
   _AddParameter(LFunction, 'ControlName', 'String');
 
   // GUI inspection
+
+  LFunction := _AddFunction('ControlExists', ControlExistsEval);
+  LFunction.ResultType := 'Boolean';
+  _AddParameter(LFunction, 'ControlName', 'String');
 
   LFunction := _AddFunction('ControlText', ControlTextEval);
   LFunction.ResultType := 'String';
@@ -403,6 +484,12 @@ begin
   LFunction := _AddFunction('CheckNotVisible', CheckNotVisibleEval);
   _AddParameter(LFunction, 'ControlName', 'String');
 
+  LFunction := _AddFunction('CheckExists', CheckExistsEval);
+  _AddParameter(LFunction, 'ControlName', 'String');
+
+  LFunction := _AddFunction('CheckNotExists', CheckNotExistsEval);
+  _AddParameter(LFunction, 'ControlName', 'String');
+
   LFunction := _AddFunction('CheckFocused', CheckFocusedEval);
   _AddParameter(LFunction, 'ControlName', 'String');
 
@@ -433,6 +520,9 @@ begin
   else
   begin
     try
+      // Start with the mouse at the centre of the active form
+      FGUIAutomation.MoveMouseTo(Screen.ActiveForm);
+      FGUIAutomation.SyncSleep(0);
       LExec := LProgram.Execute;
       if LExec.Msgs.HasErrors then
         FScriptResult := LExec.Msgs.AsInfo
@@ -514,14 +604,46 @@ begin
     FOnExecutionStarted(Self);
 end;
 
+procedure TGUIScript.StopExecution;
+begin
+  FContinueExecution := false;
+  FGUIAutomation.WakeUp;
+end;
+
 procedure TGUIScript.SleepEval(Info: TProgramInfo);
 begin
   FGUIAutomation.SyncSleep(Info.ValueAsInteger['Milliseconds']);
 end;
 
-procedure TGUIScript.StopExecution;
+// Note: Unicode not supported
+procedure TGUIScript.StringToFileEval(Info: TProgramInfo);
+var
+  LFileStream: TFileStream;
+  LString: AnsiString;
 begin
-  FContinueExecution := false;
+  LFileStream := TFileStream.Create(Info.ValueAsString['FileName'], fmCreate);
+  try
+    LString := AnsiString(Info.ValueAsString['String']);
+    LFileStream.WriteBuffer(Pointer(LString)^, (Length(LString)));
+  finally
+    LFileStream.Free;
+  end;
+end;
+
+// Note: Unicode not supported
+procedure TGUIScript.FileToStringEval(Info: TProgramInfo);
+var
+  LFileStream: TFileStream;
+  LString: AnsiString;
+begin
+  LFileStream := TFileStream.Create(Info.ValueAsString['FileName'], fmOpenRead);
+  try
+    SetLength(LString, LFileStream.Size);
+    LFileStream.ReadBuffer(Pointer(LString)^, LFileStream.Size);
+    Info.ResultAsString := String(LString);
+  finally
+    LFileStream.Free;
+  end;
 end;
 
 procedure TGUIScript.RunScriptEval(Info: TProgramInfo);
@@ -551,6 +673,40 @@ begin
   TerminateScript(Info);
 end;
 
+procedure TGUIScript.WaitForControlExistsEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.WaitForControlExists(
+      ControlName(Info),
+      Info.ValueAsBoolean['ExistsOrNot'],
+      Info.ValueAsInteger['Milliseconds']);
+end;
+
+procedure TGUIScript.WaitForControlVisibleEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.WaitForControlVisible(
+      ControlName(Info),
+      Info.ValueAsBoolean['VisibleOrNot'],
+      Info.ValueAsInteger['Milliseconds']);
+end;
+
+procedure TGUIScript.WaitForControlEnabledEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.WaitForControlEnabled(
+      ControlName(Info),
+      Info.ValueAsBoolean['EnabledOrNot'],
+      Info.ValueAsInteger['Milliseconds']);
+end;
+
+procedure TGUIScript.MoveMouseToEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.MoveMouseTo(
+      ControlName(Info),
+      Info.ValueAsInteger['X'],
+      Info.ValueAsInteger['Y'],
+      Info.ValueAsInteger['PixelInterval'],
+      Info.ValueAsInteger['PixelsPerSecond']);
+end;
+
 procedure TGUIScript.EnterTextIntoEval(Info: TProgramInfo);
 begin
   FGUIAutomation.EnterTextInto(
@@ -577,6 +733,22 @@ begin
   FGUIAutomation.EnterKey(
       Char(Info.ValueAsInteger['Key']),
       LShiftState);
+end;
+
+procedure TGUIScript.LeftMouseDownEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.LeftMouseDown(
+      ControlName(Info),
+      Info.ValueAsInteger['X'],
+      Info.ValueAsInteger['Y']);
+end;
+
+procedure TGUIScript.LeftMouseUpEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.LeftMouseUp(
+      ControlName(Info),
+      Info.ValueAsInteger['X'],
+      Info.ValueAsInteger['Y']);
 end;
 
 procedure TGUIScript.LeftClickEval(Info: TProgramInfo);
@@ -617,6 +789,22 @@ end;
 procedure TGUIScript.LeftDoubleClickControlEval(Info: TProgramInfo);
 begin
   FGUIAutomation.LeftDoubleClick(ControlName(Info));
+end;
+
+procedure TGUIScript.RightMouseDownEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.RightMouseDown(
+      ControlName(Info),
+      Info.ValueAsInteger['X'],
+      Info.ValueAsInteger['Y']);
+end;
+
+procedure TGUIScript.RightMouseUpEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.RightMouseUp(
+      ControlName(Info),
+      Info.ValueAsInteger['X'],
+      Info.ValueAsInteger['Y']);
 end;
 
 procedure TGUIScript.RightClickEval(Info: TProgramInfo);
@@ -686,6 +874,17 @@ begin
     raise EGUIScript.CreateFmt('Unhandled control type for control ''%s''', [AControlName]);
 end;
 
+procedure TGUIScript.ControlExistsEval(Info: TProgramInfo);
+begin
+  try
+    Control(Info);
+    Info.ResultAsBoolean := true;
+  except
+    on e: EGUIAutomationControlNotFound do
+      Info.ResultAsBoolean := false;
+  end;
+end;
+
 procedure TGUIScript.ControlTextEval(Info: TProgramInfo);
 begin
   Info.ResultAsString := GetControlText(ControlName(Info));
@@ -740,6 +939,26 @@ end;
 procedure TGUIScript.CheckNotVisibleEval(Info: TProgramInfo);
 begin
   Check(not Control(Info).Visible, Format('Control ''%s'' not visible', [ControlName(Info)]));
+end;
+
+procedure TGUIScript.CheckExistsEval(Info: TProgramInfo);
+begin
+  try
+    Control(Info);
+  except
+    on e: EGUIAutomationControlNotFound do
+      Check(false, Format('Control ''%s'' exists', [ControlName(Info)]));
+  end;
+end;
+
+procedure TGUIScript.CheckNotExistsEval(Info: TProgramInfo);
+begin
+  try
+    Control(Info);
+    Check(false, Format('Control ''%s'' not exists', [ControlName(Info)]));
+  except
+    on e: EGUIAutomationControlNotFound do;
+  end;
 end;
 
 procedure TGUIScript.CheckFocusedEval(Info: TProgramInfo);
