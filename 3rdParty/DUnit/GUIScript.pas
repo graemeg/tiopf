@@ -33,7 +33,7 @@
  *)
 
 //TODO: Add a function to retrieve the value of any property of a control by property name
-//TODO: Bridge to model/objects/data presented in the UI
+//TODO: Bridge to model/objects/data presented in the UI. e.g. using RTTI.
 
 {$I DUnit.inc}
 
@@ -52,6 +52,13 @@ type
   TGUIScript = class;
 
   TOnExecutionStateEvent = procedure(AScript: TGUIScript) of object;
+  TOnGetControlTextEvent = procedure(const AControl: TControl;
+      var AText: string; var AHandled: boolean) of object;
+  TCallApplicationEvent = procedure(const AActionName: string;
+      var AValue: string) of object;
+
+  TControlClass = class of TControl;
+  TControlClasses = array of TControlClass;
 
   TGUIScript = class(TObject)
   private
@@ -65,6 +72,11 @@ type
     FContinueExecution: Boolean;
     FOnExecutionStarted: TOnExecutionStateEvent;
     FOnExecutionEnded: TOnExecutionStateEvent;
+    FOnGetControlText: TOnGetControlTextEvent;
+    FOnGetControlSelectedText: TOnGetControlTextEvent;
+    FOnCallApplication: TCallApplicationEvent;
+    FTextControls: TControlClasses;
+
     function GetRecordedScript: string;
     procedure RunScript;
     procedure TerminateScript(Info: TProgramInfo);
@@ -75,8 +87,10 @@ type
     function ControlName(Info: TProgramInfo): string;
     function Control(const AControlName: string): TControl; overload;
     function Control(Info: TProgramInfo): TControl; overload;
-    function GetControlText(const AControlName: string): string;
     procedure Check(const ACheckResult: Boolean; const AErrorMessage: string);
+    procedure StringToFile(const AString: string; const AFileName: string);
+    function FileToString(const AFileName: string): string;
+    function IsTextControl(const AControl: TControl): Boolean;
 
     procedure SleepEval(Info: TProgramInfo);
     procedure StringToFileEval(Info: TProgramInfo);
@@ -84,6 +98,13 @@ type
 
     procedure RunScriptEval(Info: TProgramInfo);
     procedure TerminateScriptEval(Info: TProgramInfo);
+    procedure CallApplicationEval(Info: TProgramInfo);
+
+    procedure SetActionDelayEval(Info: TProgramInfo);
+    procedure SetMouseMoveDelayEval(Info: TProgramInfo);
+    procedure SetKeyDownDelayEval(Info: TProgramInfo);
+    procedure SetTextEntryDelayEval(Info: TProgramInfo);
+    procedure SetControlWaitPeriodEval(Info: TProgramInfo);
 
     procedure WaitForControlExistsEval(Info: TProgramInfo);
     procedure WaitForControlVisibleEval(Info: TProgramInfo);
@@ -97,24 +118,25 @@ type
     procedure LeftMouseUpEval(Info: TProgramInfo);
     procedure LeftClickEval(Info: TProgramInfo);
     procedure LeftClickAtEval(Info: TProgramInfo);
-    procedure LeftClickControlEval(Info: TProgramInfo);
     procedure LeftDoubleClickEval(Info: TProgramInfo);
     procedure LeftDoubleClickAtEval(Info: TProgramInfo);
-    procedure LeftDoubleClickControlEval(Info: TProgramInfo);
     procedure RightMouseDownEval(Info: TProgramInfo);
     procedure RightMouseUpEval(Info: TProgramInfo);
     procedure RightClickEval(Info: TProgramInfo);
     procedure RightClickAtEval(Info: TProgramInfo);
-    procedure RightClickControlEval(Info: TProgramInfo);
     procedure RightDoubleClickEval(Info: TProgramInfo);
     procedure RightDoubleClickAtEval(Info: TProgramInfo);
-    procedure RightDoubleClickControlEval(Info: TProgramInfo);
     procedure ControlExistsEval(Info: TProgramInfo);
     procedure ControlTextEval(Info: TProgramInfo);
+    procedure ControlSelectedTextEval(Info: TProgramInfo);
 
     procedure FailEval(Info: TProgramInfo);
+    procedure CheckTrueEval(Info: TProgramInfo);
+    procedure CheckFalseEval(Info: TProgramInfo);
     procedure CheckEqualsEval(Info: TProgramInfo);
     procedure CheckNotEqualsEval(Info: TProgramInfo);
+    procedure CheckFilesEqualEval(Info: TProgramInfo);
+    procedure CheckFilesNotEqualEval(Info: TProgramInfo);
 
     procedure CheckExistsEval(Info: TProgramInfo);
     procedure CheckNotExistsEval(Info: TProgramInfo);
@@ -124,6 +146,7 @@ type
     procedure CheckNotVisibleEval(Info: TProgramInfo);
     procedure CheckFocusedEval(Info: TProgramInfo);
     procedure CheckControlTextEqualEval(Info: TProgramInfo);
+    procedure CheckControlSelectedTextEqualEval(Info: TProgramInfo);
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -132,9 +155,19 @@ type
     // Play back script and get result
     function Execute(const AScript: string): Boolean;
     procedure StopExecution;
+    procedure RegisterTextControl(AControlClass: TControlClass);
+    function GetControlText(const AControl: TControl): string;
+    function GetControlSelectedText(const AControl: TControl): string;
+    // Get all control names in the hierarchy
+    function GetControlNames(const AControl: TControl): string;
+    // Generate a script to check the state of all controls in the hierarchy
+    function GetControlStates(const AControl: TControl): string;
 
     property OnExecutionStarted: TOnExecutionStateEvent read FOnExecutionStarted write FOnExecutionStarted;
     property OnExecutionEnded: TOnExecutionStateEvent read FOnExecutionEnded write FOnExecutionEnded;
+    property OnGetControlText: TOnGetControlTextEvent read FOnGetControlText write FOnGetControlText;
+    property OnGetControlSelectedText: TOnGetControlTextEvent read FOnGetControlSelectedText write FOnGetControlSelectedText;
+    property OnCallApplication: TCallApplicationEvent read FOnCallApplication write FOnCallApplication;
     property ScriptResult: string read FScriptResult;
     property Terminated: boolean read FTerminated;
     property DWScript: TDelphiWebScript read FDWScript;
@@ -142,6 +175,7 @@ type
 
   EGUIScript = class(Exception);
   EGUIScriptCheckFail = class(EGUIScript);
+  EGUIScriptUnhandledControlType = class(Exception);
 
 implementation
 
@@ -149,8 +183,15 @@ uses
   Classes,
   TypInfo,
   StdCtrls,
+  ExtCtrls,
   Buttons,
+  CheckLst,
+  Grids,
+{$IFDEF MSWINDOWS}
   Windows,
+  ComCtrls,
+  Calendar,
+{$ENDIF}
   Forms,
   SyncObjs;
 
@@ -301,23 +342,45 @@ begin
   FDWScript.OnExecutionStarted := ScriptExecutionStarted;
   FDWScript.OnExecutionEnded := ScriptExecutionEnded;
   FUnit := TdwsUnit.Create(nil);
-  FUnit.UnitName := 'GUIScriptExecution';
+  FUnit.UnitName := 'GUIScript';
   FUnit.StaticSymbols := False;
   FUnit.Script := FDWScript;
 
+  RegisterTextControl(TCustomEdit);
+
   // Constants
 
-  _AddConstant('VK_TAB', 'Integer', Ord(VK_TAB));
+{$IFDEF MSWINDOWS}
   _AddConstant('VK_BACK', 'Integer', Ord(VK_BACK));
-  _AddConstant('VK_HOME', 'Integer', Ord(VK_HOME));
+  _AddConstant('VK_TAB', 'Integer', Ord(VK_TAB));
+  _AddConstant('VK_RETURN', 'Integer', Ord(VK_RETURN));
+  _AddConstant('VK_PAUSE', 'Integer', Ord(VK_PAUSE));
+  _AddConstant('VK_ESCAPE', 'Integer', Ord(VK_ESCAPE));
+  _AddConstant('VK_SPACE', 'Integer', Ord(VK_SPACE));
+  _AddConstant('VK_PRIOR', 'Integer', Ord(VK_PRIOR));
+  _AddConstant('VK_NEXT', 'Integer', Ord(VK_NEXT));
   _AddConstant('VK_END', 'Integer', Ord(VK_END));
+  _AddConstant('VK_HOME', 'Integer', Ord(VK_HOME));
   _AddConstant('VK_LEFT', 'Integer', Ord(VK_LEFT));
   _AddConstant('VK_UP', 'Integer', Ord(VK_UP));
   _AddConstant('VK_RIGHT', 'Integer', Ord(VK_RIGHT));
   _AddConstant('VK_DOWN', 'Integer', Ord(VK_DOWN));
+  _AddConstant('VK_PRINT', 'Integer', Ord(VK_PRINT));
   _AddConstant('VK_INSERT', 'Integer', Ord(VK_INSERT));
   _AddConstant('VK_DELETE', 'Integer', Ord(VK_DELETE));
-  _AddConstant('VK_ESCAPE', 'Integer', Ord(VK_ESCAPE));
+  _AddConstant('VK_F1', 'Integer', Ord(VK_F1));
+  _AddConstant('VK_F2', 'Integer', Ord(VK_F2));
+  _AddConstant('VK_F3', 'Integer', Ord(VK_F3));
+  _AddConstant('VK_F4', 'Integer', Ord(VK_F4));
+  _AddConstant('VK_F5', 'Integer', Ord(VK_F5));
+  _AddConstant('VK_F6', 'Integer', Ord(VK_F6));
+  _AddConstant('VK_F7', 'Integer', Ord(VK_F7));
+  _AddConstant('VK_F8', 'Integer', Ord(VK_F8));
+  _AddConstant('VK_F9', 'Integer', Ord(VK_F9));
+  _AddConstant('VK_F10', 'Integer', Ord(VK_F10));
+  _AddConstant('VK_F11', 'Integer', Ord(VK_F11));
+  _AddConstant('VK_F12', 'Integer', Ord(VK_F12));
+{$ENDIF}
 
   // General methods
 
@@ -339,7 +402,27 @@ begin
 
   _AddFunction('TerminateScript', TerminateScriptEval);
 
+  LFunction := _AddFunction('CallApplication', CallApplicationEval);
+  LFunction.ResultType := 'String';
+  _AddParameter(LFunction, 'ActionName', 'String', '');
+  _AddParameter(LFunction, 'Value', 'String', '');
+
   // GUI automation methods
+
+  LFunction := _AddFunction('SetActionDelay', SetActionDelayEval);
+  _AddParameter(LFunction, 'Milliseconds', 'Integer');
+
+  LFunction := _AddFunction('SetMouseMoveDelay', SetMouseMoveDelayEval);
+  _AddParameter(LFunction, 'Milliseconds', 'Integer');
+
+  LFunction := _AddFunction('SetKeyDownDelay', SetKeyDownDelayEval);
+  _AddParameter(LFunction, 'Milliseconds', 'Integer');
+
+  LFunction := _AddFunction('SetTextEntryDelay', SetTextEntryDelayEval);
+  _AddParameter(LFunction, 'Milliseconds', 'Integer');
+
+  LFunction := _AddFunction('SetControlWaitPeriod', SetControlWaitPeriodEval);
+  _AddParameter(LFunction, 'Milliseconds', 'Integer');
 
   LFunction := _AddFunction('WaitForControlExists', WaitForControlExistsEval);
   LFunction.ResultType := 'Boolean';
@@ -373,79 +456,67 @@ begin
   LFunction := _AddFunction('EnterKeyInto', EnterKeyIntoEval);
   _AddParameter(LFunction, 'ControlName', 'String');
   _AddParameter(LFunction, 'Key', 'Integer');
-  _AddParameter(LFunction, 'ShiftState', 'String');
+  _AddParameter(LFunction, 'ShiftState', 'String', '');
 
   LFunction := _AddFunction('EnterKey', EnterKeyEval);
   _AddParameter(LFunction, 'Key', 'Integer');
-  _AddParameter(LFunction, 'ShiftState', 'String');
+  _AddParameter(LFunction, 'ShiftState', 'String', '');
 
   LFunction := _AddFunction('LeftMouseDown', LeftMouseDownEval);
   _AddParameter(LFunction, 'ControlName', 'String');
-  _AddParameter(LFunction, 'X', 'Integer');
-  _AddParameter(LFunction, 'Y', 'Integer');
+  _AddParameter(LFunction, 'X', 'Integer', -1);
+  _AddParameter(LFunction, 'Y', 'Integer', -1);
 
   LFunction := _AddFunction('LeftMouseUp', LeftMouseUpEval);
   _AddParameter(LFunction, 'ControlName', 'String');
-  _AddParameter(LFunction, 'X', 'Integer');
-  _AddParameter(LFunction, 'Y', 'Integer');
+  _AddParameter(LFunction, 'X', 'Integer', -1);
+  _AddParameter(LFunction, 'Y', 'Integer', -1);
 
   LFunction := _AddFunction('LeftClick', LeftClickEval);
   _AddParameter(LFunction, 'ControlName', 'String');
-  _AddParameter(LFunction, 'X', 'Integer');
-  _AddParameter(LFunction, 'Y', 'Integer');
+  _AddParameter(LFunction, 'X', 'Integer', -1);
+  _AddParameter(LFunction, 'Y', 'Integer', -1);
 
   LFunction := _AddFunction('LeftClickAt', LeftClickAtEval);
   _AddParameter(LFunction, 'X', 'Integer');
   _AddParameter(LFunction, 'Y', 'Integer');
 
-  LFunction := _AddFunction('LeftClickControl', LeftClickControlEval);
-  _AddParameter(LFunction, 'ControlName', 'String');
-
   LFunction := _AddFunction('LeftDoubleClick', LeftDoubleClickEval);
   _AddParameter(LFunction, 'ControlName', 'String');
-  _AddParameter(LFunction, 'X', 'Integer');
-  _AddParameter(LFunction, 'Y', 'Integer');
+  _AddParameter(LFunction, 'X', 'Integer', -1);
+  _AddParameter(LFunction, 'Y', 'Integer', -1);
 
   LFunction := _AddFunction('LeftDoubleClickAt', LeftDoubleClickAtEval);
   _AddParameter(LFunction, 'X', 'Integer');
   _AddParameter(LFunction, 'Y', 'Integer');
 
-  LFunction := _AddFunction('LeftDoubleClickControl', LeftDoubleClickControlEval);
-  _AddParameter(LFunction, 'ControlName', 'String');
-
   LFunction := _AddFunction('RightMouseDown', RightMouseDownEval);
   _AddParameter(LFunction, 'ControlName', 'String');
-  _AddParameter(LFunction, 'X', 'Integer');
-  _AddParameter(LFunction, 'Y', 'Integer');
+  _AddParameter(LFunction, 'X', 'Integer', -1);
+  _AddParameter(LFunction, 'Y', 'Integer', -1);
 
   LFunction := _AddFunction('RightMouseUp', RightMouseUpEval);
   _AddParameter(LFunction, 'ControlName', 'String');
-  _AddParameter(LFunction, 'X', 'Integer');
-  _AddParameter(LFunction, 'Y', 'Integer');
+  _AddParameter(LFunction, 'X', 'Integer', -1);
+  _AddParameter(LFunction, 'Y', 'Integer', -1);
 
   LFunction := _AddFunction('RightClick', RightClickEval);
   _AddParameter(LFunction, 'ControlName', 'String');
-  _AddParameter(LFunction, 'X', 'Integer');
-  _AddParameter(LFunction, 'Y', 'Integer');
+  _AddParameter(LFunction, 'X', 'Integer', -1);
+  _AddParameter(LFunction, 'Y', 'Integer', -1);
 
   LFunction := _AddFunction('RightClickAt', RightClickAtEval);
   _AddParameter(LFunction, 'X', 'Integer');
   _AddParameter(LFunction, 'Y', 'Integer');
 
-  LFunction := _AddFunction('RightClickControl', RightClickControlEval);
-  _AddParameter(LFunction, 'ControlName', 'String');
-
   LFunction := _AddFunction('RightDoubleClick', RightDoubleClickEval);
   _AddParameter(LFunction, 'ControlName', 'String');
-  _AddParameter(LFunction, 'X', 'Integer');
-  _AddParameter(LFunction, 'Y', 'Integer');
+  _AddParameter(LFunction, 'X', 'Integer', -1);
+  _AddParameter(LFunction, 'Y', 'Integer', -1);
 
   LFunction := _AddFunction('RightDoubleClickAt', RightDoubleClickAtEval);
   _AddParameter(LFunction, 'X', 'Integer');
   _AddParameter(LFunction, 'Y', 'Integer');
-
-  LFunction := _AddFunction('RightDoubleClickControl', RightDoubleClickControlEval);
-  _AddParameter(LFunction, 'ControlName', 'String');
 
   // GUI inspection
 
@@ -457,10 +528,20 @@ begin
   LFunction.ResultType := 'String';
   _AddParameter(LFunction, 'ControlName', 'String');
 
+  LFunction := _AddFunction('ControlSelectedText', ControlSelectedTextEval);
+  LFunction.ResultType := 'String';
+  _AddParameter(LFunction, 'ControlName', 'String');
+
   // General testing check methods
 
   LFunction := _AddFunction('Fail', FailEval);
   _AddParameter(LFunction, 'ErrorMessage', 'String');
+
+  LFunction := _AddFunction('CheckTrue', CheckTrueEval);
+  _AddParameter(LFunction, 'Value', 'Boolean');
+
+  LFunction := _AddFunction('CheckFalse', CheckFalseEval);
+  _AddParameter(LFunction, 'Value', 'Boolean');
 
   LFunction := _AddFunction('CheckEquals', CheckEqualsEval);
   _AddParameter(LFunction, 'ExpectedValue', 'String');
@@ -469,6 +550,14 @@ begin
   LFunction := _AddFunction('CheckNotEquals', CheckNotEqualsEval);
   _AddParameter(LFunction, 'NotExpectedValue', 'String');
   _AddParameter(LFunction, 'ActualValue', 'String');
+
+  LFunction := _AddFunction('CheckFilesEqual', CheckFilesEqualEval);
+  _AddParameter(LFunction, 'FileName1', 'String');
+  _AddParameter(LFunction, 'FileName2', 'String');
+
+  LFunction := _AddFunction('CheckFilesNotEqual', CheckFilesNotEqualEval);
+  _AddParameter(LFunction, 'FileName1', 'String');
+  _AddParameter(LFunction, 'FileName2', 'String');
 
   // GUI testing check methods
 
@@ -494,6 +583,10 @@ begin
   _AddParameter(LFunction, 'ControlName', 'String');
 
   LFunction := _AddFunction('CheckControlTextEqual', CheckControlTextEqualEval);
+  _AddParameter(LFunction, 'ControlName', 'String');
+  _AddParameter(LFunction, 'Text', 'String');
+
+  LFunction := _AddFunction('CheckControlSelectedTextEqual', CheckControlSelectedTextEqualEval);
   _AddParameter(LFunction, 'ControlName', 'String');
   _AddParameter(LFunction, 'Text', 'String');
 end;
@@ -616,14 +709,15 @@ begin
 end;
 
 // Note: Unicode not supported
-procedure TGUIScript.StringToFileEval(Info: TProgramInfo);
+procedure TGUIScript.StringToFile(const AString: string;
+  const AFileName: string);
 var
   LFileStream: TFileStream;
   LString: AnsiString;
 begin
-  LFileStream := TFileStream.Create(Info.ValueAsString['FileName'], fmCreate);
+  LFileStream := TFileStream.Create(AFileName, fmCreate);
   try
-    LString := AnsiString(Info.ValueAsString['String']);
+    LString := AnsiString(AString);
     LFileStream.WriteBuffer(Pointer(LString)^, (Length(LString)));
   finally
     LFileStream.Free;
@@ -631,19 +725,29 @@ begin
 end;
 
 // Note: Unicode not supported
-procedure TGUIScript.FileToStringEval(Info: TProgramInfo);
+function TGUIScript.FileToString(const AFileName: string): string;
 var
   LFileStream: TFileStream;
   LString: AnsiString;
 begin
-  LFileStream := TFileStream.Create(Info.ValueAsString['FileName'], fmOpenRead);
+  LFileStream := TFileStream.Create(AFileName, fmOpenRead);
   try
     SetLength(LString, LFileStream.Size);
     LFileStream.ReadBuffer(Pointer(LString)^, LFileStream.Size);
-    Info.ResultAsString := String(LString);
+    Result := String(LString);
   finally
     LFileStream.Free;
   end;
+end;
+
+procedure TGUIScript.StringToFileEval(Info: TProgramInfo);
+begin
+  StringToFile(Info.ValueAsString['String'], Info.ValueAsString['FileName']);
+end;
+
+procedure TGUIScript.FileToStringEval(Info: TProgramInfo);
+begin
+  Info.ResultAsString := FileToString(Info.ValueAsString['FileName']);
 end;
 
 procedure TGUIScript.RunScriptEval(Info: TProgramInfo);
@@ -671,6 +775,41 @@ end;
 procedure TGUIScript.TerminateScriptEval(Info: TProgramInfo);
 begin
   TerminateScript(Info);
+end;
+
+procedure TGUIScript.CallApplicationEval(Info: TProgramInfo);
+var
+  LValue: string;
+begin
+  LValue := Info.ValueAsString['Value'];
+  if Assigned(FOnCallApplication) then
+    FOnCallApplication(Info.ValueAsString['ActionName'], LValue);
+  Info.ResultAsString := LValue;
+end;
+
+procedure TGUIScript.SetActionDelayEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.ActionDelay := Info.ValueAsInteger['Milliseconds'];
+end;
+
+procedure TGUIScript.SetMouseMoveDelayEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.MouseMoveDelay := Info.ValueAsInteger['Milliseconds'];
+end;
+
+procedure TGUIScript.SetKeyDownDelayEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.KeyDownDelay := Info.ValueAsInteger['Milliseconds'];
+end;
+
+procedure TGUIScript.SetTextEntryDelayEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.TextEntryDelay := Info.ValueAsInteger['Milliseconds'];
+end;
+
+procedure TGUIScript.SetControlWaitPeriodEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.ControlWaitPeriod := Info.ValueAsInteger['Milliseconds'];
 end;
 
 procedure TGUIScript.WaitForControlExistsEval(Info: TProgramInfo);
@@ -766,11 +905,6 @@ begin
       Info.ValueAsInteger['Y']);
 end;
 
-procedure TGUIScript.LeftClickControlEval(Info: TProgramInfo);
-begin
-  FGUIAutomation.LeftClick(ControlName(Info));
-end;
-
 procedure TGUIScript.LeftDoubleClickEval(Info: TProgramInfo);
 begin
   FGUIAutomation.LeftDoubleClick(
@@ -784,11 +918,6 @@ begin
   FGUIAutomation.LeftDoubleClickAt(
       Info.ValueAsInteger['X'],
       Info.ValueAsInteger['Y']);
-end;
-
-procedure TGUIScript.LeftDoubleClickControlEval(Info: TProgramInfo);
-begin
-  FGUIAutomation.LeftDoubleClick(ControlName(Info));
 end;
 
 procedure TGUIScript.RightMouseDownEval(Info: TProgramInfo);
@@ -822,11 +951,6 @@ begin
       Info.ValueAsInteger['Y']);
 end;
 
-procedure TGUIScript.RightClickControlEval(Info: TProgramInfo);
-begin
-  FGUIAutomation.RightClick(ControlName(Info));
-end;
-
 procedure TGUIScript.RightDoubleClickEval(Info: TProgramInfo);
 begin
   FGUIAutomation.RightDoubleClick(
@@ -842,36 +966,383 @@ begin
       Info.ValueAsInteger['Y']);
 end;
 
-procedure TGUIScript.RightDoubleClickControlEval(Info: TProgramInfo);
+function TGUIScript.GetControlText(const AControl: TControl): string;
+var
+  i, x, y: Integer;
+  LHandled: Boolean;
+
+  procedure _AppendLine(var AString: string; const AAppend: string);
+  begin
+    if AString <> '' then
+      AString := AString + #13#10;
+    AString := AString + AAppend;
+  end;
+
 begin
-  FGUIAutomation.RightDoubleClick(ControlName(Info));
+  Result := '';
+  LHandled := true;
+  if AControl is TCustomEdit then // TEdit, TMemo, etc
+    Result := (AControl as TCustomEdit).Text
+  else if AControl is TCheckBox then
+    Result := BoolToStr((AControl as TCheckBox).Checked, true {UseBoolStrs})
+  else if AControl is TRadioButton then
+    Result := BoolToStr((AControl as TRadioButton).Checked, true {UseBoolStrs})
+  else if AControl is TButton then
+    Result := (AControl as TButton).Caption
+  else if AControl is TBitBtn then
+    Result := (AControl as TBitBtn).Caption
+  else if AControl is TSpeedButton then
+    Result := (AControl as TSpeedButton).Caption
+  else if AControl is TCustomLabel then
+    Result := (AControl as TCustomLabel).Caption // TLabel
+  else if AControl is TStaticText then
+    Result := (AControl as TStaticText).Caption
+  else if AControl is TComboBox then
+    Result := (AControl as TComboBox).Items.Text
+  else if AControl is TForm then
+    Result := (AControl as TForm).Caption
+  else if AControl is TPanel then
+    Result := (AControl as TPanel).Caption
+  else if AControl is TGroupBox then
+    Result := (AControl as TGroupBox).Caption
+  else if AControl is TSplitter then
+    Result := IntToStr((AControl as TSplitter).Left) + ',' + IntToStr((AControl as TSplitter).Top)
+  else if AControl is TScrollBar then
+    Result := IntToStr((AControl as TScrollBar).Position)
+{$IFDEF MSWINDOWS}
+  else if AControl is TPageControl then
+  begin
+    Result := IntToStr((AControl as TPageControl).TabIndex);
+    if Assigned((AControl as TPageControl).ActivePage) then
+      Result := Result + ': ' + (AControl as TPageControl).ActivePage.Caption;
+  end
+  else if AControl is TTabSheet then
+    Result := (AControl as TTabSheet).Caption
+  else if AControl is TRichEdit then
+    Result := (AControl as TRichEdit).Text
+  else if AControl is TDateTimePicker then
+  begin
+    if (AControl as TDateTimePicker).Kind = dtkDate then
+      Result := DateToStr((AControl as TDateTimePicker).Date)
+    else
+      Result := TimeToStr((AControl as TDateTimePicker).Time);
+  end
+  else if AControl is TTrackBar then
+    Result := IntToStr((AControl as TTrackBar).Position)
+  else if AControl is TProgressBar then
+    Result := IntToStr((AControl as TProgressBar).Position)
+  else if AControl is TMonthCalendar then
+    Result := DateToStr((AControl as TMonthCalendar).Date)
+  else if AControl is TCalendar then
+    Result := DateToStr((AControl as TCalendar).CalendarDate)
+  else if AControl is TCustomTreeView then
+    for i := 0 to (AControl as TCustomTreeView).SelectionCount - 1 do
+      _AppendLine(Result, (AControl as TCustomTreeView).Selections[i].Text)
+  else if AControl is TCustomListView then
+  begin
+    for i := 0 to (AControl as TCustomListView).Items.Count - 1 do
+      if (AControl as TCustomListView).Items[i].Selected then
+        _AppendLine(Result, (AControl as TCustomListView).Items[i].Caption);
+  end
+  else if AControl is TStatusBar then
+    for i := 0 to (AControl as TStatusBar).Panels.Count - 1 do
+      _AppendLine(Result, (AControl as TStatusBar).Panels.Items[i].Text)
+  else if AControl is TPaintBox then
+    Result := IntToStr((AControl as TPaintBox).Width) + ',' + IntToStr((AControl as TPaintBox).Height)
+{$ENDIF}
+  else if AControl is TImage then
+    Result := IntToStr((AControl as TImage).Width) + ',' + IntToStr((AControl as TImage).Height)
+  else if AControl is TListBox then
+    Result := (AControl as TListBox).Items.Text
+  else if AControl is TCheckListBox then
+    Result := (AControl as TCheckListBox).Items.Text
+  else if AControl is TRadioGroup then
+    Result := (AControl as TRadioGroup).Items.Text
+  else if AControl is TStringGrid then
+    for y := 0 to (AControl as TStringGrid).RowCount - 1 do
+    begin
+      _AppendLine(Result, '');
+      for x := 0 to (AControl as TStringGrid).ColCount - 1 do
+      begin
+        if x > (AControl as TStringGrid).Selection.Left then
+          Result := Result + #9;
+        Result := Result + (AControl as TStringGrid).Cells[x, y];
+      end;
+    end
+  else
+    LHandled := false;
+
+  if Assigned(FOnGetControlText) then
+    FOnGetControlText(AControl, Result, LHandled);
+
+  if not LHandled then
+    raise EGUIScriptUnhandledControlType.CreateFmt(
+        'Unhandled control type for control ''%s''', [AControl.Name]);
 end;
 
-function TGUIScript.GetControlText(const AControlName: string): string;
+function TGUIScript.GetControlSelectedText(const AControl: TControl): string;
 var
-  LControl: TControl;
+  i, x, y: Integer;
+  LHandled: Boolean;
+
+  procedure _AppendLine(var AString: string; const AAppend: string);
+  begin
+    if AString <> '' then
+      AString := AString + #13#10;
+    AString := AString + AAppend;
+  end;
+
 begin
-  LControl := Control(AControlName);
-  if LControl is TCustomEdit then
-    Result := (LControl as TCustomEdit).Text
-  else if LControl is TCheckBox then
-    Result := BoolToStr((LControl as TCheckBox).Checked, true {UseBoolStrs})
-  else if LControl is TRadioButton then
-    Result := BoolToStr((LControl as TRadioButton).Checked, true {UseBoolStrs})
-  else if LControl is TButton then
-    Result := (LControl as TButton).Caption
-  else if LControl is TBitBtn then
-    Result := (LControl as TBitBtn).Caption
-  else if LControl is TSpeedButton then
-    Result := (LControl as TSpeedButton).Caption
-  else if LControl is TLabel then
-    Result := (LControl as TLabel).Caption
-  else if LControl is TComboBox then
-    Result := (LControl as TComboBox).Text
-  else if LControl is TListBox then
-    Result := (LControl as TListBox).Items.Text
+  Result := '';
+  LHandled := true;
+  if AControl is TCustomEdit then // TEdit, TMemo, etc
+    Result := (AControl as TCustomEdit).SelText
+  else if AControl is TCheckBox then
+    Result := BoolToStr((AControl as TCheckBox).Checked, true {UseBoolStrs})
+  else if AControl is TRadioButton then
+    Result := BoolToStr((AControl as TRadioButton).Checked, true {UseBoolStrs})
+  else if AControl is TButton then
+    Result := (AControl as TButton).Caption
+  else if AControl is TBitBtn then
+    Result := (AControl as TBitBtn).Caption
+  else if AControl is TSpeedButton then
+    Result := (AControl as TSpeedButton).Caption
+  else if AControl is TCustomLabel then
+    Result := (AControl as TCustomLabel).Caption // TLabel
+  else if AControl is TStaticText then
+    Result := (AControl as TStaticText).Caption
+  else if AControl is TComboBox then
+    Result := (AControl as TComboBox).Text
+  else if AControl is TForm then
+    Result := (AControl as TForm).Caption
+  else if AControl is TPanel then
+    Result := (AControl as TPanel).Caption
+  else if AControl is TGroupBox then
+    Result := (AControl as TGroupBox).Caption
+  else if AControl is TSplitter then
+    Result := IntToStr((AControl as TSplitter).Left) + ',' + IntToStr((AControl as TSplitter).Top)
+  else if AControl is TScrollBar then
+    Result := IntToStr((AControl as TScrollBar).Position)
+{$IFDEF MSWINDOWS}
+  else if AControl is TPageControl then
+  begin
+    Result := IntToStr((AControl as TPageControl).TabIndex);
+    if Assigned((AControl as TPageControl).ActivePage) then
+      Result := Result + ': ' + (AControl as TPageControl).ActivePage.Caption;
+  end
+  else if AControl is TTabSheet then
+    Result := (AControl as TTabSheet).Caption
+  else if AControl is TRichEdit then
+    Result := (AControl as TRichEdit).Text
+  else if AControl is TDateTimePicker then
+  begin
+    if (AControl as TDateTimePicker).Kind = dtkDate then
+      Result := DateToStr((AControl as TDateTimePicker).Date)
+    else
+      Result := TimeToStr((AControl as TDateTimePicker).Time);
+  end
+  else if AControl is TTrackBar then
+    Result := IntToStr((AControl as TTrackBar).Position)
+  else if AControl is TProgressBar then
+    Result := IntToStr((AControl as TProgressBar).Position)
+  else if AControl is TMonthCalendar then
+    Result := DateToStr((AControl as TMonthCalendar).Date)
+  else if AControl is TCalendar then
+    Result := DateToStr((AControl as TCalendar).CalendarDate)
+  else if AControl is TCustomTreeView then
+    for i := 0 to (AControl as TCustomTreeView).SelectionCount - 1 do
+      _AppendLine(Result, (AControl as TCustomTreeView).Selections[i].Text)
+  else if AControl is TCustomListView then
+  begin
+    for i := 0 to (AControl as TCustomListView).Items.Count - 1 do
+      if (AControl as TCustomListView).Items[i].Selected then
+        _AppendLine(Result, (AControl as TCustomListView).Items[i].Caption);
+  end
+  else if AControl is TStatusBar then
+    for i := 0 to (AControl as TStatusBar).Panels.Count - 1 do
+      _AppendLine(Result, (AControl as TStatusBar).Panels.Items[i].Text)
+  else if AControl is TPaintBox then
+    Result := IntToStr((AControl as TPaintBox).Width) + ',' + IntToStr((AControl as TPaintBox).Height)
+{$ENDIF}
+  else if AControl is TImage then
+    Result := IntToStr((AControl as TImage).Width) + ',' + IntToStr((AControl as TImage).Height)
+  else if AControl is TListBox then
+  begin
+    for i := 0 to (AControl as TListBox).Items.Count - 1 do
+      if (AControl as TListBox).Selected[i] then
+        _AppendLine(Result, (AControl as TListBox).Items.Strings[i]);
+  end
+  else if AControl is TCheckListBox then
+  begin
+    for i := 0 to (AControl as TCheckListBox).Items.Count - 1 do
+      if (AControl as TCheckListBox).Checked[i] then
+        _AppendLine(Result, (AControl as TCheckListBox).Items.Strings[i]);
+  end
+  else if AControl is TRadioGroup then
+  begin
+    if (AControl as TRadioGroup).ItemIndex <> -1 then
+      Result := (AControl as TRadioGroup).Items.Strings[
+          (AControl as TRadioGroup).ItemIndex];
+  end
+  else if AControl is TStringGrid then
+  begin
+    if (AControl as TStringGrid).Selection.Left <> -1 then
+      for y := (AControl as TStringGrid).Selection.Top to
+          (AControl as TStringGrid).Selection.Bottom do
+      begin
+        _AppendLine(Result, '');
+        for x := (AControl as TStringGrid).Selection.Left to
+            (AControl as TStringGrid).Selection.Right do
+        begin
+          if x > (AControl as TStringGrid).Selection.Left then
+            Result := Result + #9;
+          Result := Result + (AControl as TStringGrid).Cells[x, y];
+        end;
+      end;
+  end
   else
-    raise EGUIScript.CreateFmt('Unhandled control type for control ''%s''', [AControlName]);
+    LHandled := false;
+
+  if Assigned(FOnGetControlSelectedText) then
+    FOnGetControlSelectedText(AControl, Result, LHandled);
+
+  if not LHandled then
+    raise EGUIScriptUnhandledControlType.CreateFmt(
+        'Unhandled control type for control ''%s''', [AControl.Name]);
+end;
+
+function TGUIScript.GetControlNames(const AControl: TControl): string;
+var
+  LControlNames: TStringList;
+
+  procedure _GetControlNames(const AControl: TControl; AControlNames: TStringList;
+    const ALevel: Integer);
+  var
+    i: Integer;
+    LWinControl: TWinControl;
+  begin
+    if AControl.Name <> '' then
+      AControlNames.Add(StringOfChar(' ', ALevel * 2) + AControl.Name);
+    if AControl is TWinControl then
+    begin
+      LWinControl := AControl as TWinControl;
+      for i := 0 to LWinControl.ControlCount - 1 do
+        if LWinControl.Controls[i] is TControl then
+          _GetControlNames(LWinControl.Controls[i], AControlNames, ALevel + 1);
+    end
+    else
+      for i := 0 to AControl.ComponentCount - 1 do
+        if AControl.Components[i] is TControl then
+          _GetControlNames(AControl.Components[i] as TControl, AControlNames, ALevel + 1);
+  end;
+
+begin
+  LControlNames := TStringList.Create;
+  try
+    _GetControlNames(AControl, LControlNames, 0);
+    Result := LControlNames.Text;
+  finally
+    LControlNames.Free;
+  end;
+end;
+
+procedure TGUIScript.RegisterTextControl(AControlClass: TControlClass);
+begin
+  SetLength(FTextControls, Length(FTextControls) + 1);
+  FTextControls[Length(FTextControls) - 1] := AControlClass;
+end;
+
+function TGUIScript.IsTextControl(const AControl: TControl): Boolean;
+var
+  i: Integer;
+begin
+  result := false;
+  for i := 0 to Length(FTextControls) - 1 do
+    if AControl is FTextControls[i] then
+    begin
+      result := true;
+      break;
+    end;
+end;
+
+function TGUIScript.GetControlStates(const AControl: TControl): string;
+var
+  LControlStateScript: TStringList;
+
+  function _CheckState(const AState: boolean): string;
+  begin
+    if AState then
+      Result := ''
+    else
+      Result := 'Not';
+  end;
+
+  procedure _GetControlStates(const AControl: TControl; AScript: TStringList);
+  var
+    i: Integer;
+    LWinControl: TWinControl;
+    LText: string;
+    LCheckAllText: Boolean;
+  begin
+    if AControl.Name <> '' then
+    begin
+      if AScript.Count > 0 then
+        AScript.Add('');
+
+      AScript.Add('  CheckExists(''' + AControl.Name + ''');');
+      AScript.Add('  Check' + _CheckState(AControl.Visible) + 'Visible(''' + AControl.Name + ''');');
+      AScript.Add('  Check' + _CheckState(AControl.Enabled) + 'Enabled(''' + AControl.Name + ''');');
+      if (AControl is TWinControl) and (AControl as TWinControl).Focused then
+        AScript.Add('  CheckFocused(''' + AControl.Name + ''');');
+      try
+        // Generally better to check entire edit text
+        LCheckAllText := IsTextControl(AControl);
+
+        if LCheckAllText then
+          LText := GetControlText(AControl)
+        else
+          LText := GetControlSelectedText(AControl);
+
+        // Escape single quotes
+        LText :=  StringReplace(LText, '''', '''''', [rfReplaceAll]);
+        // Split into nice Pascal multi-line string
+        LText := StringReplace(LText, #13#10,
+            '''#13#10 +'#13#10 +
+            '    ''', [rfReplaceAll]);
+
+        if LCheckAllText then
+          AScript.Add('  CheckControlTextEqual(''' + AControl.Name + ''', ''' +
+              LText + ''');')
+        else
+          AScript.Add('  CheckControlSelectedTextEqual(''' + AControl.Name + ''', ''' +
+              LText + ''');');
+      except
+        on e: EGUIScriptUnhandledControlType do;
+      end;
+
+      // Child controls in the hierarchy
+      if AControl is TWinControl then
+      begin
+        LWinControl := AControl as TWinControl;
+        for i := 0 to LWinControl.ControlCount - 1 do
+          if LWinControl.Controls[i] is TControl then
+            _GetControlStates(LWinControl.Controls[i], AScript)
+      end
+      else
+        for i := 0 to AControl.ComponentCount - 1 do
+          if AControl.Components[i] is TControl then
+            _GetControlStates(AControl.Components[i] as TControl, AScript);
+    end;
+  end;
+
+begin
+  LControlStateScript := TStringList.Create;
+  try
+    _GetControlStates(AControl, LControlStateScript);
+    Result := LControlStateScript.Text;
+  finally
+    LControlStateScript.Free;
+  end;
 end;
 
 procedure TGUIScript.ControlExistsEval(Info: TProgramInfo);
@@ -887,7 +1358,12 @@ end;
 
 procedure TGUIScript.ControlTextEval(Info: TProgramInfo);
 begin
-  Info.ResultAsString := GetControlText(ControlName(Info));
+  Info.ResultAsString := GetControlText(Control(Info));
+end;
+
+procedure TGUIScript.ControlSelectedTextEval(Info: TProgramInfo);
+begin
+  Info.ResultAsString := GetControlSelectedText(Control(Info));
 end;
 
 procedure TGUIScript.Check(const ACheckResult: Boolean; const AErrorMessage: string);
@@ -911,6 +1387,16 @@ begin
   Check(LActual = LExpected, Format('Expected <%s> actual <%s>', [LExpected, LActual]));
 end;
 
+procedure TGUIScript.CheckTrueEval(Info: TProgramInfo);
+begin
+  Check(Info.ValueAsBoolean['Value'], 'Expected true but was false');
+end;
+
+procedure TGUIScript.CheckFalseEval(Info: TProgramInfo);
+begin
+  Check(not Info.ValueAsBoolean['Value'], 'Expected false but was true');
+end;
+
 procedure TGUIScript.CheckNotEqualsEval(Info: TProgramInfo);
 var
   LNotExpected: string;
@@ -919,6 +1405,36 @@ begin
   LNotExpected := Info.ValueAsString['NotExpectedValue'];
   LActual := Info.ValueAsString['ActualValue'];
   Check(LActual <> LNotExpected, Format('Actual <%s>', [LActual]));
+end;
+
+procedure TGUIScript.CheckFilesEqualEval(Info: TProgramInfo);
+var
+  LFileName1: string;
+  LFileName2: string;
+  LContents1: string;
+  LContents2: string;
+begin
+  LFileName1 := Info.ValueAsString['FileName1'];
+  LFileName2 := Info.ValueAsString['FileName2'];
+  LContents1 := FileToString(LFileName1);
+  LContents2 := FileToString(LFileName2);
+  Check(LContents1 = LContents2, Format('File ''%s'' equals file ''%s''',
+      [LFileName1, LFileName2]));
+end;
+
+procedure TGUIScript.CheckFilesNotEqualEval(Info: TProgramInfo);
+var
+  LFileName1: string;
+  LFileName2: string;
+  LContents1: string;
+  LContents2: string;
+begin
+  LFileName1 := Info.ValueAsString['FileName1'];
+  LFileName2 := Info.ValueAsString['FileName2'];
+  LContents1 := FileToString(LFileName1);
+  LContents2 := FileToString(LFileName2);
+  Check(LContents1 <> LContents2, Format('File ''%s'' not equals file ''%s''',
+      [LFileName1, LFileName2]));
 end;
 
 procedure TGUIScript.CheckEnabledEval(Info: TProgramInfo);
@@ -966,7 +1482,8 @@ var
   LControl: TWinControl;
 begin
   LControl := Control(Info) as TWinControl;
-  Check(Assigned(LControl) and LControl.Focused, Format('Control ''%s'' focused', [ControlName(Info)]));
+  Check(Assigned(LControl) and LControl.Focused, Format('Control ''%s'' focused',
+      [ControlName(Info)]));
 end;
 
 procedure TGUIScript.CheckControlTextEqualEval(Info: TProgramInfo);
@@ -975,8 +1492,20 @@ var
   LActual: string;
 begin
   LExpected := Info.ValueAsString['Text'];
-  LActual := GetControlText(ControlName(Info));
-  Check(LExpected = LActual, Format('ControlText Expected <%s> actual <%s>', [LExpected, LActual]));
+  LActual := GetControlText(Control(Info));
+  Check(LExpected = LActual, Format('Control ''%s'' text expected <%s> actual <%s>',
+      [ControlName(Info), LExpected, LActual]));
+end;
+
+procedure TGUIScript.CheckControlSelectedTextEqualEval(Info: TProgramInfo);
+var
+  LExpected: string;
+  LActual: string;
+begin
+  LExpected := Info.ValueAsString['Text'];
+  LActual := GetControlSelectedText(Control(Info));
+  Check(LExpected = LActual, Format('Control ''%s'' selected text expected <%s> actual <%s>',
+      [ControlName(Info), LExpected, LActual]));
 end;
 
 end.

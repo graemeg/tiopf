@@ -36,13 +36,12 @@
  *     WM_CUT, WM_PASTE?)
  *   Mouse wheel messages
  *   Context menu key
- *   Text selection using the mouse (independent mouse down, up, mouse move)
  *   Drag and drop
  *   TComboBox item selection using keyboard
  *   Use control hierarchy and index to find window handle of control at
  *     runtime for unnamed controls instead of using an absolute cursor
  *     position. This allows the control position to change such as when
- *     the window resized.
+ *     the window resized. e.g. Use '#<index>' as control name
  *   Optionally record timing. Calculate time between actions and add delay
  *     to commands to simulate actual usage.
  *   Detect change in foreground window and add a WaitForNewForegroundWindow
@@ -98,10 +97,13 @@ const
 type
   TGUIActionAbs = class;
   TGUIActionMouseDown = class;
+  TGUIActionRecorder = class;
 
-  TGUIActionRecorderStopRecordingEvent = procedure(Sender: TObject;
+  TGUIActionRecorderEvent = procedure(Sender: TGUIActionRecorder) of object;
+  TGUIActionRecorderStopRecordingEvent = procedure(Sender: TGUIActionRecorder;
       var AStopRecording: boolean) of object;
-  TGUIActionRecorderActionEvent = procedure(Action: TGUIActionAbs) of object;
+  TGUIActionRecorderActionEvent = procedure(AAction: TGUIActionAbs;
+      var AContinue: boolean) of object;
 
   TMouseClickState = (mcsSingle, mcsDouble);
 
@@ -112,16 +114,18 @@ type
   TGUIActionAbs = class {$IFDEF DELPHI2006_UP}abstract{$ENDIF} (TObject)
   private
     FHwnd: HWND;
+    FControl: TControl;
     FControlName: string;
   protected
     function GetCommandName: string; virtual; abstract;
     function GetCommandParameters(const ACommandFormat: TGUIActionCommandFormat): string; virtual;
     function JoinParams(const AFirst: string; const ASecond: string): string;
   public
-    constructor Create(const AHwnd: HWND; const AControlName: string);
+    constructor Create(const AHwnd: HWND; const AControl: TControl; const AControlName: string);
     function AsString(const ACommandFormat: TGUIActionCommandFormat): string;
     function CommandParameters(const ACommandFormat: TGUIActionCommandFormat = acfNative): string;
     property Hwnd: HWND read FHwnd;
+    property Control: TControl read FControl;
     property ControlName: string read FControlName;
     property CommandName: string read GetCommandName;
   end;
@@ -154,13 +158,16 @@ type
     FHighlightControl: Boolean;
     FOnStopRecording: TGUIActionRecorderStopRecordingEvent;
     FOnAction: TGUIActionRecorderActionEvent;
-    procedure AddAction(AAction: TGUIActionAbs);
-    procedure FlushTextEntry;
+    FOnRecordingStarted: TGUIActionRecorderEvent;
+    FOnRecordingStopped: TGUIActionRecorderEvent;
+
+    procedure AddAction(AAction: TGUIActionAbs; var AContinue: Boolean);
+    procedure FlushTextEntry(var AContinue: Boolean);
     function CharFromVirtualKey(const AKey: Word): string;
     function CheckKeyState(const AVKCode: Word; var AKeyState: string;
         const ANewKeyState: string): boolean;
     procedure SetActive(const AValue: boolean);
-    procedure SetControl(const AHwnd: HWND; var APoint: TPoint);
+    procedure SetControl(const AHwnd: HWND; var APoint: TPoint; var AContinue: Boolean);
     function ControlByName(const AControl: TControl): boolean;
     function ControlName: string;
     function ValidControl: boolean;
@@ -172,7 +179,7 @@ type
     procedure Initialize;
     procedure Finalize;
     procedure ProcessMessage(const AMessage: UINT; const AHwnd: HWND;
-        const AWParam: WPARAM; out AStopRecording: boolean;
+        const AWParam: WPARAM; var AContinue: boolean;
         const AX: Integer = -1; const AY: Integer = -1);
     procedure PerformHighlight;
     procedure StopRecording;
@@ -187,6 +194,8 @@ type
     property HighlightControl: Boolean read FHighlightControl write SetHighlightControl;
     property OnStopRecording: TGUIActionRecorderStopRecordingEvent read
         FOnStopRecording write FOnStopRecording;
+    property OnRecordingStarted: TGUIActionRecorderEvent read FOnRecordingStarted write FOnRecordingStarted;
+    property OnRecordingStopped: TGUIActionRecorderEvent read FOnRecordingStopped write FOnRecordingStopped;
     property OnAction: TGUIActionRecorderActionEvent read FOnAction write FOnAction;
   end;
 
@@ -198,7 +207,8 @@ type
     function GetCommandParameters(const ACommandFormat: TGUIActionCommandFormat): string; override;
   public
     constructor Create(
-        const AHwnd: HWND; const AControlName: string; const AText: string);
+        const AHwnd: HWND; const AControl: TControl;
+        const AControlName: string; const AText: string);
     property Text: string read FText;
   end;
 
@@ -211,8 +221,8 @@ type
     function GetCommandParameters(const ACommandFormat: TGUIActionCommandFormat): string; override;
   public
     constructor Create(
-        const AHwnd: HWND; const AControlName: string; const AKeyCode: Integer;
-        const AKeyState: string);
+        const AHwnd: HWND; const AControl: TControl; const AControlName: string;
+        const AKeyCode: Integer; const AKeyState: string);
     property KeyCode: Integer read FKeyCode;
     property KeyState: string read FKeyState;
   end;
@@ -222,12 +232,11 @@ type
     FX: Integer;
     FY: Integer;
   protected
-    function GetCommandNameSuffix: string;
     function GetCommandParameters(const ACommandFormat: TGUIActionCommandFormat): string; override;
   public
     constructor Create(
-        const AHwnd: HWND; const AControlName: string; const AX: Integer;
-        const AY: Integer);
+        const AHwnd: HWND; const AControl: TControl; const AControlName: string;
+        const AX: Integer; const AY: Integer);
     property X: Integer read FX;
     property Y: Integer read FY;
   end;
@@ -242,10 +251,11 @@ type
     FButton: TMouseButton;
   protected
     function GetCommandNamePrefix: string;
+    function GetCommandNameSuffix: string;
   public
     constructor Create(
-        const AHwnd: HWND; const AControlName: string; const AX: Integer;
-        const AY: Integer; const AButton: TMouseButton);
+        const AHwnd: HWND; const AControl: TControl; const AControlName: string;
+        const AX: Integer; const AY: Integer; const AButton: TMouseButton);
     property Button: TMouseButton read FButton;
   end;
 
@@ -266,8 +276,8 @@ type
     function GetCommandName: string; override;
   public
     constructor Create(
-        const AHwnd: HWND; const AControlName: string; const AX: Integer;
-        const AY: Integer; const AButton: TMouseButton;
+        const AHwnd: HWND; const AControl: TControl; const AControlName: string;
+        const AX: Integer; const AY: Integer; const AButton: TMouseButton;
         const AClickState: TMouseClickState);
     property ClickState: TMouseClickState read FClickState;
   end;
@@ -320,27 +330,32 @@ function ProcessGetMessageProcHook(AnCode: Integer;
 var
   LProcess: Boolean;
   LMsg: PMsg;
-  LStopRecording: boolean;
+  LContinue: boolean;
 begin
   LProcess := (AnCode = HC_ACTION) and (AwParam = PM_REMOVE) and
       Assigned(URecorder) and URecorder.Active;
 
-  LStopRecording := false;
-  if LProcess then
-  begin
-    LMsg := PMsg(AlParam);
-    URecorder.ProcessMessage(LMsg.message, LMsg.hwnd, LMsg.wParam,
-        LStopRecording, LoWord(LMsg.lParam), HiWord(LMsg.lParam));
+  LContinue := true;
+  try
+    if LProcess then
+    begin
+      LMsg := PMsg(AlParam);
+      URecorder.ProcessMessage(LMsg.message, LMsg.hwnd, LMsg.wParam,
+          LContinue, LoWord(LMsg.lParam), HiWord(LMsg.lParam));
+    end;
+  finally
+    if LContinue then
+      Result := CallNextHookEx(UProcessGetMessageHook, AnCode, AwParam, AlParam)
+    else
+      Result := 0;
   end;
-
-  Result := CallNextHookEx(UProcessGetMessageHook, AnCode, AwParam, AlParam);
 
   // Highlight after the window has processed the message
   if LProcess and URecorder.HighlightControl then
     URecorder.PerformHighlight;
 
   // Must only unhook after CallNextHookEx
-  if LProcess and LStopRecording then
+  if LProcess and (not LContinue) then
     URecorder.StopRecording;
 end;
 
@@ -348,28 +363,31 @@ end;
 //  AwParam: WPARAM; AlParam: LPARAM): Integer; stdcall;
 //var
 //  LStruct: PCWPStruct;
-//  LStopRecording: boolean;
+//  LContinue: boolean;
 //begin
+//  LContinue := true;
 //  if Assigned(URecorder) and URecorder.Active then
 //  begin
 //    LStruct := PCWPStruct(AlParam);
 //    URecorder.ProcessMessage(LStruct.message, LStruct.hwnd, LStruct.wParam,
-//        LStopRecording);
+//        LContinue);
 //  end;
 //
 //  Result := CallNextHookEx(UCallWndProcHook, AnCode, AwParam, AlParam);
 //
 //  // Must only unhook after CallNextHookEx
-//  if Assigned(URecorder) and LStopRecording then
+//  if Assigned(URecorder) and (not LContinue) then
 //    URecorder.StopRecording;
 //end;
 
 { TGUIActionAbs }
 
-constructor TGUIActionAbs.Create(const AHwnd: HWND; const AControlName: string);
+constructor TGUIActionAbs.Create(const AHwnd: HWND; const AControl: TControl;
+  const AControlName: string);
 begin
   inherited Create;
   FHwnd := AHwnd;
+  FControl := AControl;
   FControlName := AControlName;
 end;
 
@@ -477,8 +495,11 @@ begin
 end;
 
 procedure TGUIActionRecorder.Finalize;
+var
+  LContinue: Boolean;
 begin
-  FlushTextEntry;
+  LContinue := false;
+  FlushTextEntry(LContinue);
   FControl := nil;
   FHwnd := 0;
 end;
@@ -497,11 +518,12 @@ begin
     Result := '';
 end;
 
-procedure TGUIActionRecorder.AddAction(AAction: TGUIActionAbs);
+procedure TGUIActionRecorder.AddAction(AAction: TGUIActionAbs;
+  var AContinue: Boolean);
 begin
   try
     if Assigned(FOnAction) then
-      FOnAction(AAction);
+      FOnAction(AAction, AContinue);
     if FActionMode = amRecord then
     begin
       FActions.Add(AAction);
@@ -524,6 +546,7 @@ begin
 //      if UCallWndProcHook = 0 then
 //        UCallWndProcHook := SetWindowsHookEx(WH_CALLWNDPROC,
 //            ProcessCallWndProcHook, 0, GetCurrentThreadId);
+// Also look at WH_JOURNALRECORD as a possibile alternative
     end
     else
     begin
@@ -541,6 +564,10 @@ begin
     end;
 
     FActive := AValue;
+    if FActive and Assigned(FOnRecordingStarted) then
+      FOnRecordingStarted(Self);
+    if (not FActive) and Assigned(FOnRecordingStopped) then
+      FOnRecordingStopped(Self);
   end;
 end;
 
@@ -597,7 +624,8 @@ begin
     end;
 end;
 
-procedure TGUIActionRecorder.SetControl(const AHwnd: HWND; var APoint: TPoint);
+procedure TGUIActionRecorder.SetControl(const AHwnd: HWND; var APoint: TPoint;
+  var AContinue: Boolean);
 var
   LWinControl: TWinControl;
   LHitControl: TControl;
@@ -617,7 +645,7 @@ begin
 
   if LHitControl <> FControl then
   begin
-    FlushTextEntry;
+    FlushTextEntry(AContinue);
     FControl := LHitControl;
   end;
 
@@ -687,11 +715,12 @@ begin
   end;
 end;
 
-procedure TGUIActionRecorder.FlushTextEntry;
+procedure TGUIActionRecorder.FlushTextEntry(var AContinue: Boolean);
 begin
   if Assigned(FControl) and (FEnteredText <> '') then
   begin
-    AddAction(TGUIActionEnterTextInto.Create(FHwnd, ControlName, FEnteredText));
+    AddAction(TGUIActionEnterTextInto.Create(FHwnd, FControl, ControlName,
+        FEnteredText), AContinue);
     FEnteredText := '';
   end;
 end;
@@ -737,14 +766,13 @@ begin
 end;
 
 procedure TGUIActionRecorder.ProcessMessage(const AMessage: UINT;
-  const AHwnd: HWND; const AWParam: WPARAM; out AStopRecording: boolean;
+  const AHwnd: HWND; const AWParam: WPARAM; var AContinue: boolean;
   const AX: Integer; const AY: Integer);
 var
   LKeyState: string;
   LText: string;
   LPoint: TPoint;
   LButton: TMouseButton;
-  LClickState: TMouseClickState;
 
   // Translate control co-ords to window co-ords as we don't have a
   // repeatable window name or handle to rely on so we record it as
@@ -763,7 +791,6 @@ var
 begin
   if not FActive then
     Exit; //==>
-  AStopRecording := false;
 
   case AMessage of
     WM_SYSKEYDOWN, WM_KEYDOWN:
@@ -772,13 +799,13 @@ begin
         if (AWParam = VK_CANCEL) and
            ((GetKeyState(VK_CONTROL) and $80) = $80) then
         begin
-          FlushTextEntry;
-          AStopRecording := true;
+          FlushTextEntry(AContinue);
+          AContinue := false;
           Exit; //==>
         end;
 
         LPoint := Point(AX, AY);
-        SetControl(AHwnd, LPoint);
+        SetControl(AHwnd, LPoint, AContinue);
 
         if ValidControl then
         begin
@@ -801,59 +828,69 @@ begin
               FEnteredText := FEnteredText + LText
             else
             begin // Special characters
-              FlushTextEntry;
-              AddAction(TGUIActionEnterKey.Create(AHwnd, ControlName,
-                  AWParam, LKeyState));
+              FlushTextEntry(AContinue);
+              AddAction(TGUIActionEnterKey.Create(AHwnd, FControl, ControlName,
+                  AWParam, LKeyState), AContinue);
             end;
           end;
         end;
       end;
     WM_LBUTTONDOWN,
-    WM_LBUTTONDBLCLK,
-    WM_RBUTTONDOWN,
-    WM_RBUTTONDBLCLK:
+    WM_RBUTTONDOWN:
       begin
         LPoint := Point(AX, AY);
-        SetControl(AHwnd, LPoint);
-        FlushTextEntry;
+        SetControl(AHwnd, LPoint, AContinue);
+        FlushTextEntry(AContinue);
 
         if ValidControl then
         begin
-          if (AMessage = WM_LBUTTONDOWN) or (AMessage = WM_LBUTTONDBLCLK) then
+          if AMessage = WM_LBUTTONDOWN then
             LButton := mbLeft
           else
             LButton := mbRight;
-
-          if (AMessage = WM_LBUTTONDBLCLK) or (AMessage = WM_RBUTTONDBLCLK) then
-            LClickState := mcsDouble
-          else
-            LClickState := mcsSingle;
 
           // If control cannot be identified by name then find the control
           // at runtime based on co-ords from foreground window.
           if not ControlByName(FControl) then
             LPoint := _ControlToWindowCoords(LPoint);
 
-          // For single click we record a mouse down. If the mouse up is at the
+          // For single click we record a mouse down but if the mouse up is at the
           // same position the action will be changed to a click for simplicity
-          if (AMessage = WM_LBUTTONDOWN) or (AMessage = WM_RBUTTONDOWN) then
-          begin
-            FMouseDownAction := TGUIActionMouseDown.Create(AHwnd, ControlName,
-                LPoint.X, LPoint.Y, LButton);
-            AddAction(FMouseDownAction);
-            FMouseDownMoved := false;
-          end
+          FMouseDownAction := TGUIActionMouseDown.Create(AHwnd, FControl,
+              ControlName, LPoint.X, LPoint.Y, LButton);
+          AddAction(FMouseDownAction, AContinue);
+          FMouseDownMoved := false;
+        end;
+      end;
+    WM_LBUTTONDBLCLK,
+    WM_RBUTTONDBLCLK:
+      begin
+        LPoint := Point(AX, AY);
+        SetControl(AHwnd, LPoint, AContinue);
+        FlushTextEntry(AContinue);
+
+        if ValidControl then
+        begin
+          if AMessage = WM_LBUTTONDBLCLK then
+            LButton := mbLeft
           else
-            AddAction(TGUIActionClick.Create(AHwnd, ControlName,
-                LPoint.X, LPoint.Y, LButton, LClickState));
+            LButton := mbRight;
+
+          // If control cannot be identified by name then find the control
+          // at runtime based on co-ords from foreground window.
+          if not ControlByName(FControl) then
+            LPoint := _ControlToWindowCoords(LPoint);
+
+          AddAction(TGUIActionClick.Create(AHwnd, FControl, ControlName,
+              LPoint.X, LPoint.Y, LButton, mcsDouble), AContinue);
         end;
       end;
     WM_LBUTTONUP,
     WM_RBUTTONUP:
       begin
         LPoint := Point(AX, AY);
-        SetControl(AHwnd, LPoint);
-        FlushTextEntry;
+        SetControl(AHwnd, LPoint, AContinue);
+        FlushTextEntry(AContinue);
 
         if ValidControl then
         begin
@@ -867,37 +904,48 @@ begin
           if not ControlByName(FControl) then
             LPoint := _ControlToWindowCoords(LPoint);
 
-          // If same control and position as mouse down then change to click
-          if (AHwnd = FMouseDownAction.Hwnd) and (not FMouseDownMoved) and
-             (LPoint.X = FMouseDownAction.X) and (LPoint.Y = FMouseDownAction.Y) then
+          // If same control and position as mouse down then change to single click
+          if Assigned(FMouseDownAction) and (AHwnd = FMouseDownAction.Hwnd) and
+             (not FMouseDownMoved) and (LPoint.X = FMouseDownAction.X) and
+             (LPoint.Y = FMouseDownAction.Y) then
           begin
             FActions.Remove(FMouseDownAction);
-            AddAction(TGUIActionClick.Create(AHwnd, ControlName,
-                LPoint.X, LPoint.Y, LButton, mcsSingle));
+            FMouseDownAction := nil;
+            AddAction(TGUIActionClick.Create(AHwnd, FControl, ControlName,
+                LPoint.X, LPoint.Y, LButton, mcsSingle), AContinue);
           end
           else
-            AddAction(TGUIActionMouseUp.Create(AHwnd, ControlName,
-                LPoint.X, LPoint.Y, LButton));
-        end;
+            AddAction(TGUIActionMouseUp.Create(AHwnd, FControl, ControlName,
+                LPoint.X, LPoint.Y, LButton), AContinue);
+        end
+        else
+          FMouseDownAction := nil;
       end;
     WM_MOUSEMOVE:
+      if FRecordMouseMove or Assigned(FMouseDownAction) then
       begin
-        FMouseDownMoved := true;
-        if FRecordMouseMove then
+        LPoint := Point(AX, AY);
+        SetControl(AHwnd, LPoint, AContinue);
+        FlushTextEntry(AContinue);
+
+        if ValidControl then
         begin
-          LPoint := Point(AX, AY);
-          SetControl(AHwnd, LPoint);
-          FlushTextEntry;
+          // If control cannot be identified by name then find the control
+          // at runtime based on co-ords from foreground window.
+          if not ControlByName(FControl) then
+            LPoint := _ControlToWindowCoords(LPoint);
 
-          if ValidControl then
+          // Record if position is different to mouse down
+          if (not Assigned(FMouseDownAction)) or
+             ((AHwnd <> FMouseDownAction.Hwnd) or
+              (LPoint.X <> FMouseDownAction.X) or
+              (LPoint.Y <> FMouseDownAction.Y)) then
           begin
-            // If control cannot be identified by name then find the control
-            // at runtime based on co-ords from foreground window.
-            if not ControlByName(FControl) then
-              LPoint := _ControlToWindowCoords(LPoint);
+            FMouseDownMoved := true;
 
-            AddAction(TGUIActionMouseMove.Create(AHwnd, ControlName,
-                LPoint.X, LPoint.Y));
+            if FRecordMouseMove then
+              AddAction(TGUIActionMouseMove.Create(AHwnd, FControl, ControlName,
+                  LPoint.X, LPoint.Y), AContinue);
           end;
         end;
       end;
@@ -921,9 +969,9 @@ end;
 { TGUIActionEnterTextInto }
 
 constructor TGUIActionEnterTextInto.Create(const AHwnd: HWND;
-  const AControlName: string; const AText: string);
+  const AControl: TControl; const AControlName: string; const AText: string);
 begin
-  inherited Create(AHwnd, AControlName);
+  inherited Create(AHwnd, AControl, AControlName);
   FText := AText;
 end;
 
@@ -945,10 +993,10 @@ end;
 { TGUIActionEnterKey }
 
 constructor TGUIActionEnterKey.Create(const AHwnd: HWND;
-  const AControlName: string; const AKeyCode: Integer;
-  const AKeyState: string);
+  const AControl: TControl; const AControlName: string;
+  const AKeyCode: Integer; const AKeyState: string);
 begin
-  inherited Create(AHwnd, AControlName);
+  inherited Create(AHwnd, AControl, AControlName);
   FKeyCode := AKeyCode;
   FKeyState := AKeyState;
 end;
@@ -965,23 +1013,73 @@ function TGUIActionEnterKey.GetCommandParameters(
   const ACommandFormat: TGUIActionCommandFormat): string;
 var
   LParams: string;
+{$IFDEF MSWINDOWS}
+  LKey: string;
+{$ENDIF}
+  LKeyStateParam: string;
 begin
-  if ACommandFormat = acfScript then
-    LParams := Format('%d, ''[%s]''', [FKeyCode, FKeyState])
+{$IFDEF MSWINDOWS}
+  case FKeyCode of
+    VK_BACK: LKey := 'VK_BACK';
+    VK_TAB: LKey := 'VK_TAB';
+    VK_RETURN: LKey := 'VK_RETURN';
+    VK_PAUSE: LKey := 'VK_PAUSE';
+    VK_ESCAPE: LKey := 'VK_ESCAPE';
+    VK_SPACE: LKey := 'VK_SPACE';
+    VK_PRIOR: LKey := 'VK_PRIOR';
+    VK_NEXT: LKey := 'VK_NEXT';
+    VK_END: LKey := 'VK_END';
+    VK_HOME: LKey := 'VK_HOME';
+    VK_LEFT: LKey := 'VK_LEFT';
+    VK_UP: LKey := 'VK_UP';
+    VK_RIGHT: LKey := 'VK_RIGHT';
+    VK_DOWN: LKey := 'VK_DOWN';
+    VK_PRINT: LKey := 'VK_PRINT';
+    VK_INSERT: LKey := 'VK_INSERT';
+    VK_DELETE: LKey := 'VK_DELETE';
+    VK_F1: LKey := 'VK_F1';
+    VK_F2: LKey := 'VK_F2';
+    VK_F3: LKey := 'VK_F3';
+    VK_F4: LKey := 'VK_F4';
+    VK_F5: LKey := 'VK_F5';
+    VK_F6: LKey := 'VK_F6';
+    VK_F7: LKey := 'VK_F7';
+    VK_F8: LKey := 'VK_F8';
+    VK_F9: LKey := 'VK_F9';
+    VK_F10: LKey := 'VK_F10';
+    VK_F11: LKey := 'VK_F11';
+    VK_F12: LKey := 'VK_F12';
   else
-    LParams := Format('%d, [%s]', [FKeyCode, FKeyState]);
+    LKey := IntToStr(FKeyCode);
+  end;
+{$ELSE}
+  LKey := IntToStr(FKeyCode);
+{$ENDIF}
+
+  // Key state is optional
+  if FKeyState = '' then
+    LKeyStateParam := ''
+  else
+  begin
+    if ACommandFormat = acfScript then
+      LKeyStateParam := Format(', ''[%s]''', [FKeyState])
+    else
+      LKeyStateParam := Format(', [%s]', [FKeyState]);
+  end;
+
+  LParams := Format('%s%s', [LKey, LKeyStateParam]);
   Result := JoinParams((inherited GetCommandParameters(ACommandFormat)), LParams);
 end;
 
 { TGUIActionMouseAbs }
 
 constructor TGUIActionMouseAbs.Create(const AHwnd: HWND;
-  const AControlName: string; const AX, AY: Integer);
+  const AControl: TControl; const AControlName: string; const AX, AY: Integer);
 const
   CMaxPos = 32767;
-  CCalculateNegativePos = 65535;
+  CCalculateNegativePos = 65536;
 begin
-  inherited Create(AHwnd, AControlName);
+  inherited Create(AHwnd, AControl, AControlName);
   if AX > CMaxPos then
     FX := AX - CCalculateNegativePos
   else
@@ -990,14 +1088,6 @@ begin
     FY := AY - CCalculateNegativePos
   else
     FY := AY;
-end;
-
-function TGUIActionMouseAbs.GetCommandNameSuffix: string;
-begin
-  if ControlName = '' then
-    Result := CClickAtCommand
-  else
-    Result := '';
 end;
 
 function TGUIActionMouseAbs.GetCommandParameters(
@@ -1011,16 +1101,16 @@ end;
 
 function TGUIActionMouseMove.GetCommandName: string;
 begin
-  Result := CMouseMoveCommand + CMouseCommand + CClickToCommand + GetCommandNameSuffix;
+  Result := CMouseMoveCommand + CMouseCommand + CClickToCommand;
 end;
 
 { TGUIActionMouseButtonAbs }
 
 constructor TGUIActionMouseButtonAbs.Create(const AHwnd: HWND;
-  const AControlName: string; const AX, AY: Integer;
+  const AControl: TControl; const AControlName: string; const AX, AY: Integer;
   const AButton: TMouseButton);
 begin
-  inherited Create(AHwnd, AControlName, AX, AY);
+  inherited Create(AHwnd, AControl, AControlName, AX, AY);
   FButton := AButton;
 end;
 
@@ -1033,6 +1123,14 @@ begin
   else
     raise Exception.Create('Unhandled mouse button: ' + IntToStr(Ord(FButton)));
   end;
+end;
+
+function TGUIActionMouseButtonAbs.GetCommandNameSuffix: string;
+begin
+  if ControlName = '' then
+    Result := CClickAtCommand
+  else
+    Result := '';
 end;
 
 { TGUIActionMouseDown }
@@ -1052,10 +1150,11 @@ end;
 { TGUIActionClick }
 
 constructor TGUIActionClick.Create(const AHwnd: HWND;
-  const AControlName: string; const AX: Integer; const AY: Integer;
-  const AButton: TMouseButton; const AClickState: TMouseClickState);
+  const AControl: TControl; const AControlName: string; const AX: Integer;
+  const AY: Integer; const AButton: TMouseButton;
+  const AClickState: TMouseClickState);
 begin
-  inherited Create(AHwnd, AControlName, AX, AY, AButton);
+  inherited Create(AHwnd, AControl, AControlName, AX, AY, AButton);
   FClickState := AClickState;
 end;
 
