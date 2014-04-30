@@ -241,6 +241,8 @@ type
     RecordSelectedTestButton: TToolButton;
     Runselectedtest2: TMenuItem;
     Runselectedtest4: TMenuItem;
+    Panel1: TPanel;
+    BreadcrumbsLabel: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure TestTreeClick(Sender: TObject);
     procedure FailureListViewSelectItem(Sender: TObject; Item: TListItem;
@@ -371,6 +373,7 @@ type
     FTestFailed: Boolean;
     FSP: TGUISearchPanel;
     FSearchController: TGUISearchController;
+    FBreadCrumbs: TStrings;
     procedure ResetProgress;
     procedure MenuLooksInactive(ACanvas: TCanvas; ARect: TRect; Selected: Boolean;
       ATitle: string; TitlePosn: UINT; PtyOveridesGUI: boolean);
@@ -391,6 +394,10 @@ type
       const AStartIndex: integer; out AFileName, ALineNumber: string): boolean;
     function FindMultiErrorSourceReference(const AString: string;
       const AStartIndex: integer; out AFileName, ALineNumber: string): boolean;
+    procedure PushBreadCrumb(const Value: string);
+    function PeekBreadCrumb: string;
+    procedure PopBreadCrumb;
+    procedure ClearBreadCrumbs;
   protected
     procedure OnUpdateTimer(Sender: TObject);
     function  get_TestResult: TTestResult;
@@ -673,6 +680,14 @@ begin
   FUpdateTimer.Enabled := False;
 end;
 
+function TGUITestRunner.PeekBreadCrumb: string;
+begin
+  if FBreadCrumbs.Count > 0 then
+    Result := FBreadCrumbs[FBreadCrumbs.Count - 1]
+  else
+    Result := '';
+end;
+
 function TGUITestRunner.TestToNode(Test: ITestProxy): TTreeNode;
 begin
   Result := nil;
@@ -698,6 +713,7 @@ begin
   assert(assigned(Test));
   Node := TestToNode(Test);
   assert(assigned(Node));
+  PushBreadCrumb(Test.Name);
   SetTreeNodeImage(Node, imgRUNNING);
   if ShowTestedNodeAction.Checked then
   begin
@@ -710,11 +726,13 @@ end;
 
 procedure TGUITestRunner.EndTest(Test: ITestProxy);
 begin
+  PopBreadCrumb;
   UpdateStatus(False);
 end;
 
 procedure TGUITestRunner.TestingStarts;
 begin
+  ClearBreadCrumbs;
   FTotalTime := 0;
   UpdateStatus(True);
   TProgressBarCrack(ScoreBar).Color := clOK;
@@ -1022,10 +1040,12 @@ end;
 
 procedure TGUITestRunner.StartSuite(Suite: ITestProxy);
 begin
+  PushBreadCrumb(Suite.Name);
 end;
 
 procedure TGUITestRunner.EndSuite(Suite: ITestProxy);
 begin
+  PopBreadCrumb;
 end;
 
 procedure TGUITestRunner.UpdateNodeState(Node: TTreeNode);
@@ -1057,6 +1077,13 @@ begin
   else
     ResultsView.Items[0].Caption := '';
 end;
+
+procedure TGUITestRunner.ClearBreadCrumbs;
+begin
+  FBreadCrumbs.Clear;
+  BreadcrumbsLabel.Caption := FBreadCrumbs.DelimitedText;
+end;
+
 
 procedure TGUITestRunner.SetNodeState(Node: TTreeNode; Enabled :boolean);
 var
@@ -1487,6 +1514,10 @@ begin
     FailTestCaseIfMemoryLeakedAction.Checked;
   if not IgnoreMemoryLeakInSetUpTearDownAction.Enabled then
     IgnoreMemoryLeakInSetUpTearDownAction.Checked := False;
+
+  FBreadCrumbs := TStringList.Create;
+  FBreadCrumbs.StrictDelimiter := true;
+  FBreadCrumbs.Delimiter := '>';
 end;
 
 procedure TGUITestRunner.FormDestroy(Sender: TObject);
@@ -1497,6 +1528,7 @@ begin
   Suite := nil;       // Take down the test proxys
   ClearRegistry;      // Take down the Registered tests
   FreeAndNil(FSearchController);
+  FBreadCrumbs.Free;
   inherited;
 end;
 
@@ -2061,6 +2093,7 @@ begin
     EXIT;
   end;
 
+
   FRunning := true;
   try
     RunAction.Enabled  := False;
@@ -2250,6 +2283,13 @@ begin
   begin
     SwitchNodeState(Node);
   end;
+end;
+
+procedure TGUITestRunner.PushBreadCrumb(const Value: string);
+begin
+  if not SameText(PeekBreadCrumb, Value) then
+    FBreadCrumbs.Add(Value);
+  BreadcrumbsLabel.Caption := FBreadCrumbs.DelimitedText;
 end;
 
 procedure TGUITestRunner.UpdateNodeImage(Node: TTreeNode);
@@ -2899,6 +2939,13 @@ begin
     end;
     ATest := nil;
   end;
+end;
+
+procedure TGUITestRunner.PopBreadCrumb;
+begin
+  if FBreadCrumbs.Count > 0 then
+    FBreadCrumbs.Delete(FBreadCrumbs.Count - 1);
+  BreadcrumbsLabel.Caption := FBreadCrumbs.DelimitedText;
 end;
 
 procedure TGUITestRunner.Previous1Click(Sender: TObject);

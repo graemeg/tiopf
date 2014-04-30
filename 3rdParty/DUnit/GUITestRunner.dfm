@@ -92,9 +92,9 @@ object GUITestRunner: TGUITestRunner
         TabOrder = 0
         object TestTree: TTreeView
           Left = 2
-          Top = 57
+          Top = 81
           Width = 493
-          Height = 304
+          Height = 280
           Hint = 'Hierarchy of test cases. Checked test cases will be run.'
           Align = alClient
           HideSelection = False
@@ -109,6 +109,8 @@ object GUITestRunner: TGUITestRunner
           OnClick = TestTreeClick
           OnKeyPress = TestTreeKeyPress
           OnMouseDown = TestTreeMouseDown
+          ExplicitTop = 96
+          ExplicitHeight = 265
         end
         object ToolBar1: TToolBar
           Left = 2
@@ -274,6 +276,8 @@ object GUITestRunner: TGUITestRunner
           BevelEdges = []
           BevelOuter = bvNone
           TabOrder = 2
+          ExplicitLeft = 0
+          ExplicitWidth = 495
           object lblTestTree: TLabel
             Left = 2
             Top = 2
@@ -283,6 +287,29 @@ object GUITestRunner: TGUITestRunner
             Caption = 'Test Hi&erarchy:'
             FocusControl = TestTree
             Layout = tlCenter
+          end
+        end
+        object Panel1: TPanel
+          Left = 2
+          Top = 57
+          Width = 493
+          Height = 24
+          Align = alTop
+          BevelOuter = bvNone
+          TabOrder = 3
+          object BreadcrumbsLabel: TLabel
+            Left = 0
+            Top = 0
+            Width = 493
+            Height = 24
+            Align = alClient
+            AutoSize = False
+            EllipsisPosition = epEndEllipsis
+            Layout = tlCenter
+            ExplicitLeft = 7
+            ExplicitTop = 6
+            ExplicitWidth = 3
+            ExplicitHeight = 13
           end
         end
       end
@@ -525,7 +552,7 @@ object GUITestRunner: TGUITestRunner
     Left = 230
     Top = 60
     Bitmap = {
-      494C010106000900040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010106000900080010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002000000001002000000000000020
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -802,7 +829,7 @@ object GUITestRunner: TGUITestRunner
     Left = 280
     Top = 60
     Bitmap = {
-      494C010109000E00040010001000FFFFFF00FF10FFFFFFFFFFFFFFFF424D3600
+      494C010109000E00080010001000FFFFFF00FF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       000000000000000000000000000000000000FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
@@ -1758,7 +1785,7 @@ object GUITestRunner: TGUITestRunner
     Left = 176
     Top = 61
     Bitmap = {
-      494C010118001D00040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010118001D00080010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000007000000001002000000000000070
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -2754,7 +2781,7 @@ object GUITestRunner: TGUITestRunner
     Left = 352
     Top = 108
     Bitmap = {
-      494C010102000400040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000400080010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
