@@ -112,6 +112,9 @@ type
     property SidebarGroupGradientTo: TColor read FSidebarGroupGradientTo write FSidebarGroupGradientTo;
   end;
 
+  TtiAMSOnGetShowModalMenuEvent = procedure(const AMenuItem: TTBXSubmenuItem;
+      var AShow: Boolean) of object;
+
   TtiApplicationMenuSystem = class(TtiBaseObject)
   private
     FFormMgr: TtiFormMgr;
@@ -124,6 +127,7 @@ type
     FContactEmailAddress: string;
     FDefaultDisplaySettings: TtiApplicationMenuSystemDisplaySetings;
     FDisplaySettings: TtiApplicationMenuSystemDisplaySetings; // Reference
+    FOnGetShowModalMenu: TtiAMSOnGetShowModalMenuEvent;
 
     FlblCaption : TLabel;
     FpnlCaption: TPanel;
@@ -316,16 +320,15 @@ type
      procedure   ClearContextActions;
      procedure   AddContextAction(const AAction: TAction);
      procedure   AddContextActions(const AList: TList);
+     procedure   MouseToContextMenuSideBar;
+     procedure   SetEscapeKeyEnabled(const AValue: boolean);
+
      property    ContextMenuSideBar: TdxWinXPBar read FdxWinXPBarContext;
      property    dxContainer : TdxContainer read FdxContainer;
      property    FormErrorMessage: string Write SetFormErrorMessage;
      property    FormInfoMessage: string Write SetFormInfoMessage;
      property    StatusPanelMessage: string read GetStatusPannelMessage write SetStatusPannelMessage;
-
-     procedure   MouseToContextMenuSideBar;
-     procedure   SetEscapeKeyEnabled(const AValue: boolean);
-
-
+     property    OnGetShowModalMenu: TtiAMSOnGetShowModalMenuEvent read FOnGetShowModalMenu write FOnGetShowModalMenu;
    end;
 
 function  gAMS: TtiApplicationMenuSystem;
@@ -1710,6 +1713,7 @@ end;
 procedure TtiApplicationMenuSystem.SetNavigationControlsEnabled(const AValue: Boolean);
 var
   i : Integer;
+  LVisible: Boolean;
 begin
   FNavigationControlsEnabled := AValue;
   DoBeginUpdate(nil);
@@ -1730,7 +1734,12 @@ begin
          (FMainMenuBar.Items[i] <> FtbxContextMenu) and
          ((not Assigned(FApplicationBusyToolbarImage)) or
            (not FApplicationBusyToolbarImage.IsBusyItem(FMainMenuBar.Items[i]))) then
-        FMainMenuBar.Items[i].Visible := AValue;
+      begin
+        LVisible := AValue;
+        if Assigned(FOnGetShowModalMenu) and (FMainMenuBar.Items[i] is TTBXSubmenuItem) then
+          FOnGetShowModalMenu(FMainMenuBar.Items[i] as TTBXSubmenuItem, LVisible);
+        FMainMenuBar.Items[i].Visible := LVisible;
+      end;
 
     FActionWindowNextMenu.Enabled        := (FormMgr.FormCount > 1)   and (AValue);
     FActionWindowNextToolbar.Enabled     := (FormMgr.FormCount > 1)   and (AValue);
