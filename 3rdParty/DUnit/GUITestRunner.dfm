@@ -69,32 +69,32 @@ object GUITestRunner: TGUITestRunner
       TabOrder = 0
       object ResultsSplitter: TSplitter
         Left = 0
-        Top = 363
+        Top = 318
         Width = 497
         Height = 5
         Cursor = crVSplit
         Align = alBottom
         Color = clBtnFace
         ParentColor = False
-        ExplicitTop = 196
-        ExplicitWidth = 462
+        ExplicitTop = 322
       end
       object TreePanel: TPanel
         Left = 0
         Top = 0
         Width = 497
-        Height = 363
+        Height = 318
         Align = alClient
         BevelOuter = bvNone
         BorderWidth = 2
         Constraints.MinHeight = 100
         ParentColor = True
         TabOrder = 0
+        ExplicitHeight = 317
         object TestTree: TTreeView
           Left = 2
-          Top = 81
+          Top = 57
           Width = 493
-          Height = 280
+          Height = 259
           Hint = 'Hierarchy of test cases. Checked test cases will be run.'
           Align = alClient
           HideSelection = False
@@ -109,8 +109,7 @@ object GUITestRunner: TGUITestRunner
           OnClick = TestTreeClick
           OnKeyPress = TestTreeKeyPress
           OnMouseDown = TestTreeMouseDown
-          ExplicitTop = 96
-          ExplicitHeight = 265
+          ExplicitHeight = 248
         end
         object ToolBar1: TToolBar
           Left = 2
@@ -289,35 +288,12 @@ object GUITestRunner: TGUITestRunner
             Layout = tlCenter
           end
         end
-        object Panel1: TPanel
-          Left = 2
-          Top = 57
-          Width = 493
-          Height = 24
-          Align = alTop
-          BevelOuter = bvNone
-          TabOrder = 3
-          object BreadcrumbsLabel: TLabel
-            Left = 0
-            Top = 0
-            Width = 493
-            Height = 24
-            Align = alClient
-            AutoSize = False
-            EllipsisPosition = epEndEllipsis
-            Layout = tlCenter
-            ExplicitLeft = 7
-            ExplicitTop = 6
-            ExplicitWidth = 3
-            ExplicitHeight = 13
-          end
-        end
       end
       object ResultsPanel: TPanel
         Left = 0
-        Top = 368
+        Top = 323
         Width = 497
-        Height = 174
+        Height = 219
         Align = alBottom
         BevelOuter = bvNone
         BorderWidth = 2
@@ -328,18 +304,19 @@ object GUITestRunner: TGUITestRunner
           Left = 2
           Top = 2
           Width = 493
-          Height = 46
+          Height = 71
           Align = alTop
           BevelOuter = bvLowered
           BorderWidth = 4
           ParentColor = True
           TabOrder = 0
+          ExplicitTop = 0
           object TopProgressPanel: TPanel
             Left = 5
-            Top = 5
+            Top = 23
             Width = 483
-            Height = 18
-            Align = alTop
+            Height = 23
+            Align = alClient
             BevelOuter = bvNone
             BorderWidth = 2
             ParentColor = True
@@ -348,9 +325,10 @@ object GUITestRunner: TGUITestRunner
               Left = 62
               Top = 2
               Width = 419
-              Height = 14
+              Height = 16
               Hint = 'Shows the proportion of tests run'
               Align = alClient
+              BorderWidth = 2
               Step = 1
               TabOrder = 1
             end
@@ -358,48 +336,107 @@ object GUITestRunner: TGUITestRunner
               Left = 2
               Top = 2
               Width = 60
-              Height = 14
+              Height = 16
               Align = alLeft
               Alignment = taRightJustify
               BevelOuter = bvNone
               Caption = 'Progress: '
               ParentColor = True
               TabOrder = 0
+              ExplicitLeft = -4
+              ExplicitTop = 0
+              ExplicitHeight = 19
             end
           end
           object ScorePanel: TPanel
             Left = 5
-            Top = 23
+            Top = 46
             Width = 483
-            Height = 18
-            Align = alClient
+            Height = 20
+            Align = alBottom
             BevelOuter = bvNone
             BorderWidth = 2
             ParentColor = True
             TabOrder = 1
+            ExplicitTop = 39
             object LbProgress: TLabel
               Left = 425
               Top = 2
               Width = 56
-              Height = 14
+              Height = 16
               Align = alRight
               Alignment = taRightJustify
               AutoSize = False
               Caption = 'Progress'
-              ExplicitLeft = 390
+              ExplicitLeft = 431
+              ExplicitTop = 3
+              ExplicitHeight = 36
             end
             object ScoreBar: TProgressBar
               Left = 62
               Top = 2
               Width = 363
-              Height = 14
+              Height = 16
               Hint = 'Shows the proportion of successful tests'
               Align = alClient
               BorderWidth = 2
               Step = 1
               TabOrder = 1
+              ExplicitHeight = 14
             end
             object ScoreLabel: TPanel
+              Left = 2
+              Top = 2
+              Width = 60
+              Height = 16
+              Align = alLeft
+              Alignment = taRightJustify
+              BevelOuter = bvNone
+              Caption = 'Score: '
+              ParentColor = True
+              TabOrder = 0
+              ExplicitLeft = 298
+              ExplicitTop = 530
+              ExplicitHeight = 14
+            end
+          end
+          object BreadCrumbPanel: TPanel
+            Left = 5
+            Top = 5
+            Width = 483
+            Height = 18
+            Align = alTop
+            BevelOuter = bvNone
+            BorderWidth = 2
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Pitch = fpVariable
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 2
+            object BreadcrumbsLabel: TLabel
+              Left = 62
+              Top = 2
+              Width = 419
+              Height = 14
+              Align = alClient
+              AutoSize = False
+              EllipsisPosition = epEndEllipsis
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Pitch = fpVariable
+              Font.Style = [fsBold]
+              ParentFont = False
+              Layout = tlCenter
+              ExplicitLeft = 68
+              ExplicitTop = 0
+              ExplicitHeight = 11
+            end
+            object pnlCurrentLabel: TPanel
               Left = 2
               Top = 2
               Width = 60
@@ -407,17 +444,20 @@ object GUITestRunner: TGUITestRunner
               Align = alLeft
               Alignment = taRightJustify
               BevelOuter = bvNone
-              Caption = 'Score: '
+              Caption = 'Current: '
               ParentColor = True
               TabOrder = 0
+              ExplicitLeft = -4
+              ExplicitTop = 1
+              ExplicitHeight = 11
             end
           end
         end
         object ResultsView: TListView
           Left = 2
-          Top = 48
+          Top = 73
           Width = 493
-          Height = 47
+          Height = 45
           Hint = 'Shows statistics about the current/last run'
           Align = alTop
           Columns = <
@@ -473,9 +513,9 @@ object GUITestRunner: TGUITestRunner
         end
         object FailureListView: TListView
           Left = 2
-          Top = 95
+          Top = 118
           Width = 493
-          Height = 77
+          Height = 99
           Hint = 'Shows the list of failed tests'
           Align = alClient
           Columns = <
@@ -509,6 +549,8 @@ object GUITestRunner: TGUITestRunner
           OnClick = FailureListViewClick
           OnDblClick = FailureListViewDblClick
           OnSelectItem = FailureListViewSelectItem
+          ExplicitTop = 117
+          ExplicitHeight = 96
         end
       end
     end
