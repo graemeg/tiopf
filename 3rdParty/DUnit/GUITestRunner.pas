@@ -245,6 +245,9 @@ type
     BreadCrumbPanel: TPanel;
     BreadcrumbsLabel: TLabel;
     pnlCurrentLabel: TPanel;
+    DeselectPassedAction: TAction;
+    DeselectPassedItem: TMenuItem;
+    pmiDeselectPassed: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure TestTreeClick(Sender: TObject);
     procedure FailureListViewSelectItem(Sender: TObject; Item: TListItem;
@@ -254,6 +257,7 @@ type
     procedure SelectAllActionExecute(Sender: TObject);
     procedure DeselectAllActionExecute(Sender: TObject);
     procedure SelectFailedActionExecute(Sender: TObject);
+    procedure DeselectPassedActionExecute(Sender: TObject);
     procedure SaveConfigurationActionExecute(Sender: TObject);
     procedure RestoreSavedActionExecute(Sender: TObject);
     procedure AutoSaveActionExecute(Sender: TObject);
@@ -431,6 +435,7 @@ type
 
     function  EnableTest(Test :ITestProxy) : boolean;
     function  DisableTest(Test :ITestProxy) : boolean;
+    function  DisablePassedTest(Test: ITestProxy): boolean;
     function  IncludeTest(Test :ITestProxy) : boolean;
     function  ExcludeTest(Test :ITestProxy) : boolean;
     procedure ApplyToTests(root :TTreeNode; const func :TTestFunc);
@@ -513,6 +518,7 @@ uses
   XMLListener,
 {$ENDIF}
   TestListenerIface,
+  TestFrameworkIfaces,
   Registry,
   XPVistaSupport,
   SysUtils,
@@ -1324,16 +1330,16 @@ var
 begin
   TestTree.Selected := TTreeNode(Item.data);
   Test := NodeToTest(TestTree.Selected);
-  case Ord(Test.ExecutionStatus) of
-    0 {_Ready}     : hlColor := clGray;
-    1 {_Running}   : hlColor := clNavy;
-    2 {_HaltTest}  : hlColor := clBlack;
-    3 {_Passed}    : hlColor := clLime;
-    4 {_Warning}   : hlColor := clGreen;
-    5 {_Stopped}   : hlColor := clBlack ;
-    6 {_Failed}    : hlColor := clFuchsia;
-    7 {_Break}     : hlColor := clBlack;
-    8 {_Error}     : hlColor := clRed;
+  case Test.ExecutionStatus of
+    _Ready     : hlColor := clGray;
+    _Running   : hlColor := clNavy;
+    _HaltTest  : hlColor := clBlack;
+    _Passed    : hlColor := clLime;
+    _Warning   : hlColor := clGreen;
+    _Stopped   : hlColor := clBlack ;
+    _Failed    : hlColor := clFuchsia;
+    _Break     : hlColor := clBlack;
+    _Error     : hlColor := clRed;
     else
       hlColor := clPurple;
   end;
@@ -1704,6 +1710,13 @@ begin
   result := true;
 end;
 
+function TGUITestRunner.DisablePassedTest(Test: ITestProxy): boolean;
+begin
+  if Test.ExecutionStatus = _Passed then
+    Test.Enabled := false;
+  result := true;
+end;
+
 function TGUITestRunner.IncludeTest(Test: ITestProxy): boolean;
 begin
   Test.Excluded := False;
@@ -1767,6 +1780,12 @@ end;
 procedure TGUITestRunner.DeselectAllActionExecute(Sender: TObject);
 begin
   ApplyToTests(TestTree.Items.GetFirstNode, DisableTest);
+  UpdateStatus(True);
+end;
+
+procedure TGUITestRunner.DeselectPassedActionExecute(Sender: TObject);
+begin
+  ApplyToTests(TestTree.Items.GetFirstNode, DisablePassedTest);
   UpdateStatus(True);
 end;
 
