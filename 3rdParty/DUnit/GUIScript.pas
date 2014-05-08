@@ -43,7 +43,7 @@ interface
 
 uses
   SysUtils, Controls, GUIActionRecorder, GUIAutomation, dwsExprs, dwsCompiler,
-  dwsVCLGUIFunctions, dwsComp;
+  dwsComp;
 
 const
   rcs_id: string = '#(@)$Id$';
@@ -64,6 +64,7 @@ type
   private
     FGUIAutomation: TGUIAutomation;
     FDWScript: TDelphiWebScript;
+    FDWExec: IdwsProgramExecution;
     FUnit: TdwsUnit;
     FScriptSource: string;
     FScriptResult: string;
@@ -76,6 +77,7 @@ type
     FOnGetControlSelectedText: TOnGetControlTextEvent;
     FOnCallApplication: TCallApplicationEvent;
     FTextControls: TControlClasses;
+    FControlInspectionIndent: string;
 
     function GetRecordedScript: string;
     procedure RunScript;
@@ -91,13 +93,17 @@ type
     procedure StringToFile(const AString: string; const AFileName: string);
     function FileToString(const AFileName: string): string;
     function IsTextControl(const AControl: TControl): Boolean;
+    function ShouldContinueExecution: Boolean;
 
-    procedure SleepEval(Info: TProgramInfo);
+    procedure SyncSleepEval(Info: TProgramInfo);
     procedure StringToFileEval(Info: TProgramInfo);
     procedure FileToStringEval(Info: TProgramInfo);
+    procedure GetClipboardTextEval(Info: TProgramInfo);
+    procedure SetClipboardTextEval(Info: TProgramInfo);
 
     procedure RunScriptEval(Info: TProgramInfo);
     procedure TerminateScriptEval(Info: TProgramInfo);
+    procedure ContinueExecutionEval(Info: TProgramInfo);
     procedure CallApplicationEval(Info: TProgramInfo);
 
     procedure SetActionDelayEval(Info: TProgramInfo);
@@ -158,8 +164,8 @@ type
     procedure RegisterTextControl(AControlClass: TControlClass);
     function GetControlText(const AControl: TControl): string;
     function GetControlSelectedText(const AControl: TControl): string;
-    // Get all control names in the hierarchy
-    function GetControlNames(const AControl: TControl): string;
+    // Get the name and type of all controls in the hierarchy
+    function GetControlList(const AControl: TControl): string;
     // Generate a script to check the state of all controls in the hierarchy
     function GetControlStates(const AControl: TControl): string;
 
@@ -171,6 +177,8 @@ type
     property ScriptResult: string read FScriptResult;
     property Terminated: boolean read FTerminated;
     property DWScript: TDelphiWebScript read FDWScript;
+    // Indentation to use in GetControlList and GetControlStates
+    property ControlInspectionIndent: string read FControlInspectionIndent write FControlInspectionIndent;
   end;
 
   EGUIScript = class(Exception);
@@ -178,6 +186,8 @@ type
   EGUIScriptUnhandledControlType = class(Exception);
 
 implementation
+
+{$I dws.inc}
 
 uses
   Classes,
@@ -193,7 +203,26 @@ uses
   Calendar,
 {$ENDIF}
   Forms,
-  SyncObjs;
+  SyncObjs,
+  Clipbrd,
+  StrUtils,
+
+  // Make available some built-in functions provided by DWS
+{$IFNDEF DWS_NO_BUILTIN_FUNCTIONS}
+  dwsFileFunctions,
+  dwsDebugFunctions,
+  dwsGlobalVarsFunctions,
+  dwsRTTIFunctions,
+  dwsMathFunctions,
+  dwsMath3DFunctions,
+  dwsMathComplexFunctions,
+  dwsStringFunctions,
+  dwsTimeFunctions,
+  dwsVariantFunctions,
+  dwsVCLGUIFunctions,
+{$ENDIF}
+
+  dwsSymbols;
 
 {
   String/set conversion methods from:
@@ -342,11 +371,13 @@ begin
   FDWScript.OnExecutionStarted := ScriptExecutionStarted;
   FDWScript.OnExecutionEnded := ScriptExecutionEnded;
   FUnit := TdwsUnit.Create(nil);
-  FUnit.UnitName := 'GUIScript';
+  FUnit.UnitName := 'UITestUtils';
   FUnit.StaticSymbols := False;
   FUnit.Script := FDWScript;
 
   RegisterTextControl(TCustomEdit);
+
+  FControlInspectionIndent := '  ';
 
   // Constants
 
@@ -384,7 +415,7 @@ begin
 
   // General methods
 
-  LFunction := _AddFunction('Sleep', SleepEval);
+  LFunction := _AddFunction('SyncSleep', SyncSleepEval);
   _AddParameter(LFunction, 'Milliseconds', 'Integer');
 
   LFunction := _AddFunction('StringToFile', StringToFileEval);
@@ -395,12 +426,21 @@ begin
   LFunction.ResultType := 'String';
   _AddParameter(LFunction, 'FileName', 'String');
 
+  LFunction := _AddFunction('SetClipboardText', SetClipboardTextEval);
+  _AddParameter(LFunction, 'String', 'String');
+
+  LFunction := _AddFunction('GetClipboardText', GetClipboardTextEval);
+  LFunction.ResultType := 'String';
+
   // General script control methods
 
   LFunction := _AddFunction('RunScript', RunScriptEval);
   _AddParameter(LFunction, 'FileName', 'String');
 
   _AddFunction('TerminateScript', TerminateScriptEval);
+
+  LFunction := _AddFunction('ContinueExecution', ContinueExecutionEval);
+  LFunction.ResultType := 'Boolean';
 
   LFunction := _AddFunction('CallApplication', CallApplicationEval);
   LFunction.ResultType := 'String';
@@ -602,7 +642,6 @@ end;
 procedure TGUIScript.RunScript;
 var
   LProgram: IdwsProgram;
-  LExec: IdwsProgramExecution;
 begin
   FTerminated := false;
   FRunSuccessful := false;
@@ -616,13 +655,17 @@ begin
       // Start with the mouse at the centre of the active form
       FGUIAutomation.MoveMouseTo(Screen.ActiveForm);
       FGUIAutomation.SyncSleep(0);
-      LExec := LProgram.Execute;
-      if LExec.Msgs.HasErrors then
-        FScriptResult := LExec.Msgs.AsInfo
-      else
-      begin
-        FScriptResult := LExec.Result.ToString;
-        FRunSuccessful := true;
+      FDWExec := LProgram.Execute;
+      try
+        if FDWExec.Msgs.HasErrors then
+          FScriptResult := FDWExec.Msgs.AsInfo
+        else
+        begin
+          FScriptResult := FDWExec.Result.ToString;
+          FRunSuccessful := true;
+        end;
+      finally
+        FDWExec := nil;
       end;
     except
       on E: Exception do
@@ -654,10 +697,16 @@ begin
   Result := FGUIAutomation.FindControl(AControlName);
 end;
 
+function TGUIScript.ShouldContinueExecution: Boolean;
+begin
+  result := FContinueExecution and
+      ((not Assigned(FDWExec)) or (FDWExec.ProgramState = psRunning));
+end;
+
 procedure TGUIScript.AutomationContinueExecution(
   var AContinueExecution: boolean);
 begin
-  AContinueExecution := FContinueExecution;
+  AContinueExecution := ShouldContinueExecution;
 end;
 
 function TGUIScript.Control(Info: TProgramInfo): TControl;
@@ -703,7 +752,7 @@ begin
   FGUIAutomation.WakeUp;
 end;
 
-procedure TGUIScript.SleepEval(Info: TProgramInfo);
+procedure TGUIScript.SyncSleepEval(Info: TProgramInfo);
 begin
   FGUIAutomation.SyncSleep(Info.ValueAsInteger['Milliseconds']);
 end;
@@ -750,6 +799,16 @@ begin
   Info.ResultAsString := FileToString(Info.ValueAsString['FileName']);
 end;
 
+procedure TGUIScript.GetClipboardTextEval(Info: TProgramInfo);
+begin
+  Info.ResultAsString := Clipboard.AsText;
+end;
+
+procedure TGUIScript.SetClipboardTextEval(Info: TProgramInfo);
+begin
+  Clipboard.AsText := Info.ValueAsString['String'];
+end;
+
 procedure TGUIScript.RunScriptEval(Info: TProgramInfo);
 var
   LScript: TGUIScript;
@@ -775,6 +834,11 @@ end;
 procedure TGUIScript.TerminateScriptEval(Info: TProgramInfo);
 begin
   TerminateScript(Info);
+end;
+
+procedure TGUIScript.ContinueExecutionEval(Info: TProgramInfo);
+begin
+  Info.ResultAsBoolean := ShouldContinueExecution;
 end;
 
 procedure TGUIScript.CallApplicationEval(Info: TProgramInfo);
@@ -1211,38 +1275,36 @@ begin
         'Unhandled control type for control ''%s''', [AControl.Name]);
 end;
 
-function TGUIScript.GetControlNames(const AControl: TControl): string;
+function TGUIScript.GetControlList(const AControl: TControl): string;
 var
-  LControlNames: TStringList;
+  LControlList: TStringList;
 
-  procedure _GetControlNames(const AControl: TControl; AControlNames: TStringList;
+  procedure _GetControlList(const AControl: TControl; AControlList: TStringList;
     const ALevel: Integer);
   var
     i: Integer;
     LWinControl: TWinControl;
   begin
     if AControl.Name <> '' then
-      AControlNames.Add(StringOfChar(' ', ALevel * 2) + AControl.Name);
+      AControlList.Add(DupeString(FControlInspectionIndent, ALevel) + AControl.Name +
+          ' (' + AControl.ClassName + ')');
+    // Recurse to get child controls
     if AControl is TWinControl then
     begin
       LWinControl := AControl as TWinControl;
       for i := 0 to LWinControl.ControlCount - 1 do
         if LWinControl.Controls[i] is TControl then
-          _GetControlNames(LWinControl.Controls[i], AControlNames, ALevel + 1);
-    end
-    else
-      for i := 0 to AControl.ComponentCount - 1 do
-        if AControl.Components[i] is TControl then
-          _GetControlNames(AControl.Components[i] as TControl, AControlNames, ALevel + 1);
+          _GetControlList(LWinControl.Controls[i], AControlList, ALevel + 1);
+    end;
   end;
 
 begin
-  LControlNames := TStringList.Create;
+  LControlList := TStringList.Create;
   try
-    _GetControlNames(AControl, LControlNames, 0);
-    Result := LControlNames.Text;
+    _GetControlList(AControl, LControlList, 0);
+    Result := LControlList.Text;
   finally
-    LControlNames.Free;
+    LControlList.Free;
   end;
 end;
 
@@ -1283,17 +1345,29 @@ var
     LWinControl: TWinControl;
     LText: string;
     LCheckAllText: Boolean;
+
+    procedure _AddScriptCommand(const ACommandName: string; const AParam: string = '');
+    var
+      LCommand: string;
+    begin
+      LCommand := FControlInspectionIndent + ACommandName + '(''' + AControl.Name + '''';
+      if AParam <> '' then
+        LCommand := LCommand + ', ' + AParam;
+      LCommand := LCommand + ');';
+      AScript.Add(LCommand);
+    end;
+
   begin
     if AControl.Name <> '' then
     begin
       if AScript.Count > 0 then
         AScript.Add('');
 
-      AScript.Add('  CheckExists(''' + AControl.Name + ''');');
-      AScript.Add('  Check' + _CheckState(AControl.Visible) + 'Visible(''' + AControl.Name + ''');');
-      AScript.Add('  Check' + _CheckState(AControl.Enabled) + 'Enabled(''' + AControl.Name + ''');');
+      _AddScriptCommand('CheckExists');
+      _AddScriptCommand('Check' + _CheckState(AControl.Visible) + 'Visible');
+      _AddScriptCommand('Check' + _CheckState(AControl.Enabled) + 'Enabled');
       if (AControl is TWinControl) and (AControl as TWinControl).Focused then
-        AScript.Add('  CheckFocused(''' + AControl.Name + ''');');
+        _AddScriptCommand('CheckFocused');
       try
         // Generally better to check entire edit text
         LCheckAllText := IsTextControl(AControl);
@@ -1311,27 +1385,21 @@ var
             '    ''', [rfReplaceAll]);
 
         if LCheckAllText then
-          AScript.Add('  CheckControlTextEqual(''' + AControl.Name + ''', ''' +
-              LText + ''');')
+          _AddScriptCommand('CheckControlTextEqual', '''' + LText + '''')
         else
-          AScript.Add('  CheckControlSelectedTextEqual(''' + AControl.Name + ''', ''' +
-              LText + ''');');
+          _AddScriptCommand('CheckControlSelectedTextEqual', '''' + LText + '''');
       except
         on e: EGUIScriptUnhandledControlType do;
       end;
 
-      // Child controls in the hierarchy
+      // Recurse to get child controls
       if AControl is TWinControl then
       begin
         LWinControl := AControl as TWinControl;
         for i := 0 to LWinControl.ControlCount - 1 do
           if LWinControl.Controls[i] is TControl then
             _GetControlStates(LWinControl.Controls[i], AScript)
-      end
-      else
-        for i := 0 to AControl.ComponentCount - 1 do
-          if AControl.Components[i] is TControl then
-            _GetControlStates(AControl.Components[i] as TControl, AScript);
+      end;
     end;
   end;
 

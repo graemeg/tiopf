@@ -153,7 +153,7 @@ type
     procedure MoveMouseTo(const AHwnd: HWND; const AX: Integer = -1; const AY: Integer = -1;
         const APixelInterval: Integer = -1; const APixelsPerSecond: Integer = CDefaultMouseMovePixelsPerSecond); overload;
 
-    // AControl (VCL or other) under mouse cursor, position is relative to GUI
+    // Control (VCL or other) under mouse cursor, position is relative to GUI
     procedure LeftMouseDownAt(const AX: Integer; const AY: Integer);
     procedure LeftMouseUpAt(const AX: Integer; const AY: Integer);
     procedure LeftClickAt(const AX: Integer; const AY: Integer);
@@ -163,7 +163,7 @@ type
     procedure RightClickAt(const AX: Integer; const AY: Integer);
     procedure RightDoubleClickAt(const AX: Integer; const AY: Integer);
 
-    // Active Control, default position is centre of AControl
+    // Active Control, default position is centre of Control
     procedure MoveMouseTo(const AX: Integer = -1; const AY: Integer = -1;
         const APixelInterval: Integer = -1; const APixelsPerSecond: Integer = CDefaultMouseMovePixelsPerSecond); overload;
     procedure LeftMouseDown(const AX: Integer = -1; const AY: Integer = -1); overload;
@@ -174,7 +174,7 @@ type
     procedure RightMouseUp(const AX: Integer = -1; const AY: Integer = -1); overload;
     procedure RightClick(const AX: Integer = -1; const AY: Integer = -1); overload;
     procedure RightDoubleClick(const AX: Integer = -1; const AY: Integer = -1); overload;
-    // Given Control, default position is centre of AControl
+    // Given Control, default position is centre of Control
     procedure MoveMouseTo(const AControlName: string; const AX: Integer = -1; const AY: Integer = -1;
         const APixelInterval: Integer = -1; const APixelsPerSecond: Integer = CDefaultMouseMovePixelsPerSecond); overload;
     procedure MoveMouseTo(const AControl: TControl; const AX: Integer = -1; const AY: Integer = -1;
@@ -244,11 +244,11 @@ const
 implementation
 
 uses
-{$IF COMPILERVERSION >= 11} // D2007
+{$IFDEF DELPHI2007_UP}
   Dialogs
   ,Types
   ,
-{$IFEND}
+{$ENDIF}
   TestUtils
   ;
 
@@ -386,6 +386,7 @@ function TGUIAutomation.FindControlInstance(const AComp: TComponent;
   const AControlName: string): TControl;
 var
   LControlName: string;
+  LWinControl: TWinControl;
   i: Integer;
 begin
   LControlName := UpperCase(AControlName);
@@ -394,11 +395,16 @@ begin
   else
   begin
     Result := nil;
-    i := 0;
-    while (Result = nil) and (i < AComp.ComponentCount) do
+
+    if AComp is TWinControl then
     begin
-      Result := FindControlInstance(AComp.Components[i], AControlName);
-      Inc(i);
+      LWinControl := AComp as TWinControl;
+      i := 0;
+      while (Result = nil) and (i < LWinControl.ControlCount) do
+      begin
+        Result := FindControlInstance(LWinControl.Controls[i], AControlName);
+        Inc(i);
+      end;
     end;
   end;
 end;
@@ -444,31 +450,40 @@ function TGUIAutomation.GetWinControl(var AControl: TControl; var AX: Integer;
 var
   LPoint: TPoint;
 begin
-  if not (AControl is TWinControl) then
+  if Assigned(AControl) then
   begin
-    // Translate actual control co-ords to parent window control co-ords
-    if (AX <> -1) and (AY <> -1) then
+    // We need an actual position to work with
+    // If the default position is specified then use the centre of the control
+    if (AX = -1) and (AY = -1) then
     begin
+      AX := AControl.Width div 2;
+      AY := AControl.Height div 2;
+    end;
+
+    // If the control does not have a window handle then find the parent
+    // control that does and translate the co-ords to the parent control
+    if not (AControl is TWinControl) then
+    begin
+      // Step 1: Get control co-ords in screen co-ords
       LPoint := Point(AX, AY);
       LPoint := AControl.ClientToScreen(LPoint);
-    end;
-    AControl := FindParentWinControl(AControl);
-    if Assigned(AControl) and (AX <> -1) and (AY <> -1) then
-    begin
-      LPoint := AControl.ScreenToClient(LPoint);
-      AX := LPoint.X;
-      AY := LPoint.Y;
-    end;
-  end;
 
-  result := AControl <> nil;
-  if result then
-  begin
-    if AX = -1 then
-      AX := AControl.Width div 2;
-    if AY = -1 then
-      AY := AControl.Height div 2;
-  end;
+      // Target the parent windowed control
+      AControl := FindParentWinControl(AControl);
+
+      // Step 2: Now get the parent co-ords from screen co-ords
+      if Assigned(AControl) then
+      begin
+        LPoint := AControl.ScreenToClient(LPoint);
+        AX := LPoint.X;
+        AY := LPoint.Y;
+      end;
+    end;
+
+    result := AControl <> nil;
+  end
+  else
+    result := false;
 end;
 
 function TGUIAutomation.WaitForWindowEnabled(const AHwnd: HWND): boolean;
@@ -652,7 +667,7 @@ begin
   ClientToScreen(AHwnd, LPoint);
   SetCursorPos(LPoint.X, LPoint.Y);
 
-  // Send move message to notify AControl
+  // Send move message to notify control
 {$IFDEF DUNIT_CLX}
   LPoint := Point(AX, AY);
   evMouse := QMouseEvent_create(QEventType_MouseMove, @LPoint, 1, 0);
@@ -811,10 +826,10 @@ function TGUIAutomation.ControlAtActiveWindowCoord(const AX: Integer;
 var
   LPoint: TPoint;
 begin
-{$IF COMPILERVERSION >= 11} // D2007 or later
+{$IFDEF DELPHI2007_UP}
   // NOTE: Themeing in Vista and later doesn't set the foreground window handle
   //   until the window animation effect is complete (at least with task
-  //   dialogs) so if we are too fast we might get the AControl on the wrong
+  //   dialogs) so if we are too fast we might get the control on the wrong
   //   window.
   // TODO: Improve this: Know *if* we need to wait for a new window to appear
   //   and *wait* for it to appear (instead of always waiting and instead of
@@ -826,7 +841,7 @@ begin
     SleepAndCheckContinue(CGUIPositionalClickDelay);
     SyncMessages;
   end;
-{$IFEND}
+{$ENDIF}
 
   // Get screen position of the co-ord relative to the active window
   LPoint := Point(AX, AY);
