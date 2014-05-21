@@ -86,7 +86,14 @@ type
       ['{53FF38BA-BCBA-45D1-AE64-80BF5C738FEE}']
       // Add object named AName to garbage collector
       // AValue is constructor call for AName
-      function Add(out AName; const AValue: TObject): boolean; overload;
+      // e.g. var bob: TPerson;
+      //      Add(bob, TPerson.Create); // adds the created TPerson object to GC,
+      //                                // and also assigns to variable 'bob'
+      function Add(out AVarName; const AValue: TObject): boolean; overload;
+      //  Add a pre-created object to the garbage collector
+      // e.g. var bob: TPerson;
+      //      bob := TPerson.Create;
+      //      Add(bob); // adds _pre-created_ object 'bob' to GC
       function Add(const AValue: TObject): boolean; overload;
       function Remove(const AValue: TObject): boolean;
     end;
@@ -144,7 +151,7 @@ type
       FObjects: array of TObject;
       procedure CheckCapacity;
     public
-      function Add(out AName; const AValue: TObject): boolean; overload;
+      function Add(out AVarName; const AValue: TObject): boolean; overload;
       function Add(const AValue: TObject): boolean; overload;
       function Remove(const AValue: TObject): boolean;
       destructor Destroy; override;
@@ -157,10 +164,10 @@ type
 
 { TtiGC }
 
-function TtiGC.Add(out AName; const AValue: TObject): boolean;
+function TtiGC.Add(out AVarName; const AValue: TObject): boolean;
 begin
   Result := Add(AValue);
-  TObject(AName) := AValue;
+  TObject(AVarName) := AValue;
 end;
 
 function TtiGC.Add(const AValue: TObject): boolean;
