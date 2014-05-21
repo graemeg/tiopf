@@ -69,7 +69,7 @@ begin
   Check(GC.Add(B, TCollected.Create('B')), 'add B');
   CheckFalse(GC.Add(A), 'add A again');
   GC := nil;
-  CheckEquals('Destroying A' + NL + 'Destroying B' + NL, Log.Text, 'two additions');
+  CheckEquals('Destroying B' + NL + 'Destroying A' + NL, Log.Text, 'two additions');
 end;
 
 procedure TTestTiGarbageCollector.TestRemove;
@@ -94,7 +94,7 @@ begin
   Check(GC.Add(C, TCollected.Create('C')), 'add C');
   Check(GC.Remove(B), 'remove B');
   GC := nil;
-  CheckEquals('Destroying A' + NL + 'Destroying C' + NL, Log.Text, 'removed B (middle) from A,B,C');
+  CheckEquals('Destroying C' + NL + 'Destroying A' + NL, Log.Text, 'removed B (middle) from A,B,C');
   FreeAndNil(B);
 
   Log.Clear;
@@ -104,7 +104,7 @@ begin
   Check(GC.Add(C, TCollected.Create('C')), 'add C');
   Check(GC.Remove(A), 'remove A');
   GC := nil;
-  CheckEquals('Destroying B' + NL + 'Destroying C' + NL, Log.Text, 'removed A (head) from A,B,C');
+  CheckEquals('Destroying C' + NL + 'Destroying B' + NL, Log.Text, 'removed A (head) from A,B,C');
   FreeAndNil(A);
 
   Log.Clear;
@@ -114,7 +114,7 @@ begin
   Check(GC.Add(C, TCollected.Create('C')), 'add C');
   Check(GC.Remove(C), 'remove C');
   GC := nil;
-  CheckEquals('Destroying A'+ NL + 'Destroying B' + NL, Log.Text, 'removed C (tail) from A,B,C');
+  CheckEquals('Destroying B'+ NL + 'Destroying A' + NL, Log.Text, 'removed C (tail) from A,B,C');
   FreeAndNil(C);
 end;
 
