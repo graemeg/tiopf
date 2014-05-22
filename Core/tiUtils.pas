@@ -305,6 +305,7 @@ type
   function tiGetCommonAppDataDir(const AAppDataSubDir: string): string;
   function tiGetUserLocalAppDataDir(const AAppDataSubDir: string): string;
   function tiGetCurrentUserPersonalDir: string;
+  function tiRemoveCurrentUserPersonalDirPrefix(const AFileName: string): string;
 
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
   // *
@@ -3814,6 +3815,28 @@ begin
     end;
   end;
   result := AErrorMsg = '';
+end;
+
+// Remove path prefix to my documents from given dir.
+// e.g.
+// Input : C:\Documents and Settings\User\My Documents\Path\File.ext
+// Output: My Documents\Path\File.ext
+function tiRemoveCurrentUserPersonalDirPrefix(const AFileName: string): string;
+var
+  LDocumentsDir: string;
+  LPos: integer;
+begin
+  // Get My Documents directory without last sub-dir so that it is
+  // preserved.
+  LDocumentsDir := tiRemoveTrailingSlash(tiGetCurrentUserPersonalDir);
+  LPos := tiPosR(PathDelim, LDocumentsDir);
+  if LPos <> 0 then
+    LDocumentsDir := Copy(LDocumentsDir, 1, LPos);
+
+  if Copy(AFileName, 1, Length(LDocumentsDir)) = LDocumentsDir then
+    result := Copy(AFileName, Length(LDocumentsDir) + 1, Length(AFileName))
+  else
+    result := AFileName;
 end;
 
 function tiLocateExtension(aValue: TFileName): integer;
