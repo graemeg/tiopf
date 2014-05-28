@@ -25,7 +25,7 @@ type
   TtiSleepThread = class(TThread)
   private
     FSleepResponse: Cardinal;
-    FName: string;
+    FName: AnsiString;
     FUpdateEvent: TEvent;
     FThreadInstanceID: Integer;
   protected
@@ -133,7 +133,9 @@ type
   end;
 
 {$IFDEF MSWINDOWS}
-procedure SetIdeDebuggerThreadName(AThreadID: DWORD; AThreadName: PChar);
+procedure SetIdeDebuggerThreadName(AThreadID: DWORD; AThreadName: PAnsiChar);
+{$ELSE}
+procedure SetIdeDebuggerThreadName(AThreadID: Integer; const AThreadName: string);
 {$ENDIF}
 
 
@@ -152,11 +154,11 @@ uses
 
 
 {$IFDEF MSWINDOWS}
-procedure SetIdeDebuggerThreadName(AThreadID: DWORD; AThreadName: PChar);
+procedure SetIdeDebuggerThreadName(AThreadID: DWORD; AThreadName: PAnsiChar);
 type
   TThreadNameInfo = record
     FType: LongWord;     // must be 0x1000
-    FName: PChar;        // pointer to name (in user address space)
+    FName: PAnsiChar;    // pointer to name (in user address space)
     FThreadID: LongWord; // thread ID (-1 indicates caller thread)
     FFlags: LongWord;    // reserved for future use, must be zero
   end;
@@ -234,8 +236,8 @@ end;
 
 procedure TtiSleepThread.SetThreadName(const AName: string);
 begin
-  FName := AName; // Need to store the name in the heap
-  SetIdeDebuggerThreadName(Self.ThreadID, PChar(FName));
+  FName := AnsiString(AName); // Need to store the name in the heap
+  SetIdeDebuggerThreadName(Self.ThreadID, PAnsiChar(FName));
 end;
 
 { TtiThreadList }
