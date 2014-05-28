@@ -214,17 +214,19 @@ type
 
   TGUIActionEnterKey = class(TGUIActionAbs)
   private
-    FKeyCode: Integer;
+    FKeyCode: Word;
     FKeyState: string;
+    FCount: Integer;
   protected
     function GetCommandName: string; override;
     function GetCommandParameters(const ACommandFormat: TGUIActionCommandFormat): string; override;
   public
     constructor Create(
         const AHwnd: HWND; const AControl: TControl; const AControlName: string;
-        const AKeyCode: Integer; const AKeyState: string);
-    property KeyCode: Integer read FKeyCode;
+        const AKeyCode: Word; const AKeyState: string; const ACount: Integer);
+    property KeyCode: Word read FKeyCode;
     property KeyState: string read FKeyState;
+    property Count: Integer read FCount write FCount;
   end;
 
   TGUIActionMouseAbs = class(TGUIActionAbs)
@@ -630,12 +632,15 @@ var
   LWinControl: TWinControl;
   LHitControl: TControl;
 begin
+  // If the target control has a name then we can use that instead of the
+  // windowed parent but we need to translate the co-ords
+
   // Find the VCL control with the given window handle
   LWinControl := FindControl(AHwnd);
   if Assigned(LWinControl) then
   begin
     LHitControl := _ControlAtPos(LWinControl, APoint, true {AllowDisabled});
-    if Assigned(LHitControl) then
+    if Assigned(LHitControl) and ControlByName(LHitControl) then
       // Get point relative to child
       APoint := _SourceToTarget(APoint, LWinControl, LHitControl)
     else
@@ -829,8 +834,18 @@ begin
             else
             begin // Special characters
               FlushTextEntry(AContinue);
-              AddAction(TGUIActionEnterKey.Create(AHwnd, FControl, ControlName,
-                  AWParam, LKeyState), AContinue);
+
+              // If the last action was EnterKey and it is the same key then
+              // increment the count instead of creating a new action
+              if (FActions.Last is TGUIActionEnterKey) and
+                 (AHwnd = TGUIActionEnterKey(FActions.Last).Hwnd) and
+                 (AWParam = TGUIActionEnterKey(FActions.Last).KeyCode) and
+                 (LKeyState = TGUIActionEnterKey(FActions.Last).KeyState) then
+                TGUIActionEnterKey(FActions.Last).Count :=
+                    TGUIActionEnterKey(FActions.Last).Count + 1
+              else
+                AddAction(TGUIActionEnterKey.Create(AHwnd, FControl, ControlName,
+                    AWParam, LKeyState, 1), AContinue);
             end;
           end;
         end;
@@ -994,11 +1009,12 @@ end;
 
 constructor TGUIActionEnterKey.Create(const AHwnd: HWND;
   const AControl: TControl; const AControlName: string;
-  const AKeyCode: Integer; const AKeyState: string);
+  const AKeyCode: Word; const AKeyState: string; const ACount: Integer);
 begin
   inherited Create(AHwnd, AControl, AControlName);
   FKeyCode := AKeyCode;
   FKeyState := AKeyState;
+  FCount := ACount;
 end;
 
 function TGUIActionEnterKey.GetCommandName: string;
@@ -1017,6 +1033,7 @@ var
   LKey: string;
 {$ENDIF}
   LKeyStateParam: string;
+  LCountParam: string;
 begin
 {$IFDEF MSWINDOWS}
   case FKeyCode of
@@ -1056,8 +1073,14 @@ begin
   LKey := IntToStr(FKeyCode);
 {$ENDIF}
 
-  // Key state is optional
-  if FKeyState = '' then
+  // Count is optional
+  if FCount = 1 then
+    LCountParam := ''
+  else
+    LCountParam := Format(', %d', [FCount]);
+
+  // Key state is optional but must be specified if Count is specified
+  if (FKeyState = '') and (LCountParam = '') then
     LKeyStateParam := ''
   else
   begin
@@ -1067,7 +1090,7 @@ begin
       LKeyStateParam := Format(', [%s]', [FKeyState]);
   end;
 
-  LParams := Format('%s%s', [LKey, LKeyStateParam]);
+  LParams := Format('%s%s%s', [LKey, LKeyStateParam, LCountParam]);
   Result := JoinParams((inherited GetCommandParameters(ACommandFormat)), LParams);
 end;
 

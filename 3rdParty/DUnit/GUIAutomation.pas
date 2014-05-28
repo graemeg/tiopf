@@ -119,8 +119,6 @@ type
         const AX: Integer; const AY: Integer); overload;
     procedure DoubleClickMouseButtonOn(const AControl: TControl; const AButton: TMouseButton;
         const AX: Integer = -1; const AY: Integer = -1); overload;
-
-    procedure SynchronizeProcessMessages;
   protected
     procedure SyncMessages;
     function WaitForWindowEnabled(const AHwnd: HWND): boolean;
@@ -196,15 +194,15 @@ type
     procedure RightDoubleClick(const AControlName: string; const AX: Integer = -1; const AY: Integer = -1); overload;
     procedure RightDoubleClick(const AControl: TControl; const AX: Integer = -1; const AY: Integer = -1); overload;
 
-    procedure EnterKey(AKey :Word; const AShiftState :TShiftState = []); overload;
-    procedure EnterKeyInto(const AControlHwnd: HWND;  AKey: Word; const AShiftState: TShiftState = []); overload;
-    procedure EnterKeyInto(const AControl: TControl;   AKey :Word; const AShiftState :TShiftState = []); overload;
-    procedure EnterKeyInto(const AControlName :string; AKey :Word; const AShiftState :TShiftState = []); overload;
+    procedure EnterKey(AKey :Word; const AShiftState :TShiftState = []; const ACount: Integer = 1); overload;
+    procedure EnterKeyInto(const AControlHwnd: HWND;  AKey: Word; const AShiftState: TShiftState = []; const ACount: Integer = 1); overload;
+    procedure EnterKeyInto(const AControl: TControl;   AKey :Word; const AShiftState :TShiftState = []; const ACount: Integer = 1); overload;
+    procedure EnterKeyInto(const AControlName :string; AKey :Word; const AShiftState :TShiftState = []; const ACount: Integer = 1); overload;
 
-    procedure EnterKey(AKey :Char; const AShiftState :TShiftState = []); overload;
-    procedure EnterKeyInto(const AControlHwnd: HWND;  AKey: Char; const AShiftState: TShiftState = []); overload;
-    procedure EnterKeyInto(const AControl: TControl;   AKey :Char; const AShiftState :TShiftState = []); overload;
-    procedure EnterKeyInto(const AControlName :string; AKey :Char; const AShiftState :TShiftState = []); overload;
+    procedure EnterKey(AKey :Char; const AShiftState :TShiftState = []; const ACount: Integer = 1); overload;
+    procedure EnterKeyInto(const AControlHwnd: HWND;  AKey: Char; const AShiftState: TShiftState = []; const ACount: Integer = 1); overload;
+    procedure EnterKeyInto(const AControl: TControl;   AKey :Char; const AShiftState :TShiftState = []; const ACount: Integer = 1); overload;
+    procedure EnterKeyInto(const AControlName :string; AKey :Char; const AShiftState :TShiftState = []; const ACount: Integer = 1); overload;
 
     procedure EnterText(AText :string);
     procedure EnterTextInto(const AControlHwnd: HWND; AText: string); overload;
@@ -253,6 +251,16 @@ uses
   ;
 
 type
+  // Provide a non-blocking call to Application.ProcessMessages.
+  TGUISyncMessagesThread = class(TThread)
+  private
+    procedure ProcessMessages;
+  protected
+    procedure Execute; override;
+  public
+    constructor Create(CreateSuspended: Boolean);
+    class procedure SyncMessages;
+  end;
 
 {$IFDEF DELPHI2009_UP}
   // Ability to run code in a separate thread. Required for GUI testing
@@ -275,6 +283,97 @@ type
 
 const
   CControlRetryWaitPeriod = 100;
+
+procedure _OutputDebug(const AMsg: string);
+begin
+  OutputDebugString(PWideChar(AMsg));
+end;
+
+procedure _OutputDebug1(const AMsg: string; const AHwnd: HWND);
+var
+  LClassName: string;
+  LRect: TRect;
+begin
+  SetLength(LClassName, 255);
+  SetLength(LClassName,
+      GetClassName(AHwnd, PChar(LClassName), Length(LClassName)));
+  GetWindowRect(AHwnd, LRect);
+  _OutputDebug(Format('%s: %d "%s" (%d,%d) [%d,%d]',
+      [AMsg, AHwnd, LClassName,
+       LRect.Left, LRect.Top, LRect.Width, LRect.Height]));
+end;
+
+procedure _OutputDebug2(const AMsg: string; const AX, AY: Integer);
+begin
+  _OutputDebug(Format('%s: (%d,%d)', [AMsg, AX, AY]));
+end;
+
+procedure ToggleHighlight(const AHwnd: HWND; const AX: Integer = -1;
+  const AY: Integer = -1);
+var
+  LRect: TRect;
+  LDC: HDC;
+  LPrevPen: HPen;
+  LNewPen: HPen;
+  LPrevBrush: HBrush;
+  LNewBrush: HBrush;
+begin
+  LDC := GetWindowDC(AHwnd);
+  try
+    SetROP2(LDC, R2_NOT);
+
+    LNewPen := CreatePen(PS_INSIDEFRAME, 2, 0);
+    try
+      LPrevPen := SelectObject(LDC, LNewPen);
+      try
+        LNewBrush := GetStockObject(Null_Brush);
+        LPrevBrush := SelectObject(LDC, LNewBrush);
+        try
+          // Draw the highlight
+          if (AX <> -1) and (AY <> -1) then
+            LRect := Rect(AX - 4, AY - 4, AX + 4, AY + 4)
+          else
+          begin
+            GetWindowRect(AHwnd, LRect);
+            LRect := Rect(1, 1, LRect.Width - 2, LRect.Height - 2);
+          end;
+          Rectangle(LDC, LRect.Left, LRect.Top, LRect.Right, LRect.Bottom);
+        finally
+          SelectObject(LDC, LPrevBrush);
+        end;
+      finally
+        SelectObject(LDC, LPrevPen);
+      end;
+    finally
+      DeleteObject(LNewPen);
+    end;
+  finally
+    ReleaseDC(AHwnd, LDC);
+  end;
+end;
+
+{ TGUISyncMessagesThread }
+
+class procedure TGUISyncMessagesThread.SyncMessages;
+begin
+  TGUISyncMessagesThread.Create(False {CreateSuspended});
+end;
+
+constructor TGUISyncMessagesThread.Create(CreateSuspended: Boolean);
+begin
+  inherited;
+  FreeOnTerminate := true;
+end;
+
+procedure TGUISyncMessagesThread.ProcessMessages;
+begin
+  Application.ProcessMessages;
+end;
+
+procedure TGUISyncMessagesThread.Execute;
+begin
+  Synchronize(ProcessMessages);
+end;
 
 { TGUITestThread }
 
@@ -326,14 +425,12 @@ begin
   FWakeEvent.Free;
 end;
 
-procedure TGUIAutomation.SynchronizeProcessMessages;
-begin
-  Application.ProcessMessages;
-end;
-
 procedure TGUIAutomation.SyncMessages;
 begin
-  TThread.Synchronize(nil, SynchronizeProcessMessages);
+  if GetCurrentThreadId = MainThreadID then
+    Application.ProcessMessages
+  else
+    TGUISyncMessagesThread.SyncMessages;
 end;
 
 procedure TGUIAutomation.SleepAndCheckContinue(const AInterval: Cardinal);
@@ -825,6 +922,7 @@ function TGUIAutomation.ControlAtActiveWindowCoord(const AX: Integer;
   const AY: Integer; out AControlHwnd: HWND; out APoint: TPoint): boolean;
 var
   LPoint: TPoint;
+  LForegroundHwnd: HWND;
 begin
 {$IFDEF DELPHI2007_UP}
   // NOTE: Themeing in Vista and later doesn't set the foreground window handle
@@ -845,16 +943,30 @@ begin
 
   // Get screen position of the co-ord relative to the active window
   LPoint := Point(AX, AY);
-  ClientToScreen(GetForegroundWindow, LPoint);
-  // Now get the window handle of the control at that position
-  AControlHwnd := WindowFromPoint(LPoint);
-  result := AControlHwnd <> 0;
-  // Get the co-ords relative to the control
+  _OutputDebug2('1', AX, AY);
+  LForegroundHwnd := GetForegroundWindow;
+  result := LForegroundHwnd <> 0;
   if result then
   begin
-    ScreenToClient(AControlHwnd, LPoint);
-    APoint := LPoint;
+//    _OutputDebug1('FG', LForegroundHwnd);
+//    ToggleHighlight(LForegroundHwnd);
+    ClientToScreen(LForegroundHwnd, LPoint);
+//    _OutputDebug2('2', LPoint.X, LPoint.Y);
+    // Now get the window handle of the control at that position
+    AControlHwnd := WindowFromPoint(LPoint);
+    result := AControlHwnd <> 0;
+    // Get the co-ords relative to the control
+    if result then
+    begin
+//      _OutputDebug1('WP', AControlHwnd);
+      ScreenToClient(AControlHwnd, LPoint);
+//      _OutputDebug2('3', LPoint.X, LPoint.Y);
+//      ToggleHighlight(AControlHwnd);
+//      ToggleHighlight(AControlHwnd, LPoint.X, LPoint.Y);
+      APoint := LPoint;
+    end;
   end;
+//  Sleep(5000);
 end;
 
 function TGUIAutomation.WaitForControlExists(const AControlName: string;
@@ -1247,15 +1359,17 @@ begin
   DoubleClickMouseButtonOn(AControl, mbRight, AX, AY);
 end;
 
-procedure TGUIAutomation.EnterKey(AKey: Word; const AShiftState: TShiftState);
+procedure TGUIAutomation.EnterKey(AKey: Word; const AShiftState: TShiftState;
+  const ACount: Integer);
 begin
-  EnterKeyInto(GetFocus, AKey, AShiftState);
+  EnterKeyInto(GetFocus, AKey, AShiftState, ACount);
 end;
 
 procedure TGUIAutomation.EnterKeyInto(const AControlHwnd: HWND; AKey: Word;
-  const AShiftState: TShiftState);
-{$IFDEF DUNIT_CLX}
+  const AShiftState: TShiftState; const ACount: Integer);
 var
+  i: Integer;
+{$IFDEF DUNIT_CLX}
   E: QKeyEventH;
   Ch: char;
   S: WideString;
@@ -1295,74 +1409,92 @@ begin
       State := State or Integer(ButtonState_ControlButton);
     if ssShift in AShiftState then
       State := State or Integer(ButtonState_ShiftButton);
+{$ENDIF}
 
-    E := QKeyEvent_create(QEventType_KeyPress, AKey, Ord(Ch), State, @S, false, 1);
-    try
-      QApplication_sendEvent(AControlHwnd, E);
-    finally
-      QKeyEvent_destroy(E);
-    end;
-{$ELSE}
-    SetKeyboardStateDown(AShiftState);
-    if ssAlt in AShiftState then
-      PostMessage(AControlHwnd, WM_SYSKEYDOWN, AKey, integer($20000000))
-    else
-      PostMessage(AControlHwnd, WM_KEYDOWN, AKey, 0);
-{$ENDIF}
-    SyncSleep(KeyDownDelay);
+    // Repeat the key presses
+    for i := 1 to ACount do
+    begin
+      if i > 1 then
+        SyncSleep(TextEntryDelay);
+
+      // Key down
 {$IFDEF DUNIT_CLX}
-    E := QKeyEvent_create(QEventType_KeyRelease, AKey, Ord(Ch), State, @S, false, 1);
-    try
-      QApplication_sendEvent(AControlHwnd, E);
-    finally
-      QKeyEvent_destroy(E);
-    end;
+      E := QKeyEvent_create(QEventType_KeyPress, AKey, Ord(Ch), State, @S, false, 1);
+      try
+        QApplication_sendEvent(AControlHwnd, E);
+      finally
+        QKeyEvent_destroy(E);
+      end;
 {$ELSE}
-    if ssAlt in AShiftState then
-      PostMessage(AControlHwnd, WM_SYSKEYUP, AKey, integer($E0000000))
-    else
-      PostMessage(AControlHwnd, WM_KEYUP, AKey, integer($C0000000));
-    SetKeyboardStateUp(AShiftState);
+      SetKeyboardStateDown(AShiftState);
+      if ssAlt in AShiftState then
+        PostMessage(AControlHwnd, WM_SYSKEYDOWN, AKey, integer($20000000))
+      else
+        PostMessage(AControlHwnd, WM_KEYDOWN, AKey, 0);
 {$ENDIF}
+
+      SyncSleep(KeyDownDelay);
+
+      // Key up
+{$IFDEF DUNIT_CLX}
+      E := QKeyEvent_create(QEventType_KeyRelease, AKey, Ord(Ch), State, @S, false, 1);
+      try
+        QApplication_sendEvent(AControlHwnd, E);
+      finally
+        QKeyEvent_destroy(E);
+      end;
+{$ELSE}
+      if ssAlt in AShiftState then
+        PostMessage(AControlHwnd, WM_SYSKEYUP, AKey, integer($E0000000))
+      else
+        PostMessage(AControlHwnd, WM_KEYUP, AKey, integer($C0000000));
+      SetKeyboardStateUp(AShiftState);
+{$ENDIF}
+    end;
+
     SyncSleep(ActionDelay);
   end;
 end;
 
 procedure TGUIAutomation.EnterKeyInto(const AControl: TControl; AKey: Word;
-  const AShiftState: TShiftState);
+  const AShiftState: TShiftState; const ACount: Integer);
 var
   LWinControl: TWinControl;
 begin
   Assert(AControl <> nil, 'No control');
   LWinControl := FindParentWinControl(AControl);
   if LWinControl <> nil then
-    EnterKeyInto(LWinControl.Handle, AKey, AShiftState);
+    EnterKeyInto(LWinControl.Handle, AKey, AShiftState, ACount);
 end;
 
-procedure TGUIAutomation.EnterKeyInto(const AControlName: string; AKey: Word; const AShiftState: TShiftState);
+procedure TGUIAutomation.EnterKeyInto(const AControlName: string; AKey: Word;
+  const AShiftState: TShiftState; const ACount: Integer);
 begin
-  EnterKeyInto(FindControl(AControlName, CallerAddr), AKey, AShiftState);
+  EnterKeyInto(FindControl(AControlName, CallerAddr), AKey, AShiftState, ACount);
 end;
 
-procedure TGUIAutomation.EnterKey(AKey: Char; const AShiftState: TShiftState);
+procedure TGUIAutomation.EnterKey(AKey: Char; const AShiftState: TShiftState;
+  const ACount: Integer);
 begin
-  EnterKey(Ord(AKey), AShiftState);
+  EnterKey(Ord(AKey), AShiftState, ACount);
 end;
 
 procedure TGUIAutomation.EnterKeyInto(const AControlHwnd: HWND; AKey: Char;
-  const AShiftState: TShiftState);
+  const AShiftState: TShiftState; const ACount: Integer);
 begin
-  EnterKeyInto(AControlHwnd, Ord(AKey), AShiftState);
+  EnterKeyInto(AControlHwnd, Ord(AKey), AShiftState, ACount);
 end;
 
-procedure TGUIAutomation.EnterKeyInto(const AControl: TControl; AKey: Char; const AShiftState: TShiftState);
+procedure TGUIAutomation.EnterKeyInto(const AControl: TControl; AKey: Char;
+  const AShiftState: TShiftState; const ACount: Integer);
 begin
-  EnterKeyInto(AControl, Ord(AKey), AShiftState);
+  EnterKeyInto(AControl, Ord(AKey), AShiftState, ACount);
 end;
 
-procedure TGUIAutomation.EnterKeyInto(const AControlName: string; AKey: Char; const AShiftState: TShiftState);
+procedure TGUIAutomation.EnterKeyInto(const AControlName: string; AKey: Char;
+  const AShiftState: TShiftState; const ACount: Integer);
 begin
-  EnterKeyInto(AControlName, Ord(AKey), AShiftState);
+  EnterKeyInto(AControlName, Ord(AKey), AShiftState, ACount);
 end;
 
 procedure TGUIAutomation.EnterText(AText: string);

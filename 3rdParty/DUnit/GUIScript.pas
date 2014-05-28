@@ -121,13 +121,17 @@ type
     procedure EnterKeyIntoEval(Info: TProgramInfo);
     procedure EnterKeyEval(Info: TProgramInfo);
     procedure LeftMouseDownEval(Info: TProgramInfo);
+    procedure LeftMouseDownAtEval(Info: TProgramInfo);
     procedure LeftMouseUpEval(Info: TProgramInfo);
+    procedure LeftMouseUpAtEval(Info: TProgramInfo);
     procedure LeftClickEval(Info: TProgramInfo);
     procedure LeftClickAtEval(Info: TProgramInfo);
     procedure LeftDoubleClickEval(Info: TProgramInfo);
     procedure LeftDoubleClickAtEval(Info: TProgramInfo);
     procedure RightMouseDownEval(Info: TProgramInfo);
+    procedure RightMouseDownAtEval(Info: TProgramInfo);
     procedure RightMouseUpEval(Info: TProgramInfo);
+    procedure RightMouseUpAtEval(Info: TProgramInfo);
     procedure RightClickEval(Info: TProgramInfo);
     procedure RightClickAtEval(Info: TProgramInfo);
     procedure RightDoubleClickEval(Info: TProgramInfo);
@@ -497,6 +501,7 @@ begin
   _AddParameter(LFunction, 'ControlName', 'String');
   _AddParameter(LFunction, 'Key', 'Integer');
   _AddParameter(LFunction, 'ShiftState', 'String', '');
+  _AddParameter(LFunction, 'Count', 'Integer', 1);
 
   LFunction := _AddFunction('EnterKey', EnterKeyEval);
   _AddParameter(LFunction, 'Key', 'Integer');
@@ -507,10 +512,18 @@ begin
   _AddParameter(LFunction, 'X', 'Integer', -1);
   _AddParameter(LFunction, 'Y', 'Integer', -1);
 
+  LFunction := _AddFunction('LeftMouseDownAt', LeftMouseDownAtEval);
+  _AddParameter(LFunction, 'X', 'Integer');
+  _AddParameter(LFunction, 'Y', 'Integer');
+
   LFunction := _AddFunction('LeftMouseUp', LeftMouseUpEval);
   _AddParameter(LFunction, 'ControlName', 'String');
   _AddParameter(LFunction, 'X', 'Integer', -1);
   _AddParameter(LFunction, 'Y', 'Integer', -1);
+
+  LFunction := _AddFunction('LeftMouseUpAt', LeftMouseUpAtEval);
+  _AddParameter(LFunction, 'X', 'Integer');
+  _AddParameter(LFunction, 'Y', 'Integer');
 
   LFunction := _AddFunction('LeftClick', LeftClickEval);
   _AddParameter(LFunction, 'ControlName', 'String');
@@ -535,10 +548,18 @@ begin
   _AddParameter(LFunction, 'X', 'Integer', -1);
   _AddParameter(LFunction, 'Y', 'Integer', -1);
 
+  LFunction := _AddFunction('RightMouseDownAt', RightMouseDownAtEval);
+  _AddParameter(LFunction, 'X', 'Integer');
+  _AddParameter(LFunction, 'Y', 'Integer');
+
   LFunction := _AddFunction('RightMouseUp', RightMouseUpEval);
   _AddParameter(LFunction, 'ControlName', 'String');
   _AddParameter(LFunction, 'X', 'Integer', -1);
   _AddParameter(LFunction, 'Y', 'Integer', -1);
+
+  LFunction := _AddFunction('RightMouseUpAt', RightMouseUpAtEval);
+  _AddParameter(LFunction, 'X', 'Integer');
+  _AddParameter(LFunction, 'Y', 'Integer');
 
   LFunction := _AddFunction('RightClick', RightClickEval);
   _AddParameter(LFunction, 'ControlName', 'String');
@@ -925,7 +946,8 @@ begin
   FGUIAutomation.EnterKeyInto(
       ControlName(Info),
       Char(Info.ValueAsInteger['Key']),
-      LShiftState);
+      LShiftState,
+      Info.ValueAsInteger['Count']);
 end;
 
 procedure TGUIScript.EnterKeyEval(Info: TProgramInfo);
@@ -946,10 +968,24 @@ begin
       Info.ValueAsInteger['Y']);
 end;
 
+procedure TGUIScript.LeftMouseDownAtEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.LeftMouseDownAt(
+      Info.ValueAsInteger['X'],
+      Info.ValueAsInteger['Y']);
+end;
+
 procedure TGUIScript.LeftMouseUpEval(Info: TProgramInfo);
 begin
   FGUIAutomation.LeftMouseUp(
       ControlName(Info),
+      Info.ValueAsInteger['X'],
+      Info.ValueAsInteger['Y']);
+end;
+
+procedure TGUIScript.LeftMouseUpAtEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.LeftMouseUpAt(
       Info.ValueAsInteger['X'],
       Info.ValueAsInteger['Y']);
 end;
@@ -992,10 +1028,24 @@ begin
       Info.ValueAsInteger['Y']);
 end;
 
+procedure TGUIScript.RightMouseDownAtEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.RightMouseDownAt(
+      Info.ValueAsInteger['X'],
+      Info.ValueAsInteger['Y']);
+end;
+
 procedure TGUIScript.RightMouseUpEval(Info: TProgramInfo);
 begin
   FGUIAutomation.RightMouseUp(
       ControlName(Info),
+      Info.ValueAsInteger['X'],
+      Info.ValueAsInteger['Y']);
+end;
+
+procedure TGUIScript.RightMouseUpAtEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.RightMouseUp(
       Info.ValueAsInteger['X'],
       Info.ValueAsInteger['Y']);
 end;
