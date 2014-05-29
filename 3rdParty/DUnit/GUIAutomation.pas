@@ -284,74 +284,6 @@ type
 const
   CControlRetryWaitPeriod = 100;
 
-procedure _OutputDebug(const AMsg: string);
-begin
-  OutputDebugString(PWideChar(AMsg));
-end;
-
-procedure _OutputDebug1(const AMsg: string; const AHwnd: HWND);
-var
-  LClassName: string;
-  LRect: TRect;
-begin
-  SetLength(LClassName, 255);
-  SetLength(LClassName,
-      GetClassName(AHwnd, PChar(LClassName), Length(LClassName)));
-  GetWindowRect(AHwnd, LRect);
-  _OutputDebug(Format('%s: %d "%s" (%d,%d) [%d,%d]',
-      [AMsg, AHwnd, LClassName,
-       LRect.Left, LRect.Top, LRect.Width, LRect.Height]));
-end;
-
-procedure _OutputDebug2(const AMsg: string; const AX, AY: Integer);
-begin
-  _OutputDebug(Format('%s: (%d,%d)', [AMsg, AX, AY]));
-end;
-
-procedure ToggleHighlight(const AHwnd: HWND; const AX: Integer = -1;
-  const AY: Integer = -1);
-var
-  LRect: TRect;
-  LDC: HDC;
-  LPrevPen: HPen;
-  LNewPen: HPen;
-  LPrevBrush: HBrush;
-  LNewBrush: HBrush;
-begin
-  LDC := GetWindowDC(AHwnd);
-  try
-    SetROP2(LDC, R2_NOT);
-
-    LNewPen := CreatePen(PS_INSIDEFRAME, 2, 0);
-    try
-      LPrevPen := SelectObject(LDC, LNewPen);
-      try
-        LNewBrush := GetStockObject(Null_Brush);
-        LPrevBrush := SelectObject(LDC, LNewBrush);
-        try
-          // Draw the highlight
-          if (AX <> -1) and (AY <> -1) then
-            LRect := Rect(AX - 4, AY - 4, AX + 4, AY + 4)
-          else
-          begin
-            GetWindowRect(AHwnd, LRect);
-            LRect := Rect(1, 1, LRect.Width - 2, LRect.Height - 2);
-          end;
-          Rectangle(LDC, LRect.Left, LRect.Top, LRect.Right, LRect.Bottom);
-        finally
-          SelectObject(LDC, LPrevBrush);
-        end;
-      finally
-        SelectObject(LDC, LPrevPen);
-      end;
-    finally
-      DeleteObject(LNewPen);
-    end;
-  finally
-    ReleaseDC(AHwnd, LDC);
-  end;
-end;
-
 { TGUISyncMessagesThread }
 
 class procedure TGUISyncMessagesThread.SyncMessages;
@@ -943,30 +875,21 @@ begin
 
   // Get screen position of the co-ord relative to the active window
   LPoint := Point(AX, AY);
-  _OutputDebug2('1', AX, AY);
   LForegroundHwnd := GetForegroundWindow;
   result := LForegroundHwnd <> 0;
   if result then
   begin
-//    _OutputDebug1('FG', LForegroundHwnd);
-//    ToggleHighlight(LForegroundHwnd);
     ClientToScreen(LForegroundHwnd, LPoint);
-//    _OutputDebug2('2', LPoint.X, LPoint.Y);
     // Now get the window handle of the control at that position
     AControlHwnd := WindowFromPoint(LPoint);
     result := AControlHwnd <> 0;
     // Get the co-ords relative to the control
     if result then
     begin
-//      _OutputDebug1('WP', AControlHwnd);
       ScreenToClient(AControlHwnd, LPoint);
-//      _OutputDebug2('3', LPoint.X, LPoint.Y);
-//      ToggleHighlight(AControlHwnd);
-//      ToggleHighlight(AControlHwnd, LPoint.X, LPoint.Y);
       APoint := LPoint;
     end;
   end;
-//  Sleep(5000);
 end;
 
 function TGUIAutomation.WaitForControlExists(const AControlName: string;
