@@ -239,6 +239,7 @@ type
     FSupportsRowsAffected: boolean;
     //function  GetSession: TObject; virtual; abstract;
     //procedure SetSession(const AValue: TObject); virtual; abstract;
+    procedure Prepare; virtual;
     function  GetSQL: TStrings; virtual; abstract;
     procedure SetSQL(const AValue: TStrings); virtual; abstract;
     function  GetQueryType: TtiQueryType;virtual;
@@ -247,6 +248,8 @@ type
     function  GetActive: boolean; virtual; abstract;
     procedure SetActive(const AValue: boolean); virtual; abstract;
     function  GetEOF: boolean; virtual; abstract;
+    function  GetRecordCount: Integer; virtual; abstract;
+    function  GetRowsAffected: Integer; virtual; abstract;
 
     function  GetParamAsString(const AName: string): string; virtual; abstract;
     procedure SetParamAsString(const AName, AValue: string); virtual; abstract;
@@ -357,6 +360,8 @@ type
     property SQLText     : string   read GetSQLText write SetSQLText;
     property Active      : boolean  read GetActive write SetActive;
     property EOF         : boolean  read GetEOF;
+    property RowCount    : Integer  read GetRecordCount;
+    property RowsAffected: Integer  read GetRowsAffected;
     property ContinueScan : boolean  read fContinueScan write fContinueScan;
 
     procedure Open; virtual; abstract;
@@ -649,6 +654,9 @@ uses
   ,tiVisitorCriteria
   ,Math
   ,TypInfo
+{$IFNDEF IOS}
+  ,tiMime
+{$ENDIF IOS}
  ;
 
 function StrToQueryFieldKind(const AFieldKind: String): TtiQueryFieldKind;
@@ -1090,6 +1098,13 @@ begin
     on e:exception do
       result := 'Unknown';
   end;
+end;
+
+procedure TtiQuery.Prepare;
+begin
+// Subclass responsibility. Example:
+//  if not FIBSQL.Prepared then
+//    FIBSQL.Prepare;
 end;
 
 procedure TtiQuery.DetachDatabase;
@@ -1748,9 +1763,13 @@ procedure TtiQuery.AssignParams(const AParams: TtiQueryParams; const AWhere : Tt
 var
   i : integer;
 begin
-  if AParams <> nil then
-    For i := 0 to AParams.Count - 1 do
-      AParams.Items[i].AssignToTIQuery(Self);
+  if AParams = nil then
+    Exit; //===> 
+  Prepare;
+
+  For i := 0 to AParams.Count - 1 do
+    AParams.Items[i].AssignToTIQuery(Self);
+
   if AWhere <> nil then
     For i := 0 to AWhere.Count - 1 do
       AWhere.Items[i].AssignToTIQuery(Self);
@@ -2227,7 +2246,11 @@ end;
 
 function TtiQueryParamStream.GetValueAsString: string;
 begin
+{$IFDEF IOS}
+  result:= tiStreamToString(FStream); { TODO : Does QueryParam need MIME encoding on mobile? }
+{$ELSE}
   result:= tiStreamToMIMEEncodeString(FStream);
+{$ENDIF IOS}
 end;
 
 procedure TtiQueryParamStream.SetValueAsStream(const AValue: TStream);
@@ -2244,7 +2267,11 @@ end;
 
 procedure TtiQueryParamStream.SetValueAsString(const AValue: string);
 begin
+{$IFDEF IOS}
+  tiStringToStream(AValue, FStream); { TODO : Does QueryParam need MIME encoding on mobile? }
+{$ELSE}
   tiMIMEEncodeStringToStream(AValue, FStream);
+{$ENDIF IOS}
 end;
 
 { TtiQueryNonSQL }
@@ -2270,7 +2297,11 @@ begin
   lStream := TStringStream.Create(ls);
   try
     AValue.Size := 0;
+{$IFDEF IOS}
+    tiCopyStream(lStream, AValue); { TODO : Does AssignFieldAsStream need MIME encoding on mobile? }
+{$ELSE}
     MimeDecodeStream(lStream, AValue);
+{$ENDIF IOS}
     AValue.Position := 0;
   finally
     lStream.Free;
@@ -2424,7 +2455,11 @@ begin
   lStream := TStringStream.Create(ls);
   try
     AValue.Size := 0;
+{$IFDEF IOS}
+    tiCopyStream(lStream, AValue); { TODO : Does AssignFieldAsStream need MIME encoding on mobile? }
+{$ELSE}
     MimeDecodeStream(lStream, AValue);
+{$ENDIF IOS}
     AValue.Position := 0;
   finally
     lStream.Free;

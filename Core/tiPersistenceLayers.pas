@@ -375,6 +375,14 @@ begin
 end;
 
 function TtiPersistenceLayers.LoadPersistenceLayer(const APersistenceLayerName: string): TtiPersistenceLayer;
+
+  {$IFDEF IOS}
+  function LoadPackage(const APackageName: String): HModule;
+  begin
+    Assert(False, 'tiOPF Error: procedure <LoadPackage> not supported on mobile platform');
+  end;
+  {$ENDIF IOS}
+
 var
   lPackageName : TFileName;
   lPackageModule : HModule;
@@ -429,6 +437,14 @@ end;
 }
 
 procedure TtiPersistenceLayers.UnLoadPersistenceLayer(const APersistenceLayerName: string);
+
+  {$IFDEF IOS}
+  procedure UnLoadPackage(const AModileId: Cardinal);
+  begin
+    { Do nothing}
+  end;
+  {$ENDIF IOS}
+
 var
   LPackageID    : string;
   LPersistenceLayer : TtiPersistenceLayer;

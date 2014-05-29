@@ -115,7 +115,6 @@ type
     procedure   AssignParamToStream(const AName: string; const AStream: TStream); override;
     procedure   AssignFieldAsStream(const AName: string; const AStream: TStream); override;
     procedure   AssignFieldAsStreamByIndex(     AIndex : integer; const AStream : TStream); override;
-    procedure   AssignParams(const AParams: TtiQueryParams; const AWhere: TtiQueryParams = nil); override;
 
     procedure   AttachDatabase(ADatabase: TtiDatabase); override;
     procedure   DetachDatabase; override;
@@ -910,16 +909,6 @@ begin
     raise EtiOPFInternalException.Create('Invalid FieldKind');
   end;
 end;
-
-// ToDo: Shouldn't this be in the abstract?
-procedure TtiQueryFIBP.AssignParams(const AParams, AWhere: TtiQueryParams);
-begin
-  if AParams = nil then
-    Exit;
-  Prepare;
-  inherited;
-end;
-
 
 class procedure TtiDatabaseFIBP.CreateDatabase(const ADatabaseName,AUserName, APassword: string; const AParams: string);
 var

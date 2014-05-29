@@ -27,7 +27,8 @@ implementation
 
 uses
   SysUtils
-  ,tiVirtualTrees
+  ,VirtualTrees
+  ,tiVirtualTreesNEW
   ,tiResources
   ,tiObject
   ;
@@ -141,7 +142,7 @@ begin
   WriteToOutput('<COL ALIGN="LEFT" SPAN=' +
     IntToStr(LColumnCount) + '>');
 
-  for LHeaderRow := 0 to FSourceTree.VT.Header.RowCount - 1 do
+  for LHeaderRow := 0 to (FSourceTree.VT.Header as TtiVSTHeader).RowCount - 1 do
   begin
     SetLength(FOutputStr, 0);
 

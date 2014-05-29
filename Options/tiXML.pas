@@ -267,6 +267,7 @@ uses
   ,tiCompressZLib // Required to force linking
   ,tiExcept
   ,tiStreams
+  ,tiMime
   ,SysUtils
   ,TypInfo
   ,Math

@@ -57,14 +57,17 @@ Type
   TtiDatabaseUIB_FB = Class(TtiDatabaseUIBAbs)
   Public
     Constructor Create; Override;
-    Class Procedure CreateDatabase(Const ADatabaseName, AUserName, APassword: String; const AParams: string = ''); Override;
+
     Class Function DatabaseExists(Const ADatabaseName, AUserName, APassword: String; const AParams: string = ''): Boolean; Override;
+    Class Procedure CreateDatabase(Const ADatabaseName, AUserName, APassword: String; const AParams: string = ''); Override;
     class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
     Function TIQueryClass : TtiQueryClass; Override;
+
   End;
 
 
   TtiQueryUIB_FB = Class(TtiQueryUIBAbs)
+
   End;
 
 
@@ -90,37 +93,10 @@ Var
 Begin
   lDatabase := TtiDatabaseUIB_FB.Create;
   Try
-    With lDatabase.UIBDatabase Do Begin
-      DatabaseName := ADatabaseName;
-      UserName := AUserName;
-      PassWord := APassword;
-      CreateDatabase(GetSystemCharacterset);
-    End;
-  Finally
-    lDatabase.Free;
-  End;
-End;
-
-Class Function TtiDatabaseUIB_FB.DatabaseExists(Const ADatabaseName, AUserName,
-  APassword: String; const AParams: string): Boolean;
-Var
-  lDatabase : TtiDatabaseUIB_FB;
-Begin
-  lDatabase := TtiDatabaseUIB_FB.Create;
-  Try
-    With lDatabase.UIBDatabase Do Begin
-      DatabaseName := ADatabaseName;
-      UserName := AUserName;
-      PassWord := APassword;
-      Try
-        Connected := true;
-        Result := true;
-      Except
-        On e : exception Do
-          result := false;
-      End;
-      Connected := false;
-    End;
+    lDatabase.UIBDatabase.DatabaseName := ADatabaseName;
+    lDatabase.UIBDatabase.UserName := AUserName;
+    lDatabase.UIBDatabase.PassWord := APassword;
+    lDatabase.UIBDatabase.CreateDatabase(GetSystemCharacterset);
   Finally
     lDatabase.Free;
   End;
@@ -131,6 +107,33 @@ class procedure TtiDatabaseUIB_FB.DropDatabase(const ADatabaseName, AUserName,
 begin
   Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;
+
+Class Function TtiDatabaseUIB_FB.DatabaseExists(Const ADatabaseName, AUserName, APassword: String; const AParams: string): Boolean;
+Var
+  lDatabase : TtiDatabaseUIB_FB;
+Begin
+  lDatabase := TtiDatabaseUIB_FB.Create;
+  Try
+    lDatabase.UIBDatabase.DatabaseName := ADatabaseName;
+    lDatabase.UIBDatabase.UserName := AUserName;
+    lDatabase.UIBDatabase.PassWord := APassword;
+    Try
+      lDatabase.UIBDatabase.Connected := true;
+      Result := true;
+    Except
+      On e : exception Do
+        result := false;
+    End;
+    lDatabase.UIBDatabase.Connected := false;
+  Finally
+    lDatabase.Free;
+  End;
+End;
+
+Function TtiDatabaseUIB_FB.TIQueryClass : TtiQueryClass;
+Begin
+  Result := TtiQueryUIB_FB;
+End;
 
 { TtiPersistenceLayerUIB_FB }
 
@@ -163,13 +166,8 @@ Begin
   Result := TtiQueryUIB_FB;
 End;
 
-Function TtiDatabaseUIB_FB.TIQueryClass : TtiQueryClass;
-Begin
-  Result := TtiQueryUIB_FB;
-End;
-
-
 initialization
+
   gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
     TtiPersistenceLayerUIB_FB);
 

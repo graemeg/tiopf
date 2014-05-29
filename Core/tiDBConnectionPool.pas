@@ -7,10 +7,16 @@ uses
   tiBaseObject,
   tiQuery,
   tiPool,
-  Classes,
-  Contnrs,
-  SysUtils,
-  SyncObjs;
+  Classes
+{$IFDEF IOS}
+  ,System.Generics.Defaults
+  ,Generics.Collections
+{$ELSE}
+  ,Contnrs
+{$ENDIF IOS}
+  ,SysUtils
+  ,SyncObjs
+  ;
 
 const
   cErrorAttemptToAddDuplicateDBConnectionPool = 'Attempt to register a duplicate database connection: "%s"';
@@ -59,7 +65,11 @@ type
   TtiDBConnectionPools = class(TtiBaseObject)
   private
     FPersistenceLayer: TtiBaseObject;
+{$IFDEF IOS}
+    FList : TObjectList<TtiDBConnectionPool>;
+{$ELSE}
     FList : TObjectList;
+{$ENDIF IOS}
     FCritSect: TCriticalSection;
     function GetItems(i: integer): TtiDBConnectionPool;
     procedure GetPoolSizeDefaults(var AMinPoolSize, AMaxPoolSize, APoolTimeOut: integer);
@@ -207,7 +217,11 @@ begin
   inherited Create;
   Assert(APersistenceLayer.TestValid(TtiPersistenceLayer, True), CTIErrorInvalidObject);
   FPersistenceLayer:= APersistenceLayer;
-  FList := TObjectList.Create;
+{$IFDEF IOS}
+ FList := TObjectList<TtiDBConnectionPool>.Create;
+{$ELSE}
+ FList := TObjectList.Create;
+{$ENDIF IOS}
   FCritSect:= TCriticalSection.Create;
 end;
 

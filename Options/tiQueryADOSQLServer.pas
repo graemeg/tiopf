@@ -64,7 +64,7 @@ begin
   lDatabase := TtiDatabaseADOSQLServer.Create;
   try
     try
-      lDatabase.Connect(ADatabaseName, AUserName, APassword, '');
+      lDatabase.Connect(ADatabaseName, AUserName, APassword, '', '');
       Result := True;
     except
       on E: Exception do

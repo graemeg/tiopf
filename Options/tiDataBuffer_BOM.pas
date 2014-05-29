@@ -162,6 +162,7 @@ implementation
 uses
    tiUtils
   ,tiStreams
+  ,tiMime
   ,tiExcept
   ,SysUtils
  ;

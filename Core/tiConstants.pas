@@ -63,6 +63,26 @@ const
   CTIProtocolFile = 'file';
   CTIProtocolSelf = 'self';
   CTIProtocolMailTo = 'mailto';
+  
+{$IFDEF DELPHIXE6}
+  cPackageSuffix = '270';
+  cCompilerName = 'Delphi XE6';
+{$ENDIF}
+
+{$IFDEF DELPHIXE4}
+  cPackageSuffix = '260';
+  cCompilerName = 'Delphi XE5';
+{$ENDIF}
+
+{$IFDEF DELPHIXE4}
+  cPackageSuffix = '250';
+  cCompilerName = 'Delphi XE4';
+{$ENDIF}
+
+{$IFDEF DELPHIXE3}
+  cPackageSuffix = '240';
+  cCompilerName = 'Delphi XE3';
+{$ENDIF}
 
 {$IFDEF DELPHIXE2}
   cPackageSuffix = '230';

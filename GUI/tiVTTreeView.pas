@@ -14,7 +14,8 @@ uses
   ,LCLProc
   ,VirtualStringTree
 {$ENDIF}
-  ,tiVirtualTrees
+  ,VirtualTrees
+  ,tiVirtualTreesNEW
   ,Classes
   ,Menus
   ,Graphics
@@ -370,7 +371,7 @@ begin
   Width := 120;
   OnResize := DoResize;
 
-  SetVT(TVirtualStringTree.Create(self));
+  SetVT(TtiVirtualStringTree.Create(self));
   VT.Parent := Self;
   VT.Name := Name + '_TV';
   VT.Align := alClient;

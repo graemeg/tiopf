@@ -6,6 +6,9 @@ interface
 uses
   Classes
   ,ActnList
+{$IFDEF DELPHIXE3ORABOVE}
+  ,Actions
+{$ENDIF}
   {$IFNDEF FPC}
    {$IFNDEF VER130}
      ,DesignIntf

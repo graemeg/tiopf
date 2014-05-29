@@ -50,7 +50,7 @@ const
   CAllowNil = true;
 
 implementation
-{$IFNDEF FPC}
+{$IFDEF MSWINDOWS}
 uses
   Windows;
 {$ENDIF}

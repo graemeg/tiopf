@@ -2087,7 +2087,8 @@ end;
 
 procedure TVisAutoUpdate.DoExecuteQuery;
 begin
-  Query.UpdateRow(FWhereAttrColMaps.TableName, FParams, FWhere);
+  if FParams.Count > 0 then
+    Query.UpdateRow(FWhereAttrColMaps.TableName, FParams, FWhere);
 end;
 
 { TVisAutoCreate }

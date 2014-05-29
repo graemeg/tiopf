@@ -1,5 +1,7 @@
 unit tiVirtualTrees;
 
+{$MESSAGE FATAL 'This unit is depreciated. Use tiVirtualTreesNEW and the "real" VirtualTrees component'}
+
 {$I tiDefines.inc}
 
 // Version 5.0.0

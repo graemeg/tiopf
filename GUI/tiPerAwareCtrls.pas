@@ -175,7 +175,7 @@ type
 
     property    FieldName : string      read FsFieldName   write SetFieldName;
 
-    property    ShowError: boolean read FShowError write SetShowError default False;
+    property    ShowError: boolean read FShowError write SetShowError default True;
     property    Error : boolean read FbError write SetError default False;
     property    ErrorColor : TColor read FErrorColor write SetErrorColor default clError;
     property    GreyWhenReadOnly : boolean read FGreyWhenReadOnly write SetGreyWhenReadOnly default true;
@@ -322,6 +322,7 @@ type
   // An abstract wrapper for the TComboBox control
   TtiPerAwareComboBoxAbs = class(TtiPerAwareAbs)
   private
+    fEditHandle : THandle;
     function  GetDropDownCount: integer;
     procedure SetDropDownCount(const AValue: integer);
     function  GetItemIndex: integer;
@@ -332,6 +333,7 @@ type
     procedure SetOnDrawItem(const AValue: TDrawItemEvent);
     function GetItemText(AIndex: Integer): string;
   protected
+    property    EditHandle : THandle read fEditHandle;
     procedure   SetOnChangeActive(AValue : boolean); override;
     procedure   SetReadOnly(const AValue: Boolean);override;
     {$IFNDEF FPC}
@@ -412,12 +414,15 @@ type
     FOnGetObjectProp: TOnGetObjectPropEvent;
     FOnSetObjectProp: TOnSetObjectPropEvent;
     FValueAsString : string;
+    FsHideItemMask : string; 
+    FiHideItemLen  : integer; 
     function    GetValue: TtiObject;
     procedure   SetValue(const AValue: TtiObject);
     procedure   SetList(const AValue: TList);
     procedure   SetFieldNameDisplay(const AValue: string);
     function    GetValueAsString: string;
     procedure   SetValueAsString(const AValue: string);
+    procedure SetHideItemMask(const Value: string); 
   protected
     procedure   DataToWinControl; override;
     procedure   WinControlToData; override;
@@ -430,6 +435,19 @@ type
     procedure   Refresh; override;
   published
     property    FieldNameDisplay : string read FsFieldNameDisplay write SetFieldNameDisplay;
+///IPK 2010-04-12
+///  HideItemMask is an attempt to provide a simple means to filter the selection list.
+///  The assigned list will be filtered to *ignore* any value that starts with this string.
+///  For example, if HideItemMask = '{', any items in the list starting with '{' will *not* be added
+///  to the combobox.
+///  If an item is assigned via Data that is not in the list, it will be added to the ComboBox.Items list
+///  (not FList itself) in order to satisfy ItemIndex logic.
+///  This change would have been quite easy if it wasn't for the fact that FList is referenced numerous times
+///  when updating the ComboBox (eg. ItemIndex property). I've changed these to the ComboBox.Items prop.
+///
+///  Could this be improved? Certainly. The listviews have a comprehensive filter option for a start.
+///  Perhaps even an OnAddItem event (with a var pInclude: boolean param) would make this more elegant.
+    property    HideItemMask    : string                read FsHideItemMask   write SetHideItemMask;
     property    OnGetObjectProp : TOnGetObjectPropEvent read FOnGetObjectProp write FOnGetObjectProp;
     property    OnSetObjectProp : TOnSetObjectPropEvent read FOnSetObjectProp write FOnSetObjectProp;
   end;
@@ -808,7 +826,7 @@ const
   cusImageDefaultExt  = '.bmp';
 
 var
-  UBooleanToDropDownComboStyles : array[boolean] of TComboBoxStyle = (csDropDownList, csSimple);
+  UBooleanToDropDownComboStyles : array[boolean] of TComboBoxStyle = (csDropDown, csSimple);
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 //*
@@ -855,7 +873,7 @@ begin
 
   FiLabelWidth := cuiDefaultLabelWidth;
 
-  FShowError:= false;
+  FShowError        := True;
   FbError           := False;
   FErrorColor       := clError;
   FGreyWhenReadOnly := True;
@@ -1263,7 +1281,10 @@ begin
   // the control is in error
   if ShowError and Error then
   begin
-    FLabel.Font.Color := clBlack;
+    if not Enabled then
+      FLabel.Font.Color := clGray
+    else
+      FLabel.Font.Color := clBlack;
     FWinControl.Brush.Color := FErrorColor;
     FWinControl.Refresh;
     Exit; //==>
@@ -1272,7 +1293,10 @@ begin
   // control is read only
   if ReadOnly and GreyWhenReadOnly then
   begin
-    FLabel.Font.Color := clBlack;
+    if not Enabled then
+      FLabel.Font.Color := clGray
+    else
+      FLabel.Font.Color := clBlack;
     FWinControl.Brush.Color := clBtnFace;
     FWinControl.Refresh;
     Exit; //==>
@@ -1348,12 +1372,13 @@ end;
 
 procedure TtiPerAwareEdit.DataToWinControl;
 begin
+  SetOnChangeActive(false);
   if not DataAndPropertyValid then
   begin
     TEdit(FWinControl).Text := '';
+    SetOnChangeActive(true);
     Exit; //==>
   end;
-  SetOnChangeActive(false);
 { NB 3rd param of GetPropValue below is boolean for 'PreferStrings'.
      Up to and including D2005, this has a default value of True.
      In D2006 we must explicitly state it.  (Thank you Borland) }
@@ -1447,12 +1472,13 @@ end;
 
 procedure TtiPerAwareMemo.DataToWinControl;
 begin
+  SetOnChangeActive(false);
   if not DataAndPropertyValid then
   begin
     TMemo(FWinControl).Lines.Text := '';
+    SetOnChangeActive(true);
     Exit; //==>
   end;
-  SetOnChangeActive(false);
   TMemo(FWinControl).Lines.Text := GetPropValue(FData, FsFieldName, True);
   SetOnChangeActive(true);
 end;
@@ -1764,12 +1790,13 @@ end;
 
 procedure TtiPerAwareCheckBox.DataToWinControl;
 begin
+  SetOnChangeActive(false);
   if not DataAndPropertyValid then
   begin
     TCheckBox(FWinControl).Checked := False;
+    SetOnChangeActive(true);
     Exit; //==>
   end;
-  SetOnChangeActive(false);
   TCheckBox(FWinControl).Checked := GetPropValue(FData, FsFieldName, True);
   SetOnChangeActive(true);
 end;
@@ -2238,12 +2265,13 @@ end;
 
 procedure TtiPerAwareFloatEdit.DataToWinControl;
 begin
+  SetOnChangeActive(false);
   if not DataAndPropertyValid then
   begin
     Value := 0.0;
+    SetOnChangeActive(true);
     Exit; //==>
   end;
-  SetOnChangeActive(false);
   Value := GetPropValue(FData, FsFieldName, True);
   SetOnChangeActive(true);
 end;
@@ -2910,12 +2938,13 @@ procedure TtiPerAwareComboBoxStatic.DataToWinControl;
 var
   lsValue : string;
 begin
+  SetOnChangeActive(false);
   if not DataAndPropertyValid then
   begin
     TComboBox(FWinControl).ItemIndex := -1;
+    SetOnChangeActive(true);
     Exit; //==>
   end;
-  SetOnChangeActive(false);
   lsValue := GetPropValue(FData, FsFieldName, True);
   TComboBox(FWinControl).ItemIndex :=
     TComboBox(FWinControl).Items.IndexOf(lsValue);
@@ -2996,7 +3025,8 @@ begin
     for I := 0 to FList.Count - 1 do
     begin
       lStr := GetPropValue(TObject(FList.Items [ I ]), FsFieldNameDisplay, True);
-      lItems.AddObject(lStr, TObject(FList.Items[ I ]));
+      if (FiHideItemLen = 0) or not SameText(Copy(lStr,1,FiHideItemLen),FsHideItemMask) then
+        lItems.AddObject(lStr, TObject(FList.Items[ I ]));
       if Length(lStr) > Length(lMaxStr) then
         lMaxStr := lStr;
     end;
@@ -3022,12 +3052,13 @@ var
   lValue : TtiObject;
   lPropType : TTypeKind;
 begin
+  SetOnChangeActive(false);
   if not DataAndPropertyValid then
   begin
     SetValue(nil);
+    SetOnChangeActive(true);
     Exit; //==>
   end;
-  SetOnChangeActive(false);
   lPropType := PropType(Data, FieldName);
   if lPropType = tkClass then
   begin
@@ -3047,9 +3078,8 @@ end;
 
 function TtiPerAwareComboBoxDynamic.GetValue: TtiObject;
 begin
-  with TComboBox(WinControl) do
-    if (ItemIndex >= 0) and (ItemIndex < FList.Count) then
-      Result:= TtiObject(FList [ ItemIndex ])
+    if (TComboBox(WinControl).ItemIndex >= 0) and (TComboBox(WinControl).ItemIndex < TComboBox(WinControl).Items.Count) then  
+      Result:= TtiObject(TComboBox(WinControl).Items.Objects [ TComboBox(WinControl).ItemIndex ])
     else
       Result := nil;
 end;
@@ -3067,9 +3097,15 @@ end;
 procedure TtiPerAwareComboBoxDynamic.SetValue(const AValue: TtiObject);
 var
   I: Integer;
+  LStr: string;
 begin
-//  TList doesn't have an IndexOfObject - simulate it...
-//  Set the index only (We're assuming the item is present in the list)
+// IPK 2010-04-12
+///  Change FList references to TComboBox(WinControl).Items
+///  This will allow us to use IndexOfObject.
+///  What if the value isn't there?
+///  Well, we'll check that it does exist in the original list and append it to the combobox if so.
+///  This will ensure ItemIndex is set correctly.
+
   TComboBox(WinControl).ItemIndex := -1;
   if AValue = nil then
     Exit; //==>
@@ -3077,12 +3113,17 @@ begin
   if not Assigned(FList) then
     raise EtiOPFProgrammerException.Create(cErrorListHasNotBeenAssigned);
 
-  for I := 0 to FList.Count - 1 do
-    if TtiObject(FList.Items[ I ]) = AValue then
-    begin
-      TComboBox(WinControl).ItemIndex := I;
-      Break; //==>
-    end;
+  TComboBox(WinControl).ItemIndex := TComboBox(WinControl).Items.IndexOfObject(AValue);
+  if TComboBox(WinControl).ItemIndex < 0 then
+  begin
+    for I := 0 to FList.Count - 1 do
+      if TtiObject(FList.Items[ I ]) = AValue then
+      begin
+        LStr := GetPropValue(AValue, FsFieldNameDisplay, True);
+        TComboBox(WinControl).ItemIndex := TComboBox(WinControl).Items.AddObject(LStr, AValue);
+        Break; //==>
+      end;
+  end;
 end;
 
 procedure TtiPerAwareComboBoxDynamic.WinControlToData;
@@ -3097,7 +3138,7 @@ begin
   if ComboBox.ItemIndex < 0 then
     Exit; //==>
 
-  lValue := tTiObject(FList.Items[ComboBox.ItemIndex]);
+  lValue := tTiObject(ComboBox.Items.Objects[ComboBox.ItemIndex]); 
 
   lPropType := PropType(Data, FieldName);
   if lPropType = tkClass then
@@ -3118,6 +3159,18 @@ begin
   Refresh;
 end;
 
+procedure TtiPerAwareComboBoxDynamic.SetHideItemMask(const Value: string);
+begin
+  if FsHideItemMask <> Value then
+  begin
+    FsHideItemMask := Value;
+    FiHideItemLen  := Length(FsHideItemMask);
+// A refresh is appropriate, but for now assume this assigment is done before list is set up (to avoid a 2nd refresh)    
+//    if not(csDesigning in ComponentState) then
+//      Refresh;
+  end;
+end;
+
 procedure TtiPerAwareComboBoxDynamic.DoOnExit( Sender : TObject ) ;
 begin
   if (CompareStr(ComboBox.Text, ComboBox.Items[ComboBox.ItemIndex]) <> 0)
@@ -3133,7 +3186,7 @@ begin
   begin
     ComboBox.ItemIndex := 0;
     ComboBox.Text := '';
-    WinControlToData ;
+    DoChange(Self); // IPK 2012-03-27 Was: WinControlToData;
   end;
   inherited;
 end;
@@ -3147,7 +3200,7 @@ constructor TtiPerAwareComboBoxAbs.Create(AOwner: TComponent);
 begin
   FWinControl := TComboBox.Create(self);
   TComboBox(FWinControl).OnChange := DoChange;
-  TComboBox(FWinControl).Style := csDropDownList;
+  TComboBox(FWinControl).Style := csDropDown;
   TComboBox(FWinControl).OnKeyPress := DoOnKeyPress;
   TComboBox(FWinControl).OnKeyDown := DoOnKeyDown;
   TComboBox(FWinControl).OnExit := DoOnExit ;
@@ -3201,7 +3254,7 @@ procedure TtiPerAwareComboBoxAbs.SetOnChangeActive(AValue: boolean);
 begin
   if AValue then
   begin
-    TComboBox(WinControl).OnClick := DoChange;
+//    TComboBox(WinControl).OnClick := DoChange;
     TComboBox(WinControl).OnExit  := DoOnExit;
   end
   else
@@ -3219,13 +3272,22 @@ end;
 procedure TtiPerAwareComboBoxAbs.SetReadOnly(const AValue: Boolean);
 begin
   inherited SetReadOnly(AValue);
-  if HandleAllocated then
-  begin
+{ fEditHandle logic borrowed from StdCtrls.TCustomComboBox.CreateWnd
+  This logic is affected by the Style property - (initially) csDropdown.
+  The child handle would be different if style is csSimple.
+
+  Note: This logic doesn't appear to be working! .. even though similar
+  logic in RzComboBox does. Might need to refactor to use a TRzComboBox!}
   {$IFNDEF FPC}
-    SendMessage(Handle, EM_SETREADONLY, Ord(AValue), 0);
+  if EditHandle = 0 then
+    fEditHandle := GetWindow(WinControl.Handle, GW_CHILD);
+  if EditHandle <> 0 then
+  begin
+    SendMessage(EditHandle, EM_SETREADONLY, Ord(AValue), 0);
+  end;
   {$ENDIF}
-    TComboBox(WinControl).Style := UBooleanToDropDownComboStyles[ AValue ];
-  end else
+
+  TComboBox(WinControl).Style   := UBooleanToDropDownComboStyles[ AValue ];
   if AValue then
     TComboBox(WinControl).Enabled := False
   else
@@ -3531,6 +3593,8 @@ constructor TtiPerAwareComboBoxDynamic.Create(AOwner: TComponent);
 begin
   inherited;
   FsFieldNameDisplay := 'Caption';
+  FsHideItemMask := '';
+  FiHideItemLen  := 0;
 end;
 
 { TtiPerAwareImageEditAction }
@@ -3860,12 +3924,13 @@ end;
 
 procedure TtiPerAwareDateTimeEditAbs.DataToWinControl;
 begin
+  SetOnChangeActive(false);
   if not DataAndPropertyValid then
   begin
     TEdit(FWinControl).Text := '';
+    SetOnChangeActive(true);
     Exit; //==>
   end;
-  SetOnChangeActive(false);
   TEdit(FWinControl).Text :=
       FormatDateTime(FormatString, GetPropValue(FData, FsFieldName, True));
   SetOnChangeActive(true);

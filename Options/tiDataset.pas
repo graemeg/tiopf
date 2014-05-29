@@ -467,17 +467,49 @@ begin
   FillChar(Buffer[FStartCalculated], CalcFieldsSize, 0);
 end;
 
+{ NB TRecbuf declaration in Data.DB was changed from a pointer to NativeInt in Delphi XE4.
+     Thus, a Pointer() override is required for ActiveBuffer, CalcBuffer, TempBuffer, etc.
+     here and in other references below. I can't speak for FPC 
+	 cf. http://stackoverflow.com/questions/17770751/e2017-pointer-type-required-using-move-function-in-delphi-7-way
+}
 function TTiCustomDataset.GetActiveRecordBuffer: PByteOrChar;
 begin
   case State of
     dsBrowse: begin
       if isEmpty
       then Result := nil
+{$IFDEF FPC}
       else Result := ActiveBuffer;
+{$ELSE}
+  {$IF CompilerVersion >= 18.0}
+      else Result := Pointer(ActiveBuffer);
+  {$ELSE}
+      else Result := ActiveBuffer;
+  {$ENDIF}
+{$ENDIF}
     end;
+
+{$IFDEF FPC}
     dsCalcFields: Result := CalcBuffer;
-    dsFilter: Result := TempBuffer; //FFilterBuffer
-    dsEdit, dsInsert, dsNewValue: Result := ActiveBuffer;
+    dsFilter    : Result := TempBuffer;
+    dsEdit,
+    dsInsert,
+    dsNewValue  : Result := ActiveBuffer;
+{$ELSE}
+  {$IF CompilerVersion >= 18.0}
+    dsCalcFields: Result := Pointer(CalcBuffer);
+    dsFilter    : Result := Pointer(TempBuffer);
+    dsEdit,
+    dsInsert,
+    dsNewValue  : Result := Pointer(ActiveBuffer);
+  {$ELSE}
+    dsCalcFields: Result := CalcBuffer;
+    dsFilter    : Result := TempBuffer;
+    dsEdit,
+    dsInsert,
+    dsNewValue : Result := ActiveBuffer;
+  {$ENDIF}
+{$ENDIF}
     else Result := nil;
   end;
 end;
@@ -1430,7 +1462,15 @@ begin
   //Variants do not support int64 (<Delphi6)
   CheckBrowseMode;
   CursorPosChanged;
+{$IFDEF FPC}
   Buffer := TempBuffer;
+{$ELSE}
+  {$IF CompilerVersion >= 18.0}
+  Buffer := Pointer(TempBuffer);
+  {$ELSE}
+  Buffer := TempBuffer;
+  {$ENDIF}
+{$ENDIF}
 
   Result := false;
   Fields := TList.Create;
@@ -1966,7 +2006,15 @@ begin
   Begin
     If Filtered And Assigned(OnFilterRecord) Then
     Begin
+{$IFDEF FPC}
       Buffer := TempBuffer;
+{$ELSE}
+  {$IF CompilerVersion >= 18.0}
+      Buffer := Pointer(TempBuffer);
+  {$ELSE}
+      Buffer := TempBuffer;
+  {$ENDIF}
+{$ENDIF}
       OldObject := FObjectIndex;
       FFilterBuffer := Buffer;
       SetTempState(dsFilter);

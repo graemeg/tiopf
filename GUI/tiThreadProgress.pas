@@ -53,6 +53,22 @@ unit tiThreadProgress;
 
 {$I tiDefines.inc}
 
+{ Ian K - 2010-07-08
+  Up until V3, THTMLViewer has provided a 'hot' label behaviour.
+  This however has required the 3rd party Html (PBear) component which
+  needed updating for D2009+ (Unicode support). At this point in time it has not been ported
+  to tiOPF3 but I have a copy if needed.
+  It may however be better to refactor the hot behaviour to avoid this component altogether.
+  For now, I have introduced a directive - USEHTMLVIEW - so it can be turned on if the Html component
+  is available.
+  Note also that this is only applicable for Win platform.
+  cf tiOPF newsgroup topic early 2009(?).
+
+}
+{$IFNDEF FPC}
+  {.$DEFINE USEHTMLVIEW}
+{$ENDIF}
+
 interface
 uses
   Forms
@@ -65,8 +81,10 @@ uses
   ,SyncObjs
   ,tiThread
   ,Graphics
-  {$IFNDEF FPC}
+  {$IFDEF USEHTMLVIEW}
   ,Htmlview
+  {$ENDIF}
+  {$IFNDEF FPC}
   ,tiAnimatedGIF
   {$ENDIF}
  ;
@@ -102,6 +120,8 @@ type
     procedure SetCanCancel(const AValue: boolean);
     {$IFNDEF FPC}
     procedure SetShowAnimation(const Value: boolean);
+    {$ENDIF}
+    {$IFDEF USEHTMLVIEW}
     procedure OnLabelHotspotClick(Sender: TObject; const SRC: string;
                      var Handled: boolean);
     {$ENDIF}
@@ -182,10 +202,10 @@ type
 
   TProgInd = class(TCustomPanel)
   private
-    {$IFDEF FPC}
-    FLabel      : TLabel;
-    {$ELSE}
+    {$IFDEF USEHTMLVIEW}
     FLabel      : THTMLViewer;
+    {$ELSE}
+    FLabel      : TLabel;
     {$ENDIF}
     FProgressBar: TtiProgressBar;
     FSpeedButton: TSpeedButton;
@@ -224,9 +244,11 @@ type
     function    AnimationShowing: boolean;
     procedure   AddAnimation;
     procedure   RemoveAnimation;
+    procedure   SetThread(const AValue: TtiThreadProgress);
+    {$ENDIF}
+    {$IFDEF USEHTMLVIEW}
     function    GetOnLabelHotspotClick: THotSpotClickEvent;
     procedure   SetOnLabelHotspotClick(const AValue: THotSpotClickEvent);
-    procedure   SetThread(const AValue: TtiThreadProgress);
     {$ENDIF}
     {$IFDEF FPC}
     procedure Async(Data: PtrInt);
@@ -250,6 +272,8 @@ type
     property    CanCancel : boolean read GetCanCancel write SetCanCancel;
     {$IFNDEF FPC}
     property    ShowAnimation: boolean read FShowAnimation write SetShowAnimation;
+    {$ENDIF}
+    {$IFDEF USEHTMLVIEW}
     property    OnLabelHotspotClick: THotSpotClickEvent read GetOnLabelHotspotClick write SetOnLabelHotspotClick;
     {$ENDIF}
   end;
@@ -260,6 +284,7 @@ function gFormThreadProgress : TFormThreadProgress;
 implementation
 uses
   tiUtils
+  ,tiLog
   ,tiDialogs
   ,tiResources
   ,tiOPFManager
@@ -315,15 +340,15 @@ begin
 
   FThreadID   := INVALID_HANDLE_VALUE;
 
-  {$IFDEF FPC}
-  FLabel                 := TLabel.Create(self);
-  {$ELSE}
+  {$IFDEF USEHTMLVIEW}
   FLabel                 := THtmlviewer.Create(self);
+  {$ELSE}
+  FLabel                 := TLabel.Create(self);
   {$ENDIF}
   FLabel.Parent          := self;
   FLabel.Left            := 6;
   FLabel.Top             := 1;
-  {$IFNDEF FPC}
+  {$IFDEF USEHTMLVIEW}
   FLabel.DefFontSize := 8;
   FLabel.MarginHeight := 0;
   Flabel.MarginWidth := 0;
@@ -332,7 +357,7 @@ begin
   {$ENDIF}
   FLabel.Width           := GetLabelWidth;
   FLabel.Height          :=  16;
-  {$IFNDEF FPC}
+  {$IFDEF USEHTMLVIEW}
   FLabel.DefFontName := TForm(Owner).Font.Name;
   {$ENDIF}
 
@@ -394,7 +419,7 @@ begin
 end;
 
 
-{$IFNDEF FPC}
+{$IFDEF USEHTMLVIEW}
 function TProgInd.GetOnLabelHotspotClick: THotSpotClickEvent;
 begin
   Assert(Assigned(FLabel));
@@ -420,7 +445,7 @@ begin
 end;
 
 
-{$IFNDEF FPC}
+{$IFDEF USEHTMLVIEW}
 procedure TProgInd.SetOnLabelHotspotClick(const AValue: THotSpotClickEvent);
 begin
   Assert(Assigned(FLabel));
@@ -499,21 +524,21 @@ end;
 
 function TProgInd.GetText: string;
 begin
-  {$IFDEF FPC}
-  result := FLabel.Caption;
-  {$ELSE}
+  {$IFDEF USEHTMLVIEW}
   result := FLabel.DocumentSource;
+  {$ELSE}
+  result := FLabel.Caption;
   {$ENDIF}
 end;
 
 
 procedure TProgInd.SetText(const AValue: string);
 begin
-  {$IFDEF FPC}
-  FLabel.Caption := AValue;
-  {$ELSE}
+  {$IFDEF USEHTMLVIEW}
   if FLabel.DocumentSource <> cuWaitForTerminate then
     FLabel.LoadFromString(AValue);
+  {$ELSE}
+  FLabel.Caption := AValue;
   {$ENDIF}
 end;
 
@@ -759,7 +784,7 @@ begin
 end;
 
 
-{$IFNDEF FPC}
+{$IFDEF USEHTMLVIEW}
 procedure TtiThreadProgress.OnLabelHotspotClick(Sender: TObject;
   const SRC: string; var Handled: boolean);
 begin
@@ -1134,7 +1159,7 @@ begin
   ConfirmCancel := True;
   ReturnValue   := 0;
 
-  {$IFNDEF FPC}
+  {$IFDEF USEHTMLVIEW}
   //FCrtiSectLabelHotspotClick := TCriticalSection.Create;
   FProgInd.OnLabelHotspotClick := OnLabelHotspotClick;
   {$ENDIF}
@@ -1166,4 +1191,3 @@ finalization
     FreeAndNil(uFormThreadProgress);
 
 end.
-

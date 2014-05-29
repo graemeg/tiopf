@@ -54,6 +54,7 @@ type
     //property    ViewStyle    ;
     property    RowSelect    ;
     property    Constraints  ;
+    property    TabOrder     ;
     property    Visible      ;
 
     // These three properties are needed for drag-and-drop

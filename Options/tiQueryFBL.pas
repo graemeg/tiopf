@@ -133,7 +133,6 @@ type
     procedure   AssignParamToStream(const AName: string; const AStream: TStream); override;
     procedure   AssignFieldAsStream(const AName: string; const AStream: TStream); override;
     procedure   AssignFieldAsStreamByIndex(AIndex: integer; const AValue: TStream); override;
-    procedure   AssignParams(const AParams: TtiQueryParams; const AWhere: TtiQueryParams = nil); override;
 
     procedure   AttachDatabase(ADatabase: TtiDatabase); override;
     procedure   DetachDatabase; override;
@@ -504,16 +503,6 @@ begin
   Assert(AValue <> nil, 'Stream not assigned');
   AValue.Position := 0;
   FQuery.BlobFieldSaveToStream(AIndex, AValue);
-end;
-
-// ToDo: Shouldn't this be in the abstract?
-procedure TtiQueryFBL.AssignParams(const AParams: TtiQueryParams;
-  const AWhere: TtiQueryParams);
-begin
-  if AParams = nil then
-    Exit;
-  Prepare;
-  inherited;
 end;
 
 procedure TtiQueryFBL.AttachDatabase(ADatabase: TtiDatabase);

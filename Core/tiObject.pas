@@ -13,7 +13,12 @@ uses
   ,tiRTTI
   ,Classes
   ,TypInfo
+{$IFDEF IOS}
+  ,System.Generics.Defaults
+  ,Generics.Collections
+{$ELSE}
   ,Contnrs
+{$ENDIF IOS}
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF MSWINDOWS}
@@ -297,7 +302,12 @@ type
     property    Seconds: Word read GetSeconds;
   end;
 
+
+{$IFDEF IOS}
+  TtiFieldList = class(TObjectlist<TtiFieldAbs>)
+{$ELSE}
   TtiFieldList = class(TObjectlist)
+{$ENDIF IOS}
   protected
     function  GetItem(AIndex: Integer): TtiFieldAbs;
     procedure SetItem(AIndex: Integer; AObject: TtiFieldAbs);
@@ -502,6 +512,8 @@ type
     {: Return the propery count filter by APropFilter }
     function    PropCount(APropFilter: TTypeKinds = ctkSimple): integer;
 
+    {: Answer a CSV formatted string of object properties}
+    function    PropToCSV(const AFieldDelim: string; AColsSelected: TStringList): string;
     { Observer pattern implementation below }
     {: Attach a new observer }
     procedure   AttachObserver(AObserver: TtiObject); virtual;
@@ -553,10 +565,18 @@ type
 
   TtiObjectList = class(TtiObject)
   private
+{$IFDEF IOS}
+    FList : TObjectList<TtiObject>;
+{$ELSE}
     FList : TObjectList;
+{$ENDIF IOS}
     FItemOwner: TtiObject;
     FbAutoSetItemOwner: boolean;
+{$IFDEF IOS}
+    function    GetList: TList<TtiObject>;
+{$ELSE}
     function    GetList: TList;
+{$ENDIF IOS}
     function    GetCountNotDeleted: integer;
     function    GetOwnsObjects: boolean;
     procedure   SetOwnsObjects(const AValue: boolean);
@@ -682,7 +702,11 @@ type
 
   published
     // This must be published so it can be used by the tiPerAware controls.
+{$IFDEF IOS}
+    property    List : TList<TtiObject> read GetList;
+{$ELSE}
     property    List : TList read GetList;
+{$ENDIF IOS}
   end;
 
   TtiClass  = class of TtiObject;
@@ -741,7 +765,11 @@ type
 
   TPerObjFactory = class(TtiBaseObject)
   private
+{$IFDEF IOS}
+    FList : TObjectList<TtiBaseObject>;
+{$ELSE}
     FList : TObjectList;
+{$ENDIF IOS}
   protected
     function FindByClassName(const AClassName : string): TPerObjClassMapping; virtual;
     function GetItems(AIndex: integer): TPerObjClassMapping; virtual;
@@ -758,6 +786,11 @@ type
   end;
 
 
+{$IFDEF IOS}
+  AnsiString = Array of Byte;
+{$ENDIF IOS}
+
+{$IFNDEF IOS}
   TPerStream = class(TtiObject)
   private
     FStream : TMemoryStream;
@@ -776,6 +809,7 @@ type
     procedure   Clear;
     property    AsString : AnsiString read GetAsString write SetAsString;
   end;
+{$ENDIF IOS}
 
 
   TPerStringStream = class(TtiObject)
@@ -885,6 +919,8 @@ type
     property    Dirty : boolean read FbDirty write FbDirty;
   end;
 
+  { TtiObserverProxy }
+
   TtiObserverProxy = class(TtiObject)
   private
     FSubject: TtiObject;
@@ -915,7 +951,8 @@ procedure tiListToStream(AStream: TStream;
                          AList: TtiObjectList;
                          AFieldDelim: string;
                          ARowDelim: string;
-                         AColsSelected: TStringList); overload;
+                         AColsSelected: TStringList;
+                         AColsHeader: TStringList = nil); overload;
 
 procedure tiListToStream(AStream : TStream;
                          AList : TtiObjectList); overload;
@@ -923,7 +960,8 @@ procedure tiListToStream(AStream : TStream;
 // Copy a TList of TtiBaseObject's to a CSV file (Prompt the user for the file name)
 procedure tiListToCSV(AList: TtiObjectList;
                        const AFileName: string;
-                       AColsSelected: TStringList); overload;
+                       AColsSelected: TStringList;
+                       AColsHeader: TStringList = nil); overload;
 
 procedure tiListToCSV(AList: TtiObjectList;
                        const AFileName: string); overload;
@@ -972,7 +1010,8 @@ end;
 
 procedure tiListToCSV(AList: TtiObjectList;
                        const AFileName: string;
-                       AColsSelected: TStringList);
+                       AColsSelected: TStringList;
+                       AColsHeader: TStringList = nil);
 var
   lStream   : TFileStream;
 begin
@@ -982,7 +1021,7 @@ begin
 
   lStream := TFileStream.Create(AFileName, fmCreate);
   try
-    tiListToStream(lStream, AList, ',', tiLineEnd, AColsSelected);
+    tiListToStream(lStream, AList, ',', tiLineEnd, AColsSelected, AColsHeader);
   finally
     lStream.Free;
   end;
@@ -1014,19 +1053,25 @@ procedure tiListToStream(AStream : TStream;
                          AList : TtiObjectList;
                          AFieldDelim : string;
                          ARowDelim: string;
-                         AColsSelected : TStringList);
+                         AColsSelected : TStringList;
+                         AColsHeader: TStringList = nil);
 var
-  i, j      : integer;
+  i, j, LIntValue : integer;
   LValue   : string;
   LFieldName : string;
   LData     : TtiBaseObject;
   LLine     : string;
   LPropType: TTypeKind;
+  LColsHeader: TStringList;
 begin
   // Write column headings
-  for i := 0 to AColsSelected.Count - 1 do begin
-    tiAppendStringToStream(AColsSelected.Strings[i], AStream);
-    if i < AColsSelected.Count - 1 then
+  if Assigned(AColsHeader) then
+    lColsHeader := AColsHeader
+  else
+    lColsHeader := AColsSelected;
+  for i := 0 to LColsHeader.Count - 1 do begin
+    tiAppendStringToStream(LColsHeader.Strings[i], AStream);
+    if i < LColsHeader.Count - 1 then
       tiAppendStringToStream(AFieldDelim, AStream)
     else
       tiAppendStringToStream(ARowDelim, AStream);
@@ -1042,7 +1087,11 @@ begin
       if LLine <> '' then
         LLine := LLine + AFieldDelim;
       LFieldName := AColsSelected.Strings[j];
+{$IFDEF IOS}
+      if GetPropInfo(LData,lFieldName).NameFld.ToString = 'TDateTime' then
+{$ELSE}
       if GetPropInfo(LData,lFieldName)^.PropType^.Name = 'TDateTime' then
+{$ENDIF IOS}
         LValue := tiDateTimeToStr(GetPropValue(LData, LFieldName))
       else
       begin
@@ -1052,11 +1101,18 @@ begin
           tkWChar      : LValue := IntToStr(GetOrdProp(LData, LFieldName));
           tkString     : LValue := GetStrProp(LData, LFieldName);
           tkLString    : LValue := GetStrProp(LData, LFieldName);
+{$IFDEF IOS}
+          tkWString    : LValue := GetStrProp(LData, LFieldName);
+{$ELSE}
           tkWString    : LValue := GetWideStrProp(LData, LFieldName);
+{$ENDIF IOS}
           {$IFDEF FPC}
           tkAString    : LValue := GetStrProp(LData, LFieldName);
           {$ENDIF}
-          tkInteger    : LValue := IntToStr(Integer(GetInt64Prop(LData, LFieldName)));
+          tkInteger    : begin  // Two step extract required to avoid strange errors with Int props that have getters
+                           LIntValue  := GetInt64Prop(LData, LFieldName);
+                           LValue := IntToStr(LIntValue);
+                         end;
           tkInt64      : LValue := IntToStr(GetInt64Prop(LData, LFieldName));
           tkFloat      : LValue := FloatToStr(GetFloatProp(LData, LFieldName));
           tkEnumeration: LValue := IntToStr(GetOrdProp(LData, LFieldName));
@@ -1246,7 +1302,11 @@ begin
       tkWChar      : SetOrdProp(Self, APropName, GetOrdProp(ASource, APropName));
       tkString     : SetStrProp(Self, APropName, GetStrProp(ASource, APropName));
       tkLString    : SetStrProp(Self, APropName, GetStrProp(ASource, APropName));
+{$IFDEF IOS}
+      tkWString    : SetStrProp(Self, APropName, GetStrProp(ASource, APropName));
+{$ELSE}
       tkWString    : SetWideStrProp(Self, APropName, GetWideStrProp(ASource, APropName));
+{$ENDIF IOS}
       {$IFDEF FPC}
       tkAString    : SetStrProp(Self, APropName, GetStrProp(ASource, APropName));
       {$ENDIF}
@@ -1423,7 +1483,11 @@ end;
 constructor TtiObjectList.Create;
 begin
   inherited Create;
+{$IFDEF IOS}
+  FList := TObjectList<TtiObject>.Create;
+{$ELSE}
   FList := TObjectList.Create;
+{$ENDIF IOS}
   FItemOwner := Self;
   FbAutoSetItemOwner := true;
 end;
@@ -1511,10 +1575,17 @@ begin
   result := TtiObject(FList.Items[ i ]);
 end;
 
+{$IFDEF IOS}
+function TtiObjectList.GetList: TList<TtiObject>;
+begin
+  result := FList;
+end;
+{$ELSE}
 function TtiObjectList.GetList: TList;
 begin
   result := FList;
 end;
+{$ENDIF IOS}
 
 function TtiObjectList.IndexOf(const AObject: TtiObject): integer;
 begin
@@ -1564,7 +1635,8 @@ begin
 end;
 
 { TPerStream }
- 
+
+{$IFNDEF IOS}
 constructor TPerStream.Create;
 begin
   inherited Create;
@@ -1588,6 +1660,11 @@ end;
 function TPerStream.GetSize: integer;
 begin
   result := FStream.Size;
+end;
+
+procedure TPerStream.SetSize(const AValue: integer);
+begin
+  FStream.Size := AValue;
 end;
 
 procedure TPerStream.LoadFromFile(const AFileName: string);
@@ -1619,14 +1696,15 @@ begin
   lpcText := PAnsiChar(AValue);
   FStream.WriteBuffer(lpcText^, length(lpcText));
 end;
+{$ENDIF IOS}
 
-{: Call Remove to delete a specific object from the list when its index is 
-  unknown. The value returned is the index of the object in the Items array 
-  before it was removed. If the specified object is not found on the list, 
-  Remove returns -1. If OwnsObjects is True, Remove frees the object in 
-  addition to removing it from the list. After an object is deleted, all the 
-  objects that follow it are moved up in index position and Count is 
-  decremented. If an object appears more than once on the list, Remove deletes 
+{: Call Remove to delete a specific object from the list when its index is
+  unknown. The value returned is the index of the object in the Items array
+  before it was removed. If the specified object is not found on the list,
+  Remove returns -1. If OwnsObjects is True, Remove frees the object in
+  addition to removing it from the list. After an object is deleted, all the
+  objects that follow it are moved up in index position and Count is
+  decremented. If an object appears more than once on the list, Remove deletes
   only the first appearance. Hence, if OwnsObjects is True, removing an object 
   that appears more than once results in empty object references later in the 
   list. To use an index position (rather than an object reference) to specify 
@@ -2068,16 +2146,27 @@ var
         if Assigned(tiFieldAbs) then
           lItem := tiFieldAbs.AsString
         else
+{$IFDEF IOS}
+          lItem := TypInfo.GetPropValue(AObject, LPropInfo.NameFld.ToString);
+{$ELSE}
           lItem := TypInfo.GetPropValue(AObject, string(LPropInfo^.Name));
+{$ENDIF IOS}
       end
       else // tkEnumeration
       begin
         // If the property is an enumeration and the search is on a numeric value,
         // compare the ordinary values of the enumeration, instead of it' s name
+{$IFDEF IOS}
+        if VarIsNumeric(lSearch) then
+          lItem := TypInfo.GetOrdProp(AObject, LPropInfo.NameFld.ToString)
+        else
+          lItem := TypInfo.GetPropValue(AObject, LPropInfo.NameFld.ToString);
+{$ELSE}
         if VarIsNumeric(lSearch) then
           lItem := TypInfo.GetOrdProp(AObject, string(LPropInfo^.Name))
         else
           lItem := TypInfo.GetPropValue(AObject, string(LPropInfo^.Name));
+{$ENDIF IOS}
       end;
     end
     else
@@ -2086,7 +2175,11 @@ var
     // Just to be sure that I'm comparing the SAME kind of values,
     // plus Boolean types need some extra help under FPC
     if VarIsType(PropValue, varBoolean) then
+{$IFDEF IOS}
+      lItem := Boolean(TypInfo.GetOrdProp(AObject, LPropInfo.NameFld.ToString))
+{$ELSE}
       lItem := Boolean(TypInfo.GetOrdProp(AObject, string(LPropInfo^.Name)))
+{$ENDIF IOS}
     else
     begin
       lVarType  := VarType(lItem);
@@ -2131,11 +2224,6 @@ begin
       Break; //==>
     end;
   end; // for i
-end;
-
-procedure TPerStream.SetSize(const AValue: integer);
-begin
-  FStream.Size := AValue;
 end;
 
 function TtiObject.TopOfHierarchy: TtiObject;
@@ -2205,7 +2293,16 @@ end;
 procedure TtiObjectList.SortByOID;
 begin
   BeginUpdate;
-  List.Sort(_DoSortByOID);
+{$IFDEF IOS}
+  FList.Sort(TComparer<TtiObject>.Construct(
+   function (const L, R: TtiObject): integer
+   begin
+     result := _DoSortByOID(L, R);
+   end
+   ));
+{$ELSE}
+  FList.Sort(_DoSortByOID);
+{$ENDIF IOS}
   NotifyObservers(self, noReSort);
   EndUpdate;
 end;
@@ -2308,11 +2405,15 @@ end;
 
 procedure TtiObjectList.SortByProps(const ASortProps: array of string; AAscendingOrder : Boolean = True);
 begin
+{$IFDEF IOS}
+  Assert(False, 'TtiObjectList.SortByProps not implemented');
+{$ELSE}
   BeginUpdate;
   if (FList <> nil) and (Count > 0) then
     QuickSortByProps(FList.List, 0, Count - 1, ASortProps, AAscendingOrder);
   NotifyObservers(self, noReSort);
   EndUpdate;
+{$ENDIF IOS}
 end;
 
 procedure TtiObject.Read(const ADBConnectionName: string; APersistenceLayerName : string = '');
@@ -2578,7 +2679,11 @@ end;
 constructor TPerObjFactory.Create;
 begin
   inherited Create;
+{$IFDEF IOS}
+  FList := TObjectList<TtiBaseObject>.Create;
+{$ELSE}
   FList := TObjectList.Create;
+{$ENDIF IOS}
 end;
 
 function TPerObjFactory.CreateInstance(const AClassName: string): TtiObject;
@@ -3774,6 +3879,62 @@ begin
   ObjectState := posCreate;
 end;
 
+function TtiObject.PropToCSV(const AFieldDelim: string; AColsSelected: TStringList): string;
+var
+  j, LIntValue      : integer;
+  LValue   : string;
+  LFieldName : string;
+  LPropType: TTypeKind;
+begin
+  Result := '';
+  for j := 0 to AColsSelected.Count - 1 do
+  begin
+    if Result <> '' then
+      Result := Result + AFieldDelim;
+    LFieldName := AColsSelected.Strings[j];
+{$IFDEF IOS}
+    if GetPropInfo(Self,LFieldName).NameFld.ToString = 'TDateTime' then
+{$ELSE}
+    if GetPropInfo(Self,LFieldName)^.PropType^.Name = 'TDateTime' then
+{$ENDIF IOS}
+      LValue := tiDateTimeToStr(PropValue[LFieldName])
+    else
+    begin
+      lPropType := TypInfo.PropType(Self, LFieldName);
+      case lPropType of
+        tkChar       : LValue := IntToStr(GetOrdProp(Self, LFieldName));
+        tkWChar      : LValue := IntToStr(GetOrdProp(Self, LFieldName));
+        tkString     : LValue := GetStrProp(Self, LFieldName);
+        tkLString    : LValue := GetStrProp(Self, LFieldName);
+{$IFDEF IOS}
+        tkWString    : LValue := GetStrProp(Self, LFieldName);
+{$ELSE}
+        tkWString    : LValue := GetWideStrProp(Self, LFieldName);
+{$ENDIF IOS}
+        {$IFDEF FPC}
+        tkAString    : LValue := GetStrProp(Self, LFieldName);
+        {$ENDIF}
+        tkInteger    : begin  // Two step extract required to avoid strange errors with Int props that have getters
+                         LIntValue  := GetInt64Prop(Self, LFieldName);
+                         LValue := IntToStr(LIntValue);
+                       end;
+        tkInt64      : LValue := IntToStr(GetInt64Prop(Self, LFieldName));
+        tkFloat      : LValue := FloatToStr(GetFloatProp(Self, LFieldName));
+        tkEnumeration : LValue := IntToStr(GetOrdProp(Self, LFieldName));
+        {$IFDEF FPC}
+        tkBool       : LValue := IntToStr(GetInt64Prop(Self, LFieldName));
+        {$ENDIF}
+        {$IFDEF UNICODE}
+        tkUString    : LValue := GetStrProp(Self, LFieldName);
+        {$ENDIF}
+      end;
+    end;
+    if Pos(AFieldDelim,LValue) > 0 then
+      LValue := tiQuote(LValue); 
+    Result := Result + LValue;
+  end;
+end;
+
 function TtiObject.PropType(const APropName: string): TtiTypeKind;
 begin
   Assert(APropName <> '', 'APropName not assigned');
@@ -3806,7 +3967,7 @@ begin
             ((adsDeleted in ToShow) or
              ((not TtiObject(Visited).Deleted) and
               (not TtiObject(Visited).Deleted))) and
-            ((Depth <= 1) or (adsData in ToShow));
+            ((Depth <= 1) or (adsChildren in ToShow));    //IPK Was adsData - why I don't know
 end;
 
 constructor TVisTIObjectAsDebugString.Create;

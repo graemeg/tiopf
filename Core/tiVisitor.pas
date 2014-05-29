@@ -12,8 +12,14 @@ uses
   tiUtils,
   Classes,
   TypInfo,
-  SysUtils,
-  Contnrs;
+  SysUtils
+{$IFDEF IOS}
+  ,System.Generics.Defaults
+  ,Generics.Collections
+{$ELSE}
+  ,Contnrs
+{$ENDIF IOS}
+  ;
 
 const
   CErrorInVisitorExecute      = 'Error in %s.Execute(%s) Message: %s';
@@ -89,7 +95,11 @@ type
   {** @exclude A list of TtiTouchedByVisitor}
   TtiTouchedByVisitorList = class(TtiBaseObject)
   private
+{$IFDEF IOS}
+    FList: TObjectList<TtiTouchedByVisitor>;
+{$ELSE}
     FList: TObjectList;
+{$ENDIF IOS}
     function GetItems(const AIndex: integer): TtiTouchedByVisitor;
     function GetCount: integer;
   public
@@ -167,7 +177,7 @@ type
         iteration behaviour.
         @param AVisitor: An instance of the TtiVisitor to be passed over the
         object graph.}
-    procedure Iterate(const AVisitor: TtiVisitor); overload;
+    procedure Iterate(const AVisitor: TtiVisitor); overload; virtual; 
     {** Find all the objects that are of a given class type.
         @param AClass The class type to find
         @param AList An empty TList that will be populated with the instances
@@ -240,11 +250,14 @@ type
     property VisitedsOwner: TtiVisited read FVisitedsOwner write FVisitedsOwner;
 
   end;
+{$IFDEF IOS}
+  TClassList = TList<TClass>;
+{$ENDIF IOS}
 
   {** @exclude}
   TtiVisitorMappingGroup = class(TtiBaseObject)
   private
-    FMappings:  TClassList;
+    FMappings: TClassList;
     FGroupName: string;
     FVisitorControllerClass: TtiVisitorControllerClass;
   public
@@ -252,7 +265,11 @@ type
       const AVisitorControllerClass: TtiVisitorControllerClass);
     destructor Destroy; override;
     procedure Add(const AVisitorClass: TtiVisitorClass);
+{$IFDEF IOS}
+    procedure AssignVisitorInstances(const AVisitorList: TObjectList<TtiVisitor>);
+{$ELSE}
     procedure AssignVisitorInstances(const AVisitorList: TObjectList);
+{$ENDIF IOS}
     property GroupName: string read FGroupName;
     property VisitorControllerClass: TtiVisitorControllerClass read FVisitorControllerClass;
   end;
@@ -267,13 +284,24 @@ type
   TtiVisitorManager = class(TtiBaseObject)
   private
     FTIOPFManager:     TtiBaseObject;
+{$IFDEF IOS}
+    FVisitorMappings:  TObjectList<TtiVisitorMappingGroup>;
+{$ELSE}
     FVisitorMappings:  TObjectList;
+{$ENDIF IOS}
     FSynchronizer:     TtiMultiReadExclusiveWriteSynchronizer;
+{$IFDEF IOS}
+    procedure ExecuteVisitors(const AVisitorController: TtiVisitorController; const AVisitors: TObjectList<TtiVisitor>; const AVisited: TtiVisited);
+    procedure AssignVisitorInstances(const AVisitorMappingGroup: TtiVisitorMappingGroup; const AVisitors: TObjectList<TtiVisitor>);
+{$ELSE}
     procedure ExecuteVisitors(const AVisitorController: TtiVisitorController; const AVisitors: TList; const AVisited: TtiVisited);
     function GetVisitorMappings: TList;
     procedure AssignVisitorInstances(const AVisitorMappingGroup: TtiVisitorMappingGroup; const AVisitors: TObjectList);
+{$ENDIF IOS}
   protected
+{$IFNDEF IOS}
     property VisitorMappings: TList read GetVisitorMappings;
+{$ENDIF IOS}
     function FindVisitorMappingGroup(const AGroupName: string): TtiVisitorMappingGroup; virtual;
     procedure ProcessVisitors(const AGroupName: string; const AVisited: TtiVisited; const AVisitorControllerConfig: TtiVisitorControllerConfig); virtual;
     function GetTIOPFManager: TtiBaseObject; virtual;
@@ -289,6 +317,7 @@ type
 
   {** @exclude A wrapper for the TtiPreSizedStream which allows text to be written to
       the stream with each visit.}
+{ $IFNDEF IOS}
   TVisStream = class(TtiVisitor)
   private
     FStream: TtiPreSizedStream;
@@ -310,8 +339,9 @@ type
     destructor Destroy; override;
     property Text: string read GetText;
   end;
+{ $ENDIF IOS}
 
-  {** @exclude A visitor to count the number of instances of each class owned 
+  {** @exclude A visitor to count the number of instances of each class owned
       by the passed object}
   TVisClassCount = class(TtiVisitor)
   private
@@ -339,7 +369,9 @@ type
   end;
 
   {** @exclude}
+{$IFNDEF IOS}
   TVisStreamClass = class of TVisStream;
+{$ENDIF IOS}
 
 {** Global proc to write a apply a TVisStream (as a TFileStream) to a TtiVisited.}
 procedure VisStreamToFile(const AData: TtiVisited; const AFileName: string;
@@ -854,7 +886,11 @@ begin
   inherited Create;
   FTIOPFManager     := ATIOPFManager;
   FSynchronizer     := TtiMultiReadExclusiveWriteSynchronizer.Create;
+{$IFDEF IOS}
+  FVisitorMappings  := TObjectList<TtiVisitorMappingGroup>.Create;
+{$ELSE}
   FVisitorMappings  := TObjectList.Create;
+{$ENDIF IOS}
 end;
 
 
@@ -879,8 +915,10 @@ begin
   end;
 end;
 
+
 procedure TtiVisitorManager.ExecuteVisitors(const AVisitorController: TtiVisitorController;
-  const AVisitors: TList; const AVisited: TtiVisited);
+  const AVisitors: {$IFDEF IOS} TObjectList<TtiVisitor>; {$ELSE} TList; {$ENDIF IOS}
+  const AVisited: TtiVisited);
 var
   LVisitor: TtiVisitor;
   i:        integer;
@@ -928,14 +966,20 @@ begin
   Result := FTIOPFManager;
 end;
 
+{$IFNDEF IOS}
 function TtiVisitorManager.GetVisitorMappings: TList;
 begin
   Result := FVisitorMappings;
 end;
+{$ENDIF IOS}
 
 procedure TtiVisitorManager.AssignVisitorInstances(
   const AVisitorMappingGroup: TtiVisitorMappingGroup;
+{$IFDEF IOS}
+  const AVisitors: TObjectList<TtiVisitor>);
+{$ELSE}
   const AVisitors: TObjectList);
+{$ENDIF IOS}
 begin
   FSynchronizer.BeginRead;
   try
@@ -950,13 +994,30 @@ procedure TtiVisitorManager.ProcessVisitors(const AGroupName: string;
 var
   LVisitorMappingGroup: TtiVisitorMappingGroup;
   LVisitorController: TtiVisitorController;
+{$IFDEF IOS}
+  LVisitors: TObjectList<TtiVisitor>;
+{$ELSE}
   LVisitors: TObjectList;
+{$ENDIF IOS}
+  lLogMsg  : string;
 begin
   Assert(AGroupName<>'', 'AGroupName not assigned');
   Assert(AVisited.TestValid, CTIErrorInvalidObject);
   Assert(AVisitorControllerConfig.TestValid, CTIErrorInvalidObject);
-  Log('About to process visitors for <' + AGroupName + '>', lsVisitor);
+//IPK 2011-11-23 Enhancement to logging  
+//  Log('About to process visitors for <' + AGroupName + '>', lsVisitor);
+  if Assigned(AVisited) then
+    lLogMsg := 'About to process visitors for <' + AGroupName +
+               '> Visited: ' + AVisited.ClassName + ' (' + AVisited.Caption + ')'
+  else
+    lLogMsg := 'About to process visitors for <' + AGroupName +
+               ' > Visited: (nil)';
+  Log(lLogMsg, lsVisitor);
+{$IFDEF IOS}
+  LVisitors := TObjectList<TtiVisitor>.Create;
+{$ELSE}
   LVisitors := TObjectList.Create;
+{$ENDIF IOS}
   try
     LVisitorMappingGroup := FindVisitorMappingGroup(AGroupName);
     if LVisitorMappingGroup = nil then
@@ -981,7 +1042,15 @@ begin
   finally
     LVisitors.Free;
   end;
-  Log('Finished process visitors for <' + AGroupName + '>', lsVisitor);
+//IPK 2011-11-23 Enhancement to logging  
+//  Log('Finished process visitors for <' + AGroupName + '>', lsVisitor);
+  if Assigned(AVisited) then
+    lLogMsg := 'Finished process visitors for <' + AGroupName +
+               '> Visited: ' + AVisited.ClassName + ' (' + AVisited.Caption + ')'
+  else
+    lLogMsg := 'Finished process visitors for <' + AGroupName +
+               ' > Visited: (nil)';
+  Log(lLogMsg, lsVisitor);
 end;
 
 
@@ -1043,7 +1112,11 @@ begin
   FMappings.Add(AVisitorClass);
 end;
 
+{$IFDEF IOS}
+procedure TtiVisitorMappingGroup.AssignVisitorInstances(const AVisitorList: TObjectList<TtiVisitor>);
+{$ELSE}
 procedure TtiVisitorMappingGroup.AssignVisitorInstances(const AVisitorList: TObjectList);
+{$ENDIF IOS}
 var
   i: integer;
 begin
@@ -1118,7 +1191,11 @@ end;
 constructor TtiTouchedByVisitorList.Create(const AOwnsObjects: boolean);
 begin
   inherited Create;
-  FList := TObjectList.Create(AOwnsObjects);
+{$IFDEF IOS}
+  FList:= TObjectList<TtiTouchedByVisitor>.Create(AOwnsObjects);
+{$ELSE}
+  FList:= TObjectList.Create(AOwnsObjects);
+{$ENDIF IOS}
 end;
 
 destructor TtiTouchedByVisitorList.Destroy;

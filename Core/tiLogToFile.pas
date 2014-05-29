@@ -186,7 +186,11 @@ end;
 
 procedure TtiLogToFile.Terminate;
 begin
+  {$IFDEF MSWINDOWS}
   ThrdLog.Priority := tpHighest;
+  {$ELSE}
+  ThrdLog.Priority := ThrdLog.Priority + 1;  // Don't know what to do here???
+  {$ENDIF}
   inherited;
   WriteToOutput;
 end;
@@ -252,6 +256,10 @@ procedure TtiLogToFile.SetFileCreateAttempts(const Value: integer);
 begin
   FFileCreateAttempts := Value;
 end;
+{$IFDEF IOS}
+type
+  AnsiString = Array of Byte;
+{$ENDIF IOS}
 
 procedure TtiLogToFile.WorkingListToOutput;
 var
@@ -268,8 +276,13 @@ begin
       begin
         Assert(WorkingList.Items[i].TestValid(TtiLogEvent), CTIErrorInvalidObject);
         LLine := WorkingList.Items[i].AsLeftPaddedString + #13 + #10;
+{$IFDEF IOS}
+        StringToShortString(LLine, LLineAnsi);
+        LFileStream.Write(LLineAnsi, Length(LLineAnsi));
+{$ELSE}
         LLineAnsi := AnsiString(LLine);
         LFileStream.Write(PAnsiChar(LLineAnsi)^, Length(LLineAnsi));
+{$ENDIF IOS}
       end;
     finally
       LFileStream.Free;

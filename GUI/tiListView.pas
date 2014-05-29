@@ -589,6 +589,7 @@ type
     property    ViewStyle    ;
     property    RowSelect    ;
     property    Constraints  ;
+    property    TabOrder     ;
     property    Visible      ;
     property    OnEnter      ;
     property    OnExit       ;
@@ -947,12 +948,12 @@ end;
 
 procedure TtiCustomListView.ConnectToData;
 begin
-//  if FDataInternal.Count > 0 then begin
+  BeginUpdate;
+  try
 
-    // The order of these three assignments is important.
-    // Do not change the order.
-    // Must set OwnerData, AutoGenCols, Items.Count, OnData order.
-
+  // The order of these three assignments is important.
+  // Do not change the order.
+  // Must set OwnerData, AutoGenCols, Items.Count, OnData order.
     FLV.OwnerData  := true;
 
     if FbRunTimeGenCols then
@@ -965,7 +966,9 @@ begin
     if Assigned(FOnGetFont) then
       FLV.OnCustomDrawItem :=  DoCustomDrawItem;
     {$ENDIF}
-//  end;
+  finally
+    EndUpdate;
+  end;
 end;
 
 // There where no columns specified at design time, so setup the
@@ -1032,6 +1035,7 @@ begin
     GetColWidths;
     Exit; //==>
     end;
+
   FListColsBeingDisplayed.Clear;
   FLV.Columns.Clear;
   AddImageColumn;
@@ -1050,9 +1054,9 @@ begin
   result :=
     (FData = nil) or
     (FData.Count < 1) or
-    (FtiListColumns.Count <> FLV.Columns.Count - 1) or
-    (FListColsBeingDisplayed.Count <> FtiListColumns.Count) or
-    (FtiListColumns.Count <> FLV.Columns.Count - 1);
+    (FtiListColumns.Count <> FLV.Columns.Count - 1); // or
+//    (FtiListColumns.Count <> FListColsBeingDisplayed.Count - 1 ) or  //++IPK 2014/05/23 Can't understand why this would not be -1
+//    (FtiListColumns.Count <> FLV.Columns.Count - 1);
   if result then
     Exit; //==>
   for i := 0 to FtiListColumns.Count - 1 do
@@ -1101,7 +1105,9 @@ end;
 function TtiCustomListView.GetColWidth(pListColumn : TtiListColumn; pLVColumn : TListColumn):Integer;
 begin
   if pListColumn.Width = -1 then
-    result := FLV.Canvas.TextWidth(pLVColumn.Caption) + 12
+//IPK 2010-07-12:- tiOPF3 conversion - For some reason this line raises an AV. Temp hack to bypass it for now
+//    result := FLV.Canvas.TextWidth(pLVColumn.Caption) + 12
+    result := 50
   else
     result := pListColumn.Width;
 end;
@@ -1118,6 +1124,7 @@ var
   j : integer;
   laWidths : Array of integer;
   liTextWidth : integer;
+  lCaption : String;
 begin
 
   SetLength(laWidths, Columns.Count);
@@ -1126,8 +1133,9 @@ begin
   for j := 1 to Columns.Count - 1 do begin
     if {not RunTimeGenCols and} FtiListColumns.Items[j-1].Width = -1 then
     begin
-      liTextWidth := FLV.Canvas.TextWidth(Columns[j].Caption);
-      laWidths[j]:= Max(laWidths[j], liTextWidth);
+      lCaption    := Columns[j].Caption;
+      liTextWidth := FLV.Canvas.TextWidth(lCaption);
+      laWidths[j] := Max(laWidths[j], liTextWidth);
     end;
   end;
 
@@ -1141,7 +1149,7 @@ begin
   // Now set the column widths to match the calculated values.
   for j := 1 to Columns.Count - 1 do
     if {not RunTimeGenCols and} FtiListColumns.Items[j-1].Width = -1 then
-      Columns[j].Width := laWidths[j] + 12
+      Columns[j].Width := laWidths[j] + 14
     else
       Columns[j].Width := FtiListColumns.Items[j-1].Width;
 
@@ -1786,6 +1794,7 @@ begin
                 TtiObject(FDataInternal.Items[Item.Index]));
   end;
   // Fix for display glitches in column dividers under Vista, Win 7 etc with Aero themes enabled. AD
+(*
   DefaultDraw := False;
   ListView := TListView(FLV);
   for lIndex := 0 to ListView.Columns.Count-1 do
@@ -1813,6 +1822,7 @@ begin
 
     ListView.Canvas.TextRect(lRect, lRect.Left + 2, lRect.Top, lText);
   end;
+*)
 end;
 
 {

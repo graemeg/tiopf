@@ -4,7 +4,8 @@ unit tiVTAbstract;
 
 interface
 uses
-  tiVirtualTrees,
+  VirtualTrees,
+  tiVirtualTreesNEW,
   tiFocusPanel,
   tiObject,
   Graphics,
@@ -48,7 +49,7 @@ type
   //       duplicated into TtiVTAbstract
   TtiVTAbstract = class(TtiFocusPanel)
   private
-    FVT: TVirtualStringTree;
+    FVT: TtiVirtualStringTree;
     FOnPaintText: TtiVTOnPaintText;
     FOnAdvancedPaintText: TtiVTOnAdvancedPaintText;
     FOnGetNodeHint: TtiVTOnGetHint;
@@ -90,7 +91,7 @@ type
     FLastNode: PVirtualNode;
 ///
     function GetObjectFromNode(Node: PVirtualNode): TtiObject; virtual; abstract;
-    procedure SetVT(const AVT: TVirtualStringTree);
+    procedure SetVT(const AVT: TtiVirtualStringTree);
 ////
     procedure ClearSearchState;
     procedure SPEnterFindEdit(Sender: TObject); virtual;
@@ -111,7 +112,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor  Destroy; override;
-    property VT: TVirtualStringTree read FVT;
+    property VT: TtiVirtualStringTree read FVT;
     property SP: TtiVTSearchPanel read FSP;
   end;
 
@@ -243,7 +244,7 @@ begin
   VT.OnScroll := AValue;
 end;
 
-procedure TtiVTAbstract.SetVT(const AVT: TVirtualStringTree);
+procedure TtiVTAbstract.SetVT(const AVT: TtiVirtualStringTree);
 begin
   FVT:= AVT;
 end;

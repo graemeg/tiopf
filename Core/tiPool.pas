@@ -388,7 +388,11 @@ begin
   Create(False);
   FreeOnTerminate := false;
   FPool := APool;
+  {$IFDEF MSWINDOWS}
   Priority := tpLowest;
+  {$ELSE}
+  Priority := Priority - 1;  // Don't know what to do here???
+  {$ENDIF}
   FSweepInterval:= ASweepInterval;
 end;
 

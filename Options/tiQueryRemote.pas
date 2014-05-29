@@ -296,7 +296,7 @@ uses
   ,tiWebServerVersion
   ,SysUtils
   ,Variants
- ;
+ , tiMime;
 
 var
   uXMLTags : TtiXMLTags;

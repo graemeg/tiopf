@@ -388,9 +388,9 @@ begin
 end;
 
 
-initialization
-  if gCommandLineParams.IsParam(csLogVisual) then
-    GLog.RegisterLog(TtiLogToGUI);
+//initialization
+//  if gCommandLineParams.IsParam(csLogVisual) then
+//    gLog.RegisterLog(TtiLogToGUI);
 
 end.
 

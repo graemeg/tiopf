@@ -27,7 +27,8 @@ uses
   ,tiVisitor
   ,tiOID
   ,Variants
-  ,tiVirtualTrees
+  ,VirtualTrees
+  ,tiVirtualTreesNEW
   ,StdCtrls     // TLabel, TCustomEdit
   ,ExtCtrls     // TCustomPanel
   ,Buttons      // TSpeedButton
@@ -136,6 +137,39 @@ type
                                              pColumn : Integer;
                                              pNode  : PVirtualNode
                                       ) of object;
+
+  TtiVTOnBeforeCellPaintEvent = procedure(const pVT : TtiCustomVirtualTree;
+                                       const pCanvas : TCanvas;
+                                       const AData  : TtiObject;
+                                             pColumn : Integer;
+                                             pNode  : PVirtualNode;
+                                             ACellRect : TRect
+                                      ) of object;
+  TtiVTOnAfterCellPaintEvent = procedure(const pVT : TtiCustomVirtualTree;
+                                       const pCanvas : TCanvas;
+                                       const AData  : TtiObject;
+                                             pColumn : Integer;
+                                             pNode  : PVirtualNode;
+                                             ACellRect : TRect
+                                      ) of object;
+
+
+  TtiVTBeforeItemEraseEvent = procedure(const pVT : TtiCustomVirtualTree;
+                                        const pCanvas : TCanvas;
+                                        const AData  : TtiObject;
+                                        pNode: PVirtualNode;
+                                        pItemRect: TRect;
+                                    var pItemColor: TColor;
+                                    var pEraseAction: TItemEraseAction) of object;
+
+
+
+  TtiVTAfterItemEraseEvent = procedure(const pVT : TtiCustomVirtualTree;
+                                       const pCanvas : TCanvas;
+                                       const AData  : TtiObject;
+                                       pNode: PVirtualNode;
+                                       pItemRect: TRect) of object;
+
   //TtiVTOnClick            = procedure(pVT : TtiCustomVirtualTree;
   //                                     AItem  : PVirtualNode  ;
   //                                     AData  : TtiObject;
@@ -219,7 +253,7 @@ type
   end;
 
 
-  TtiVTColumn = class(TVirtualTreeColumn)
+  TtiVTColumn = class(TtiVirtualTreeColumn)
   private
     FsFieldName: string;
     FsDisplayMask: string;
@@ -260,7 +294,9 @@ type
     procedure SetItem(Index : TColumnIndex; const AValue : TtiVTColumn);
   protected
   public
-    constructor Create(AOwner : TtiVTHeader);
+// VT 5.4 now has Create() virtual, so need override and with TVTHeader class
+// Since this method is empty, just comment out until required
+//    constructor Create(AOwner : TtiVTHeader); override;
     destructor  Destroy; override;
     Procedure StoreWidths;
     Procedure RevertToStoredWidths;
@@ -270,7 +306,7 @@ type
     function  FindByFieldName(const AValue : String) : TtiVTColumn;
   end;
 
-  TtiVTHeader = class(TVTHeader)
+  TtiVTHeader = class(TtiVSTHeader)
   private
     function GetColumns: TtiVTColumns;
     procedure SetColumns(const AValue: TtiVTColumns);
@@ -282,7 +318,7 @@ type
     property Columns: TtiVTColumns read GetColumns write SetColumns stored False; // VT stores manually
   end;
 
-  TtiInternalVirtualTree = class(TVirtualStringTree)
+  TtiInternalVirtualTree = class(TtiVirtualStringTree)
   protected
     FtiOwner: TtiCustomVirtualTree;
 
@@ -292,7 +328,7 @@ type
     procedure DoFocusChange(Node: PVirtualNode; Column: TColumnIndex); override;
     function DoGetImageIndex(Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var Index: Integer): TCustomImageList; override;
-    procedure DoInitChildren(Node: PVirtualNode; var ChildCount: Cardinal); override;
+    function DoInitChildren(Node: PVirtualNode; var ChildCount: Cardinal): Boolean; override;
     procedure DoInitNode(Parent, Node: PVirtualNode; var InitStates: TVirtualNodeInitStates); override;
 
     function GetColumnClass: TVirtualTreeColumnClass; override;
@@ -343,14 +379,14 @@ type
   private
     FtiTree: TtiCustomVirtualTree;
   public
-    constructor Create(AtiTree: TtiCustomVirtualTree); reintroduce;
+    constructor CreateWith(AtiTree: TtiCustomVirtualTree);
     property tiTree: TtiCustomVirtualTree read FtiTree;
   end;
 
   TtiVTEdit = class(TVTEdit)
   protected
     procedure DoOnChange(Sender: TObject);
-    function IsValidValue: Boolean; override;
+    function IsValidValue: Boolean; // override;
     function GetLink: TtiStringEditLink;
     property Link: TtiStringEditLink read GetLink;
   public
@@ -386,7 +422,10 @@ type
     FOnItemLeave: TtiVTItemEvent;
     FOnFilterData : TtiVTOnFilterDataEvent;
     FOnPaintText : TtiVTOnPaintText;
-    FOnBeforeCellPaint: TtiVTOnPaintText;
+    FOnBeforeCellPaint: TtiVTOnBeforeCellPaintEvent;
+    FOnAfterCellPaint: TtiVTOnAfterCellPaintEvent;
+    FOnBeforeItemErase: TtiVTBeforeItemEraseEvent;
+    FOnAfterItemErase: TtiVTAfterItemEraseEvent;
     FOnDblClick: TtiVTItemEvent;
     FOnEdited: TtiVTItemEvent;
     FAlternateRowCount: Byte;
@@ -416,7 +455,8 @@ type
     function  GetSelectedData: TtiObject;
     procedure SetSelectedData(const AValue: TtiObject);
     procedure SetOnPaintText(const AValue: TtiVTOnPaintText);
-    procedure SetOnBeforeCellPaint(const AValue: TtiVTOnPaintText);
+//    procedure SetOnBeforeCellPaint(const AValue: TtiVTOnBeforeCellPaintEvent);
+    procedure SetOnAfterCellPaint(const AValue: TtiVTOnAfterCellPaintEvent);
     procedure SetRootNodeCount;
     function  GetSelectedIndex: integer;
     procedure SetSelectedIndex(const AValue: integer);
@@ -447,6 +487,8 @@ type
     function GetNearest: TtiObject;
     function DoSortElement(AOrder: TtiVTSortOrder; AData1, AData2: TtiObject): Integer;
     function SortProc(AData1, AData2: Pointer): Integer;
+    procedure SetOnAfterItemErase(const AValue: TtiVTAfterItemEraseEvent);
+    procedure SetOnBeforeItemErase(const AValue: TtiVTBeforeItemEraseEvent);
 
     //
     //FOnDblClick  : TtiLVItemEditEvent;
@@ -479,7 +521,10 @@ type
     property    OnItemLeave     : TtiVTItemEvent read FOnItemLeave write FOnItemLeave;
     // ToDo: Replace with OnPaintText in TtiVTAbstract
     property    OnPaintText     : TtiVTOnPaintText read FOnPaintText Write SetOnPaintText;
-    property    OnBeforeCellPaint: TtiVTOnPaintText read FOnBeforeCellPaint Write SetOnBeforeCellPaint;
+//    property    OnBeforeCellPaint: TtiVTOnBeforeCellPaintEvent read FOnBeforeCellPaint Write SetOnBeforeCellPaint;
+    property    OnAfterCellPaint: TtiVTOnAfterCellPaintEvent read FOnAfterCellPaint Write SetOnAfterCellPaint;
+    property    OnBeforeItemErase: TtiVTBeforeItemEraseEvent read FOnBeforeItemErase write SetOnBeforeItemErase;
+    property    OnAfterItemErase: TtiVTAfterItemEraseEvent   read FOnAfterItemErase  write SetOnAfterItemErase;
     property    OnGetNodeHint   : TtiVTOnNodeHint read FOnGetNodeHint write SetOnGetNodeHint;
     property    OnEdited        : TtiVTItemEvent read FOnEdited write FOnEdited;
     //property    OnInfoTip      : TtiLVInfoTipEvent read FOnTipInfo   write SetOnInfoTip;
@@ -514,7 +559,10 @@ type
     procedure VTInitNode(Parent, Node: PVirtualNode; var InitStates: TVirtualNodeInitStates); virtual;
     procedure VTInitChildren(Node: PVirtualNode;  var ChildCount: Cardinal); virtual;
     procedure DoOnPaintText(pSender: TBaseVirtualTree; const pTargetCanvas: TCanvas; pNode: PVirtualNode;  pColumn: TColumnIndex; pTextType: TVSTTextType);
-    procedure DoOnBeforeCellPaint(ASender: TBaseVirtualTree; ATargetCanvas: TCanvas; ANode: PVirtualNode; AColumn: TColumnIndex; ACellPaintMode: TVTCellPaintMode; ACellRect: TRect; var AContentRect: TRect);
+//    procedure DoOnBeforeCellPaint(ASender: TBaseVirtualTree; ATargetCanvas: TCanvas; ANode: PVirtualNode; AColumn: TColumnIndex; ACellPaintMode: TVTCellPaintMode; ACellRect: TRect; var AContentRect: TRect);
+    procedure DoOnAfterCellPaint(ASender: TBaseVirtualTree; ATargetCanvas: TCanvas; ANode: PVirtualNode; AColumn: TColumnIndex; ACellRect: TRect);
+    procedure DoOnBeforeItemErase (ASender: TBaseVirtualTree; ATargetCanvas: TCanvas; ANode: PVirtualNode; AItemRect: TRect; var AItemColor: TColor; var AEraseAction: TItemEraseAction);
+    procedure DoOnAfterItemErase (ASender: TBaseVirtualTree; ATargetCanvas: TCanvas; ANode: PVirtualNode; AItemRect: TRect);
     procedure DoOnGetHint(Sender: TBaseVirtualTree; ANode: PVirtualNode; Column: TColumnIndex; var ALineBreakStyle: TVTTooltipLineBreakStyle; var AHintText: UnicodeString);
 
     property AlternateRowColor: TColor read FAlternateRowColor write SetAlternateRowColor default cDefaultAlternateRowColor;
@@ -796,8 +844,11 @@ type
     property OnKeyDown;
     property OnKeyPress;
     property OnPaintText;
-    property OnBeforeCellPaint;
+//    property OnBeforeCellPaint;
+    property OnAfterCellPaint;
     property OnGetNodeHint;
+    property OnBeforeItemErase;
+    property OnAfterItemErase;
     // ...
   end;
 
@@ -1134,10 +1185,10 @@ end;
 
 { TtiVTColumns }
 
-constructor TtiVTColumns.Create(AOwner: TtiVTHeader);
-begin
-  inherited Create(AOwner);
-end;
+//constructor TtiVTColumns.Create(AOwner: TtiVTHeader);
+//begin
+//  inherited Create(AOwner);
+//end;
 
 destructor TtiVTColumns.Destroy;
 begin
@@ -1303,7 +1354,7 @@ end;
 
 function TtiVTEdit.GetLink: TtiStringEditLink;
 begin
-  Result := (inherited Link) as TtiStringEditLink;
+  Result := (FLink as TtiStringEditLink);
 end;
 
 procedure TtiVTEdit.DoOnChange(Sender: TObject);
@@ -1335,8 +1386,9 @@ end;
 
 { TtiStringEditLink }
 
-constructor TtiStringEditLink.Create(AtiTree: TtiCustomVirtualTree);
+constructor TtiStringEditLink.CreateWith(AtiTree: TtiCustomVirtualTree);
 begin
+  Create;
   FtiTree := AtiTree;
 end;
 
@@ -1416,7 +1468,16 @@ begin
   Assert(AData2.TestValid(TtiObject), CTIErrorInvalidObject);
 
   LColumn := Header.Columns.FindByFieldName(AOrder.FieldName);
-  LDerived := Assigned(LColumn) and LColumn.Derived;
+
+//++IPK 2012-07-09 LDerived assignment corrected.
+// Reason: We only want to GetTextFromObject() if the fieldname is not supplied.
+// A date field (for example) might be derived for the display, but the PropValue
+// is required for sorting - which is the reason the OnDeriveColumn event was
+// introduced in tiOPF2 in the first place.
+// Will this mod introduce side effects? Possibly, if the user was expecting to
+// provide the string value for sorting in the OnDeriveColumn for a column flagged as derived.
+
+  LDerived := Assigned(LColumn) and (LColumn.FieldName = ''); //++IPK 2012-07-09 was: LColumn.Derived;
 
   if LDerived then
   begin
@@ -1644,18 +1705,20 @@ end;
 
 procedure TtiCustomVirtualTree.ConnectToData;
 begin
+  BeginUpdate;
   ReadData;
 
   if Sorted then
     ApplySort(FGroupingApplied);
 
   SetRootNodeCount;
+  EndUpdate;
 end;
 
 constructor TtiCustomVirtualTree.Create(AOwner: TComponent);
 begin
   inherited;
-  BorderWidth := 2;
+  BorderWidth := 0;
   FFilteredData := TObjectList.Create(False);
   FGroupedData := TList.Create;
   FSortOrders := TtiVTSortOrders.Create(Self);
@@ -1688,7 +1751,7 @@ begin
   FRowSelect:= True;
   VT.TreeOptions.SelectionOptions := [toFullRowSelect, toExtendedFocus];
   FMultiSelect:= False;
-  VT.Header.Style := hsThickButtons;
+  VT.Header.Style := hsFlatButtons;
 
   // Editing
   VT.OnCreateEditor := VTCreateEditor;
@@ -2300,13 +2363,40 @@ begin
   end;
 end;
 
-procedure TtiCustomVirtualTree.SetOnBeforeCellPaint(const AValue: TtiVTOnPaintText);
+//procedure TtiCustomVirtualTree.SetOnBeforeCellPaint(const AValue: TtiVTOnBeforeCellPaintEvent);
+//begin
+//  FOnBeforeCellPaint := AValue;
+//  if Assigned(FOnBeforeCellPaint) then
+//    VT.OnBeforeCellPaint := DoOnBeforeCellPaint
+//  else
+//    VT.OnBeforeCellPaint := nil;
+//end;
+
+procedure TtiCustomVirtualTree.SetOnAfterCellPaint(const AValue: TtiVTOnAfterCellPaintEvent);
 begin
-  FOnBeforeCellPaint := AValue;
-  if Assigned(FOnBeforeCellPaint) then
-    VT.OnBeforeCellPaint := DoOnBeforeCellPaint
+  FOnAfterCellPaint := AValue;
+  if Assigned(FOnAfterCellPaint) then
+    VT.OnAfterCellPaint := DoOnAfterCellPaint
   else
-    VT.OnBeforeCellPaint := nil;
+    VT.OnAfterCellPaint := nil;
+end;
+
+procedure TtiCustomVirtualTree.SetOnBeforeItemErase(const AValue: TtiVTBeforeItemEraseEvent);
+begin
+  FOnBeforeItemErase := AValue;
+  if Assigned(FOnBeforeItemErase) then
+    VT.OnBeforeItemErase := DoOnBeforeItemErase
+  else
+    VT.OnBeforeItemErase := nil;
+end;
+
+procedure TtiCustomVirtualTree.SetOnAfterItemErase(const AValue: TtiVTAfterItemEraseEvent);
+begin
+  FOnAfterItemErase := AValue;
+  if Assigned(FOnAfterItemErase) then
+    VT.OnAfterItemErase := DoOnAfterItemErase
+  else
+    VT.OnAfterItemErase := nil;
 end;
 
 procedure TtiCustomVirtualTree.SetOnPaintText(
@@ -2354,13 +2444,16 @@ begin
     if not Assigned(RootNode) then
       RootNode := Node;
 
-    if FShowAlternateRowColor and
-       (RootNode.Index mod FAlternateRowCount = 0) then
-      ItemColor := AlternateRowColor
+    if FShowAlternateRowColor then
+    begin
+      if (RootNode.Index mod FAlternateRowCount = 0) then
+        ItemColor := AlternateRowColor
+      else
+        ItemColor := VT.Color;
+      EraseAction := eaColor;
+    end
     else
-      ItemColor := VT.Color;
-
-    EraseAction := eaColor;
+      EraseAction := eaDefault;
   end;
 end;
 
@@ -2480,10 +2573,10 @@ begin
 
     ApplySort(noGrouping);
 
-    if Assigned(OnHeaderClick) then
-      OnHeaderClick(self, Header.Columns[AHitInfo.Column]);
-
   end;
+
+    if Assigned(OnHeaderClick) then
+      OnHeaderClick(self, LColumn);
 
 end;
 
@@ -2543,17 +2636,55 @@ begin
   VT.SetFocus;
 end;
 
-procedure TtiCustomVirtualTree.DoOnBeforeCellPaint(ASender: TBaseVirtualTree;
+//procedure TtiCustomVirtualTree.DoOnBeforeCellPaint(ASender: TBaseVirtualTree;
+//  ATargetCanvas: TCanvas; ANode: PVirtualNode; AColumn: TColumnIndex;
+//   ACellPaintMode: TVTCellPaintMode; ACellRect: TRect; var AContentRect: TRect);
+//var
+//  LData: TtiObject;
+//begin
+//  if Assigned(FOnBeforeCellPaint) then
+//  begin
+//    LData := GetObjectFromNode(ANode);
+//    FOnBeforeCellPaint(Self, ATargetCanvas, LData, AColumn, ANode, ACellRect);
+//    ATargetCanvas.FillRect(ACellRect);
+//  end;
+//end;
+
+procedure TtiCustomVirtualTree.DoOnAfterCellPaint(ASender: TBaseVirtualTree;
   ATargetCanvas: TCanvas; ANode: PVirtualNode; AColumn: TColumnIndex;
-  ACellPaintMode: TVTCellPaintMode; ACellRect: TRect; var AContentRect: TRect);
+  ACellRect: TRect);
 var
   LData: TtiObject;
 begin
-  if Assigned(FOnBeforeCellPaint) then
+  if Assigned(FOnAfterCellPaint) then
   begin
     LData := GetObjectFromNode(ANode);
-    FOnBeforeCellPaint(Self, ATargetCanvas, LData, AColumn, ANode);
-    ATargetCanvas.FillRect(ACellRect);
+    FOnAfterCellPaint(Self, ATargetCanvas, LData, AColumn, ANode, ACellRect);
+  end;
+end;
+
+procedure TtiCustomVirtualTree.DoOnBeforeItemErase(ASender: TBaseVirtualTree;
+  ATargetCanvas: TCanvas; ANode: PVirtualNode; AItemRect: TRect;
+  var AItemColor: TColor; var AEraseAction: TItemEraseAction);
+var
+  LData: TtiObject;
+begin
+  if Assigned(FOnBeforeItemErase) then
+  begin
+    LData := GetObjectFromNode(ANode);
+    FOnBeforeItemErase(Self, ATargetCanvas, LData, ANode, AItemRect, AItemColor, AEraseAction);
+  end;
+end;
+
+procedure TtiCustomVirtualTree.DoOnAfterItemErase(ASender: TBaseVirtualTree;
+  ATargetCanvas: TCanvas; ANode: PVirtualNode; AItemRect: TRect);
+var
+  LData: TtiObject;
+begin
+  if Assigned(FOnAfterItemErase) then
+  begin
+    LData := GetObjectFromNode(ANode);
+    FOnAfterItemErase(Self, ATargetCanvas, LData, ANode, AItemRect);
   end;
 end;
 
@@ -2682,6 +2813,8 @@ begin
   if Enabled <> AValue then
   begin
     inherited;
+    VT.Enabled := AValue;
+    // ToDo: Make these properties on TtiCustomVirtualTree;
     if AValue then
       VT.Color := clWindow
     else
@@ -2806,7 +2939,7 @@ procedure TtiCustomVirtualTree.VTCreateEditor(Sender: TBaseVirtualTree;
 var
   LEditLink: TtiStringEditLink;
 begin
-  LEditLink := TtiStringEditLink.Create(Self);
+  LEditLink := TtiStringEditLink.CreateWith(Self);
   EditLink := LEditLink;
   LEditLink.Edit := TtiVTEdit.Create(LEditLink);
 end;
@@ -2920,15 +3053,17 @@ begin
   FtiOwner.VTDoGetText(Node, Column, TextType, Text);
 end;
 
-procedure TtiInternalVirtualTree.DoInitChildren(Node: PVirtualNode; var ChildCount: Cardinal);
+function TtiInternalVirtualTree.DoInitChildren(Node: PVirtualNode; var ChildCount: Cardinal): Boolean;
 begin
   FtiOwner.VTInitChildren(Node, ChildCount);
+  Result := inherited DoInitChildren(Node, ChildCount); //++IPK VT proc changed to func in 5.4. Not sure if this is assignment is sufficient
 end;
 
 procedure TtiInternalVirtualTree.DoInitNode(Parent, Node: PVirtualNode;
   var InitStates: TVirtualNodeInitStates);
 begin
   FtiOwner.VTInitNode(Parent, Node, InitStates);
+  inherited;
 end;
 
 function TtiInternalVirtualTree.GetColumnClass: TVirtualTreeColumnClass;
@@ -3659,7 +3794,7 @@ var
 begin
   LLastColumnIndex := FSourceTree.VT.Header.Columns.Count - 1;
 
-  for LHeaderRow := 0 to FSourceTree.VT.Header.RowCount - 1 do
+  for LHeaderRow := 0 to (FSourceTree.VT.Header as TtiVTHeader).RowCount - 1 do
   begin
     SetLength(FOutputStr, 0);
 

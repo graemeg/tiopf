@@ -11,9 +11,14 @@ interface
 
 uses
   TypInfo
-  ,Classes
   ,SysUtils
+{$IFDEF IOS}
+  ,System.Generics.Defaults
+  ,Generics.Collections
+{$ELSE}
   ,Contnrs
+{$ENDIF IOS}
+  ,Classes
   ,tiObject
   ;
 
@@ -27,6 +32,7 @@ type
   TtiAfterGUIToObjectEvent = procedure(Sender: TtiMediatorView; Src: TComponent; Dest: TtiObject) of object;
   TtiMediatorEvent = procedure(AMediatorView: TtiMediatorView) of object;
   TtiComponentNotificationEvent = procedure(AComponent: TComponent; Operation: TOperation) of object;
+  TtiOnFilterDataEvent  = procedure(AData: TtiObject; var AInclude: boolean) of object;
 
   TtiObjectUpdateMoment = (ouNone, ouDefault, ouOnChange, ouOnExit, ouCustom);
 
@@ -71,8 +77,10 @@ type
     function DataAndPropertyValid: Boolean;
     // By default, copies published FieldName to published GUIFieldName.
     procedure DoGUIToObject; virtual;
+    procedure DoGUIToObjectDefault; virtual;
     // Copy object property to GUI. By default it copies published GUIFieldName to published FieldName
     procedure DoObjectToGUI; virtual;
+    procedure DoObjectToGUIDefault; virtual;
     // Allow descendants to change or format the displayed value
     procedure GetObjectPropValue(var AValue: Variant); virtual;
     // Set value list object. Override to provide additional handling.
@@ -85,6 +93,7 @@ type
     procedure SetFieldName(const AValue: string); virtual;
     // Set ObjectUpdateMoment. Override to provide additional handling;
     procedure SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment); virtual;
+    procedure SetObjectUpdateMomentDefault(const AValue: TtiObjectUpdateMoment); virtual;
     // Raise an error which shows more information about the control, subject and fieldname.
     procedure RaiseMediatorError(const Msg: string); overload;
     // Format version
@@ -119,7 +128,7 @@ type
     // Set view. Override if additional handling required.
     procedure SetView(const AValue: TComponent); virtual;
     // Returns FView by default. Reintroduce to cast into descendant type.
-    function View: TComponent;
+    function View: TComponent; dynamic;
     // The subject of observation...
     property Subject: TtiObject read GetSubject write SetSubject;
     // Descendents that need a list of values can use this.
@@ -196,7 +205,7 @@ type
     function GetI(Index: integer): TtiMediatorFieldInfo;
     procedure SetI(Index: integer; const AValue: TtiMediatorFieldInfo);
   protected
-    procedure Notify(Item: TCollectionItem;Action: TCollectionNotification); override;
+    procedure Notify(Item: TCollectionItem; Action: TCollectionNotification); override;
     Property Mediator : TtiCustomListMediatorView read FMediator;
   public
     function FieldInfoByName(Const pName : String) : TtiMediatorFieldInfo;
@@ -243,8 +252,13 @@ type
   private
     FOnBeforeSetupField: TtiOnBeforeSetupField;
     FShowDeleted: Boolean;
+{$IFDEF IOS}
+    FMediatorList: TObjectList<TtiListItemMediator>;
+{$ELSE}
     FMediatorList: TObjectList;
+{$ENDIF IOS}
     FListChanged : Boolean;
+    FOnFilterData : TtiOnFilterDataEvent;
     function GetDisplayNames: string;
     function GetIsObserving: Boolean;
     function GetModel: TtiObjectList;
@@ -271,7 +285,11 @@ type
     procedure SetActive(const AValue: Boolean); override;
     function FindObjectMediator(AObject: TTiObject; out AtIndex: Integer): TtiListItemMediator;
     function MediatorFieldInfoClass: TtiMediatorFieldInfoClass; virtual;
+{$IFDEF IOS}
+    property MediatorList: TObjectList<TtiListItemMediator> read FMediatorList;
+{$ELSE}
     property MediatorList: TObjectList read FMediatorList;
+{$ENDIF IOS}
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -281,6 +299,7 @@ type
     procedure ItemDeleted(const ASubject: TtiObject); virtual;
   published
     property OnBeforeSetupField: TtiOnBeforeSetupField read FOnBeforeSetupField write SetOnBeforeSetupField;
+    property OnFilterData : TtiOnFilterDataEvent       read  FOnFilterData      write FOnFilterData;
     property Model: TtiObjectList read GetModel;
     property DisplayNames: string read GetDisplayNames write SetDisplayNames;
     property ShowDeleted: Boolean read FShowDeleted write SetShowDeleted;
@@ -596,6 +615,11 @@ end;
 
 procedure TtiMediatorView.SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment);
 begin
+  SetObjectUpdateMomentDefault(AValue);
+end;
+
+procedure TtiMediatorView.SetObjectUpdateMomentDefault(const AValue: TtiObjectUpdateMoment);
+begin
   { 2009-06-30 graemeg - Commented this check because it prevents descendant
     implementations from firing which is required if EditComponent changes,
     but FObjectUpdateMoment stayed the same. }
@@ -715,6 +739,11 @@ end;
 
 procedure TtiMediatorView.DoGUIToObject;
 begin
+  DoGUIToObjectDefault;
+end;
+
+procedure TtiMediatorView.DoGUIToObjectDefault;
+begin
   CheckFieldNames;
   Subject.PropValue[FieldName] := TypInfo.GetPropValue(View, GUIFieldName);
 end;
@@ -760,6 +789,11 @@ begin
 end;
 
 procedure TtiMediatorView.DoObjectToGUI;
+begin
+  DoObjectToGUIDefault;
+end;
+
+procedure TtiMediatorView.DoObjectToGUIDefault;
 var
   LPropInfo: PPropInfo;
   LValue: Variant;
@@ -938,7 +972,11 @@ begin
     Result := FMC.CompositeMediator
   else
   begin
+{$IFDEF IOS}
+    N      := APropInfo.NameFld.ToString;
+{$ELSE}
     N      := string(APropInfo^.Name);
+{$ENDIF IOS}
     Result := True;
   end;
   if not Result then
@@ -1459,11 +1497,15 @@ procedure TtiCustomListMediatorView.CreateSubMediators;
 var
   i: integer;
   LItemMediator: TtiListItemMediator;
+  lInclude : Boolean;
 begin
   CreateColumns;
   for i := 0 to Model.Count - 1 do
     begin
-    if (not Model.Items[i].Deleted) or FShowDeleted then
+    lInclude := True;
+    if Assigned(FOnFilterData) then
+      FOnFilterData(Model.Items[i], lInclude);
+    if lInclude and ((not Model.Items[i].Deleted) or FShowDeleted) then
       if i < MediatorList.Count then
         TtiListItemMediator(MediatorList[i]).Model := Model.Items[i]
       else
@@ -1512,7 +1554,11 @@ begin
   inherited Create;
   FFieldsInfo   := TtiMediatorFieldInfoList.Create(MediatorFieldInfoClass);
   FFieldsInfo.FMediator:=Self;
+{$IFDEF IOS}
+  FMediatorList := TObjectList<TtiListItemMediator>.Create;
+{$ELSE}
   FMediatorList := TObjectList.Create;
+{$ENDIF IOS}
   FShowDeleted  := False;
   Active        := False;
 end;

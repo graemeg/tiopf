@@ -21,107 +21,110 @@ uses
 
 type
   EtiOPFDBException = Class(Exception)
-    Constructor Create(Const pPerLayerName, pDatabaseName, pUserName, pPassword : String; Const pMessage : String = ''); Virtual;
-  End;
+    constructor Create(const APerLayerName, ADatabaseName, AUserName, APassword : string; const AMessage : string = ''); Virtual;
+  end;
 
   EtiOPFDBExceptionUserNamePassword = Class(EtiOPFDBException)
-    Constructor Create(Const pPerLayerName, pDatabaseName, pUserName, pPassword : String; Const pMessage : String = ''); Override;
-  End;
+    constructor Create(const APerLayerName, ADatabaseName, AUserName, APassword : string; const AMessage : string = ''); override;
+  end;
 
   // ---------------------------------------------------------------------------
   TtiDatabaseUIBAbs = Class(TtiDatabaseSQL)
-  Private
+  private
     FDatabase : TUIBDatabase;
     FTransaction : TUIBTransaction;
-    FLayerName : String;
-  Protected
-    Function FieldMetaDataToSQLCreate(Const pFieldMetaData :
-      TtiDBMetaDataField) : String; Override;
-    Function GetConnected : Boolean; Override;
-    Procedure SetConnected(pbValue : boolean); Override;
-  Public
-    Constructor Create; Override;
-    Destructor Destroy; Override;
-    Procedure Commit; Override;
-    Function InTransaction : Boolean; Override;
-    Procedure ReadMetaDataFields(AData : TtiDBMetaDataTable); Override;
-    Procedure ReadMetaDataTables(AData : TtiDBMetaData); Override;
-    Procedure RollBack; Override;
-    Procedure StartTransaction; Override;
-    Function Test : Boolean; Override;
-    Property UIBDatabase : TUIBDatabase Read FDatabase Write FDatabase;
-    Property LayerName : String Read FLayerName Write FLayerName;
-  End;
+    FLayerName : string;
+  protected
+    procedure SetConnected(AValue : boolean); override;
+    function GetConnected : boolean; override;
+    function FieldMetaDataToSQLCreate(const AFieldMetaData :  TtiDBMetaDataField) : string; override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    property UIBDatabase : TUIBDatabase Read FDatabase Write FDatabase;
+    procedure StartTransaction; override;
+    function InTransaction : boolean; override;
+    procedure Commit; override;
+    procedure RollBack; override;
+    procedure ReadMetaDataTables(AData : TtiDBMetaData); override;
+    procedure ReadMetaDataFields(AData : TtiDBMetaDataTable); override;
+    function Test : boolean; override;
+    property LayerName : string Read FLayerName Write FLayerName;
+  end;
 
 
   TtiQueryUIBAbs = Class(TtiQuerySQL)
-  Private
-    FActive : Boolean;
-    FWasPrepared : Boolean;
+  private
+    FActive : boolean;
+    FWasPrepared : boolean;
     FQuery : TUIBQuery;
     FSQLParams : TSQLParams;
-    Function IBFieldKindToTIFieldKind(pData : TUIBSQLVar) : TtiQueryFieldKind;
-  Protected
+    function IBFieldKindToTIFieldKind(pData : TUIBSQLVar) : TtiQueryFieldKind;
+  protected
     { these two methods come from tiQueryDataset }
     function ParamsAsStringList: TStringList;
     procedure LogParams;
+//    function GetParamAsVariant(const AName : string) : Variant; override;
+//    procedure SetParamAsVariant(const AName : string; const Value : Variant); override;
+//    function GetFieldAsVariant(const AName : string) : Variant; override;
+    function GetFieldAsBoolean(const AName : string) : boolean; override;
+    function GetFieldAsDateTime(const AName : string) : TDateTime; override;
+    function GetFieldAsFloat(const AName : string) : extended; override;
+    function GetFieldAsInteger(const AName : string) : Int64; override;
+    function GetFieldAsString(const AName : string) : string; override;
+    function GetFieldIsNull(const AName : string) : boolean; override;
 
-    Function GetActive : Boolean; Override;
-    Function GetEOF : Boolean; Override;
-    Function GetFieldAsBoolean(Const psName : String) : Boolean; Override;
-    Function GetFieldAsDateTime(Const psName : String) : TDateTime; Override;
-    Function GetFieldAsFloat(Const psName : String) : Extended; Override;
-    Function GetFieldAsInteger(Const psName : String) : Int64; Override;
-    Function GetFieldAsString(Const psName : String) : String; Override;
- //   Function GetFieldAsVariant(Const psName : String) : Variant; Override;
-    Function GetFieldIsNull(Const psName : String) : Boolean; Override;
-    Function GetParamAsBoolean(Const psName : String) : Boolean; Override;
-    Function GetParamAsDateTime(Const psName : String) : TDateTime; Override;
-    Function GetParamAsFloat(Const psName : String) : Extended; Override;
-    Function GetParamAsInteger(Const psName : String) : Int64; Override;
-    Function GetParamAsString(Const psName : String) : String; Override;
-    Function GetParamAsTextBLOB(Const psName : String) : String; Override;
-//    Function GetParamAsVariant(Const psName : String) : Variant; Override;
-    Function GetParamIsNull(Const psName : String) : Boolean; Override;
-    Function GetSQL : TStrings; Override;
-    Procedure InternalPrepare; Virtual;
-    Procedure SetActive(Const Value : boolean); Override;
-    Procedure SetParamAsBoolean(Const psName : String; Const Value : boolean);
-      Override;
-    Procedure SetParamAsDateTime(Const psName : String; Const Value : TDateTime);
-      Override;
-    Procedure SetParamAsFloat(Const psName : String; Const Value : Extended);
-      Override;
-    Procedure SetParamAsInteger(Const psName : String; Const Value : Int64);
-      Override;
-    Procedure SetParamAsString(Const psName, Value : String); Override;
-    Procedure SetParamAsTextBLOB(Const psName, Value : String); Override;
-//    Procedure SetParamAsVariant(Const psName : String; Const Value : Variant); Override;
-    Procedure SetParamIsNull(Const psName : String; Const Value : Boolean); Override;
-    Procedure SetSQL(Const Value : TStrings); Override;
-  Public
-    Constructor Create; Override;
-    Destructor Destroy; Override;
-    Procedure AssignFieldAsStream(Const pName : String; Const pStream : TStream); Override;
-    Procedure AssignParamFromStream(Const pName : String; Const pStream : TStream); Override;
-    Procedure AssignParams(Const AParams : TtiQueryParams; Const AWhere : TtiQueryParams = Nil); Override;
-    Procedure AssignParamToStream(Const pName : String; Const pStream : TStream); Override;
-    Procedure AttachDatabase(pDatabase : TtiDatabase); Override;
-    Procedure Close; Override;
-    Procedure DetachDatabase; Override;
-    function ExecSQL : Integer; Override;
-    Function FieldCount : Integer; Override;
-    Function FieldIndex(Const psName : String) : Integer; Override;
-    Function FieldKind(pIndex : integer) : TtiQueryFieldKind; Override;
-    Function FieldName(pIndex : integer) : String; Override;
-    Function FieldSize(pIndex : integer) : Integer; Override;
-    Function HasNativeLogicalType : Boolean; Override;
-    Procedure Next; Override;
-    Procedure Open; Override;
-    Function ParamCount : Integer; Override;
-    Function ParamName(pIndex : integer) : String; Override;
-    Procedure Reset; Override;
-  End;
+    function GetActive : boolean; override;
+    function GetEOF : boolean; override;
+    function GetRecordCount: Integer; override;
+    function GetRowsAffected: Integer; override;
+    function GetSQL : TStrings; override;
+    procedure SetActive(const AValue : boolean); override;
+    procedure SetSQL(const AValue : TStrings); override;
+    procedure InternalPrepare; Virtual;
+
+    function GetParamAsBoolean(const AName : string) : boolean; override;
+    function GetParamAsDateTime(const AName : string) : TDateTime; override;
+    function GetParamAsFloat(const AName : string) : extended; override;
+    function GetParamAsInteger(const AName : string) : Int64; override;
+    function GetParamAsString(const AName : string) : string; override;
+    function GetParamAsTextBLOB(const AName : string) : string; override;
+    function GetParamIsNull(const AName : string) : boolean; override;
+
+    procedure SetParamAsBoolean(const AName : string; const AValue : boolean); override;
+    procedure SetParamAsDateTime(const AName : string; const AValue : TDateTime); override;
+    procedure SetParamAsFloat(const AName : string; const AValue : extended); override;
+    procedure SetParamAsInteger(const AName : string; const AValue : Int64); override;
+    procedure SetParamAsString(const AName, AValue : string); override;
+    procedure SetParamAsTextBLOB(const AName, AValue : string); override;
+    procedure SetParamIsNull(const AName : string; const AValue : boolean); override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    procedure Open; override;
+    procedure Close; override;
+    procedure Next; override;
+    function ExecSQL : Integer; override;
+
+    function ParamCount : Integer; override;
+    function ParamName(AIndex : integer) : string; override;
+
+    procedure AssignParamFromStream(const AName : string; const AStream : TStream); override;
+    procedure AssignParamToStream(const AName : string; const AStream : TStream); override;
+    procedure AssignFieldAsStream(const AName : string; const AStream : TStream); override;
+
+    procedure AttachDatabase(ADatabase : TtiDatabase); override;
+    procedure DetachDatabase; override;
+    procedure Reset; override;
+
+    function FieldCount : Integer; override;
+    function FieldName(AIndex : integer) : string; override;
+    function FieldIndex(const AName : string) : Integer; override;
+    function FieldKind(AIndex : integer) : TtiQueryFieldKind; override;
+    function FieldSize(AIndex : integer) : Integer; override;
+    function HasNativeLogicalType : boolean; override;
+
+  end;
 
 Implementation
 
@@ -140,17 +143,17 @@ Uses
 Type
   TSQLType = Record
     SqlType : Integer;
-    TypeName : String;
-  End;
+    TypeName : string;
+  end;
 
   TSQLTypes = Array[0..13] Of TSQLType;
 
   TPrivTypes = Record
     PrivFlag : Integer;
-    PrivString : String;
-  End;
+    PrivString : string;
+  end;
 
-Const
+const
   priv_UNKNOWN = 1;
   priv_SELECT = 2;
   priv_INSERT = 4;
@@ -183,7 +186,7 @@ Const
     (SqlType : blr_timestamp; TypeName : 'TIMESTAMP'), {do not localize}
     (SqlType : blr_int64; TypeName : 'INT64')); {do not localize}
 
-  SubTypes : Array[0..8] Of String = (
+  SubTypes : Array[0..8] Of string = (
     'UNKNOWN', {do not localize}
     'TEXT', {do not localize}
     'BLR', {do not localize}
@@ -194,7 +197,7 @@ Const
     'TRANSACTION_DESCRIPTION', {do not localize}
     'EXTERNAL_FILE_DESCRIPTION'); {do not localize}
 
-  TriggerTypes : Array[0..6] Of String = (
+  TriggerTypes : Array[0..6] Of string = (
     '', {do not localize}
     'BEFORE INSERT', {do not localize}
     'AFTER INSERT', {do not localize}
@@ -203,7 +206,7 @@ Const
     'BEFORE DELETE', {do not localize}
     'AFTER DELETE'); {do not localize}
 
-  IntegralSubtypes : Array[0..2] Of String = (
+  IntegralSubtypes : Array[0..2] Of string = (
     'UNKNOWN', {do not localize}
     'NUMERIC', {do not localize}
     'DECIMAL'); {do not localize}
@@ -286,126 +289,356 @@ Const
 ********************************* TtiQueryUIB **********************************
 }
 
-Constructor TtiQueryUIBAbs.Create;
-Begin
+constructor TtiQueryUIBAbs.Create;
+begin
   Inherited;
   FSQLParams := TSQLParams.Create(csUTF8);
+  FSupportsRowsAffected := True;
   FWasPrepared := false;
   FQuery := TUIBQuery.Create(Nil);
-  With FQuery Do
-  Begin
-    FetchBlobs := True;
-    OnError := etmStayIn;
-  End;
+  FQuery.FetchBlobs := True;
+  FQuery.OnError := etmStayIn;
   FActive := false;
-End;
+end;
 
-Destructor TtiQueryUIBAbs.Destroy;
-Begin
+destructor TtiQueryUIBAbs.Destroy;
+begin
   FQuery.Free;
   FSQLParams.Free;
   Inherited;
-End;
+end;
 
-Procedure TtiQueryUIBAbs.AssignFieldAsStream(Const pName : String; Const pStream :
-  TStream);
-Var
-  iIndex : integer;
-Begin
-  Assert(pStream <> Nil, 'Stream not assigned');
-  pStream.Position := 0;
-  iIndex := FQuery.Fields.GetFieldIndex(UpperCase(pName));
-  If FQuery.Fields.IsBlob[iIndex] Then
-  Begin
-    FQuery.ReadBlob(UpperCase(pName), pStream);
-  End
-  Else
-  Begin
-    Raise Exception.CreateFmt('Field is not a BLOB error in method AssignFieldAsStream of class %s', [ClassName]);
-//    tiFmtException('Field is not a BLOB', Classname, 'AssignFieldAsStream');
-  End;
-End;
-
-Procedure TtiQueryUIBAbs.AssignParamFromStream(Const pName : String; Const pStream :
-  TStream);
-Begin
-  Assert(pStream <> Nil, 'Stream not assigned');
-  InternalPrepare;
-  pStream.Position := 0;
-  FQuery.ParamsSetBlob(UpperCase(pName), pStream);
-End;
-
-Procedure TtiQueryUIBAbs.AssignParams(Const AParams : TtiQueryParams; Const AWhere : TtiQueryParams = Nil);
-Begin
-  If AParams = Nil Then
-    Exit;
-  Inherited;
-End;
-
-Procedure TtiQueryUIBAbs.AssignParamToStream(Const pName : String; Const pStream : TStream);
-Begin
-  Assert(pStream <> Nil, 'Stream not assigned');
-  FQuery.ParamsSetBlob(pName, pStream);
-//  Assert(false, 'not realized');
-End;
-
-Procedure TtiQueryUIBAbs.AttachDatabase(pDatabase : TtiDatabase);
-Begin
-  Inherited AttachDatabase(pDatabase);
-  With FQuery Do
-  Begin
-    Database := TtiDatabaseUIBAbs(pDatabase).UIBDatabase;
-    Transaction := Database.Transactions[0];
-  End;
-End;
-
-Procedure TtiQueryUIBAbs.Close;
-Begin
+procedure TtiQueryUIBAbs.Close;
+begin
   Active := false;
-End;
+end;
 
-Procedure TtiQueryUIBAbs.DetachDatabase;
-Begin
-  Inherited DetachDatabase;
-  If FActive Then
-  Begin
-    FQuery.Close;
-    FActive := False;
-  End;
-  FQuery.Transaction := Nil;
-  FQuery.Database := Nil;
-End;
-
-Function TtiQueryUIBAbs.ExecSQL : Integer;
-Begin
+function TtiQueryUIBAbs.ExecSQL : Integer;
+begin
   Log(ClassName + ': [Prepare] ' + tiNormalizeStr(self.SQLText), lsSQL);
   InternalPrepare;
   LogParams;
   FQuery.Execute;
-  Result := -1;
-End;
+  Result := FQuery.RowsAffected;
+end;
 
-Function TtiQueryUIBAbs.FieldCount : Integer;
-Begin
+function TtiQueryUIBAbs.GetFieldAsBoolean(const AName : string) : boolean;
+var
+  lsValue: string;
+begin
+//  Result := FQuery.Fields.ByNameAsBoolean[UpperCase(AName)];
+  lsValue := Trim(UpperCase(GetFieldAsString(AName))); //++IPK 2012-05-04
+  result := (lsValue = 'T') or
+    (lsValue = 'TRUE') or
+    (lsValue = 'Y') or
+    (lsValue = 'YES') or
+    (lsValue = '1');
+end;
+
+function TtiQueryUIBAbs.GetFieldAsDateTime(const AName : string) : TDateTime;
+begin
+  result := FQuery.Fields.ByNameAsDateTime[UpperCase(AName)];
+end;
+
+function TtiQueryUIBAbs.GetFieldAsFloat(const AName : string) : extended;
+begin
+  result := FQuery.Fields.ByNameAsDouble[UpperCase(AName)];
+end;
+
+function TtiQueryUIBAbs.GetFieldAsInteger(const AName : string) : Int64;
+begin
+  Result := FQuery.Fields.ByNameAsInt64[UpperCase(AName)];
+end;
+
+function TtiQueryUIBAbs.GetFieldAsString(const AName : string) : string;
+begin
+  result := FQuery.Fields.ByNameAsString[UpperCase(AName)];
+end;
+
+function TtiQueryUIBAbs.GetActive : boolean;
+begin
+  result := FActive;
+end;
+
+function TtiQueryUIBAbs.GetRecordCount: Integer;
+begin
+  result := FQuery.RecordCount;
+end;
+
+function TtiQueryUIBAbs.GetRowsAffected: Integer;
+begin
+  result := FQuery.RowsAffected;
+end;
+
+function TtiQueryUIBAbs.GetEOF : boolean;
+begin
+  result := FQuery.EOF;
+end;
+
+function TtiQueryUIBAbs.GetParamAsBoolean(const AName : string) : boolean;
+Var
+  lValue : string;
+begin
+  lValue := FQuery.Params.ByNameAsString[UpperCase(AName)];
+{$IFDEF BOOLEAN_CHAR_1}
+  result := SameText(lValue, 'T');
+{$ELSE}
+  result := SameText(lValue, 'TRUE');
+{$ENDIF} // BOOLEAN_CHAR_1
+end;
+
+function TtiQueryUIBAbs.GetParamAsDateTime(const AName : string) : TDateTime;
+begin
+  result := FQuery.Params.ByNameAsDateTime[UpperCase(AName)];
+end;
+
+function TtiQueryUIBAbs.GetParamAsFloat(const AName : string) : extended;
+begin
+  result := FQuery.Params.ByNameAsDouble[UpperCase(AName)];
+end;
+
+function TtiQueryUIBAbs.GetParamAsInteger(const AName : string) : Int64;
+begin
+  result := FQuery.Params.ByNameAsInt64[UpperCase(AName)];
+end;
+
+function TtiQueryUIBAbs.GetParamAsString(const AName : string) : string;
+begin
+  if FQuery.Params.ByNameIsBlob[UpperCase(AName)] then
+    result := '[BlobData]'
+  else
+    Result := FQuery.Params.ByNameAsString[UpperCase(AName)];
+end;
+
+function TtiQueryUIBAbs.GetParamAsTextBLOB(const AName : string) : string;
+begin
+  Result := FQuery.Params.ByNameAsString[UpperCase(AName)];
+//  Result := FQuery.Params.
+ // Result := FQuery.Params.ByNameAsWideString[UpperCase(AName)];
+end;
+
+function TtiQueryUIBAbs.GetSQL : TStrings;
+begin
+  result := FQuery.SQL;
+end;
+
+procedure TtiQueryUIBAbs.Next;
+begin
+  FQuery.Next;
+end;
+
+procedure TtiQueryUIBAbs.Open;
+begin
+  Log(ClassName + ': ' + tiNormalizeStr(self.SQLText), lsSQL);
+  LogParams;
+  Active := true;
+end;
+
+function TtiQueryUIBAbs.ParamCount : Integer;
+begin
+  Result := FQuery.Params.ParamCount;
+end;
+
+function TtiQueryUIBAbs.ParamName(AIndex : integer) : string;
+begin
+  result := FQuery.Params.FieldName[AIndex];
+end;
+
+procedure TtiQueryUIBAbs.SetActive(const AValue : boolean);
+begin
+ // Assert(Database.TestValid(TtiDatabase), cTIInvalidObjectError);
+  If AValue Then
+  begin
+    try
+      FQuery.Open;
+      FActive := True;
+    Except
+        On e : exception Do
+          Raise EtiOPFInternalException.Create(E.Message);
+    end;
+  end
+  else
+  begin
+    FQuery.Close;
+    FActive := False;
+    FWasPrepared := False;
+  end;
+end;
+
+procedure TtiQueryUIBAbs.SetParamAsBoolean(const AName : string; const AValue : boolean);
+begin
+  InternalPrepare;
+{$IFDEF BOOLEAN_CHAR_1}
+  if AValue then
+    FQuery.Params.ByNameAsString[UpperCase(AName)] := 'T'
+  else
+    FQuery.Params.ByNameAsString[UpperCase(AName)] := 'F';
+{$ELSE}
+  {$IFDEF BOOLEAN_NUM_1}
+    if AValue then
+      FQuery.Params.ByNameAsInt64[UpperCase(AName)] := 1
+    else
+      FQuery.Params.ByNameAsInt64[UpperCase(AName)] := 0;
+  {$ELSE}
+    if AValue then
+      FQuery.Params.ByNameAsString[UpperCase(AName)] := 'TRUE'
+    else
+      FQuery.Params.ByNameAsString[UpperCase(AName)] := 'FALSE';
+  {$ENDIF}
+{$ENDIF} // BOOLEAN_CHAR_1
+end;
+
+procedure TtiQueryUIBAbs.SetParamAsDateTime(const AName : string; const AValue :
+  TDateTime);
+begin
+  InternalPrepare;
+  FQuery.Params.ByNameAsDateTime[UpperCase(AName)] := AValue;
+end;
+
+procedure TtiQueryUIBAbs.SetParamAsFloat(const AName : string; const AValue : extended);
+begin
+  InternalPrepare;
+  FQuery.Params.ByNameAsDouble[UpperCase(AName)] := AValue;
+end;
+
+procedure TtiQueryUIBAbs.SetParamAsInteger(const AName : string; const AValue :
+  Int64);
+begin
+  InternalPrepare;
+  FQuery.Params.ByNameAsInt64[UpperCase(AName)] := AValue;
+end;
+
+procedure TtiQueryUIBAbs.SetParamAsString(const AName, AValue : string);
+Var
+  sValue : string;
+  iIndex : Integer;
+begin
+  InternalPrepare;
+  iIndex := FQuery.Params.GetFieldIndex(UpperCase(AName));
+  If FQuery.Params.SQLType[iIndex] = SQL_BLOB Then
+  begin
+    sValue := AValue;
+    FQuery.ParamsSetBlob(iIndex, sValue);
+  end
+  else
+  begin
+    FQuery.Params.ByNameAsString[UpperCase(AName)] := AValue;
+  end;
+end;
+
+procedure TtiQueryUIBAbs.SetParamAsTextBLOB(const AName, AValue : string);
+Var
+  sValue : string;
+begin
+  InternalPrepare;
+  sValue := AValue;
+  FQuery.ParamsSetBlob(UpperCase(AName), sValue);
+end;
+
+procedure TtiQueryUIBAbs.SetSQL(const AValue : TStrings);
+begin
+  FQuery.SQL.Assign(AValue);
+end;
+
+procedure TtiQueryUIBAbs.InternalPrepare;
+Var
+  lStHandle : ISCStmtHandle;
+begin
+  If Not FWasPrepared Then
+  begin
+    FSQLParams.Clear;
+    FSQLParams.Parse(FQuery.SQL.Text);
+    FQuery.Prepare;
+    lStHandle := FQuery.StHandle;
+    FQuery.DataBase.Lib.DSQLDescribeBind(lStHandle, FQuery.DataBase.SqlDialect, FSQLParams);
+    FWasPrepared := True;
+  end;
+end;
+
+procedure TtiQueryUIBAbs.AssignParamFromStream(const AName : string; const AStream : TStream);
+begin
+  Assert(AStream <> Nil, 'Stream not assigned');
+  InternalPrepare;
+  AStream.Position := 0;
+  FQuery.ParamsSetBlob(UpperCase(AName), AStream);
+end;
+
+procedure TtiQueryUIBAbs.AssignParamToStream(const AName : string; const AStream : TStream);
+begin
+  Assert(AStream <> Nil, 'Stream not assigned');
+  FQuery.ParamsSetBlob(AName, AStream);
+//  Assert(false, 'not realized');
+end;
+
+procedure TtiQueryUIBAbs.AssignFieldAsStream(const AName : string; const AStream : TStream);
+Var
+  iIndex : integer;
+begin
+  Assert(AStream <> Nil, 'Stream not assigned');
+  AStream.Position := 0;
+  iIndex := FQuery.Fields.GetFieldIndex(UpperCase(AName));
+  If FQuery.Fields.IsBlob[iIndex] Then
+  begin
+    FQuery.ReadBlob(UpperCase(AName), AStream);
+  end
+  else
+  begin
+    Raise Exception.CreateFmt('Field is not a BLOB error in method AssignFieldAsStream of class %s', [ClassName]);
+//    tiFmtException('Field is not a BLOB', Classname, 'AssignFieldAsStream');
+  end;
+end;
+
+procedure TtiQueryUIBAbs.AttachDatabase(ADatabase : TtiDatabase);
+begin
+  Inherited AttachDatabase(ADatabase);
+  FQuery.Database := TtiDatabaseUIBAbs(ADatabase).UIBDatabase;
+  FQuery.Transaction := FQuery.Database.Transactions[0];
+end;
+
+procedure TtiQueryUIBAbs.DetachDatabase;
+begin
+  Inherited DetachDatabase;
+  If FActive Then
+  begin
+    FQuery.Close;
+    FActive := False;
+  end;
+  FQuery.Transaction := Nil;
+  FQuery.Database := Nil;
+end;
+
+function TtiQueryUIBAbs.FieldCount : Integer;
+begin
   {  if FQuery.EOF
     then result := 0
     else }result := FQuery.Fields.FieldCount;
-End;
+end;
 
-Function TtiQueryUIBAbs.FieldIndex(Const psName : String) : Integer;
-Begin
-  result := FQuery.Fields.GetFieldIndex(UpperCase(psName));
-End;
+function TtiQueryUIBAbs.FieldName(AIndex : integer) : string;
+begin
+  Result := FQuery.Fields.AliasName[AIndex];
+end;
 
-Function TtiQueryUIBAbs.FieldKind(pIndex : integer) : TtiQueryFieldKind;
+procedure TtiQueryUIBAbs.Reset;
+begin
+  Active := false;
+  FQuery.SQL.Clear;
+end;
+
+function TtiQueryUIBAbs.FieldIndex(const AName : string) : Integer;
+begin
+  result := FQuery.Fields.GetFieldIndex(UpperCase(AName));
+end;
+
+function TtiQueryUIBAbs.FieldKind(AIndex : integer) : TtiQueryFieldKind;
 Var
-  lValue : String;
-Begin
-  FQuery.Fields.CheckRange(pIndex);
-  Result := IBFieldKindToTiFieldKind(FQuery.Fields.Data.SQLVar[pIndex]);
+  lValue : string;
+begin
+  FQuery.Fields.CheckRange(AIndex);
+  Result := IBFieldKindToTiFieldKind(FQuery.Fields.Data.SQLVar[AIndex]);
   If (result = qfkString) Then
-  Begin
-    lValue := FQuery.Fields.AsString[pIndex];
+  begin
+    lValue := FQuery.Fields.AsString[AIndex];
     // ToDo: How to detect a logical field in a SQL database
     //       where logicals are represented as VarChar or Char?
     //       In the IBX layer we are currently looking for a value of
@@ -421,149 +654,39 @@ Begin
       SameText(lValue, 'TRUE ') Or
       SameText(lValue, 'FALSE') Then
 {$ENDIF} // BOOLEAN_CHAR_1
-  End;
-End;
+  end;
+end;
 
-Function TtiQueryUIBAbs.FieldName(pIndex : integer) : String;
-Begin
-  Result := FQuery.Fields.AliasName[pIndex];
-End;
 
-Function TtiQueryUIBAbs.FieldSize(pIndex : integer) : Integer;
-Begin
-  If FieldKind(pIndex) In [qfkInteger, qfkFloat, qfkDateTime,
-    qfkLogical, qfkLongString] Then
-    result := 0
-  Else
-    result := FQuery.Fields.SqlLen[pIndex];
-End;
-
-Function TtiQueryUIBAbs.GetActive : Boolean;
-Begin
-  result := FActive;
-End;
-
-Function TtiQueryUIBAbs.GetEOF : Boolean;
-Begin
-  result := FQuery.EOF;
-End;
-
-Function TtiQueryUIBAbs.GetFieldAsBoolean(Const psName : String) : Boolean;
-Begin
-  Result := FQuery.Fields.ByNameAsBoolean[UpperCase(psName)];
-End;
-
-Function TtiQueryUIBAbs.GetFieldAsDateTime(Const psName : String) : TDateTime;
-Begin
-  result := FQuery.Fields.ByNameAsDateTime[UpperCase(psName)];
-End;
-
-Function TtiQueryUIBAbs.GetFieldAsFloat(Const psName : String) : Extended;
-Begin
-  result := FQuery.Fields.ByNameAsDouble[UpperCase(psName)];
-End;
-
-Function TtiQueryUIBAbs.GetFieldAsInteger(Const psName : String) : Int64;
-Begin
-  Result := FQuery.Fields.ByNameAsInt64[UpperCase(psName)];
-End;
-
-Function TtiQueryUIBAbs.GetFieldAsString(Const psName : String) : String;
-Begin
-  result := FQuery.Fields.ByNameAsString[UpperCase(psName)];
-End;
-
-(*Function TtiQueryUIBAbs.GetFieldAsVariant(Const psName : String) : Variant;
-Begin
+(*function TtiQueryUIBAbs.GetFieldAsVariant(const AName : string) : Variant;
+begin
 //  assert(false, Format('No longer in use %s.GetFieldAsVariant', [self.ClassName]));
-  Try
-    Case FieldKind(FieldIndex(psName)) Of
-  //      qfkBinary : result := FIBSQL.FieldByName(UpperCase(psName)).AsString;
-      qfkLongString : result := FQuery.Fields.ByNameAsString[UpperCase(psName)];
-      qfkInteger : result := FQuery.Fields.ByNameAsInteger[UpperCase(psName)];
-    Else
-      result := FQuery.Fields.ByNameAsVariant[UpperCase(psName)];
-    End;
+  try
+    Case FieldKind(FieldIndex(AName)) Of
+  //      qfkBinary : result := FIBSQL.FieldByName(UpperCase(AName)).AsString;
+      qfkLongString : result := FQuery.Fields.ByNameAsString[UpperCase(AName)];
+      qfkInteger : result := FQuery.Fields.ByNameAsInteger[UpperCase(AName)];
+    else
+      result := FQuery.Fields.ByNameAsVariant[UpperCase(AName)];
+    end;
   Except
     On e : exception Do
       tiFmtException(e,
         ClassName,
         'GetFieldAsVariant',
-        'Error reading field <' + psName + '>');
-  End;
-End;
+        'Error reading field <' + AName + '>');
+  end;
+end;
   *)
-Function TtiQueryUIBAbs.GetFieldIsNull(Const psName : String) : Boolean;
-Begin
-  result := FQuery.Fields.ByNameIsNull[UpperCase(psName)];
-End;
 
-Function TtiQueryUIBAbs.GetParamAsBoolean(Const psName : String) : Boolean;
-Var
-  lValue : String;
-Begin
-  lValue := FQuery.Params.ByNameAsString[UpperCase(psName)];
-{$IFDEF BOOLEAN_CHAR_1}
-  result := SameText(lValue, 'T');
-{$ELSE}
-  result := SameText(lValue, 'TRUE');
-{$ENDIF} // BOOLEAN_CHAR_1
-End;
-
-Function TtiQueryUIBAbs.GetParamAsDateTime(Const psName : String) : TDateTime;
-Begin
-  result := FQuery.Params.ByNameAsDateTime[UpperCase(psName)];
-End;
-
-Function TtiQueryUIBAbs.GetParamAsFloat(Const psName : String) : Extended;
-Begin
-  result := FQuery.Params.ByNameAsDouble[UpperCase(psName)];
-End;
-
-Function TtiQueryUIBAbs.GetParamAsInteger(Const psName : String) : Int64;
-Begin
-  result := FQuery.Params.ByNameAsInt64[UpperCase(psName)];
-End;
-
-Function TtiQueryUIBAbs.GetParamAsString(Const psName : String) : String;
-Begin
-  if FQuery.Params.ByNameIsBlob[UpperCase(psName)] then
-    result := '[BlobData]'
-  else
-    Result := FQuery.Params.ByNameAsString[UpperCase(psName)];
-End;
-
-Function TtiQueryUIBAbs.GetParamAsTextBLOB(Const psName : String) : String;
-Begin
-  Result := FQuery.Params.ByNameAsString[UpperCase(psName)];
-//  Result := FQuery.Params.
- // Result := FQuery.Params.ByNameAsWideString[UpperCase(psName)];
-End;
-
-(*Function TtiQueryUIBAbs.GetParamAsVariant(Const psName : String) : Variant;
-Begin
+(*function TtiQueryUIBAbs.GetParamAsVariant(const AName : string) : Variant;
+begin
 //  assert(false, Format('No longer in use %s.GetParamAsVariant', [self.ClassName]));
-  Result := FQuery.Params.ByNameAsVariant[UpperCase(psName)];
-End;
+  Result := FQuery.Params.ByNameAsVariant[UpperCase(AName)];
+end;
   *)
-Function TtiQueryUIBAbs.GetParamIsNull(Const psName : String) : Boolean;
-Begin
-  result := FQuery.Params.ByNameIsNull[UpperCase(psName)];
-End;
-
-Function TtiQueryUIBAbs.GetSQL : TStrings;
-Begin
-  result := FQuery.SQL;
-End;
-
-Function TtiQueryUIBAbs.HasNativeLogicalType : Boolean;
-Begin
-  Result := False;
-End;
-
-Function TtiQueryUIBAbs.IBFieldKindToTIFieldKind(pData : TUIBSQLVar) :
-  TtiQueryFieldKind;
-Begin
+function TtiQueryUIBAbs.IBFieldKindToTIFieldKind(pData : TUIBSQLVar) : TtiQueryFieldKind;
+begin
   Case (pData.SqlType And (Not 1)) Of
     SQL_TEXT, SQL_VARYING : result := qfkString;
     SQL_LONG, SQL_SHORT, SQL_INT64, SQL_QUAD : result := qfkInteger;
@@ -571,16 +694,45 @@ Begin
     SQL_BLOB : Case pData.SqlSubType Of
         isc_blob_untyped : result := qfkBinary;
         isc_blob_text : result := qfkLongString;
-      Else
+      else
         result := qfkString; // Just to shup up the compiler
         raise EtiOPFInternalException.Create('Invalid Interbase/FireBird/IBX sqlsubtype');
-      End;
+      end;
     SQL_TIMESTAMP, SQL_TYPE_TIME, SQL_TYPE_DATE : result := qfkDateTime;
-  Else
+  else
     result := qfkString; // Just to shup up the compiler
     Raise EtiOPFInternalException.Create('Invalid Interbase/Firebird/IBX sqltype');
-  End;
-End;
+  end;
+end;
+
+function TtiQueryUIBAbs.FieldSize(AIndex : integer) : Integer;
+begin
+  If FieldKind(AIndex) In [qfkInteger, qfkFloat, qfkDateTime,
+    qfkLogical, qfkLongString] Then
+    result := 0
+  else
+    result := FQuery.Fields.SqlLen[AIndex];
+end;
+
+function TtiQueryUIBAbs.GetParamIsNull(const AName : string) : boolean;
+begin
+  result := FQuery.Params.ByNameIsNull[UpperCase(AName)];
+end;
+
+procedure TtiQueryUIBAbs.SetParamIsNull(const AName : string; const AValue : boolean);
+begin
+  FQuery.Params.ByNameIsNull[UpperCase(AName)] := AValue;
+end;
+
+function TtiQueryUIBAbs.GetFieldIsNull(const AName : string) : boolean;
+begin
+  result := FQuery.Fields.ByNameIsNull[UpperCase(AName)];
+end;
+
+function TtiQueryUIBAbs.HasNativeLogicalType : boolean;
+begin
+  Result := False;
+end;
 
 function TtiQueryUIBAbs.ParamsAsStringList: TStringList;
 var
@@ -619,191 +771,62 @@ begin
   end;
 end;
 
-Procedure TtiQueryUIBAbs.Next;
-Begin
-  FQuery.Next;
-End;
-
-Procedure TtiQueryUIBAbs.Open;
-Begin
-  Active := true;
-End;
-
-Function TtiQueryUIBAbs.ParamCount : Integer;
-Begin
-  Result := FQuery.Params.ParamCount;
-End;
-
-Function TtiQueryUIBAbs.ParamName(pIndex : integer) : String;
-Begin
-  result := FQuery.Params.FieldName[pIndex];
-End;
-
-Procedure TtiQueryUIBAbs.Reset;
-Begin
-  Active := false;
-  FQuery.SQL.Clear;
-End;
-
-Procedure TtiQueryUIBAbs.SetActive(Const Value : boolean);
-Begin
- // Assert(Database.TestValid(TtiDatabase), cTIInvalidObjectError);
-  If Value Then
-  Begin
-    Try
-      FQuery.Open;
-      FActive := True;
-    Except
-        On e : exception Do
-          Raise EtiOPFInternalException.Create(E.Message);
-    End;
-  End
-  Else
-  Begin
-    FQuery.Close;
-    FActive := False;
-    FWasPrepared := False;
-  End;
-End;
-
-Procedure TtiQueryUIBAbs.SetParamAsBoolean(Const psName : String; Const Value :
-  boolean);
-Begin
-  InternalPrepare;
-{$IFDEF BOOLEAN_CHAR_1}
-  if Value then
-    FQuery.Params.ByNameAsString[UpperCase(psName)] := 'T'
-  else
-    FQuery.Params.ByNameAsString[UpperCase(psName)] := 'F';
-{$ELSE}
-  {$IFDEF BOOLEAN_NUM_1}
-    if Value then
-      FQuery.Params.ByNameAsInt64[UpperCase(psName)] := 1
-    else
-      FQuery.Params.ByNameAsInt64[UpperCase(psName)] := 0;
-  {$ELSE}
-    if Value then
-      FQuery.Params.ByNameAsString[UpperCase(psName)] := 'TRUE'
-    else
-      FQuery.Params.ByNameAsString[UpperCase(psName)] := 'FALSE';
-  {$ENDIF}
-{$ENDIF} // BOOLEAN_CHAR_1
-End;
-
-Procedure TtiQueryUIBAbs.SetParamAsDateTime(Const psName : String; Const Value :
-  TDateTime);
-Begin
-  InternalPrepare;
-  FQuery.Params.ByNameAsDateTime[UpperCase(psName)] := Value;
-End;
-
-Procedure TtiQueryUIBAbs.SetParamAsFloat(Const psName : String; Const Value : Extended);
-Begin
-  InternalPrepare;
-  FQuery.Params.ByNameAsDouble[UpperCase(psName)] := Value;
-End;
-
-Procedure TtiQueryUIBAbs.SetParamAsInteger(Const psName : String; Const Value :
-  Int64);
-Begin
-  InternalPrepare;
-  FQuery.Params.ByNameAsInt64[UpperCase(psName)] := Value;
-End;
-
-Procedure TtiQueryUIBAbs.SetParamAsString(Const psName, Value : String);
-Var
-  sValue : String;
-  iIndex : Integer;
-Begin
-  InternalPrepare;
-  iIndex := FQuery.Params.GetFieldIndex(UpperCase(psName));
-  If FQuery.Params.SQLType[iIndex] = SQL_BLOB Then
-  Begin
-    sValue := Value;
-    FQuery.ParamsSetBlob(iIndex, sValue);
-  End
-  Else
-  Begin
-    FQuery.Params.ByNameAsString[UpperCase(psName)] := Value;
-  End;
-End;
-
-Procedure TtiQueryUIBAbs.SetParamAsTextBLOB(Const psName, Value : String);
-Var
-  sValue : String;
-Begin
-  InternalPrepare;
-  sValue := Value;
-  FQuery.ParamsSetBlob(UpperCase(psName), sValue);
-End;
-
-(*Procedure TtiQueryUIBAbs.SetParamAsVariant(Const psName : String; Const Value :
+(*procedure TtiQueryUIBAbs.SetParamAsVariant(const AName : string; const Value :
   Variant);
 Var
   lFieldKind : TtiQueryFieldKind;
   lValue : Variant;
-  lsValue : String;
+  lsValue : string;
   iIndex : Word;
-Begin
+begin
   InternalPrepare;
   lValue := Value;
-  Try
+  try
     If VarIsNull(lValue) Then
-    Begin
-      FQuery.Params.ByNameIsNull[UpperCase(psName)] := true;
-    End
-    Else
-    Begin
-      iIndex := FSQLParams.GetFieldIndex(UpperCase(psName));
+    begin
+      FQuery.Params.ByNameIsNull[UpperCase(AName)] := true;
+    end
+    else
+    begin
+      iIndex := FSQLParams.GetFieldIndex(UpperCase(AName));
       FSQLParams.CheckRange(iIndex);
       lFieldKind := IBFieldKindToTIFieldKind(FSQLParams.Data.SQLVar[iIndex]);
       Case lFieldKind Of
-        qfkDateTime : FQuery.Params.ByNameAsDateTime[UpperCase(psName)] := lValue;
-        qfkFloat : FQuery.Params.ByNameAsDouble[UpperCase(psName)] := lValue;
-        qfkInteger : FQuery.Params.ByNameAsInteger[UpperCase(psName)] := lValue;
+        qfkDateTime : FQuery.Params.ByNameAsDateTime[UpperCase(AName)] := lValue;
+        qfkFloat : FQuery.Params.ByNameAsDouble[UpperCase(AName)] := lValue;
+        qfkInteger : FQuery.Params.ByNameAsInteger[UpperCase(AName)] := lValue;
         qfkString :
-          Begin
+          begin
             lsValue := VarToStr(lValue);
               // VarToStr on a boolean will return an integer so we must
               // check for booleans and convert to a string.
             If tiIsVariantOfType(Value, varBoolean) Then
-            Begin
+            begin
 {$IFDEF BOOLEAN_CHAR_1}
               If Value Then
-                FQuery.Params.ByNameAsString[UpperCase(psName)] := 'T'
-              Else
-                FQuery.Params.ByNameAsString[UpperCase(psName)] := 'F';
+                FQuery.Params.ByNameAsString[UpperCase(AName)] := 'T'
+              else
+                FQuery.Params.ByNameAsString[UpperCase(AName)] := 'F';
 {$ELSE}
               If Value Then
-                FQuery.Params.ByNameAsString[UpperCase(psName)] := 'TRUE'
-              Else
-                FQuery.Params.ByNameAsString[UpperCase(psName)] := 'FALSE';
+                FQuery.Params.ByNameAsString[UpperCase(AName)] := 'TRUE'
+              else
+                FQuery.Params.ByNameAsString[UpperCase(AName)] := 'FALSE';
 {$ENDIF} // BOOLEAN_CHAR_1
-            End
-            Else
-              FQuery.Params.ByNameAsString[UpperCase(psName)] := lsValue;
-          End;
-      Else
+            end
+            else
+              FQuery.Params.ByNameAsString[UpperCase(AName)] := lsValue;
+          end;
+      else
         tiFmtException('Unsupported variant field type', ClassName, 'SetParamAsVariant');
-      End
-    End;
+      end
+    end;
   Except
     On e : exception Do
-      tiFmtException(e, ClassName, 'SetParamAsVariant', 'ParameterName: ' + psName);
-  End;
-End;
+      tiFmtException(e, ClassName, 'SetParamAsVariant', 'ParameterName: ' + AName);
+  end;
+end;
   *)
-Procedure TtiQueryUIBAbs.SetParamIsNull(Const psName : String; Const Value :
-  Boolean);
-Begin
-  FQuery.Params.ByNameIsNull[UpperCase(psName)] := Value;
-End;
-
-Procedure TtiQueryUIBAbs.SetSQL(Const Value : TStrings);
-Begin
-  FQuery.SQL.Assign(Value);
-End;
-
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
 // * TtiDatabaseUIB
@@ -814,24 +837,20 @@ End;
 ******************************** TtiDatabaseUIB ********************************
 }
 
-Constructor TtiDatabaseUIBAbs.Create;
-Begin
+constructor TtiDatabaseUIBAbs.Create;
+begin
   Inherited Create;
   FDatabase := TUIBDatabase.Create(Nil);
   FDatabase.SQLDialect := 3;
   FTransaction := TUIBTransaction.Create(Nil);
-  With FTransaction Do
-  Begin
-    Database := FDatabase;
-    AutoStart := False;
-    AutoStop := False;
-//    AutoRetain := False;
-  End;
-End;
+  FTransaction.Database := FDatabase;
+  FTransaction.AutoStart := False;
+  FTransaction.AutoStop := False;
+end;
 
-Destructor TtiDatabaseUIBAbs.Destroy;
-Begin
-  Try
+destructor TtiDatabaseUIBAbs.Destroy;
+begin
+  try
     FDatabase.Connected := false;
     FTransaction.Database := Nil;
     FTransaction.Free;
@@ -839,66 +858,138 @@ Begin
   Except
     On e : exception Do
       LogError(e.message);
-  End;
+  end;
   Inherited;
-End;
+end;
 
-Procedure TtiDatabaseUIBAbs.Commit;
-Begin
+procedure TtiDatabaseUIBAbs.Commit;
+begin
   If Not InTransaction Then
     Raise EtiOPFInternalException.Create('Attempt to commit but not in a transaction.');
+  Log(ClassName + ': [Commit Trans]', lsSQL);
   FTransaction.Commit;
-End;
+end;
 
-Function TtiDatabaseUIBAbs.FieldMetaDataToSQLCreate(Const pFieldMetaData :
-  TtiDBMetaDataField) : String;
-Var
-  lFieldName : String;
-Begin
-  lFieldName := pFieldMetaData.Name;
-  Case pFieldMetaData.Kind Of
-    qfkString : result := 'VarChar( ' + IntToStr(pFieldMetaData.Width) + ' )';
-    qfkInteger : result := 'Integer';
-  //    qfkFloat: result := 'Decimal( 10, 5 )';
-    qfkFloat : result := 'DOUBLE PRECISION';
-      // Just for new version of IB (6.x)
-      // DATE holds only DATE without TIME...
-    qfkDateTime : If UIBDatabase.SQLDialect <> 1 Then
-        result := 'TIMESTAMP'
-      Else
-        result := 'Date';
-{$IFDEF BOOLEAN_CHAR_1}
-    qfkLogical : result := 'Char( 1 ) default ''F'' check( ' + lFieldName + ' in ( ''T'', ''F'' ))';
-{$ELSE}
-    qfkLogical : result := 'VarChar( 5 ) default ''FALSE'' check( ' + lFieldName + ' in ( ''TRUE'', ''FALSE'' )) ';
-{$ENDIF}
-    qfkBinary : result := 'Blob sub_type 0';
-    qfkLongString : result := 'Blob sub_type 1';
-  Else
-    Raise EtiOPFInternalException.Create('Invalid field kind.');
-  End;
-End;
-
-Function TtiDatabaseUIBAbs.GetConnected : Boolean;
-Begin
-  Result := FDatabase.Connected;
-End;
-
-Function TtiDatabaseUIBAbs.InTransaction : Boolean;
-Begin
+function TtiDatabaseUIBAbs.InTransaction : boolean;
+begin
   result := FTransaction.InTransaction;
-End;
+end;
 
-Procedure TtiDatabaseUIBAbs.ReadMetaDataFields(AData : TtiDBMetaDataTable);
+procedure TtiDatabaseUIBAbs.RollBack;
+begin
+  Log(ClassName + ': [RollBack Trans]', lsSQL);
+  FTransaction.RollBack;
+end;
+
+procedure TtiDatabaseUIBAbs.StartTransaction;
+begin
+  If InTransaction Then
+    Raise EtiOPFInternalException.Create('Attempt to start a transaction but transaction already exists.');
+  Log(ClassName + ': [Start Trans]', lsSQL);
+  FTransaction.StartTransaction;
+end;
+
+function TtiDatabaseUIBAbs.GetConnected : boolean;
+begin
+  Result := FDatabase.Connected;
+end;
+
+procedure TtiDatabaseUIBAbs.SetConnected(AValue : boolean);
 Var
-  lTableName : String;
+  lMessage : string;
+  lCounter: integer;
+begin
+
+  try
+    If (not AValue) Then
+    begin
+      Log('Disconnecting from %s', [DatabaseName]);
+      FDatabase.Connected := false;
+      Exit; //==>
+    end;
+
+    FDatabase.DatabaseName := DatabaseName;
+    FDatabase.Params.Values['user_name'] := UserName;
+    FDatabase.Params.Values['password'] := Password;
+
+    for lCounter := 0 to Params.Count -1 do
+      begin
+        FDatabase.Params.Values[Params.Names[lCounter]] :=
+          Params.ValueFromIndex[lCounter];
+      end;
+
+     FDatabase.Connected := True;
+
+  Except
+      // ToDo: Must come up with a better solution that this:
+      //       try several times before raising an exception.
+      //       Rather than calling 'Halt', just terminate this database connection,
+      //       unless this is the first connection.
+    On e : EUIBError Do
+    begin
+        // Invalid username / password error
+      If (EUIBError(E).ErrorCode = 335544472) Then
+        Raise EtiOPFDBExceptionUserNamePassword.Create(FLayerName, DatabaseName, UserName, Password)
+      else
+      begin
+        lMessage :=
+          'Error attempting to connect to database.' + Cr +
+          e.Message + Cr +
+          'Error code: ' + IntToStr(EUIBError(E).ErrorCode);
+        Raise EtiOPFDBExceptionUserNamePassword.Create(FLayerName, DatabaseName, UserName, Password, lMessage)
+      end;
+    end;
+    On E : Exception Do
+      Raise EtiOPFDBExceptionUserNamePassword.Create(FLayerName, DatabaseName, UserName, Password, E.Message)
+  end;
+end;
+
+procedure TtiDatabaseUIBAbs.ReadMetaDataTables(AData : TtiDBMetaData);
+Var
+  lQuery : TtiQuery;
+  lMetaData : TtiDBMetaData;
+  lTable : TtiDBMetaDataTable;
+begin
+  lMetaData := (AData as TtiDBMetaData);
+  lQuery := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
+  try
+    StartTransaction;
+    try
+      lQuery.AttachDatabase(Self);
+      lQuery.SQLText :=
+        'SELECT RDB$RELATION_NAME as Table_Name ' +
+        '  FROM RDB$RELATIONS ' +
+        'WHERE ((RDB$SYSTEM_FLAG = 0) OR (RDB$SYSTEM_FLAG IS NULL)) ' +
+        'ORDER BY RDB$RELATION_NAME ';
+      lQuery.Open;
+      While Not lQuery.EOF Do
+      begin
+        lTable := TtiDBMetaDataTable.Create;
+        lTable.Name := Trim(lQuery.FieldAsString['table_name']);
+        lTable.ObjectState := posPK;
+        lMetaData.Add(lTable);
+        lQuery.Next;
+      end;
+      lQuery.DetachDatabase;
+      lMetaData.ObjectState := posClean;
+    Finally
+      Commit;
+    end;
+  Finally
+    lQuery.Free;
+  end;
+end;
+
+procedure TtiDatabaseUIBAbs.ReadMetaDataFields(AData : TtiDBMetaDataTable);
+Var
+  lTableName : string;
   lQuery : TtiQuery;
   lTable : TtiDBMetaDataTable;
   lField : TtiDBMetaDataField;
   lFieldType : integer;
   lFieldLength : integer;
 
-Const
+const
   // Interbase field types
   //   select * from rdb$types
   //   where rdb$field_NAME = 'RDB$FIELD_TYPE'
@@ -920,13 +1011,13 @@ Const
   cIBField_BLOB = 261;
 
 
-Begin
+begin
   lTable := (AData As TtiDBMetaDataTable);
   lTableName := UpperCase(lTable.Name);
   lQuery := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
-  Try
+  try
     StartTransaction;
-    Try
+    try
       lQuery.AttachDatabase(Self);
       lQuery.SQL.Text :=
         '  select ' +
@@ -943,7 +1034,7 @@ Begin
 
       lQuery.Open;
       While Not lQuery.EOF Do
-      Begin
+      begin
         lField := TtiDBMetaDataField.Create;
         lField.Name := Trim(lQuery.FieldAsString['field_name']);
         lFieldType := lQuery.FieldAsInteger['field_type'];
@@ -965,36 +1056,36 @@ Begin
 
           cIBField_VARYING,
           cIBField_TEXT :
-            Begin
+            begin
               lField.Kind := qfkString;
               lField.Width := lFieldLength;
-            End;
+            end;
 
           cIBField_BLOB :
-            Begin
+            begin
               Assert(Not lQuery.FieldIsNull['field_sub_type'], 'field_sub_type is null');
               If lQuery.FieldAsInteger['field_sub_type'] = 1 Then
                 lField.Kind := qfkLongString
               else if lQuery.FieldAsInteger['field_sub_type'] = 0 then
                 lField.Kind := qfkBinary
-              Else
+              else
                 Raise EtiOPFInternalException.Create('Invalid field_sub_type <' + IntToStr(lQuery.FieldAsInteger['field_sub_type']) + '>');
-            End;
-        Else
+            end;
+        else
           Raise EtiOPFInternalException.Create('Invalid field_sub_type <' + IntToStr(lFieldType) + '>');
-        End;
+        end;
         lField.ObjectState := posClean;
         lTable.Add(lField);
         lQuery.Next;
-      End;
+      end;
     Finally
       Commit;
-    End;
+    end;
     lQuery.DetachDatabase;
     lTable.ObjectState := posClean;
   Finally
     lQuery.Free;
-  End;
+  end;
 
   // This SQL was found somewhere on the web...
   //      lQuery.SQLText :=
@@ -1009,151 +1100,64 @@ Begin
   //        '	t.rdb$field_name=''RDB$FIELD_TYPE'' and  ' +
   //        '	f.rdb$field_type=t.rdb$type ';
 
-End;
+end;
 
-Procedure TtiDatabaseUIBAbs.ReadMetaDataTables(AData : TtiDBMetaData);
+function TtiDatabaseUIBAbs.FieldMetaDataToSQLCreate(const AFieldMetaData : TtiDBMetaDataField) : string;
 Var
-  lQuery : TtiQuery;
-  lMetaData : TtiDBMetaData;
-  lTable : TtiDBMetaDataTable;
-Begin
-  lMetaData := (AData as TtiDBMetaData);
-  lQuery := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
-  Try
-    StartTransaction;
-    Try
-      lQuery.AttachDatabase(Self);
-      lQuery.SQLText :=
-        'SELECT RDB$RELATION_NAME as Table_Name ' +
-        '  FROM RDB$RELATIONS ' +
-        'WHERE ((RDB$SYSTEM_FLAG = 0) OR (RDB$SYSTEM_FLAG IS NULL)) ' +
-        'ORDER BY RDB$RELATION_NAME ';
-      lQuery.Open;
-      While Not lQuery.EOF Do
-      Begin
-        lTable := TtiDBMetaDataTable.Create;
-        lTable.Name := Trim(lQuery.FieldAsString['table_name']);
-        lTable.ObjectState := posPK;
-        lMetaData.Add(lTable);
-        lQuery.Next;
-      End;
-      lQuery.DetachDatabase;
-      lMetaData.ObjectState := posClean;
-    Finally
-      Commit;
-    End;
-  Finally
-    lQuery.Free;
-  End;
-End;
+  lFieldName : string;
+begin
+  lFieldName := AFieldMetaData.Name;
+  Case AFieldMetaData.Kind Of
+    qfkString : result := 'VarChar( ' + IntToStr(AFieldMetaData.Width) + ' )';
+    qfkInteger : result := 'Integer';
+  //    qfkFloat: result := 'Decimal( 10, 5 )';
+    qfkFloat : result := 'DOUBLE PRECISION';
+      // Just for new version of IB (6.x)
+      // DATE holds only DATE without TIME...
+    qfkDateTime : If UIBDatabase.SQLDialect <> 1 Then
+        result := 'TIMESTAMP'
+      else
+        result := 'Date';
+{$IFDEF BOOLEAN_CHAR_1}
+    qfkLogical : result := 'Char( 1 ) default ''F'' check( ' + lFieldName + ' in ( ''T'', ''F'' ))';
+{$ELSE}
+    qfkLogical : result := 'VarChar( 5 ) default ''FALSE'' check( ' + lFieldName + ' in ( ''TRUE'', ''FALSE'' )) ';
+{$ENDIF}
+    qfkBinary : result := 'Blob sub_type 0';
+    qfkLongString : result := 'Blob sub_type 1';
+  else
+    Raise EtiOPFInternalException.Create('Invalid field kind.');
+  end;
+end;
 
-Procedure TtiDatabaseUIBAbs.RollBack;
-Begin
-  FTransaction.RollBack;
-End;
-
-Procedure TtiDatabaseUIBAbs.SetConnected(pbValue : boolean);
-Var
-  lMessage : String;
-  lCounter: integer;
-Begin
-
-  Try
-    If (Not pbValue) Then
-    Begin
-      Log('Disconnecting from %s', [DatabaseName]);
-      FDatabase.Connected := false;
-      Exit; //==>
-    End;
-
-    FDatabase.DatabaseName := DatabaseName;
-    FDatabase.Params.Values['user_name'] := UserName;
-    FDatabase.Params.Values['password'] := Password;
-
-    for lCounter := 0 to Params.Count -1 do
-      begin
-        FDatabase.Params.Values[Params.Names[lCounter]] :=
-          Params.ValueFromIndex[lCounter];
-      end;
-
-     FDatabase.Connected := True;
-
-  Except
-      // ToDo: Must come up with a better solution that this:
-      //       Try several times before raising an exception.
-      //       Rather than calling 'Halt', just terminate this database connection,
-      //       unless this is the first connection.
-    On e : EUIBError Do
-    Begin
-        // Invalid username / password error
-      If (EUIBError(E).ErrorCode = 335544472) Then
-        Raise EtiOPFDBExceptionUserNamePassword.Create(FLayerName, DatabaseName, UserName, Password)
-      Else
-      Begin
-        lMessage :=
-          'Error attempting to connect to database.' + Cr +
-          e.Message + Cr +
-          'Error code: ' + IntToStr(EUIBError(E).ErrorCode);
-        Raise EtiOPFDBExceptionUserNamePassword.Create(FLayerName, DatabaseName, UserName, Password, lMessage)
-      End;
-    End;
-    On E : Exception Do
-      Raise EtiOPFDBExceptionUserNamePassword.Create(FLayerName, DatabaseName, UserName, Password, E.Message)
-  End;
-End;
-
-Procedure TtiDatabaseUIBAbs.StartTransaction;
-Begin
-  If InTransaction Then
-    Raise EtiOPFInternalException.Create('Attempt to start a transaction but transaction already exists.');
-  FTransaction.StartTransaction;
-End;
-
-Function TtiDatabaseUIBAbs.Test : Boolean;
-Begin
+function TtiDatabaseUIBAbs.Test : boolean;
+begin
   result := false;
   Assert(false, 'Under construction');
-End;
+end;
 
-
-Procedure TtiQueryUIBAbs.InternalPrepare;
-Var
-  lStHandle : ISCStmtHandle;
-Begin
-  If Not FWasPrepared Then
-  Begin
-    FSQLParams.Clear;
-    FSQLParams.Parse(FQuery.SQL.Text);
-    FQuery.Prepare;
-    lStHandle := FQuery.StHandle;
-    FQuery.DataBase.Lib.DSQLDescribeBind(lStHandle, FQuery.DataBase.SqlDialect, FSQLParams);
-    FWasPrepared := True;
-  End;
-End;
 
 { EtiOPFDBExceptionUserNamePassword }
 
-Constructor EtiOPFDBExceptionUserNamePassword.Create(Const pPerLayerName,
-  pDatabaseName, pUserName, pPassword, pMessage : String);
-Begin
-  Inherited Create(pPerLayerName, pDatabaseName, pUserName, pPassword, pMessage);
+constructor EtiOPFDBExceptionUserNamePassword.Create(const APerLayerName, ADatabaseName, AUserName, APassword, AMessage : string);
+begin
+  Inherited Create(APerLayerName, ADatabaseName, AUserName, APassword, AMessage);
   Message := 'Cannot connect to database. ' + CR + Message;
-End;
+end;
 
 { EtiOPFDBException }
 
-Constructor EtiOPFDBException.Create(Const pPerLayerName, pDatabaseName,
-  pUserName, pPassword, pMessage : String);
-Begin
+constructor EtiOPFDBException.Create(const APerLayerName, ADatabaseName, AUserName, APassword, AMessage : string);
+begin
   Message :=
-    'Database name:       ' + pDatabaseName + Cr +
-    'User name:           ' + pUserName + Cr +
-    'Password:            ' + tiReplicate('X', Length(pPassword)) + Cr +
-    'Persistence layer:   ' + pPerLayerName;
-  If pMessage <> '' Then
+    'Database name:       ' + ADatabaseName + Cr +
+    'User name:           ' + AUserName + Cr +
+    'Password:            ' + tiReplicate('X', Length(APassword)) + Cr +
+    'Persistence layer:   ' + APerLayerName;
+  If AMessage <> '' Then
     Message := Message + Cr(2) +
-      'Message:' + Cr + pMessage;
-End;
+      'Message:' + Cr + AMessage;
+end;
 
-End.
+end.
 

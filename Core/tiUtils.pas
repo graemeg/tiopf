@@ -11,7 +11,12 @@ uses
   ,Classes
   ,Types
   ,Math
+{$IFDEF IOS}
+  ,System.Generics.Defaults
+  ,Generics.Collections
+{$ELSE}
   ,Contnrs
+{$ENDIF IOS}
   ,Variants
   {$IFDEF MSWINDOWS}
   ,Windows       // Graeme: This must appear before SyncObjs for Free Pascal!
@@ -247,12 +252,16 @@ type
   function tiDeleteFile(const AFileName: string): boolean;
   // Does a directory have any subdirectories?
   function  tiHasSubDirectory(AStartDir : string): boolean;
+
+{$IFNDEF IOS}
   // Write the string in AText to a file named AFileName
   procedure tiStringToFile(const AText : string; const AFileName: string);
   // Append the string in AText to a file named AFileName
   procedure tiAppendStringToFile(const AText : string; const AFileName: string);
   // Read a text file into a string
   function  tiFileToString(const AFileName : TFileName): string;
+{$ENDIF IOS}
+
   // Get the current directory
   // Extract a directory name to a certain level.
   // eg tiExtractDirToLevel('c:\temp\dir', 0) gives 'c:'
@@ -555,6 +564,8 @@ type
   function  Tab(const ACount : Byte = 1): string;
   // Returns the checksum of a string of numbers
   function tiCheckSum(const AValue: string): Integer;
+
+{ $IFNDEF IOS}
   {: Write a string into a stream overwriting all contents}
   procedure tiStringToStream(const AStr : string; const AStream : TStream);
   {: Append a string to a stream}
@@ -565,6 +576,8 @@ type
   function  tiStreamToString(const AStream : TStream): string; overload;
   {: Read part of the contents of a stream as a string}
   function  tiStreamToString(const AStream : TStream; AStart, AEnd: Longword): string; overload;
+{ $ENDIF IOS}
+
   // Read a file into a stream
   procedure tiFileToStream(const AFileName : string; const AStream : TStream);
   // Save the contents of a stream to a file
@@ -603,7 +616,11 @@ type
 
   TtiIntegerList = class(TtiBaseObject)
   private
+{$IFDEF IOS}
+    FList: TObjectList<TtiIntegerListItem>;
+{$ELSE}
     FList: TObjectList;
+{$ENDIF IOS}
     function    GetItems(i: Integer): Int64;
     procedure   SetItems(i: Integer; const AValue: Int64);
     function    GetCount: Integer;
@@ -633,7 +650,11 @@ type
 
   TtiRealList = class(TtiBaseObject)
   private
+{$IFDEF IOS}
+    FList: TObjectList<TtiRealListItem>;
+{$ELSE}
     FList: TObjectList;
+{$ENDIF IOS}
     function    GetItems(i: Integer): Extended;
     procedure   SetItems(i: Integer; const AValue: Extended);
     function    GetCount: Integer;
@@ -668,6 +689,18 @@ type
     procedure   EndWrite;
   end;
 
+{$IFDEF IOS}
+// cf http://docwiki.embarcadero.com/CodeExamples/XE4/en/ShortStringToString_(Delphi)
+// NB These two ShortString methods have not been tested
+
+type
+  EtiShortStringConvertError = class(Exception)
+  end;
+
+function ShortStringToString(AValue: array of Byte): String;
+procedure StringToShortString(const AFromString: String; var AReturnValue);
+{$ENDIF IOS}
+
 implementation
 uses
    tiExcept
@@ -678,66 +711,22 @@ uses
     {$ENDIF}
   {$ENDIF MSWINDOWS}
   {$IFDEF UNIX}
+  {$IFNDEF MACOS}
   ,unix
   ,baseunix
   ,tiUnix
+  {$ENDIF MACOS}
   {$ENDIF UNIX}
   {$IFDEF FPC}
   ,Process
   {$ENDIF}
+  {$IFDEF MACOS}
+  ,System.IOUtils
+  {$ENDIF MACOS}
   ,StrUtils   // used for DelSpace1 and tiEnclose
   ;
 
-function tiGetTempFile(const AFileNameExtension : string): string;
-{$IFNDEF FPC}
-const
-  cMaxPathLen = 255;
-var
-  pcTemp : array[0..cMaxPathLen] of char;
-  pcApp : array[0..cMaxPathLen] of char;
-  pcPath : array[0..cMaxPathLen] of char;
-{$ENDIF FPC}
-begin
-  {$IFDEF FPC}
-  Result := SysUtils.GetTempFileName('', '');    // prefix of TMP is default
-  {$ELSE}
-  strPCopy(pcApp, copy(extractFileName(ParamStr(0)), 1, 3));
-  getTempPath(cMaxPathLen, pcPath);
-  getTempFileName(pcPath, pcApp, 0, pcTemp);
-  deleteFile(pcTemp); // This is using the Window deleteFile, not Delphi's
-  result := strPas(pcTemp);
-  {$ENDIF}
-  if pos('.', result) <> 0 then
-  begin
-    if AFileNameExtension = '' then
-      result := tiRemoveExtension(result)
-    else
-      result := copy(result, 1, tiPosR('.', result)) + AFileNameExtension;
-  end;
-end;
-
-
-function tiGetTempDir : string;
-begin
-  {$IFDEF FPC}
-  result := GetTempDir;
-  {$ELSE}
-  result := ExtractFilePath(tiGetTempFile('tmp'));
-  {$ENDIF}
-end;
-
-
-{$IFDEF MSWINDOWS}
-function tiGetWindowsSysDir : string;
-const
-  cMaxPathLen = 255;
-var
-  pcDir : array[0..cMaxPathLen] of char;
-begin
-  GetSystemDirectory(pcDir, cMaxPathLen);
-  result := String(pcDir);
-end;
-{$ENDIF MSWINDOWS}
+{$I tiUtils_Impl.inc}
 
 
 // Seaches <sStr> and replaces <sDel> with <sIns>
@@ -1284,125 +1273,6 @@ begin
 end;
 
 
-{$IFDEF MSWINDOWS}
-function tiShellExecute(const AEXE : string;
-                         const AParameters : string = '';
-                         const AWinState : integer = SW_SHOWNORMAL): integer;
-var
-  lFileName  : array[0..255] of char;
-  lParameters : array[0..255] of char;
-  lHandle : THandle;
-begin;
-
-  strPCopy(lFileName,   AEXE);
-  strPCopy(lParameters, AParameters);
-
-  // Screen.ActiveForm.Handle is not thread safe
-  //lHandle := screen.activeForm.handle;
-  lHandle := 0;
-  result := _tiShellExecute(lHandle,
-                             nil,
-                             lFileName,
-                             lParameters,
-                             nil,
-                             AWinState);
-end;
-{$ENDIF MSWINDOWS}
-
-
-{$IFDEF MSWINDOWS}
-function _tiShellExecute(AHwnd : integer;
-                         AOpperation, AFile, AParameters, ADirectory : PChar;
-                         AShowCmd : integer): integer;
-var sMessage    : string;
-begin
-
-  result := ShellExecute(AHwnd,
-                          AOpperation,
-                          AFile,
-                          AParameters,
-                          ADirectory,
-                          AShowCmd);
-
-  { These error messages were pasted from the WINAPI help on shellExecute() }
-  case result of
-    0 : sMessage := ('System was out of memory, executable file was corrupt, or ' +
-                       'relocations were invalid.');
-    2 : sMessage := ('File was not found.');
-    3 : sMessage := ('Path was not found.');
-    5 : sMessage := ('Attempt was made to dynamically link to a task, or there ' +
-                       'was a sharing or network-protection error.');
-    6 : sMessage := ('Library required separate data segments for each task.');
-    8 : sMessage := ('There was insufficient memory to start the application.');
-    10 : sMessage := ('Windows version was incorrect.');
-    11 : sMessage := ('Executable file was invalid. Either it was not a Windows ' +
-                       'application or there was an error in the .EXE image.');
-    12 : sMessage := ('Application was designed for a different operating system.');
-    13 : sMessage := ('Application was designed for MS-DOS 4.0.');
-    14 : sMessage := ('Type of executable file was unknown.');
-    15 : sMessage := ('Attempt was made to load a real-mode application (developed ' +
-                       'for an earlier version of Windows).');
-    16 : sMessage := ('Attempt was made to load a second instance of an executable ' +
-                       'file containing multiple data segments that were not marked ' +
-                       'read-only.');
-    19 : sMessage := ('Attempt was made to load a compressed executable file. The ' +
-                       'file must be decompressed before it can be loaded.');
-    20 : sMessage := ('Dynamic-link library (DLL) file was invalid. One of the ' +
-                       'DLLs required to run this application was corrupt.');
-    21 : sMessage := ('Application requires Windows 32-bit extensions.');
-    else
-      sMessage := '';
-      { ShellExe ran OK, do nothing. }
-    end;
-
-    if sMessage <> '' then
-      raise Exception.Create('Error executing external application.' + Cr +
-                              'Error: ' + sMessage);
-end;
-{$ENDIF MSWINDOWS}
-
-
-{$IFDEF MSWINDOWS}
-procedure tiOpenFile(const AFileName: string);
-const
-  CKnownFileTypes: array[0..10] of string = (
-    'txt'
-    ,'htm'
-    ,'html'
-    ,'csv'
-    ,'exe'
-    ,'doc'
-    ,'docx'
-    ,'xls'
-    ,'xlsx'
-    ,'vsd'
-    ,'pdf'
-  );
-var
-  LExt: string;
-  i: integer;
-begin
-  // Is it a known file type?
-  LExt := LowerCase(tiExtractExtension(AFileName));
-  for i := 0 to Length(CKnownFileTypes) - 1 do
-    if LExt = CKnownFileTypes[i] then
-    begin
-      tiShellExecute(AFileName);
-      Exit; //==>
-    end;
-
-  // Is it a directory?
-  if DirectoryExists(AFileName) then
-  begin
-    tiShellExecute(AFileName);
-    Exit; //==>
-  end;
-
-  tiShellExecute('notepad.exe', AFileName);
-end;
-{$ENDIF MSWINDOWS}
-
-
 function tiExtractFileNameOnly(AValue : string): string;
 begin
   result := tiRemoveExtension(extractFileName(AValue));
@@ -1438,48 +1308,6 @@ begin
     result := copy(s, i+1, length(s) - i)
   else
     result := '';
-end;
-
-procedure tiCopyFile(const AFrom, ATo : string);
-var
-  LResultCode : Longword;
-  {$IFDEF FPC}
-    function fpcCopyFile(Org, Dest:string): boolean;
-    var
-      Source, Target:TFileStream;
-    begin
-      Result := false;
-      try
-        try
-          Source := TFileStream.Create(Org, fmShareDenyNone or fmOpenRead);
-          try
-            Target := TFileStream.Create(Dest, fmOpenWrite or fmCreate);
-            Target.CopyFrom(Source, Source.Size);
-            Result := true;
-          finally
-            Target.Free;
-          end;
-        finally
-          Source.Free;
-        end;
-      except
-      end;
-    end;
-  {$ENDIF}
-begin
-{$IFNDEF FPC}
-  copyFile(pChar(AFrom), pChar(ATo), false);
-  LResultCode := getLastError();
-{$ELSE}
-  if fpcCopyFile(AFrom, ATo) then
-    LResultCode := 0
-  else
-    LResultCode := GetLastOSError;
-{$ENDIF}
-  if LResultCode <> 0 then
-    raise EtiOPFFileSystemException.CreateFmt(
-      CErrorCanNotCopyFile,
-      [AFrom, ATo, LResultCode, sysErrorMessage(LResultCode)]);
 end;
 
 
@@ -1985,27 +1813,6 @@ begin
 end;
 
 
-function tiGetUserName : string;
-begin
-  {$IFDEF MSWINDOWS}
-    Result := tiWin32GetUserName;
-  {$ENDIF}
-  {$IFDEF UNIX}
-    Result := tiUnixGetUserName;
-  {$ENDIF}
-end;
-
-
-function tiGetComputerName : string;
-begin
-  {$IFDEF MSWINDOWS}
-  Result := tiWin32GetComputerName;
-  {$ENDIF MSWINDOWS}
-  {$IFDEF UNIX}
-  Result := tiUnixGetComputerName;
-  {$ENDIF}
-end;
-
 
 function tiRemoveDrive(AValue : string): string;
 var
@@ -2067,109 +1874,6 @@ begin
   Result := '';
   for I := 1 to Length(AString) do
     Result := Result + AHexPrefix + IntToHex(Ord(AString[I]), SizeOf(Char) * 2);
-end;
-
-
-{$IFDEF MSWINDOWS}
-procedure tiSetFileReadOnly(AFileName: string; AReadOnly: boolean);
-const // This is copied from sysUtils, as in it's native form,
-      // there is confusion with ordinals defined in DB.PAS
-      cReadOnly  = $00000001;
-var   iCurrentState : integer;
-      lBoolReadOnly : boolean;
-begin
-  lBoolReadOnly := tiIsFileReadOnly(AFileName);
-  if lBoolReadOnly = AReadOnly then exit; //==>
-
-  iCurrentState := tiWin32FileGetAttr(AFileName);
-  if AReadOnly then begin
-    tiWin32FileSetAttr(AFileName, iCurrentState or cReadOnly);
-  end else begin
-   tiWin32FileSetAttr(AFileName, iCurrentState xor cReadOnly);
-  end;
-end;
-{$ENDIF MSWINDOWS}
-{$IFDEF UNIX}
-{ Works on Owner rights only. Unix has 3 sets of rights: Owner, Group and Global }
-procedure tiSetFileReadOnly(AFileName: string; AReadOnly: boolean);
-var
-  lAttr: LongInt;
-  Info: Stat;
-begin
-  lAttr := FileGetAttr(AFileName);
-  if lAttr <> -1 then
-  begin
-    if FpStat(AFileName, Info) < 0 then
-      raise Exception.Create('Unable to set ReadOnly attribute');
-
-    if AReadOnly then
-      FpChmod(AFileName, Info.st_mode xor S_IWUSR)   // remove write access. Owner rights only.
-    else
-      FpChmod(AFileName, Info.st_mode or S_IWUSR);   // add write access.
-  end
-  else
-    raise Exception.Create('Unable to set ReadOnly attribute');
-end;
-{$ENDIF UNIX}
-
-
-{$IFDEF MSWINDOWS}
-function tiIsFileReadOnly(AValue: string): boolean;
-const // This is copied from sysUtils, as in it's native form,
-      // there is confusion with ordinals defined in DB.PAS
-      cReadOnly  = $00000001;
-var   iCurrentState : integer;
-begin
-  iCurrentState := tiWin32FileGetAttr(AValue);
-  result := tiIsBitSet(iCurrentState, 0);
-end;
-{$ENDIF MSWINDOWS}
-{$IFDEF UNIX}
-function tiIsFileReadOnly(AValue: string): boolean;
-begin
-  Result := FileIsReadOnly(AValue);
-end;
-{$ENDIF UNIX}
-
-
-function tiGetModuleFileName: string;
-{$IFNDEF CLR}
-var
-  Path: array[0..MAX_PATH - 1] of Char;
-{$ENDIF}
-begin
-  {$IFDEF CLR}
-  Result := Assembly.GetExecutingAssembly.Location;
-  {$ELSE}
-  if IsLibrary then
-  begin
-    {$IFDEF MSWINDOWS}
-    if Windows.GetModuleFileName(HInstance, Path, SizeOf(Path)) = 0 then
-      Result := ''
-    else
-      Result := Path;
-    {$ENDIF MSWINDOWS}
-    {$IFDEF UNIX}
-    Result := Paramstr(0);
-    {$ENDIF UNIX}
-  end
-  else
-    Result := Paramstr(0);
-  {$ENDIF}
-end;
-
-
-function tiGetEXEPath : string;
-var
-  path: array[0..MAX_PATH - 1] of char;
-begin
-  {$IFDEF MSWINDOWS}
-  if IsLibrary then
-    SetString(Result, path, GetModuleFileName(HInstance, path, SizeOf(path)))
-  else
-  {$ENDIF}
-    result := Paramstr(0);
-  result := tiRemoveTrailingSlash(ExtractFilePath(Result));
 end;
 
 
@@ -2488,37 +2192,6 @@ begin
 end;
 
 
-{ This allows us to always use a \ as a path separator. For Win32 it will
-  do nothing, but for *Unix it will replace all \'s with /'s.  Now we don't have
-  to have so many IFDEFs in the Unit Tests! }
-function tiFixPathDelim(const AText: string): string;
-begin
-  {$IFDEF MSWINDOWS}
-  result := AText;
-  {$ENDIF}
-  {$IFDEF UNIX}
-  result := SetDirSeparators(AText);
-  {$ENDIF}
-end;
-
-function tiGetAppDataDirPrivate: string;
-begin
-  {$IFDEF FPC}
-  result := GetAppConfigDir(False);
-  {$ELSE}
-  result := tiWin32GetAppConfigDir(False);
-  {$ENDIF}
-end;
-
-function tiGetAppDataDirPublic: string;
-begin
-  {$IFDEF FPC}
-  result := GetAppConfigDir(True);
-  {$ELSE}
-  result := tiWin32GetAppConfigDir(True);
-  {$ENDIF}
-end;
-
 function tiFloatToStr(const AValue : Extended;
     const APrecision : integer = 3): string;
 begin
@@ -2561,25 +2234,6 @@ begin
     result := 0;
   end;
 end;
-
-
-procedure tiRunEXEAndWait(const AEXE : string; const AParams: string = '';
-                          AInheritParentStartInfo: boolean = true);
-var
-  LCommand: string;
-begin
-  if AParams <> '' then
-    LCommand:= AEXE + ' ' + AParams
-  else
-    LCommand:= AEXE;
-{$IFDEF MSWINDOWS}
-  tiWin32RunEXEAndWait(LCommand, AInheritParentStartInfo);
-{$ENDIF MSWINDOWS}
-{$IFDEF UNIX}
-  tiUnixRunEXEAndWait(LCommand);
-{$ENDIF}
-end;
-
 
 function  tiRound(const AValue : Extended): Int64;
 begin
@@ -2689,43 +2343,6 @@ begin
 end;
 
 
-procedure tiSetFileDate(const AFileName : string; const ADateTime : TDateTime);
-var
-  LFileDate: Integer;
-  {$IFDEF MSWINDOWS}
-  LFileHandle: Integer;
-  {$ENDIF MSWINDOWS}
-  LExitCode: Integer;
-begin
-  LFileDate := DateTimeToFileDate(ADateTime);
-  {$IFDEF MSWINDOWS}
-  {$WARN SYMBOL_PLATFORM OFF}
-  LFileHandle := FileOpen(AFileName, fmOpenWrite or fmShareDenyNone);
-  try
-    if LFileHandle > 0 then
-    begin
-      LExitCode := FileSetDate(LFileHandle, LFileDate);
-      if LExitCode <> 0 then
-        raise EtiOPFFileSystemException.CreateFmt(
-            CErrorSettingFileDate, [
-            AFileName, tiDateTimeToStr(ADateTime),
-            LExitCode, SysErrorMessage(LExitCode)]);
-    end
-    else
-      raise exception.Create('Unable to set file date on <' + AFileName + '>');
-  finally
-    FileClose(LFileHandle);
-  end;
-  {$ENDIF MSWINDOWS}
-
-  {$IFDEF UNIX}
-    LExitCode := FileSetDate(AFileName, LFileDate);
-    if LExitCode <> 0 then
-      raise Exception.Create('Unable to set file date on <' + AFileName + '>');
-  {$ENDIF UNIX}
-end;
-
-
 function  Cr(const ACount : Byte = 1): string;
 begin
   result := tiReplicate(#13, ACount);
@@ -2783,7 +2400,12 @@ begin
 end;
 }
 
+{$IFDEF IOS}
+type
+  AnsiString = Array of Byte;
+{$ENDIF IOS}
 
+{ $IFNDEF IOS}
 procedure tiStringToStream(const AStr : string; const AStream : TStream);
 var
   LAnsiStr: AnsiString;
@@ -2837,7 +2459,11 @@ begin
     AStream.Position:= APos;
 
     // Append the new string + the RH portion
+{$IFDEF IOS}
+    AStream.WriteBuffer(LAnsiStr, Length(LAnsiStr));
+{$ELSE}
     AStream.WriteBuffer(PAnsiChar(LAnsiStr)^, Length(LAnsiStr));
+{$ENDIF IOS}
     AStream.WriteBuffer(LRHPChar^, LRHLength);
   finally
     FreeMem(LRHPChar);
@@ -2896,6 +2522,7 @@ begin
 
   Result := string(LAnsiStr);
 end;
+{ $ENDIF IOS}
 
 procedure tiFileToStream(const AFileName : string; const AStream : TStream);
 var
@@ -2943,6 +2570,7 @@ begin
 end;
 
 
+{$IFNDEF IOS}
 procedure tiStringToFile(const AText : string; const AFileName: string);
 var
   LAnsiStr: AnsiString;
@@ -2996,6 +2624,7 @@ begin
 
   result := string(LAnsiStr);
 end;
+{$ENDIF IOS}
 
 
 function tiHasRTTI(AObject : TObject): boolean;
@@ -3444,59 +3073,6 @@ begin
   end;
 end;
 
-function tiStrPos(const AString, ASubString: PChar): PChar;
-  {
-  From Paul Spain. paul@xpro.com.au
-  You may remember during the XML optimisation project that there was a
-  method where I couldn't get any performance benefit over a string-based
-  method that was using quite a few Copy() calls? What, it's not just like
-  yesterday for you?;-)
-
-  Well, I finally figured out why last night after trying to optimise
-  StringReplace(). It turns out that the RTL implementation of StrPos() is
-  a dog. Written in assembler, but a dog nonetheless. If you find any
-  calls to StrPos() in the XML code, you can crank some more from it using
-  this implementation:
- }
-var
- sub, str: PChar;
-begin
-  {$IFDEF FPC}
-  { Free Pascal's implementation of StrPos is even faster than the tiStrPos
-    version, so we rather call the Free Pascal one. }
-  result := StrPos(AString, ASubString);
-  {$ELSE}
-  if (ASubString <> nil) and (ASubString^ <> #0) and (AString <> nil) then
-  begin
-    str := AString;
-    while str^ <> #0 do
-    begin
-      sub := ASubString;
-      // look for start of sub in str or end of str
-      while (str^ <> sub^) and (str^ <> #0) do
-        Inc(str);
-      // check end of str
-      if str^ <> #0 then
-      begin
-        // remember start of sub in str
-        Result := str;
-        // look for end of sub in str or end of sub or end of str
-        while (str^ = sub^) and (str^ <> #0) do
-        begin
-          Inc(str);
-          Inc(sub);
-        end;
-        // success if sub^ = #0
-        if sub^ = #0 then
-          exit;
-      end;
-    end;
-  end;
-  Result := nil;
-  {$ENDIF}
-end;
-
-
 function tiNormalizeStr(const AString: string): string;
 var
   s: string;
@@ -3943,77 +3519,11 @@ begin
     Result := EncodeDate(lY, lM, lD) + EncodeTime(lH, lMi, lS, 0);
 end;
 
-{$IFDEF MSWINDOWS}
-function tiGMTOffset: TDateTime;
-var
-  TZI: TTimeZoneInformation;
-begin
-  Result := 0; // Removes 'return value might be undefined' warning.
-  case GetTimeZoneInformation(TZI) of
-    TIME_ZONE_ID_STANDARD: Result := (TZI.Bias + TZI.StandardBias) * cdtOneMinute;
-    TIME_ZONE_ID_DAYLIGHT: Result := (TZI.Bias + TZI.DaylightBias) * cdtOneMinute;
-    TIME_ZONE_ID_UNKNOWN: Result := TZI.Bias * cdtOneMinute;
-  else
-    RaiseLastOSError;
-  end;
-end;
-
-function tiOffsetFromGMT: TDateTime;
-begin
-  Result := -tiGMTOffset;
-end;
-
-function tiTimeToGMT(const ALocalTime: TDateTime; const AOffsetFromGMTHours: Integer): TDateTime;
-begin
-  Result := ALocalTime - (AOffsetFromGMTHours / 24);
-end;
-
-function tiLocalTimeToGMT(const ALocalTime: TDateTime): TDateTime;
-begin
-  Result := ALocalTime + tiGMTOffset;
-end;
-
-function tiGMTToTime(const AGMTTime: TDateTime; const AOffsetFromGMTHours: Integer): TDateTime;
-begin
-  Result := AGMTTime + (AOffsetFromGMTHours / 24);
-end;
-
-function tiGMTToLocalTime(const AGMTTime: TDateTime): TDateTime;
-begin
-  Result := AGMTTime + tiOffsetFromGMT;
-end;
-
-{$ENDIF}
-
 procedure tiConsoleAppPause;
 begin
   WriteLn('');
   WriteLn('Press <Enter> to continue...');
   ReadLn;
-end;
-
-function tiCreateGUIDString: string;
-{$IFDEF FPC}
-var
-  lGUID: TGUID;
-{$ENDIF}
-begin
-{$IFDEF FPC}
-  CreateGUID(lGUID);
-  Result := GUIDToString(lGUID);
-{$ELSE}
-  Result := tiWin32CoCreateGUID;
-{$ENDIF}
-end;
-
-function tiGetTickCount: Cardinal;
-begin
-{$IFDEF MSWINDOWS}
-  Result := tiWin32GetTickCount;
-{$ENDIF}
-{$IFDEF UNIX}
-  Result := tiUnixGetTickCount;
-{$ENDIF}
 end;
 
 function tiIsClassOfType(pData: TObject; pClassName: string): boolean;
@@ -4034,16 +3544,6 @@ begin
     end;
     lClass := lClass.ClassParent;
   end;
-end;
-
-function tiApplicationName: string;
-begin
-  {$IFDEF FPC}
-  // FPC adds a few more features we don't want to loose, even under Windows
-  Result := ApplicationName;
-  {$ELSE}
-  Result := ChangeFileExt(ExtractFileName(Paramstr(0)),'');
-  {$ENDIF}
 end;
 
 function tiExpandURI(const AURI: string): string;
@@ -4156,6 +3656,26 @@ function tiCheckFileCanBeCreated(const AFileName: string; var AErrorMsg: string)
       end;
     end;
 
+{$IFDEF IOS}
+  function _CheckFileName(const AFileName: string): string;
+  var
+    lStream : TFileStream;
+  begin
+    if tiIsFileNameValid(AFileName) then
+    begin
+      try
+        lStream := TFileStream.Create(AFileName, fmCreate or fmShareExclusive);
+      except
+        on e: exception do
+          result := Format(CFileAccessDenied, [AFileName]);
+      end;
+      lStream.Free;
+    end else
+      result := Format(CInvalidFileName, [AFileName]);
+  end;
+
+{$ELSE}
+
   function _CheckFileName(const AFileName: string): string;
   begin
     if tiIsFileNameValid(AFileName) then
@@ -4169,6 +3689,8 @@ function tiCheckFileCanBeCreated(const AFileName: string; var AErrorMsg: string)
     end else
       result := Format(CInvalidFileName, [AFileName]);
   end;
+{$ENDIF IOS}
+
 
   procedure _CleanupDirsCreatedByCheck(const ADirsCreatedByCheck: TStringList);
   var
@@ -4247,36 +3769,6 @@ begin
   result := AErrorMsg = '';
 end;
 
-function tiGetCommonAppDataDir(const AAppDataSubDir: string): string;
-begin
-  {$IFDEF FPC}
-  //TODO: Change to point at the correct subfolder
-  result := GetAppConfigDir(True);
-  {$ELSE}
-  result := tiWin32GetCommonAppDir + AAppDataSubDir;
-  {$ENDIF}
-end;
-
-function tiGetUserLocalAppDataDir(const AAppDataSubDir: string): string;
-begin
-  {$IFDEF FPC}
-  //TODO: Change to point at the correct subfolder
-  result := GetAppConfigDir(False);
-  {$ELSE}
-  result := tiWin32GetUserLocalAppDir + AAppDataSubDir;
-  {$ENDIF}
-end;
-
-function tiGetCurrentUserPersonalDir: string;
-begin
-  {$IFDEF FPC}
-  //TODO
-  result := '';
-  {$ELSE}
-  result := tiWin32GetCurrentUserPersonalDir;
-  {$ENDIF}
-end;
-
 function tiLocateExtension(aValue: TFileName): integer;
 var
   i: integer;
@@ -4315,7 +3807,11 @@ end;
 constructor TtiIntegerList.Create;
 begin
   inherited Create;
+{$IFDEF IOS}
+  FList:= TObjectList<TtiIntegerListItem>.Create(True);
+{$ELSE}
   FList:= TObjectList.Create(True);
+{$ENDIF IOS}
 end;
 
 
@@ -4382,7 +3878,16 @@ end;
 
 procedure TtiIntegerList.Sort;
 begin
+{$IFDEF IOS}
+  FList.Sort(TComparer<TtiIntegerListItem>.Construct(
+   function (const L, R: TtiIntegerListItem): integer
+   begin
+     result := _DoSort(L, R);
+   end
+   ));
+{$ELSE}
   FList.Sort(_DoSort);
+{$ENDIF IOS}
 end;
 
 (* *****************************************************************************
@@ -4727,7 +4232,11 @@ end;
 constructor TtiRealList.Create;
 begin
   inherited Create;
+{$IFDEF IOS}
+  FList:= TObjectList<TtiRealListItem>.Create(True);
+{$ELSE}
   FList:= TObjectList.Create(True);
+{$ENDIF IOS}
 end;
 
 destructor TtiRealList.Destroy;
@@ -4750,5 +4259,37 @@ procedure TtiRealList.SetItems(i: Integer; const AValue: Extended);
 begin
   (FList.Items[i] as TtiRealListItem).AValue := AValue;
 end;
+
+{$IFDEF IOS}
+function ShortStringToString(AValue: array of Byte): String;
+var
+  B: TBytes;
+  L: Byte;
+begin
+  Result := '';
+  L := AValue[0];
+  SetLength(B, L);
+  Move(AValue[1], B[0], L);
+  Result := TEncoding.Ansi.GetString(B);
+end;
+
+procedure StringToShortString(const AFromString: String; var AReturnValue);
+var
+  L: Integer;
+  P: PByte;
+  B: TBytes;
+begin
+  L := Length(AFromString);
+  if L > 255 then
+    raise EtiShortStringConvertError.Create('Strings longer than 255 characters cannot be converted');
+  SetLength(B, L);
+  P := @AReturnValue;
+  P^ := L;
+  Inc(P);
+  B := TEncoding.Ansi.GetBytes(AFromString);
+  Move(B[0], P^, L);
+end;
+
+{$ENDIF IOS}
 
 end.

@@ -11,10 +11,15 @@ uses
   {$IFDEF MSWINDOWS}
   Windows,
   {$ENDIF MSWINDOWS}
-  SyncObjs,   // This unit must always appear after the Windows unit!
-  Contnrs,
-  SysUtils,
-  types;
+  SyncObjs   // This unit must always appear after the Windows unit!
+{$IFDEF IOS}
+  ,System.Generics.Defaults
+  ,Generics.Collections
+{$ELSE}
+  ,Contnrs
+{$ENDIF IOS}
+  ,SysUtils
+  ,types;
 
 const
   crsSeverityNotFound = 'Severity <%s> not found';
@@ -115,7 +120,11 @@ type
   { Holds a list of TtiLogEvent objects }
   TtiLogEvents = class(TtiBaseObject)
   private
-    FList: TObjectList;
+{$IFDEF IOS}
+    FList : TObjectList<TtiLogEvent>;
+{$ELSE}
+    FList : TObjectList;
+{$ENDIF IOS}
     function GetItems(AIndex: Integer): TtiLogEvent;
     function    Extract(const AItem: TtiLogEvent): TtiLogEvent;
   public
@@ -331,6 +340,9 @@ uses
   ,tiLogToFile
   ,tiExcept
   ,Variants
+{$IFDEF MACOS}
+  ,Posix.Pthread
+{$ENDIF MACOS}
  ;
 
 
@@ -568,7 +580,8 @@ begin
         vtString:     lsLine := lsLine + string(VString^);
         vtPChar:      lsLine := lsLine + string(VPChar);
         vtPWideChar:  lsLine := lsLine + VPWideChar;
-        vtObject:     lsLine := lsLine + VObject.ClassName;
+        vtObject:     lsLine := lsLine + {$IFDEF IOS} '<VObject.ClassName TBD>';
+                                         {$ELSE} VObject.ClassName; {$ENDIF IOS}
         vtClass:      lsLine := lsLine + VClass.ClassName;
         vtAnsiString: lsLine := lsLine + string(VAnsiString);
         vtWideString: lsLine := lsLine + string(VWideString);
@@ -1289,7 +1302,11 @@ end;
 constructor TtiThrdLog.CreateExt(ALogTo : TtiLogToCacheAbs);
 begin
   Create(true);
+  {$IFDEF MSWINDOWS}
   Priority := tpLower;
+  {$ELSE}
+  Priority := Priority - 1;  // Don't know what to do here???
+  {$ENDIF}
   FLogTo   := ALogTo;
 end;
 
@@ -1425,7 +1442,11 @@ end;
 constructor TtiLogEvents.Create;
 begin
   inherited;
+{$IFDEF IOS}
+  FList:= TObjectList<TtiLogEvent>.Create(True);
+{$ELSE}
   FList:= TObjectList.Create(True);
+{$ENDIF IOS}
 end;
 
 

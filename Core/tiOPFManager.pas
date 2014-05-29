@@ -19,7 +19,12 @@ uses
   ,SysUtils
   ,Classes
   ,SyncObjs   // This unit must always appear after the Windows unit!
+{$IFDEF IOS}
+  ,System.Generics.Defaults
+  ,Generics.Collections
+{$ELSE}
   ,Contnrs
+{$ENDIF IOS}
  ;
 
 const
@@ -42,7 +47,11 @@ type
     FTerminated: boolean;
     FCriticalSection: TCriticalSection;
     FActiveThreadList: TtiActiveThreadList;
+{$IFDEF IOS}
+    FApplicationData: TObjectList<TObject>;
+{$ELSE}
     FApplicationData: TObjectList;
+{$ENDIF IOS}
     FApplicationStartTime: TDateTime;
     FDefaultOIDGenerator: TtiOIDGenerator;
     procedure SetDefaultOIDGenerator(const AValue: TtiOIDGenerator);
@@ -55,7 +64,9 @@ type
     function  GetDefaultPerLayer: TtiPersistenceLayer;
     procedure SetDefaultPerLayer(const AValue: TtiPersistenceLayer);
     procedure SetDefaultPersistenceLayerName(const AValue: string);
+{$IFNDEF IOS}
     function  GetApplicationData: TList;
+{$ENDIF IOS}
   public
     constructor Create; override;
     destructor  Destroy; override;
@@ -186,6 +197,14 @@ type
                           const ADBConnectionName : string = '';
                           const APersistenceLayerName    : string = '');
 
+    // These are simply wrappers for the visitor manager
+    procedure Execute(const AGroupName: string;
+                       const AVisited: TtiVisited;
+                       const ADBConnectionName: string;
+                       const APersistenceLayerName: string = ''); overload;
+    procedure Execute(const AGroupName: string;
+                       const AVisited: TtiVisited); overload;
+
     // These execute database independant commands
     procedure   CreateDatabase(const ADatabaseName: string;
                                const AUserName: string;
@@ -232,7 +251,9 @@ type
     function    TerminateThreads(const Timeout : Integer=0): Boolean;
     property    Terminated : boolean read FTerminated write FTerminated;
     property    ActiveThreadList : TtiActiveThreadList read FActiveThreadList;
+{$IFNDEF IOS}
     property    ApplicationData : TList read GetApplicationData;
+{$ENDIF IOS}
     property    ApplicationStartTime : TDateTime read FApplicationStartTime;
 
     property    DefaultPerLayer        : TtiPersistenceLayer    read GetDefaultPerLayer write SetDefaultPerLayer;
@@ -406,7 +427,11 @@ begin
   FTerminated := false;
 
   FActiveThreadList := TtiActiveThreadList.Create;
+{$IFDEF IOS}
+  FApplicationData := TObjectList<TObject>.Create(true);
+{$ELSE}
   FApplicationData := TObjectList.Create(true);
+{$ENDIF IOS}
 
   {$IFNDEF OID_AS_INT64}
     FDefaultOIDGenerator:= TtiOIDGeneratorGUID.Create; // Set the default OID Generator to GUID
@@ -636,6 +661,23 @@ begin
 end;
 
 
+procedure TtiOPFManager.Execute(const AGroupName: string;
+                                 const AVisited: TtiVisited;
+                                 const ADBConnectionName,
+                                       APersistenceLayerName: string);
+begin
+  Assert(FVisitorManager.TestValid, CTIErrorInvalidObject);
+  FVisitorManager.Execute(AGroupName, AVisited, ADBConnectionName, APersistenceLayerName);
+end;
+
+procedure TtiOPFManager.Execute(const AGroupName: string;
+                                 const AVisited: TtiVisited);
+begin
+  Assert(FVisitorManager.TestValid, CTIErrorInvalidObject);
+  FVisitorManager.Execute(AGroupName, AVisited, '', '');
+end;
+
+
 procedure TtiOPFManager.DisconnectDatabase(
   const ADatabaseAlias: string;
   const ADatabaseName: string;
@@ -860,10 +902,12 @@ begin
   end;
 end;
 
+{$IFNDEF IOS}
 function TtiOPFManager.GetApplicationData: TList;
 begin
   result := FApplicationData;
 end;
+{$ENDIF IOS}
 
 function TtiOPFManager.TestThenConnectDatabase(
   const ADatabaseName : string;

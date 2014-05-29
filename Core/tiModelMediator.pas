@@ -22,6 +22,7 @@ type
     FComposite: Boolean;
     FObjectUpdateMoment: TtiObjectUpdateMoment;
     FFieldName: string;
+    FGUIFieldName: string;
     FMediator: TtiMediatorView;
     FMediatorDef: TtiMediatorDef;
     FOnBeforeGUIToObject: TtiBeforeGUIToObjectEvent;
@@ -33,6 +34,7 @@ type
     procedure SetComposite(const AValue: Boolean);
     procedure SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment);
     procedure SetFieldName(const AValue: string);
+    procedure SetGUIFieldName(const AValue: string);
     procedure SetOnBeforeGUIToObject(const AValue: TtiBeforeGUIToObjectEvent);
     procedure SetOnAfterGUIToObject(const AValue: TtiAfterGUIToObjectEvent);
     procedure SetOnObjectToGUI(const AValue: TtiObjectToGUIEvent);
@@ -52,6 +54,7 @@ type
     property Composite: Boolean read FComposite write SetComposite;
     // Format: FieldName[:RootFieldName] (see TtiMediatorView.FieldName/RootFieldName)
     property FieldName: string read FFieldName write SetFieldName;
+    property GUIFieldName: string read FGUIFieldName write SetGUIFieldName;
     property Component: TComponent read FComponent write SetComponent;
     property ObjectUpdateMoment: TtiObjectUpdateMoment read FObjectUpdateMoment write SetObjectUpdateMoment;
     property OnBeforeGUIToObject: TtiBeforeGUIToObjectEvent read FOnBeforeGUIToObject write SetOnBeforeGUIToObject;
@@ -100,7 +103,7 @@ type
     procedure SetSelectedObject(AComponent: TComponent; AObject: TtiObject);
   protected
     function CreatePropertyDefs: TtiPropertyLinkDefs; virtual;
-    function CreateProperty(const AFieldName: string; const AGUIComponent: TComponent): TtiPropertyLinkDef; virtual;
+    function CreateProperty(const AFieldName: string; const AGUIComponent: TComponent; AGUIFieldName: string = ''): TtiPropertyLinkDef; virtual;
     procedure AfterPropertyCreated(ADef: TtiPropertyLinkDef);
     procedure CheckSubject;
     procedure CheckInactive;
@@ -112,7 +115,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-    function AddProperty(const AFieldName: string; const AGUIComponent: TComponent): TtiPropertyLinkDef;
+    function AddProperty(const AFieldName: string; const AGUIComponent: TComponent; AGUIFieldName: string = ''): TtiPropertyLinkDef;
     function AddComposite(const ADisplayNames: string; const AGUIComponent: TComponent): TtiPropertyLinkDef;
     function FindByComponent(AComponent: TComponent): TtiPropertyLinkDef;
     function FindByMediator(AMediator: TtiMediatorView): TtiPropertyLinkDef;
@@ -361,6 +364,13 @@ begin
   FMediatorDef := nil;
 end;
 
+procedure TtiPropertyLinkDef.SetGUIFieldName(const AValue: string);
+begin
+  if FGUIFieldName = AValue then
+    Exit;
+  FGUIFieldName   := AValue;
+end;
+
 procedure TtiPropertyLinkDef.SetOnBeforeGUIToObject(const AValue: TtiBeforeGUIToObjectEvent);
 begin
   FOnBeforeGUIToObject := AValue;
@@ -404,6 +414,8 @@ begin
     FMediator.RootFieldName := '';
   end else begin
     FMediator.FieldName := tiValueFieldName(FieldName);
+    if GUIFieldName <> '' then
+      FMediator.GUIFieldName := GUIFieldName;
     FMediator.RootFieldName := tiRootFieldName(FieldName);
   end;
   FMediator.OnBeforeGUIToObject := Self.OnBeforeGUIToObject;
@@ -630,10 +642,11 @@ begin
   inherited Destroy;
 end;
 
-function TtiModelMediator.CreateProperty(const AFieldName: string; const AGUIComponent: TComponent): TtiPropertyLinkDef;
+function TtiModelMediator.CreateProperty(const AFieldName: string; const AGUIComponent: TComponent; AGUIFieldName: string = ''): TtiPropertyLinkDef;
 begin
   Result           := FDefs.AddPropertyLinkDef;
   Result.FieldName := AFieldName;
+  Result.GUIFieldName:= AGUIFieldName;
   Result.Component := AGUICOmponent;
 end;
 
@@ -660,9 +673,9 @@ begin
   end;
 end;
 
-function TtiModelMediator.AddProperty(const AFieldName: string; const AGUIComponent: TComponent): TtiPropertyLinkDef;
+function TtiModelMediator.AddProperty(const AFieldName: string; const AGUIComponent: TComponent; AGUIFieldName: string = ''): TtiPropertyLinkDef;
 begin
-  Result := CreateProperty(AFieldName, AGUIComponent);
+  Result := CreateProperty(AFieldName, AGUIComponent, AGUIFieldName);
   AfterPropertyCreated(Result);
 end;
 

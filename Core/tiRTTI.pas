@@ -176,7 +176,11 @@ begin
       LPropInfo := tiGetPropInfo(LObject.ClassType, APropPath, @LObject);
       if Assigned(LPropInfo) and Assigned(LPropInfo.GetProc) and
          Assigned(LObject) then // Check that class property is assigned
+{$IFDEF IOS}
+        Result := GetPropValue(LObject, LPropInfo.NameFld.ToString) // APreferStrings to be added?
+{$ELSE}
         Result := GetPropValue(LObject, string(LPropInfo^.Name), APreferStrings)
+{$ENDIF IOS}
       else
         Result:= Null;
     end else
@@ -221,11 +225,27 @@ begin
           else
             LValue:= APropValue;
           // Special handling if it's a boolean
+{$IFDEF IOS}
+          if SameText(LPropInfo.NameFld.ToString, 'Boolean') then
+            tiSetBooleanPropValue(LObject, LPropInfo.NameFld.ToString, LValue)
+          else
+            SetPropValue(LObject, LPropInfo.NameFld.ToString, LValue);
+        end;
+
+      tkSet:
+        if VarToStr(APropValue) = '' then
+          SetPropValue(LObject, LPropInfo.NameFld.ToString, '[]')
+        else
+          SetPropValue(LObject, LPropInfo.NameFld.ToString, APropValue);
+    else
+      SetPropValue(LObject, LPropInfo.NameFld.ToString, APropValue);
+{$ELSE}
           if SameText(string(LPropInfo^.PropType^.Name), 'Boolean') then
             tiSetBooleanPropValue(LObject, string(LPropInfo^.Name), LValue)
           else
             SetPropValue(LObject, string(LPropInfo^.Name), LValue);
         end;
+
       tkSet:
         if VarToStr(APropValue) = '' then
           SetPropValue(LObject, string(LPropInfo^.Name), '[]')
@@ -233,6 +253,8 @@ begin
           SetPropValue(LObject, string(LPropInfo^.Name), APropValue);
     else
       SetPropValue(LObject, string(LPropInfo^.Name), APropValue);
+{$ENDIF IOS}
+
     end;  { case }
   end;
 end;
@@ -446,7 +468,11 @@ begin
                  ,LList
                  ,false);
     for i := 0 to lcount - 1 do
+{$IFDEF IOS}
+      AStringList.Add(lList^[i].NameFld.ToString));
+{$ELSE}
       AStringList.Add(string(lList^[i]^.Name));
+{$ENDIF IOS}
   finally
     FreeMem(lList, lSize);
   end;
@@ -489,7 +515,11 @@ begin
 
   lPropInfo := tiGetPropInfo(AObject.ClassType, APropName, @AObject);
   Assert(lPropInfo <> nil, Format('Class %s has no published property %s', [AObject.ClassName, APropName]));
+{$IFDEF IOS}
+  lPropTypeName := lPropInfo^.PropType^.NameFld.ToString);
+{$ELSE}
   lPropTypeName := string(lPropInfo^.PropType^.Name);
+{$ENDIF IOS}
   lPropType := lPropInfo^.PropType^.Kind;
 
   // Check for a TDateTime

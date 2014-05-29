@@ -205,6 +205,7 @@ uses
   ,tiConstants
   ,tiExcept
   ,tiCompress
+  ,tiMime
   // Delphi
   {$IFDEF MSWINDOWS}
   ,Windows // Debugging

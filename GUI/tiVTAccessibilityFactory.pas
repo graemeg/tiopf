@@ -22,11 +22,14 @@ interface
 
 uses
   {$ifndef COMPILER_10_UP}
-    MSAAIntf, // MSAA support for Delphi up to 2005
+    MSAAIntf // MSAA support for Delphi up to 2005
   {$else}
-    oleacc, // MSAA support in Delphi 2006 or higher
+    oleacc // MSAA support in Delphi 2006 or higher
   {$endif COMPILER_10_UP}
-  Classes, tiVirtualTrees;
+ ,Classes
+ ,VirtualTrees
+ ,tiVirtualTreesNEW
+ ;
 
 type
   IVTAccessibleProvider = interface
