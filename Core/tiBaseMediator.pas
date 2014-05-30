@@ -768,7 +768,7 @@ end;
 function TtiMediatorView.GUIValue: Variant;
 begin
   CheckFieldNames;
-  Result := TypInfo.GetPropValue(View, GUIFieldName);
+  Result := tiGetProperty(View, GUIFieldName);
   // Allow blank to mean 0 for numerical fields
   if (GetObjectPropType in [tiTKInteger, tiTKFloat, tiTKBoolean]) and
      VarIsStr(Result) and (VarToStr(Result) = '') then

@@ -187,6 +187,7 @@ type
     procedure   DoObjectToGUI; override;
     procedure   DoGUIToObject; override;
   public
+    constructor Create; override;
     function    View: TMemo; reintroduce;
     class function ComponentClass: TClass; override;
   end;
@@ -583,6 +584,12 @@ end;
 
 { TtiMemoMediatorView }
 
+constructor TtiMemoMediatorView.Create;
+begin
+  inherited Create;
+  GUIFieldName := 'Lines.Text';
+end;
+
 class function TtiMemoMediatorView.ComponentClass: TClass;
 begin
   Result := TMemo;
@@ -610,7 +617,6 @@ procedure TtiMemoMediatorView.DoObjectToGUI;
 begin
   View.Lines.Text := tiVariantAsStringDef(Subject.PropValue[FieldName]);
 end;
-
 
 { TtiDynamicComboBoxMediatorView }
 
