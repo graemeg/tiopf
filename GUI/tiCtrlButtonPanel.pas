@@ -29,6 +29,7 @@ type
   TtiLVBtnVis = (tiLVBtnVisView, tiLVBtnVisEdit, tiLVBtnVisNew, tiLVBtnVisDelete);
   TtiLVVisibleButtons = set of TtiLVBtnVis;
   TtiLogicalEvent = function : Boolean of object;
+  TtiButtonGetEnabledEvent = procedure(AButton: TtiSpeedButton; var AEnabled: Boolean) of object;
   TLVButtonStyle = (lvbsNoButtons, lvbsMicroButtons, lvbsNormalButtons, lvbsButtonsAndLabels, lvbsLargeButtons);
 
   TtiCtrlBtnPnlAbs = class(TCustomPanel)
@@ -82,6 +83,8 @@ type
     FBtnEdit  : TtiSpeedButton;
     FBtnDelete : TtiSpeedButton;
     FBtnView  : TtiSpeedButton;
+    FBtnCustom: TtiSpeedButton;
+    FOnCustomButtonEnabled: TtiButtonGetEnabledEvent;
   protected
     procedure   SetChildControlNames; override;
     procedure   SetupSpeedButton(const pBtn : TSpeedButton); virtual;
@@ -97,6 +100,9 @@ type
     constructor Create(Owner : TComponent); override;
     procedure   DrawButtons; override;
     procedure   EnableButtons; override;
+    function    AddCustomButton(const AName: string; const ACaption: string;
+        const AHint: string; const AOnClick: TNotifyEvent;
+        const AOnGetEnabled: TtiButtonGetEnabledEvent = nil): TtiSpeedButton;
 
     property BtnNew: TtiSpeedButton read FBtnNew;
     property BtnEdit: TtiSpeedButton read FBtnEdit;
@@ -266,6 +272,28 @@ end;
 
 { TtiCtrlBtnPnlButton }
 
+function TtiCtrlBtnPnlButton.AddCustomButton(const AName: string;
+  const ACaption: string; const AHint: string;
+  const AOnClick: TNotifyEvent; const AOnGetEnabled: TtiButtonGetEnabledEvent): TtiSpeedButton;
+begin
+  Assert(FBtnCustom = nil, 'Only one custom button is supported');
+  Assert(AName <> '', 'Name must be assigned');
+  Assert(ACaption <> '', 'Caption must be assigned');
+  Assert(Assigned(AOnClick), 'OnClick must be assigned');
+
+  FBtnCustom := TtiSpeedButton.Create(Self);
+  SetupSpeedButton(FBtnCustom);
+  FBtnCustom.Name := tiGetUniqueComponentNameFromParent(Self, AName);
+  FBtnCustom.Caption := ACaption;
+  FBtnCustom.Hint := AHint;
+  FBtnCustom.ControlStyle := FBtnCustom.ControlStyle + [csNoDesignVisible];
+  FBtnCustom.OnClick := AOnClick;
+  result := FBtnCustom;
+
+  FOnCustomButtonEnabled := AOnGetEnabled;
+  RefreshButtons;
+end;
+
 constructor TtiCtrlBtnPnlButton.Create(Owner: TComponent);
 begin
   inherited;
@@ -292,6 +320,8 @@ begin
   FBtnDelete.Hint    := 'Delete [Del]';
   FBtnDelete.ControlStyle := FBtnDelete.ControlStyle + [csNoDesignVisible];
 
+  FBtnCustom := nil;
+
   Visible := false;
 end;
 
@@ -306,10 +336,14 @@ begin
   FBtnNew.Visible   := false;
   FBtnEdit.Visible  := false;
   FBtnDelete.Visible := false;
+  if Assigned(FBtnCustom) then
+    FBtnCustom.Visible := false;
 
   FBtnNew.ControlStyle := FBtnNew.ControlStyle + [csNoDesignVisible];
   FBtnEdit.ControlStyle := FBtnEdit.ControlStyle + [csNoDesignVisible];
   FBtnDelete.ControlStyle := FBtnDelete.ControlStyle + [csNoDesignVisible];
+  if Assigned(FBtnCustom) then
+    FBtnCustom.ControlStyle := FBtnDelete.ControlStyle + [csNoDesignVisible];
 
   Visible := FLVVisibleButtons <> [];
 
@@ -346,11 +380,21 @@ begin
     FBtnDelete.Visible := true;
     FBtnDelete.Left := 1 + (liBtnCount * (FBtnDelete.Width + cBtnSpace));
     FBtnDelete.ControlStyle := FBtnDelete.ControlStyle - [csNoDesignVisible];
+    inc(liBtnCount);
+  end;
+
+  if Assigned(FBtnCustom) then
+  begin
+    FBtnCustom.Visible := true;
+    FBtnCustom.Left := 1 + (liBtnCount * (FBtnCustom.Width + cBtnSpace));
+    FBtnCustom.ControlStyle := FBtnCustom.ControlStyle - [csNoDesignVisible];
   end;
 
   FBtnNew.Invalidate;
   FBtnEdit.Invalidate;
   FBtnDelete.Invalidate;
+  if Assigned(FBtnCustom) then
+    FBtnCustom.Invalidate;
   Invalidate;
   (Owner as TControl).Invalidate;
 end;
@@ -393,6 +437,15 @@ begin
     (OnCanDelete or LDesigning);
   if LIsEnabled <> FBtnDelete.Enabled then
     FBtnDelete.Enabled := LIsEnabled;
+
+  if Assigned(FBtnCustom) then
+  begin
+    LIsEnabled := FBtnCustom.Visible;
+    if Assigned(FOnCustomButtonEnabled) then
+      FOnCustomButtonEnabled(FBtnCustom, LIsEnabled);
+    if LIsEnabled <> FBtnCustom.Enabled then
+      FBtnCustom.Enabled := LIsEnabled;
+  end;
 end;
 
 function TtiCtrlBtnPnlButton.GetOnDelete: TNotifyEvent;
