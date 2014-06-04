@@ -6,13 +6,20 @@ unit tiResources;
 interface
 
 const
-  cResTI_16N = '_16N';
-  cResTI_16H = '_16H';
-  cResTI_16D = '_16D';
+  cResTI_StateNormal = 'N';
+  cResTI_StateHot = 'H';
+  cResTI_StateDisabled = 'D';
 
-  cResTI_24N = '_24N';
-  cResTI_24H = '_24H';
-  cResTI_24D = '_24D';
+  cResTI_Size16 = '_16';
+  cResTI_Size24 = '_24';
+
+  cResTI_16N = cResTI_Size16 + cResTI_StateNormal;
+  cResTI_16H = cResTI_Size16 + cResTI_StateHot;
+  cResTI_16D = cResTI_Size16 + cResTI_StateDisabled;
+
+  cResTI_24N = cResTI_Size24 + cResTI_StateNormal;
+  cResTI_24H = cResTI_Size24 + cResTI_StateHot;
+  cResTI_24D = cResTI_Size24 + cResTI_StateDisabled;
 
   cResTI_ArrowDoubleLeft         = 'ti_ArrowDoubleLeftBlue';
   cResTI_ArrowDoubleRight        = 'ti_ArrowDoubleRightBlue'; 

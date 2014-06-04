@@ -102,6 +102,7 @@ type
     procedure   EnableButtons; override;
     function    AddCustomButton(const AName: string; const ACaption: string;
         const AHint: string; const AOnClick: TNotifyEvent;
+        const AGlyphResourceName: string = '';
         const AOnGetEnabled: TtiButtonGetEnabledEvent = nil): TtiSpeedButton;
 
     property BtnNew: TtiSpeedButton read FBtnNew;
@@ -274,7 +275,8 @@ end;
 
 function TtiCtrlBtnPnlButton.AddCustomButton(const AName: string;
   const ACaption: string; const AHint: string;
-  const AOnClick: TNotifyEvent; const AOnGetEnabled: TtiButtonGetEnabledEvent): TtiSpeedButton;
+  const AOnClick: TNotifyEvent; const AGlyphResourceName: string;
+  const AOnGetEnabled: TtiButtonGetEnabledEvent): TtiSpeedButton;
 begin
   Assert(FBtnCustom = nil, 'Only one custom button is supported');
   Assert(AName <> '', 'Name must be assigned');
@@ -282,13 +284,19 @@ begin
   Assert(Assigned(AOnClick), 'OnClick must be assigned');
 
   FBtnCustom := TtiSpeedButton.Create(Self);
+  result := FBtnCustom;
   SetupSpeedButton(FBtnCustom);
   FBtnCustom.Name := tiGetUniqueComponentNameFromParent(Self, AName);
   FBtnCustom.Caption := ACaption;
   FBtnCustom.Hint := AHint;
   FBtnCustom.ControlStyle := FBtnCustom.ControlStyle + [csNoDesignVisible];
   FBtnCustom.OnClick := AOnClick;
-  result := FBtnCustom;
+  if AGlyphResourceName <> '' then
+  begin
+    FBtnCustom.Glyph.LoadFromResourceName(HInstance, AGlyphResourceName + cResTI_StateNormal);
+    FBtnCustom.GlyphHot.LoadFromResourceName(HInstance, AGlyphResourceName + cResTI_StateHot);
+    FBtnCustom.GlyphDisabled.LoadFromResourceName(HInstance, AGlyphResourceName + cResTI_StateDisabled);
+  end;
 
   FOnCustomButtonEnabled := AOnGetEnabled;
   RefreshButtons;
@@ -343,7 +351,7 @@ begin
   FBtnEdit.ControlStyle := FBtnEdit.ControlStyle + [csNoDesignVisible];
   FBtnDelete.ControlStyle := FBtnDelete.ControlStyle + [csNoDesignVisible];
   if Assigned(FBtnCustom) then
-    FBtnCustom.ControlStyle := FBtnDelete.ControlStyle + [csNoDesignVisible];
+    FBtnCustom.ControlStyle := FBtnCustom.ControlStyle + [csNoDesignVisible];
 
   Visible := FLVVisibleButtons <> [];
 
