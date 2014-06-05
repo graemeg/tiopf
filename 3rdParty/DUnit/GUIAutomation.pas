@@ -209,6 +209,8 @@ type
     procedure EnterTextInto(const AControl: TControl;   AText :string); overload;
     procedure EnterTextInto(const AControlName: string; AText: string); overload;
 
+    procedure SelectMenuItem(AID: Integer);
+
     procedure Show(const AControl: TControl; AOnOff: boolean = true); overload;
     procedure Show(const AControlName: string; AOnOff: boolean = true); overload;
 
@@ -242,12 +244,14 @@ const
 implementation
 
 uses
-{$IFDEF DELPHI2007_UP}
-  Dialogs
-  ,Types
-  ,
-{$ENDIF}
   TestUtils
+{$IFDEF DELPHI2007_UP}
+  ,Dialogs
+  ,Types
+{$ENDIF}
+{$IFDEF MSWINDOWS}
+  ,Menus
+{$ENDIF}
   ;
 
 type
@@ -1471,6 +1475,20 @@ begin
   LWinControl := FindParentWinControl(AControl);
   if LWinControl <> nil then
     EnterTextInto(LWinControl.Handle, AText);
+end;
+
+procedure TGUIAutomation.SelectMenuItem(AID: Integer);
+var
+  LHwnd: HWND;
+  LwParam: WPARAM;
+begin
+{$IFDEF MSWINDOWS}
+  LHwnd := Menus.PopupList.Window;
+{$ELSE}
+  LHwnd := GetFocus;
+{$ENDIF}
+  LwParam := MakeWParam(WORD(AID) {IDM_*}, 0 {menu});
+  PostMessage(LHwnd, WM_COMMAND, LwParam, 0);
 end;
 
 procedure TGUIAutomation.Show(const AControlName: string; AOnOff: boolean);

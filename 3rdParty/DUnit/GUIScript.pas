@@ -136,6 +136,7 @@ type
     procedure RightClickAtEval(Info: TProgramInfo);
     procedure RightDoubleClickEval(Info: TProgramInfo);
     procedure RightDoubleClickAtEval(Info: TProgramInfo);
+    procedure SelectMenuItemEval(Info: TProgramInfo);
     procedure ControlExistsEval(Info: TProgramInfo);
     procedure ControlTextEval(Info: TProgramInfo);
     procedure ControlSelectedTextEval(Info: TProgramInfo);
@@ -578,6 +579,9 @@ begin
   LFunction := _AddFunction('RightDoubleClickAt', RightDoubleClickAtEval);
   _AddParameter(LFunction, 'X', 'Integer');
   _AddParameter(LFunction, 'Y', 'Integer');
+
+  LFunction := _AddFunction('SelectMenuItem', SelectMenuItemEval);
+  _AddParameter(LFunction, 'ID', 'Integer');
 
   // GUI inspection
 
@@ -1078,6 +1082,11 @@ begin
   FGUIAutomation.RightDoubleClickAt(
       Info.ValueAsInteger['X'],
       Info.ValueAsInteger['Y']);
+end;
+
+procedure TGUIScript.SelectMenuItemEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.SelectMenuItem(Info.ValueAsInteger['ID']);
 end;
 
 function TGUIScript.GetControlText(const AControl: TControl): string;

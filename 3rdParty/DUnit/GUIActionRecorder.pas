@@ -82,6 +82,7 @@ const
   CEnterKeyIntoCommandName = 'EnterKeyInto';
   CEnterTextCommandName = 'EnterText';
   CEnterKeyCommandName = 'EnterKey';
+  CSelectMenuItemCommandName = 'SelectMenuItem';
   CLeftButtonCommand = 'Left';
   CRightButtonCommand = 'Right';
   CMiddleButtonCommand = 'Middle';
@@ -284,6 +285,19 @@ type
     property ClickState: TMouseClickState read FClickState;
   end;
 
+  TGUIActionSelectMenuItem = class(TGUIActionAbs)
+  private
+    FID: Integer;
+  protected
+    function GetCommandName: string; override;
+    function GetCommandParameters(const ACommandFormat: TGUIActionCommandFormat): string; override;
+  public
+    constructor Create(
+        const AHwnd: HWND; const AControl: TControl; const AControlName: string;
+        const AID: Integer);
+    property ID: Integer read FID;
+  end;
+
 function GGUIActionRecorder: TGUIActionRecorder;
 
 implementation
@@ -291,6 +305,9 @@ implementation
 uses
    SysUtils
   ,Types
+{$IFDEF MSWINDOWS}
+  ,Menus
+{$ENDIF}
   ;
 
 var
@@ -964,6 +981,17 @@ begin
           end;
         end;
       end;
+    WM_COMMAND:
+{$IFDEF MSWINDOWS}
+      // Menu commands are sent to the hidden window that tracks the menu
+      // messages, not the visible menu control
+      if AHwnd = Menus.PopupList.Window then
+{$ENDIF}
+      begin
+        if HiWord(AWParam) = 0 {menu} then
+          AddAction(TGUIActionSelectMenuItem.Create(AHwnd, FControl, ControlName,
+              LoWord(AWParam) {ID_xxxx}), AContinue);
+      end;
   end;
 end;
 
@@ -1193,6 +1221,27 @@ begin
   end;
 
   Result := GetCommandNamePrefix + LDoubleClick + CClickCommand + GetCommandNameSuffix;
+end;
+
+{ TGUIActionSelectMenuItem }
+
+constructor TGUIActionSelectMenuItem.Create(const AHwnd: HWND;
+  const AControl: TControl; const AControlName: string; const AID: Integer);
+begin
+  inherited Create(AHwnd, AControl, AControlName);
+  FID := AID;
+end;
+
+function TGUIActionSelectMenuItem.GetCommandName: string;
+begin
+  Result := CSelectMenuItemCommandName;
+end;
+
+function TGUIActionSelectMenuItem.GetCommandParameters(
+  const ACommandFormat: TGUIActionCommandFormat): string;
+begin
+  Result := JoinParams((inherited GetCommandParameters(ACommandFormat)),
+      IntToStr(FID));
 end;
 
 initialization
