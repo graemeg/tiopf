@@ -314,7 +314,7 @@ type
      function    AddToolButton(const pAction: TAction; pDisplayMode: TTBItemDisplayMode): TTBXItem;
      function    AddToolBarSeparator: TTBXSeparatorItem;
 
-     function    AddMenuSidebarGroup(const pCaption: string): TdxWinXPBar;
+     function    AddMenuSidebarGroup(const ACaption: string; const AName: string = ''): TdxWinXPBar;
      function    AddMenuSidebarItem(const pAction: TAction; const pSideBarGroup: TdxWinXPBar = nil): TdxWinXPBarItem;
 
      procedure   ClearContextActions;
@@ -1146,10 +1146,17 @@ begin
 
 end;
 
-function TtiApplicationMenuSystem.AddMenuSidebarGroup(const pCaption: string): TdxWinXPBar;
+function TtiApplicationMenuSystem.AddMenuSidebarGroup(
+  const ACaption: string; const AName: string): TdxWinXPBar;
+var
+  LName: string;
 begin
+  if AName <> '' then
+    LName := AName
+  else
+    LName := 'SidebarGroup';
   FLastMenuSidebarGroup:= TdxWinXPBar.Create(FDXContainer);
-  FLastMenuSidebarGroup.Name := tiGetUniqueComponentNameFromParent(FDXContainer, 'SidebarGroup');
+  FLastMenuSidebarGroup.Name := tiGetUniqueComponentNameFromParent(FDXContainer, LName);
   FLastMenuSidebarGroup.Parent := FDXContainer;
   FLastMenuSidebarGroup.Align := alTop;
   FLastMenuSidebarGroup.Font.Charset := DEFAULT_CHARSET;
@@ -1160,7 +1167,7 @@ begin
   FLastMenuSidebarGroup.ParentFont := False;
   FLastMenuSidebarGroup.ParentShowHint := False;
   FLastMenuSidebarGroup.ShowHint := True;
-  FLastMenuSidebarGroup.Caption := pCaption;
+  FLastMenuSidebarGroup.Caption := ACaption;
   FLastMenuSidebarGroup.HeaderFont.Charset := DEFAULT_CHARSET;
   FLastMenuSidebarGroup.HeaderFont.Color := clBlack;
   FLastMenuSidebarGroup.HeaderFont.Height := -11;
@@ -1666,7 +1673,7 @@ procedure TtiApplicationMenuSystem.CreateContextMenuItems;
 begin
   FtbxContextMenu   := AddMainMenuItem('Context',1);
   FtbxContextMenu.Visible := False;
-  FdxWinXPBarContext := AddMenuSidebarGroup('Context');
+  FdxWinXPBarContext := AddMenuSidebarGroup('Context', 'Context');
   FdxWinXPBarContext.Visible := False;
 end;
 
