@@ -94,6 +94,8 @@ type
     function FileToString(const AFileName: string): string;
     function IsTextControl(const AControl: TControl): Boolean;
     function ShouldContinueExecution: Boolean;
+    function FormatScriptCheckCommand(const ACommandName: string;
+        const AControlName: string; const AParam: string = ''): string;
 
     procedure SyncSleepEval(Info: TProgramInfo);
     procedure StringToFileEval(Info: TProgramInfo);
@@ -173,6 +175,9 @@ type
     function GetControlList(const AControl: TControl): string;
     // Generate a script to check the state of all controls in the hierarchy
     function GetControlStates(const AControl: TControl): string;
+    // Generate a single script command to check the text of a control
+    function GenerateCheckControlTextCommand(const AControl: TControl;
+        const ACheckAllText: Boolean): string;
 
     property OnExecutionStarted: TOnExecutionStateEvent read FOnExecutionStarted write FOnExecutionStarted;
     property OnExecutionEnded: TOnExecutionStateEvent read FOnExecutionEnded write FOnExecutionEnded;
@@ -1386,6 +1391,46 @@ begin
     end;
 end;
 
+function TGUIScript.FormatScriptCheckCommand(const ACommandName: string;
+  const AControlName: string; const AParam: string): string;
+begin
+  Result := FControlInspectionIndent + ACommandName + '(''' + AControlName + '''';
+  if AParam <> '' then
+    Result := Result + ', ' + AParam;
+  Result := Result + ');';
+end;
+
+function TGUIScript.GenerateCheckControlTextCommand(const AControl: TControl;
+  const ACheckAllText: Boolean): string;
+var
+  LText: string;
+begin
+  Assert(AControl <> nil, 'AControl must be assigned');
+  try
+    if ACheckAllText then
+      LText := GetControlText(AControl)
+    else
+      LText := GetControlSelectedText(AControl);
+
+    // Escape single quotes
+    LText :=  StringReplace(LText, '''', '''''', [rfReplaceAll]);
+    // Encode tabs
+    LText := StringReplace(LText, #9, '''#9''', [rfReplaceAll]);
+    // Split into nice Pascal multi-line string
+    LText := StringReplace(LText, #13#10,
+        '''#13#10 +'#13#10 +
+        '    ''', [rfReplaceAll]);
+
+    if ACheckAllText then
+      Result := FormatScriptCheckCommand('CheckControlTextEqual', AControl.Name, '''' + LText + '''')
+    else
+      Result := FormatScriptCheckCommand('CheckControlSelectedTextEqual', AControl.Name, '''' + LText + '''');
+  except
+    on e: EGUIScriptUnhandledControlType do
+      Result := '';
+  end;
+end;
+
 function TGUIScript.GetControlStates(const AControl: TControl): string;
 var
   LControlStateScript: TStringList;
@@ -1402,19 +1447,8 @@ var
   var
     i: Integer;
     LWinControl: TWinControl;
-    LText: string;
     LCheckAllText: Boolean;
-
-    procedure _AddScriptCommand(const ACommandName: string; const AParam: string = '');
-    var
-      LCommand: string;
-    begin
-      LCommand := FControlInspectionIndent + ACommandName + '(''' + AControl.Name + '''';
-      if AParam <> '' then
-        LCommand := LCommand + ', ' + AParam;
-      LCommand := LCommand + ');';
-      AScript.Add(LCommand);
-    end;
+    LCommand: string;
 
   begin
     if AControl.Name <> '' then
@@ -1422,34 +1456,19 @@ var
       if AScript.Count > 0 then
         AScript.Add('');
 
-      _AddScriptCommand('CheckExists');
-      _AddScriptCommand('Check' + _CheckState(AControl.Visible) + 'Visible');
-      _AddScriptCommand('Check' + _CheckState(AControl.Enabled) + 'Enabled');
+      AScript.Add(FormatScriptCheckCommand('CheckExists', AControl.Name));
+      AScript.Add(FormatScriptCheckCommand('Check' + _CheckState(AControl.Visible) + 'Visible', AControl.Name));
+      AScript.Add(FormatScriptCheckCommand('Check' + _CheckState(AControl.Enabled) + 'Enabled', AControl.Name));
       if (AControl is TWinControl) and (AControl as TWinControl).Focused then
-        _AddScriptCommand('CheckFocused');
-      try
-        // Generally better to check entire edit text
-        LCheckAllText := IsTextControl(AControl);
-
-        if LCheckAllText then
-          LText := GetControlText(AControl)
-        else
-          LText := GetControlSelectedText(AControl);
-
-        // Escape single quotes
-        LText :=  StringReplace(LText, '''', '''''', [rfReplaceAll]);
-        // Split into nice Pascal multi-line string
-        LText := StringReplace(LText, #13#10,
-            '''#13#10 +'#13#10 +
-            '    ''', [rfReplaceAll]);
-
-        if LCheckAllText then
-          _AddScriptCommand('CheckControlTextEqual', '''' + LText + '''')
-        else
-          _AddScriptCommand('CheckControlSelectedTextEqual', '''' + LText + '''');
-      except
-        on e: EGUIScriptUnhandledControlType do;
-      end;
+        AScript.Add(FormatScriptCheckCommand('CheckFocused', AControl.Name));
+      // Control text (all or selected)
+      // Generally better to check entire text but the text from some controls
+      // like grids, treeviews and list views can be huge so we only get the
+      // full text of edit/text controls like edits and memos.
+      LCheckAllText := IsTextControl(AControl);
+      LCommand := GenerateCheckControlTextCommand(AControl, LCheckAllText);
+      if LCommand <> '' then
+        AScript.Add(LCommand);
 
       // Recurse to get child controls
       if AControl is TWinControl then
