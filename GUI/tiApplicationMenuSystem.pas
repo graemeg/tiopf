@@ -408,6 +408,7 @@ begin
   FToolbar := Toolbar;
 
   FAnimatedGIFSpaceLabel := TLabel.Create(FToolbar);
+  FAnimatedGIFSpaceLabel.Name := 'AnimatedGIFSpaceLabel';
   FAnimatedGIFSpaceLabel.AutoSize := False;
   FAnimatedGIFSpaceLabel.Transparent := True;
   FAnimatedGIFSpaceLabel.Height := 16;
@@ -421,6 +422,7 @@ begin
   if not Assigned(FAnimatedGIF) then
   begin
     FAnimatedGIF := TtiAnimatedGIF.Create(FToolbar);
+    FAnimatedGIF.Name := 'AnimatedGIF';
     FAnimatedGIF.AutoSize := True;
     FAnimatedGIF.ShowHint := True;
     FAnimatedGIF.AnimationSpeed:= FAnimationSpeed;
@@ -556,6 +558,7 @@ begin
   else
     lIndex := AIndex;
   FLastTBXSubItem := TTBXSubmenuItem.Create(FMainForm);
+  FLastTBXSubItem.Name := tiToComponentName('mi' + pCaption);
   FMainMenuBar.Items.Insert(lIndex, FLastTBXSubItem);
   FLastTBXSubItem.Images := FtbImageList16;
   FLastTBXSubItem.Caption := pCaption;
@@ -597,6 +600,7 @@ begin
   Assert(FMainForm <> nil, 'pMainForm not assigned');
   Assert(FtbImageList24 <> nil, 'pImageList not assigned');
   FLastToolBar:= TTBXToolbar.Create(MainForm);
+  FLastToolBar.Name := tiToComponentName('tb' + pCaption);
   FLastToolBar.Parent := FTBDockTop;
   FLastToolBar.Caption := pCaption;
   FLastToolBar.Images := FtbImageList24;
@@ -769,6 +773,7 @@ end;
 procedure TtiApplicationMenuSystem.CreateMainMenuBar;
 begin
   FMainMenuBar := TTBXToolbar.Create(FMainForm);
+  FMainMenuBar.Name := 'tbMainAMS';
   FMainMenuBar.Parent := FTBDockTop;
   FMainMenuBar.Left := 0;
   FMainMenuBar.Top := 0;
@@ -884,6 +889,7 @@ const
 begin
 
   FStatusBar:= TTBXStatusBar.Create(FMainForm);
+  FStatusBar.Name := 'sbAMS';
   FStatusBar.Parent := FMainForm;
   FStatusBar.Font.Charset := DEFAULT_CHARSET;
   FStatusBar.Font.Color := clBlack;
@@ -1049,6 +1055,7 @@ begin
   FPnlMessageText.CornerRadius := 5;
 
   FlblMessage:= THTMLViewer.Create(FPnlMessageText);
+  FlblMessage.Name := 'lblMessageAMS';
   FlblMessage.Parent := FPnlMessageText;
   FlblMessage.Align  := alClient;
   FlblMessage.DefFontSize := 8;
@@ -1059,6 +1066,7 @@ begin
   FlblMessage.OnHotSpotClick := DoLblMessageOnHotSpotClick;
 
   ltbDockRight:= TTBXDock.Create(FMainForm);
+  ltbDockRight.Name := 'tbDockRight';
   ltbDockRight.Parent := FMainForm;
   ltbDockRight.Left := 776;
   ltbDockRight.Top := 16;
@@ -1070,6 +1078,7 @@ begin
   ltbDockRight.HelpContext := FDefHelpContext;
 
   ltbMultiDockRight:= TTBXMultiDock.Create(FMainForm);
+  ltbMultiDockRight.Name := 'tbMultiDockRight';
   ltbMultiDockRight.Parent := FMainForm;
   ltbMultiDockRight.Left := 785;
   ltbMultiDockRight.Top := 16;
@@ -1192,6 +1201,7 @@ begin
   else
     lSideBarGroup := FLastMenuSidebarGroup;
   result := lSideBarGroup.Items.Add;
+  result.Name := tiToComponentName('sbi' + pAction.Caption);
   result.Action := pAction;
   // Side bar items don't use accelerator chars so change && to &
   Result.Caption := tiDecodeNonAcceleratorInCaption(pAction.Caption);
@@ -1202,7 +1212,7 @@ procedure TtiApplicationMenuSystem.CreateContainerPanels;
 begin
 
   FpnlBorder:= TtiRoundedPanel.Create(FMainForm);
-  FpnlBorder.Name := 'pnlBorder';
+  FpnlBorder.Name := 'pnlBorderAMS';
   FpnlBorder.Caption := '';
   FpnlBorder.Parent := FMainForm;
   FpnlBorder.Color := FDisplaySettings.BackgroundColor;
@@ -1212,7 +1222,7 @@ begin
   FpnlBorder.BorderColor := clWhite;
 
   FpnlCaption:= TPanel.Create(FMainForm);
-  FpnlCaption.Name := 'pnlCaption';
+  FpnlCaption.Name := 'pnlCaptionAMS';
   FpnlCaption.Caption := '';
   FpnlCaption.Parent := FpnlBorder;
   FpnlCaption.BevelOuter := bvNone;
@@ -1222,6 +1232,7 @@ begin
   FpnlCaption.HelpContext := FDefHelpContext;
 
   FlblCaption := TLabel.Create(FMainForm);
+  FlblCaption.Name := 'lblCaptionAMS';
   FlblCaption.Parent := FpnlCaption;
   FlblCaption.Caption := '';
   FlblCaption.Top := 8;
@@ -1232,7 +1243,7 @@ begin
   FlblCaption.Font.Name := 'Tahoma';
 
   FpnlParent:= TtiRoundedPanel.Create(FMainForm);
-  FpnlParent.Name := 'pnlParent';
+  FpnlParent.Name := 'pnlParentAMS';
   FpnlParent.Caption := '';
   FpnlParent.Parent := FPnlBorder;
   FPnlParent.Align := alClient;

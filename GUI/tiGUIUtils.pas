@@ -48,6 +48,7 @@ uses
       const AParent: TComponent;
       const ANameStub: string = '';
       const ASeparator: string = '_'): string;
+  function  tiToComponentName(const ANameText: string): string;
 
   {: Translate & to &&}
   function  tiEncodeNonAcceleratorInCaption(const ACaption: string): string;
@@ -299,6 +300,27 @@ begin
     Result := _MakeName(LSuffixNumber);
     Inc(LSuffixNumber);
   end;
+end;
+
+
+function tiToComponentName(const ANameText: string): string;
+var
+  i: Integer;
+  c: Char;
+begin
+  SetLength(Result, Length(ANameText));
+  i := 0;
+  for c in ANameText do
+    if CharInSet(c, ['A'..'Z', 'a'..'z', '0'..'9', '_']) then
+    begin
+      Inc(i);
+      Result[i] := c;
+    end;
+  SetLength(Result, i);
+  if i = 0 then
+    Result := '_'
+  else if CharInSet(Result[1], ['0'..'9']) then
+    Result := '_' + Result;
 end;
 
 

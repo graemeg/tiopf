@@ -236,7 +236,7 @@ begin
 
   // At least one action must be hooked up to the UI so that the action list
   // OnUpdate is called.
-  FaDummy := AddAction('DymmyAction', aDummyExecute);
+  FaDummy := AddAction('DummyAction', aDummyExecute);
   // A panel is used as it can be set to zero width and height. A label
   lblDummyAction.Action := FaDummy;
 
