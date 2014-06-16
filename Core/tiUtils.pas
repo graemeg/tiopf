@@ -171,6 +171,9 @@ type
                                           const AReplaceDot: Boolean = false;
                                           const AReplaceSlashes: Boolean = false;
                                           const AReplaceColons: Boolean = false): string;
+  {: Format a data size in bytes (note that this uses kibi/mebi/gibi/... magnitudes.
+     AValueFormat is a floating point format string. e.g. %f, %.0f, %g }
+  function tiFormatDataSize(const AValue: Int64; const AValueFormat: string = '%.0f'): string;
   {: Remove sequence of digits from start of string. }
   function tiStripIntPrefix(const AString : string): string;
   {: Append value onto existing string. If the existing string is not empty
@@ -3361,6 +3364,23 @@ begin
       LResult := LResult + AString[i];
   end;
   Result := LResult;
+end;
+
+function tiFormatDataSize(const AValue: Int64; const AValueFormat: string): string;
+const
+  // NOTE: These use the old 1024 base conventions.
+  // These are now known as kibibyte, mebibyte, gibibyte, etc.
+  // See: http://en.wikipedia.org/wiki/Megabyte
+  K = Int64(1024); // kB (KiB)
+  M = K * K; // MB (MiB)
+  G = K * M; // GB (GiB)
+  T = K * G; // TB (TiB)
+begin
+  if AValue < K then Result := Format('%d bytes', [AValue])
+  else if AValue < M then Result := Format(AValueFormat + ' kB', [AValue / K])
+  else if AValue < G then Result := Format(AValueFormat + ' MB', [AValue / M])
+  else if AValue < T then Result := Format(AValueFormat + ' GB', [AValue / G])
+  else Result := Format(AValueFormat + ' TB', [AValue / T]);
 end;
 
 function tiStripIntPrefix(const AString : string): string;

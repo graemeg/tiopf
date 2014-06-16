@@ -114,6 +114,7 @@ type
     procedure tiFloatToStr;
     procedure tiForceDirectories;
     procedure tiForceDirectories1;
+    procedure tiFormatDataSize;
     procedure tiGetAppDataDirPrivate;
     procedure tiGetAppDataDirPublic;
     procedure tiGetComputerName;
@@ -2369,6 +2370,26 @@ begin
   tiDUnitForceRemoveDir(lRoot);
 end;
 
+procedure TTestTIUtils.tiFormatDataSize;
+begin
+  CheckEquals('0 bytes', tiUtils.tiFormatDataSize(0), '0 bytes, def format');
+  CheckEquals('1023 bytes', tiUtils.tiFormatDataSize(1023), '1023 bytes, def format');
+  CheckEquals('1 kB', tiUtils.tiFormatDataSize(1024), '1kB, def format');
+  CheckEquals('2 kB', tiUtils.tiFormatDataSize(1536), '1.5kB, def format');
+  CheckEquals('2 kB', tiUtils.tiFormatDataSize(2048), '2kB, def format');
+  CheckEquals('1024 kB', tiUtils.tiFormatDataSize(1024*1024 - 1), '1MB-1, def format');
+  CheckEquals('1 MB', tiUtils.tiFormatDataSize(1024*1024), '1MB, def format');
+  CheckEquals('1024 MB', tiUtils.tiFormatDataSize(1024*1024*1024 - 1), '1GB-1, def format');
+  CheckEquals('1 GB', tiUtils.tiFormatDataSize(1024*1024*1024), '1GB, def format');
+  CheckEquals('1024 GB', tiUtils.tiFormatDataSize(Int64(1024)*1024*1024*1024 - 1), '1TB-1, def format');
+  CheckEquals('1 TB', tiUtils.tiFormatDataSize(Int64(1024)*1024*1024*1024), '1TB, def format');
+  CheckEquals('1024 TB', tiUtils.tiFormatDataSize(Int64(1024)*1024*1024*1024*1024), '1PB, def format');
+  CheckEquals('1023 bytes', tiUtils.tiFormatDataSize(1023, '%f'), '1023 bytes, decimal format');
+  CheckEquals('1.46 kB', tiUtils.tiFormatDataSize(1500, '%f'), '1.465kB, 2 decimal places');
+  CheckEquals('1.465 kB', tiUtils.tiFormatDataSize(1500, '%.3f'), '1.465kB, 3 decimal places');
+  CheckEquals('1.50 kB', tiUtils.tiFormatDataSize(1536, '%f'), '1.5kB, 2 decimal places');
+  CheckEquals('1.5 kB', tiUtils.tiFormatDataSize(1536, '%g'), '1.5kB, least decimal places');
+end;
 
 procedure TTestTIUtils.tiIsEMailAddressValid;
 begin
