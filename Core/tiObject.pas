@@ -751,6 +751,7 @@ type
     function    GetOwner: TtiObjectErrors; reintroduce;
     procedure   SetOwner(const AValue: TtiObjectErrors); reintroduce;
   public
+    function    Equals(const AData : TtiObject): boolean; override;
     property    Owner: TtiObjectErrors read GetOwner write SetOwner;
   published
     property    ErrorProperty: string read FErrorProperty write FErrorProperty;
@@ -2928,7 +2929,17 @@ end;
 { TtiObjectErrors }
 
 function TtiObjectErrors.Add(const AObject: TtiObjectError): Integer;
+var
+  i : integer;
 begin
+  // Check for uniqueness before adding
+  for i := 0 to Count - 1 do
+    if AObject.Equals(Items[i]) then
+    begin
+      // This list owns its children, so free orphaned child.
+      AObject.Free;
+      Exit(-1); //==>
+    end;
   Result := inherited Add(AObject);
 end;
 
@@ -3023,6 +3034,17 @@ begin
 end;
 
 { TtiObjectError }
+
+function TtiObjectError.Equals(const AData: TtiObject): boolean;
+var
+  LError: TtiObjectError;
+begin
+  Assert(AData.TestValid(TtiObjectError), CTIErrorInvalidObject);
+  LError := AData as TtiObjectError;
+  Result := (LError.ErrorCode = ErrorCode) and
+    SameStr(LError.ErrorMessage, ErrorMessage) and
+    SameStr(LError.ErrorProperty, ErrorProperty);
+end;
 
 function TtiObjectError.GetOwner: TtiObjectErrors;
 begin
