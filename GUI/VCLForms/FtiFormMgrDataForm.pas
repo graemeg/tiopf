@@ -38,13 +38,15 @@ type
     FaCancelClose: TtiAMSAction;
     FFormSettings: TtiObject;
     FModelMediators: TtiModelMediatorList;
-
+    FDataObserver: TtiObserversProxy;
     procedure SaveCloseHandler;
     procedure CancelCloseHandler;
     function GetOnEditsSave: TtiObjectEvent;
     procedure SetOnEditsSave(AOnEditsSave: TtiObjectEvent);
     function GetOnEditsCancel: TtiObjectEvent;
     procedure SetOnEditsCancel(AOnEditsCancel: TtiObjectEvent);
+    procedure AttachDataObserver;
+    procedure DetachDataObserver;
   protected
     function  CreateFormData: TtiDataFormData; virtual; abstract;
 
@@ -70,6 +72,8 @@ type
     function  GetData: TtiObject; virtual;
     function  OriginalData: TtiObject; virtual;
     function  EditedData: TtiObject; virtual;
+    procedure OnDataUpdate(ASubject: TtiObject; AOperation: TNotifyOperation); virtual;
+    property  DataObserver: TtiObserversProxy read FDataObserver;
 
     procedure SetReferenceData(const AValue: TtiObject); virtual;
     function  GetReferenceData: TtiObject; virtual;
@@ -148,10 +152,15 @@ begin
     FModelMediators.Add(ModelMediatorName);
   tiMediators.RegisterFallBackMediators;
   tiListMediators.RegisterFallBackListMediators;
+
+  FDataObserver := TtiObserversProxy.Create;
+  FDataObserver.OnUpdate := OnDataUpdate;
 end;
 
 procedure TtiFormMgrDataForm.FormDestroy(Sender: TObject);
 begin
+  DetachDataObserver;
+  FDataObserver.Free;
   FModelMediators.Free;
   FreeAndNil(FFormData);
   inherited;
@@ -217,6 +226,24 @@ begin
     Result := FFormData.Data
   else
     Result := nil;
+end;
+
+procedure TtiFormMgrDataForm.OnDataUpdate(ASubject: TtiObject;
+  AOperation: TNotifyOperation);
+begin
+  // Implement in concrete
+end;
+
+procedure TtiFormMgrDataForm.AttachDataObserver;
+begin
+  if Assigned(FFormData) and Assigned(FFormData.Data) then
+    FDataObserver.AttachTo(FFormData.Data);
+end;
+
+procedure TtiFormMgrDataForm.DetachDataObserver;
+begin
+  if Assigned(FFormData) and Assigned(FFormData.Data) then
+    FDataObserver.DetachFrom(FFormData.Data);
 end;
 
 function TtiFormMgrDataForm.GetOnEditsSave: TtiObjectEvent;
@@ -415,12 +442,14 @@ end;
 
 procedure TtiFormMgrDataForm.DoClearControlDataBindings;
 begin
-  // Implement in concrete
+  DetachDataObserver;
+  // Override in concrete if necessary
 end;
 
 procedure TtiFormMgrDataForm.DoSetControlDataBindings;
 begin
-  // Implement in concrete
+  AttachDataObserver;
+  // Override in concrete if necessary
 end;
 
 procedure TtiFormMgrDataForm.DoAfterDiscard;

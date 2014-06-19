@@ -928,6 +928,7 @@ type
   end;
 
   { TtiObserverProxy }
+  {: Event based notification for observation of a single object }
 
   TtiObserverProxy = class(TtiObject)
   private
@@ -943,6 +944,26 @@ type
     procedure   Update(ASubject: TtiObject; AOperation: TNotifyOperation; AChild: TtiObject=nil); overload; override;
     property    Subject: TtiObject read FSubject write SetSubject;
     property    OnUpdate: TtiObjectUpdateEvent read FOnUpdate write FOnUpdate;
+  end;
+
+  { TtiObserversProxy }
+  {: Event based notification for observation of multiple objects }
+
+  TtiObserversProxy = class(TtiObject)
+  private
+    FSubjects: TtiObjectList;
+    FOnUpdate: TtiObjectUpdateEvent;
+  protected
+    procedure StopObserving(ASubject: TtiObject); override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    procedure AttachTo(ASubject: TtiObject);
+    procedure DetachFrom(ASubject: TtiObject); overload;
+    procedure DetachFrom(ASubjectClass: TtiObjectClass); overload;
+    procedure DetachAll;
+    procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation); override;
+    property OnUpdate: TtiObjectUpdateEvent read FOnUpdate write FOnUpdate;
   end;
 
 const
@@ -4732,6 +4753,81 @@ begin
   inherited Update(ASubject, AOperation, AChild);
   if (ASubject = Subject) and (AOperation = noFree) then
     Subject := nil;
+  if Assigned(FOnUpdate) then
+    FOnUpdate(ASubject, AOperation);
+end;
+
+{ TtiObserversProxy }
+
+constructor TtiObserversProxy.Create;
+begin
+  inherited;
+  FSubjects := TtiObjectList.Create;
+  FSubjects.OwnsObjects := false;
+  FSubjects.AutoSetItemOwner := false;
+end;
+
+destructor TtiObserversProxy.Destroy;
+begin
+  DetachAll;
+  FSubjects.Free;
+  inherited;
+end;
+
+procedure TtiObserversProxy.AttachTo(ASubject: TtiObject);
+begin
+  if Assigned(ASubject) and (FSubjects.IndexOf(ASubject) = -1) then
+  begin
+    FSubjects.Add(ASubject);
+    ASubject.AttachObserver(Self);
+  end;
+end;
+
+procedure TtiObserversProxy.DetachFrom(ASubject: TtiObject);
+var
+  i: integer;
+begin
+  i := FSubjects.IndexOf(ASubject);
+  if i >= 0 then
+  begin
+    ASubject.DetachObserver(Self);
+    FSubjects.Delete(i);
+  end;
+end;
+
+procedure TtiObserversProxy.DetachFrom(ASubjectClass: TtiObjectClass);
+var
+  i: integer;
+begin
+  for i := FSubjects.Count - 1 downto 0 do
+    if FSubjects.Items[i] is ASubjectClass then
+    begin
+      FSubjects.Items[i].DetachObserver(Self);
+      FSubjects.Delete(i);
+    end;
+end;
+
+procedure TtiObserversProxy.DetachAll;
+var
+  i: integer;
+begin
+  for i := FSubjects.Count - 1 downto 0 do
+  begin
+    FSubjects.Items[i].DetachObserver(Self);
+    FSubjects.Delete(i);
+  end;
+end;
+
+procedure TtiObserversProxy.StopObserving(ASubject: TtiObject);
+begin
+  inherited;
+  DetachFrom(ASubject);
+end;
+
+procedure TtiObserversProxy.Update(ASubject: TtiObject;
+  AOperation: TNotifyOperation);
+begin
+  inherited;
   if Assigned(FOnUpdate) then
     FOnUpdate(ASubject, AOperation);
 end;
