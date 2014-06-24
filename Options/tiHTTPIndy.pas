@@ -140,8 +140,11 @@ begin
     FHTTP.Request.CustomHeaders.Values[ctiOPFHTTPBlockHeader]:= RequestTIOPFBlockHeader;
     Log('Request INDY %d: POST START [%s]', [LRequestID, AURL], lsDebug);
     try
+// Only for debugging: contains sensitive info like SQL
+//      Log('Response INDY %d: POST: %s', [LRequestID, AInput.DataString], lsDebug);
+      Log('Response INDY %d: POST', [LRequestID], lsDebug);
       FHTTP.Post(AURL, AInput, AOutput);
-      Log('Response INDY %d: POST [%s]', [LRequestID, FHTTP.Response.ResponseText], lsDebug);
+      Log('Response INDY %d: POST response: [%s]', [LRequestID, FHTTP.Response.ResponseText], lsDebug);
     finally
       Log('Request INDY %d: POST END', [LRequestID], lsDebug);
     end;

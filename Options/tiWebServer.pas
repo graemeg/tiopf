@@ -406,14 +406,25 @@ begin
     Log('* * * * * * * * * *');
     Log('--- RawHTTPCommand');
     Log(ARequestInfo.RawHTTPCommand);
-    Log('--- FormParams');
-    Log(ARequestInfo.FormParams);
-    Log('--- Params.Text');
-    Log(ARequestInfo.Params.Text);
+    if ARequestInfo.FormParams <> '' then
+    begin
+      Log('--- FormParams');
+      Log(ARequestInfo.FormParams);
+    end;
+    if ARequestInfo.Params.Text <> '' then
+    begin
+      Log('--- Params.Text');
+      Log(ARequestInfo.Params.Text);
+    end;
     Log('--- Document');
     Log(ARequestInfo.Document);
     Log('--- Request Headers');
-    Log(ARequestInfo.RawHeaders.Text);
+    Log(Trim(ARequestInfo.RawHeaders.Text));
+    if ARequestInfo.PostStream <> nil then
+    begin
+      Log('--- Post Stream');
+      Log(tiStreamToString(ARequestInfo.PostStream));
+    end;
   end;
 
   try

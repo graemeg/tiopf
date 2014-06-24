@@ -114,13 +114,13 @@ begin
 
   LURL := CorrectURL(LURL);
   try
-Log('Request MSXML: GET OPEN');
+    Log('Request MSXML: GET OPEN', lsDebug);
     FHTTP.open('GET', LURL, False, '', '');
     if RequestTIOPFBlockHeader <> '' then
       FHTTP.setRequestHeader(ctiOPFHTTPBlockHeader, RequestTIOPFBlockHeader);
-Log('Request MSXML: GET SEND');
+    Log('Request MSXML: GET SEND', lsDebug);
     FHTTP.Send(EmptyParam);
-Log('Response MSXML: GET [%s]', [FHTTP.responseText]);
+    Log('Response MSXML: GET [%s]', [FHTTP.responseText], lsDebug);
     if FHTTP.Get_Status <> 200 then
       raise Exception.CreateFmt(cErrorHTTPServer, [FHTTP.Get_Status]);
     AOutput.Size := 0;
@@ -153,13 +153,15 @@ begin
   FLastCallTime:= GetTickCount;
 
   try
-Log('Request MSXML: POST OPEN [%s]', [lURL]);
+    Log('Request MSXML: POST OPEN [%s]', [lURL], lsDebug);
     FHTTP.open('POST', lURL, False, '', '');
     if RequestTIOPFBlockHeader <> '' then
       FHTTP.setRequestHeader(ctiOPFHTTPBlockHeader, RequestTIOPFBlockHeader);
-Log('Request MSXML: POST SEND');
+// Only for debugging: contains sensitive info like SQL
+//    Log('Request MSXML: POST SEND: %s', [AInput.DataString], lsDebug);
+    Log('Request MSXML: POST SEND', lsDebug);
     FHTTP.Send(AInput.DataString);
-Log('Response MSXML: POST [%s]', [FHTTP.responseText]);
+    Log('Response MSXML: POST RESPONSE: %d [%s]', [FHTTP.Get_Status, FHTTP.responseText], lsDebug);
     if FHTTP.Get_Status <> 200 then
       raise Exception.CreateFmt(cErrorHTTPServer, [FHTTP.Get_Status]);
     AOutput.Size := 0;
