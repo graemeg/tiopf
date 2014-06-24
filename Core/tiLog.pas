@@ -1199,14 +1199,11 @@ begin
       LLines := CreateTiTokens(LMessage, Cr); // 1-based
       for i:= 1 to LLines.Count do
       begin
-        if i = 1 then
-          LResultBuilder.Append(LLines.Tokens[i])
-        else
-        begin
+        if i > 1 then
           LResultBuilder.Append(StringOfChar(' ', LMessagePrefixLen));
-          LResultBuilder.Append(LLines.Tokens[i]);
+        LResultBuilder.Append(LLines.Tokens[i]);
+        if i < LLines.Count then
           LResultBuilder.Append(CrLf);
-        end;
       end;
     end;
     Result := LResultBuilder.ToString;
