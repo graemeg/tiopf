@@ -175,6 +175,8 @@ var
   i: integer;
   isDuplicate: boolean;
 begin
+  if not Assigned(AValue) then
+    Exit(false);
   isDuplicate := false;
   for i := 0 to FCount - 1 do
     if FObjects[i] = AValue then isDuplicate := true;
