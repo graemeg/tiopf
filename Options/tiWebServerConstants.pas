@@ -24,8 +24,10 @@ const
   cHTTPResponseCodePageNotFound  = 404;
   cHTTPResponseCodeInternalError = 500;
 
-  cErrorHTTPCGIExtension         = 'Error in %s.'+cLineEnding+cLineEnding+
-      'Error code #%d.'+cLineEnding+cLineEnding+'Response text: %s'+cLineEnding;
+  cErrorHTTPCGIExtension         =
+      'Error in %s.' + cLineEnding +
+      'Error code #%d.' + cLineEnding +
+      'Response text: %s' + cLineEnding;
 
   cgTIDBProxyGetLog          = 'log';
   CTIDBProxyForceException   = 'ForceException';

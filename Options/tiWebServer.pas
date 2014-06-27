@@ -1015,6 +1015,7 @@ begin
     Log('About to call ' + LCGIApp);
     Log('Parameters: ' + ARequestParams, lsDebug);
 
+    //TODO: Add CRC or content length so that client can check validity
     LExitCode := ExecuteCGIApp(LCGIApp, ARequestParams, LResponse);
     if LExitCode = 0 then
       tiStringToStream(LResponse, AResponse)

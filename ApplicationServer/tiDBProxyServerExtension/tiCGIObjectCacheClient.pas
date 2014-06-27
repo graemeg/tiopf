@@ -157,19 +157,20 @@ end;
 
 procedure TtiCGIObjectCacheClient.DoExecute(const AData: TtiObject);
 var
-  LCachedFileDate : TDateTime ;
-  LDatabaseFileDate : TDateTime ;
+  LDatabaseFileDate: TDateTime;
+  LDatabaseFileSerial: string;
+  LCachedFileSerial: string;
 begin
   if tiWaitForMutex(CachedFileName, word(INFINITE)) then
   try
     Init;
-    LCachedFileDate := GetCachedFileDate;
-    LDatabaseFileDate := GetDBFileDate ;
-    Log(['Reading', CachedFileName]);
-    Log(['  FileName', GetCachedFileDirAndName]);
-    Log(['  Database date', tiDateTimeToStr(LDatabaseFileDate)]);
-    Log(['  Cache date', tiDateTimeToStr(LCachedFileDate)]);
-    if MustUpdateCacheFile(LCachedFileDate, LDatabaseFileDate) then
+    LCachedFileSerial := GetCachedFileSerial;
+    GetDBFileMetadata(LDatabaseFileDate, LDatabaseFileSerial);
+    Log('Reading "' + CachedFileName + '"');
+    Log('  FileName: ' + GetCachedFileDirAndName);
+    Log('  Database serial: ' + LDatabaseFileSerial);
+    Log('  Cache serial: ' + LCachedFileSerial);
+    if MustUpdateCacheFile(LDatabaseFileSerial, LCachedFileSerial) then
     begin
       Log('  File WILL be refreshed');
       RefreshCacheFromDB(LDatabaseFileDate);

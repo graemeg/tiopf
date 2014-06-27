@@ -98,26 +98,27 @@ end;
 
 function TtiObjectCacheServer.DoExecute: string;
 var
-  lCachedFileDate : TDateTime ;
-  lDatabaseFileDate : TDateTime ;
+  LDatabaseFileDate: TDateTime;
+  LDatabaseFileSerial: string;
+  LCachedFileSerial: string;
   LStart: DWord;
 begin
   LStart:= GetTickCount;
   if tiWaitForMutex(CachedFileName, word(INFINITE)) then
   try
-    Init ;
-    lCachedFileDate := GetCachedFileDate;
-    lDatabaseFileDate := GetDBFileDate ;
+    Init;
+    LCachedFileSerial := GetCachedFileSerial;
+    GetDBFileMetadata(LDatabaseFileDate, LDatabaseFileSerial);
     Log('Reading "' + CachedFileName + '"');
-    Log('  File directory "' + CacheDirectory);
-    Log('  File name "' + CachedFileName);
-    Log('  Database date "' + tiDateTimeToStr(LDatabaseFileDate) + '"');
-    Log('  Cache date "' + tiDateTimeToStr(LCachedFileDate) + '"');
-    if MustUpdateCacheFile(lCachedFileDate, lDatabaseFileDate) then
+    Log('  File directory: ' + CacheDirectory);
+    Log('  File name: ' + CachedFileName);
+    Log('  Database serial: ' + LDatabaseFileSerial);
+    Log('  Cache serial: ' + LCachedFileSerial);
+    if MustUpdateCacheFile(LDatabaseFileSerial, LCachedFileSerial) then
     begin
       Log('  File WILL be refreshed (' + tiIntToCommaStr(GetTickCount - LStart) + 'ms)');
       LStart:= GetTickCount;
-      RefreshCacheFromDB(lDatabaseFileDate);
+      RefreshCacheFromDB(LDatabaseFileDate);
     end else
       Log('  File WILL NOT be refreshed (' + tiIntToCommaStr(GetTickCount - LStart) + 'ms)');
     result:= ReturnDataFromCache;

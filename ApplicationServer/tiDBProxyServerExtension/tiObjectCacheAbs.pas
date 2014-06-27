@@ -19,6 +19,8 @@ const
 
 type
 
+  // In general, the cache file is updated if the database and cache file
+  // serials differ.
   TtiObjectCacheAbs = class( TtiBaseObject )
   private
     FCacheIndex: TtiINIFile ;
@@ -27,15 +29,17 @@ type
     property    CacheDirectoryRoot: string read FCacheDirectoryRoot;
     // ToDo: Rename to CacheIndexINIFile
     property    CacheIndex   : TtiINIFile read FCacheIndex;
+    function    DateTimeToSerial(const ADateTime: TDateTime): string;
     function    GetCachedFileDirAndName: string; virtual;
-    function    MustUpdateCacheFile(const ADatabaseDate, AFileDate: TDateTime): Boolean; virtual;
+    function    MustUpdateCacheFile(const ADatabaseSerial, AFileSerial: string): Boolean; virtual;
 
     procedure   Init; virtual;
-    function    GetDBFileDate: TDateTime ; virtual ;
+    procedure   GetDBFileMetadata(out ADate: TDateTime; out ASerial: string); virtual;
 
     function    GetCachedFileDate: TDateTime ; virtual ;
     function    GetCachedFileSize: Longint ; virtual ;
     procedure   SetCachedFileDate(const AData: TDateTime); virtual;
+    function    GetCachedFileSerial: string; virtual;
     function    LockDBConnectionCreateQuery(var ADatabase: TtiDatabase): TtiQuery;
 
     // You MAY override these
@@ -90,6 +94,13 @@ begin
   Result := FCacheIndex.ReadDateTime(cCacheIndexINISection, lFileName, CMinFileDate);
 end;
 
+function TtiObjectCacheAbs.GetCachedFileSerial: string;
+begin
+  // Default to the date. Descendants can optionally change this, e.g.
+  // incorporate a CRC
+  result := DateTimeToSerial(GetCachedFileDate);
+end;
+
 function TtiObjectCacheAbs.GetCachedFileSize: Longint;
 begin
   result := tiGetFileSize(GetCachedFileDirAndName);
@@ -137,11 +148,11 @@ begin
   result.AttachDatabase(ADatabase);
 end;
 
-function TtiObjectCacheAbs.MustUpdateCacheFile(const ADatabaseDate,
-  AFileDate: TDateTime): Boolean;
+function TtiObjectCacheAbs.MustUpdateCacheFile(const ADatabaseSerial,
+  AFileSerial: string): Boolean;
 begin
   result:=
-    (ADatabaseDate <> AFileDate) or
+    (ADatabaseSerial <> AFileSerial) or
     (not FileExists(GetCachedFileDirAndName));
 end;
 
@@ -156,7 +167,8 @@ begin
   Result := tiAddTrailingSlash(CacheDirectory) + CachedFileName ;
 end;
 
-function TtiObjectCacheAbs.GetDBFileDate: TDateTime;
+procedure TtiObjectCacheAbs.GetDBFileMetadata(out ADate: TDateTime;
+  out ASerial: string);
 var
   LQuery    : TtiQuery;
   LDatabase : TtiDatabase;
@@ -170,10 +182,10 @@ begin
       try
         if LQuery.EOF then
         begin
-          Result := 0 ;
+          ADate := 0 ;
           raise EtiCGIException.Create(cTICGIExitCodeNoDataReturnedFromGetLatestDateQuery);
         end;
-        Result := LQuery.FieldAsDateTime[cDBFileDateFieldName];
+        ADate := LQuery.FieldAsDateTime[cDBFileDateFieldName];
       finally
         LQuery.Close ;
       end;
@@ -184,6 +196,15 @@ begin
     LQuery.Free;
     GTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.UnLock(LDatabase) ;
   end;
+
+  // Default to the date. Descendants can optionally change this, e.g.
+  // incorporate a CRC
+  ASerial := DateTimeToSerial(ADate);
+end;
+
+function TtiObjectCacheAbs.DateTimeToSerial(const ADateTime: TDateTime): string;
+begin
+  result := tiDateTimeAsXMLString(ADateTime);
 end;
 
 procedure TtiObjectCacheAbs.Init;
@@ -195,3 +216,4 @@ begin
 end;
 
 end.
+
