@@ -836,7 +836,7 @@ procedure TtiStatefulDBConnectionPool.SweepForTimeOuts;
         begin
           FSavedDBConnections.Extract(LItem);
           ATargetList.Add(LItem);
-          Log('TransID: ' + LItem.TransactionID + '. Added to sweep list');
+          Log('TransID: ' + LItem.TransactionID + '. Added to sweep list', lsDebug);
         end;
       end;
     finally

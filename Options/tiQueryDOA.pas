@@ -569,6 +569,15 @@ begin
     // exception. Assume the DB will rollback if the connection has been
     // broken.
     try
+      // Force running query to break (calls OCIBreak())
+      // NOTE: If nonblocking DOA/OCI calls are used in the future:
+      // http://docs.oracle.com/cd/E11882_01/appdev.112/e10646/oci02bas.htm#i464495
+      // "The OCIReset() function is necessary to perform
+      //  a protocol synchronization on a nonblocking connection after an OCI
+      //  application stops a function with OCIBreak()."
+      // Currently DOA does not support the OCIReset() function.
+      if FOracleSession.Connected then
+        FOracleSession.BreakExecution;
       FOracleSession.Rollback;
     except
       on e:exception do
