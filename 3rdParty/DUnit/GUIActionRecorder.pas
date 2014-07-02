@@ -649,13 +649,13 @@ var
   LWinControl: TWinControl;
   LHitControl: TControl;
 begin
-  // If the target control has a name then we can use that instead of the
-  // windowed parent but we need to translate the co-ords
-
   // Find the VCL control with the given window handle
   LWinControl := FindControl(AHwnd);
   if Assigned(LWinControl) then
   begin
+    // If the target control at the given co-ords is not a windowed control but
+    // it has a name then we can use it instead of the windowed parent but we
+    // need to translate the co-ords
     LHitControl := _ControlAtPos(LWinControl, APoint, true {AllowDisabled});
     if Assigned(LHitControl) and ControlByName(LHitControl) then
       // Get point relative to child

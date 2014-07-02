@@ -303,7 +303,10 @@ end;
 
 procedure TGUISyncMessagesThread.ProcessMessages;
 begin
+  // Process the message queue until empty
   Application.ProcessMessages;
+  // Trigger any OnIdle processing (e.g. action OnUpdate)
+  Application.DoApplicationIdle;
 end;
 
 procedure TGUISyncMessagesThread.Execute;
@@ -364,7 +367,12 @@ end;
 procedure TGUIAutomation.SyncMessages;
 begin
   if GetCurrentThreadId = MainThreadID then
-    Application.ProcessMessages
+  begin
+    // Process the message queue until empty
+    Application.ProcessMessages;
+    // Trigger any OnIdle processing (e.g. action OnUpdate)
+    Application.DoApplicationIdle;
+  end
   else
     TGUISyncMessagesThread.SyncMessages;
 end;
@@ -393,6 +401,7 @@ procedure TGUIAutomation.SyncSleep(const AInterval: Cardinal);
 begin
   SyncMessages;
   SleepAndCheckContinue(AInterval);
+  SyncMessages;
 end;
 
 procedure TGUIAutomation.WakeUp;
@@ -432,11 +441,14 @@ begin
     if AComp is TWinControl then
     begin
       LWinControl := AComp as TWinControl;
-      i := 0;
-      while (Result = nil) and (i < LWinControl.ControlCount) do
+      // Search in reverse to get latest instance. There can be multiple
+      // controls with the same name if the form is hosting embedded child
+      // forms (parented to another form)
+      i := LWinControl.ControlCount - 1;
+      while (Result = nil) and (i >= 0) do
       begin
         Result := FindControlInstance(LWinControl.Controls[i], AControlName);
-        Inc(i);
+        Dec(i);
       end;
     end;
   end;
