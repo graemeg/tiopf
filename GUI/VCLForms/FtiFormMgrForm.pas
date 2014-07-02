@@ -125,11 +125,16 @@ type
     function    GetActiveForm: TtiFormMgrForm;
     procedure   SetActiveForm(const AValue: TtiFormMgrForm);
     procedure   Add(const pForm : TtiFormMgrForm);
-    procedure   InitializeForm(const AForm: TtiFormMgrForm;
-        const AData: TtiObject; AModal: Boolean;
+    procedure   InitializeForm(
+        const AForm: TtiFormMgrForm;
+        const AData: TtiObject;
+        AModal: Boolean;
         const AOnEditsSave: TtiObjectEvent;
-        const AOnEditsCancel: TtiObjectEvent; AReadOnly: boolean;
-        const AFormSettings: TtiObject; const AReferenceData: TtiObject);
+        const AOnEditsCancel: TtiObjectEvent;
+        AReadOnly: boolean;
+        const AFormSettings: TtiObject;
+        const AReferenceData: TtiObject;
+        const AName: string);
     procedure   DoCloseForm(const pForm : TtiFormMgrForm);
     function    CloseCurrentFormActivatePreviousForm(pClose : boolean): boolean;
     procedure   DoOnShowForm(const pForm : TtiFormMgrForm);
@@ -158,13 +163,15 @@ type
                               const AOnEditsCancel : TtiObjectEvent = nil;
                                     AReadOnly      : boolean = False;
                               const AFormSettings  : TtiObject = nil;
-                              const AReferenceData : TtiObject = nil): TtiFormMgrForm; overload;
+                              const AReferenceData : TtiObject = nil;
+                              const AName          : string = ''): TtiFormMgrForm; overload;
     function    ShowFormModal(const AFormClass     : TtiFormMgrFormClass;
                               const AData          : TtiObject;
                               const AOnEditsSave   : TtiObjectEvent = nil;
                               const AOnEditsCancel : TtiObjectEvent = nil;
                               const AFormSettings  : TtiObject = nil;
-                              const AReferenceData : TtiObject = nil): TtiFormMgrForm;
+                              const AReferenceData : TtiObject = nil;
+                              const AName          : string = ''): TtiFormMgrForm;
     procedure   BringToFront(const pForm : TtiFormMgrForm; pFocusFirstControl : Boolean);
 
     function    FindForm(const AFormClass : TtiFormMgrFormClass): TtiFormMgrForm; overload;
@@ -616,7 +623,8 @@ procedure TtiFormMgr.InitializeForm(
   const AOnEditsCancel: TtiObjectEvent;
         AReadOnly: boolean;
   const AFormSettings: TtiObject;
-  const AReferenceData: TtiObject);
+  const AReferenceData: TtiObject;
+  const AName: string);
 begin
   if AForm.Initialized then
     raise EtiOPFProgrammerException.Create('Form already initialized');
@@ -624,6 +632,9 @@ begin
   {$IFDEF DEBUG}
   Assert(AForm.HelpContext <> 0, AForm.ClassName + ' help context not set <' + AForm.Name +'>');
   {$ENDIF}
+
+  if AName <> '' then
+    AForm.Name := AName;
 
   AForm.OnFormMessage := FOnFormMessageEvent;
   if AForm is TtiFormMgrDataForm then
@@ -685,7 +696,7 @@ begin
           if not AForm.Initialized then
           begin
             InitializeForm(AForm, AData, AModal, AOnEditsSave, AOnEditsCancel,
-                AReadOnly, AFormSettings, AReferenceData);
+                AReadOnly, AFormSettings, AReferenceData, '');
             BringToFront(AForm, true);
           end else
             BringToFront(AForm, false);
@@ -714,7 +725,8 @@ function TtiFormMgr.ShowForm(
       const AOnEditsCancel: TtiObjectEvent = nil;
             AReadOnly: boolean = False;
       const AFormSettings: TtiObject = nil;
-      const AReferenceData: TtiObject = nil
+      const AReferenceData: TtiObject = nil;
+      const AName: string = ''
      ): TtiFormMgrForm;
 var
   LForm : TtiFormMgrForm;
@@ -746,7 +758,7 @@ begin
           LForm := CreateForm(AFormClass);
 
           InitializeForm(LForm, AData, AModal, AOnEditsSave, AOnEditsCancel,
-              AReadOnly, AFormSettings, AReferenceData);
+              AReadOnly, AFormSettings, AReferenceData, AName);
 
           BringToFront(LForm, true);
         except
@@ -769,10 +781,12 @@ begin
 end;
 
 function TtiFormMgr.ShowFormModal(const AFormClass: TtiFormMgrFormClass;
-  const AData: TtiObject; const AOnEditsSave,
-  AOnEditsCancel: TtiObjectEvent; const AFormSettings, AReferenceData: TtiObject): TtiFormMgrForm;
+  const AData: TtiObject; const AOnEditsSave: TtiObjectEvent;
+  const AOnEditsCancel: TtiObjectEvent; const AFormSettings: TtiObject;
+  const AReferenceData: TtiObject; const AName: string): TtiFormMgrForm;
 begin
-  Result := ShowForm(AFormClass, AData, True {AModal}, AOnEditsSave, AOnEditsCancel, False {AReadOnly}, AFormSettings, AReferenceData);
+  Result := ShowForm(AFormClass, AData, True {AModal}, AOnEditsSave,
+      AOnEditsCancel, False {AReadOnly}, AFormSettings, AReferenceData, AName);
 end;
 
 procedure TtiFormMgr.CloseForm(const pForm: TtiFormMgrForm);

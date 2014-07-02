@@ -207,6 +207,7 @@ begin
     raise exception.Create('Invalid button style');
   end;
   pCtrlBtnPnl.Name := tiGetUniqueComponentNameFromParent(pParent, 'CtrlBtnPnl');
+  pCtrlBtnPnl.Caption := '';
   pCtrlBtnPnl.Parent := pParent;
   pCtrlBtnPnl.Top := 1;
   pCtrlBtnPnl.Left := 1;

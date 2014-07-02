@@ -2692,6 +2692,8 @@ end;
 procedure TtiPerAwareImageEdit.SetChildControlNames;
 begin
   inherited;
+  if Assigned(FWinControl) then
+    (FWinControl as TPanel).Caption := '';
   if Assigned(FScrollBContainer) then
   begin
     FScrollBContainer.Name := tiGetUniqueComponentNameFromParent(Self, 'ScrollBContainer');

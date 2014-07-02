@@ -779,6 +779,7 @@ uses
   ,Math
   ,tiImageMgr
   ,tiUtils
+  ,tiGUIUtils
   ,tiConstants
   ,DateUtils
   ,tiCtrlButtonPanel
@@ -1014,6 +1015,8 @@ begin
   with FChartPanel do
   begin
     Parent := self;
+    Name := tiGetUniqueComponentNameFromParent(self, 'ChartPanel');
+    Caption := '';
     Anchors    := [akLeft,akTop,akRight,akBottom];
     Top := Parent.Top;
     Left := Parent.Left;
@@ -1027,6 +1030,7 @@ begin
   with FChart do
   begin
     Parent  := FChartPanel;
+    Name := tiGetUniqueComponentNameFromParent(self, 'Chart');
     Anchors    := [akLeft,akTop,akRight,akBottom];
     Top := Parent.Top;
     Left := Parent.Left;
@@ -1074,6 +1078,7 @@ begin
   with FscbHorizontal do
   begin
     Parent  := self;
+    Name    := tiGetUniqueComponentNameFromParent(self, 'scbHorizontal');
     TabStop := false;
     Kind    := sbHorizontal;
     Top     := FChartPanel.Height;
@@ -1093,6 +1098,7 @@ begin
   with FscbVertical do
   begin
     Parent  := self;
+    Name    := tiGetUniqueComponentNameFromParent(self, 'scbVertical');
     TabStop := false;
     Kind    := sbVertical;
     Top     := FChartPanel.Top;
@@ -1205,6 +1211,7 @@ begin
 //  begin
 //    Name := 'FDockTabSet';
 //    Parent := Self;
+//    Name := tiGetUniqueComponentNameFromParent(Self, 'DockTabSet');
 //    Left := 0;
 //    Top := 0;
 //    Width := 25;
@@ -1225,6 +1232,8 @@ begin
 //  with FButonPanel do
 //  begin
 //    Parent := self;
+//    Name := tiGetUniqueComponentNameFromParent(self, 'ButtonPanel');
+//    Caption := '';
 //    Width := 20;
 //    Align := alLeft;
 //  end;
@@ -1232,6 +1241,7 @@ begin
 //  with FLegendButton do
 //  begin
 //    Parent := FButonPanel;
+//    Name := tiGetUniqueComponentNameFromParent(FButtonPanel, 'LegendButton');
 //    Height := 100;
 //    Width := 20;
 //    Flat   := true;
@@ -1245,6 +1255,8 @@ begin
 
 //  FLegendFormPanel := TtiClearPanel.Create(self);
 //  FLegendFormPanel.Parent := self;
+//  FLegendFormPanel.Name := tiGetUniqueComponentNameFromParent(self, 'LegendFormPanel');
+//  FLegendFormPanel.Caption := '';
 //  FLegendFormPanel.Align := alClient;
 
   // Create a page control to hold the legend form and optional user form on
@@ -1253,13 +1265,16 @@ begin
   FPageControl.Align := alClient;
   FPageControl.Style := tsFlatButtons;
   FPageControl.Parent := Self;
+  FPageControl.Name := tiGetUniqueComponentNameFromParent(Self, 'PageControl');
   FLegendTabSheet := TTabSheet.Create(FPageControl);
+  FLegendTabSheet.Name := tiGetUniqueComponentNameFromParent(self, 'LegendTabSheet');
   FLegendTabSheet.Caption := 'Legend';
   FLegendTabSheet.PageIndex := 0;
   FLegendTabSheet.TabVisible := False;
   FLegendTabSheet.BorderWidth := 0;
   FLegendTabSheet.PageControl := FPageControl;
   FUserPanelTabSheet := TTabSheet.Create(FPageControl);
+  FUserPanelTabSheet.Name := tiGetUniqueComponentNameFromParent(self, 'UserPanelTabSheet');
   FUserPanelTabSheet.Caption := 'User';
   FUserPanelTabSheet.PageIndex := 1;
   FUserPanelTabSheet.TabVisible := False;
@@ -1504,6 +1519,7 @@ constructor TtiChartLegendItem.Create(const AOwner: TtiChartLegendForm;
 begin
   inherited Create(AOwner);
   Parent:= AOwner;
+  Name := tiGetUniqueComponentNameFromParent(Parent, 'ChartLegendItem');
   FtiChart:= AChart;
   FChartSeries:= ASeries;
   ControlStyle  := ControlStyle - [csSetCaption];
@@ -1514,6 +1530,7 @@ begin
 
   FLabel := TLabel.Create(Self);
   FLabel.Parent := Self;
+  FLabel.Name := tiGetUniqueComponentNameFromParent(Self, 'Label');
   FLabel.Top := 4;
   FLabel.Left := cChartLegendItemCheckBoxLeft + 28;
   FLabel.Font.Color := ASeries.SeriesColor;
@@ -1525,6 +1542,7 @@ begin
 
   FCheckBox := TCheckBox.Create(Self);
   FCheckBox.Parent := Self;
+  FCheckBox.Name := tiGetUniqueComponentNameFromParent(Self, 'CheckBox');
   FCheckbox.Top := 4;
   FCheckbox.Width := 16;
   FCheckBox.Height := FLabel.Height;
@@ -1719,6 +1737,8 @@ begin
   //       get transparent hint working
   FPnl:= TtiRoundedPanel.Create(Self);
   FPnl.Parent:= Self;
+  FPnl.Name := tiGetUniqueComponentNameFromParent(Self, 'Pnl');
+  FPnl.Caption := '';
   FPnl.Align:= alClient;
   FPnl.Color:= clInfoBk;
   FPnl.BorderColor:= clBlack;
@@ -1728,6 +1748,7 @@ begin
   FGrid := TStringGrid.Create( self ) ;
   with FGrid do begin
     Parent := FPnl ;
+    Name := tiGetUniqueComponentNameFromParent(Self, 'Grid');
     Align  := alClient ;
     BorderStyle := bsNone ;
     ColCount := 2 ;
@@ -1938,6 +1959,7 @@ begin
 
   FContent := TMemo.Create(self);
   FContent.Parent := self;
+  FContent.Name := tiGetUniqueComponentNameFromParent(Self, 'Content');
   FContent.Align := alClient;
   FContent.WordWrap := false;
   FContent.ScrollBars := ssNone;
@@ -4109,6 +4131,8 @@ var
 begin
   LButton := TtiSpeedButton.Create(AParent);
   LButton.Parent   := AParent;
+  LButton.Name     := tiGetUniqueComponentNameFromParent(AParent,
+      'btn' + tiToComponentName(FHint));
   LButton.Top      := APosTop;
   LButton.Left     := APosLeft;
   LButton.Height   := CSBSize;
@@ -4148,6 +4172,7 @@ begin
 
   FgbMinimum := TGroupBox.Create(self);
   FgbMinimum.Parent := self;
+  FgbMinimum.Name := tiGetUniqueComponentNameFromParent(self, 'gbMinimum');
   FgbMinimum.Left    := 8;
   FgbMinimum.Top     := 8;
   FgbMinimum.Width   := 150;
@@ -4157,6 +4182,7 @@ begin
 
   FdedtMinDate := TtiPerAwareDateEdit.Create(self);
   FdedtMinDate.Parent := FgbMinimum;
+  FdedtMinDate.Name := tiGetUniqueComponentNameFromParent(FgbMinimum, 'dedtMinDate');
   FdedtMinDate.Left   := 8;
   FdedtMinDate.Top    := 16;
   FdedtMinDate.Width  := 130;
@@ -4167,6 +4193,7 @@ begin
 
   FtedeMinTime := TtiPerAwareTimeEdit.Create(self);
   FtedeMinTime.Parent := FgbMinimum;
+  FtedeMinTime.Name := tiGetUniqueComponentNameFromParent(FgbMinimum, 'tedeMinTime');
   FtedeMinTime.Left   := 8;
   FtedeMinTime.Top    := 42;
   FtedeMinTime.Width  := 130;
@@ -4178,6 +4205,7 @@ begin
 
   FfedtMinYAxis := TtiPerAwareFloatEdit.Create(self);
   FfedtMinYAxis.Parent := FgbMinimum;
+  FfedtMinYAxis.Name := tiGetUniqueComponentNameFromParent(FgbMinimum, 'fedtMinYAxis');
   FfedtMinYAxis.Left   := 8;
   FfedtMinYAxis.Top    := 76;
   FfedtMinYAxis.Width  := 130;
@@ -4193,6 +4221,7 @@ begin
 
   FgbMaximum := TGroupBox.Create(self);
   FgbMaximum.Parent := self;
+  FgbMaximum.Name := tiGetUniqueComponentNameFromParent(self, 'gbMaximum');
   FgbMaximum.Left   := 164;
   FgbMaximum.Top    := 8;
   FgbMaximum.Width  := 150;
@@ -4202,6 +4231,7 @@ begin
 
   FdedtMaxDate := TtiPerAwareDateEdit.Create(self);
   FdedtMaxDate.Parent := FgbMaximum;
+  FdedtMaxDate.Name := tiGetUniqueComponentNameFromParent(FgbMaximum, 'dedtMaxDate');
   FdedtMaxDate.Left   := 8;
   FdedtMaxDate.Top    := 16;
   FdedtMaxDate.Width  := 130;
@@ -4212,6 +4242,7 @@ begin
 
   FtedtMaxTime := TtiPerAwareTimeEdit.Create(self);
   FtedtMaxTime.Parent := FgbMaximum;
+  FtedtMaxTime.Name := tiGetUniqueComponentNameFromParent(FgbMaximum, 'tedtMaxTime');
   FtedtMaxTime.Left   := 8;
   FtedtMaxTime.Top    := 42;
   FtedtMaxTime.Width  := 130;
@@ -4223,6 +4254,7 @@ begin
 
   FfedtMaxYAxis := TtiPerAwareFloatEdit.Create(self);
   FfedtMaxYAxis.Parent := FgbMaximum;
+  FfedtMaxYAxis.Name := tiGetUniqueComponentNameFromParent(FgbMaximum, 'fedtMaxYAxis');
   FfedtMaxYAxis.Left   := 8;
   FfedtMaxYAxis.Top    := 76;
   FfedtMaxYAxis.Width  := 130;
@@ -4238,6 +4270,7 @@ begin
 
   FbtnOK := TtiSpeedButton.Create(self);
   FbtnOK.Parent := self;
+  FbtnOK.Name := tiGetUniqueComponentNameFromParent(self, 'btnOK');
   FbtnOK.Left   := 164;
   FbtnOK.Top    := 124;
   FbtnOK.Width  := 58;
@@ -4250,6 +4283,7 @@ begin
 
   FbtnCancel := TtiSpeedButton.Create(self);
   FbtnCancel.Parent := self;
+  FbtnCancel.Name := tiGetUniqueComponentNameFromParent(self, 'btnCancel');
   FbtnCancel.Left   := 232;
   FbtnCancel.Top    := 124;
   FbtnCancel.Width  := 82;
@@ -4420,6 +4454,7 @@ begin
   inherited CreateNew(AChart);
   FTreeView := TtiVTTreeView.Create(self);
   FTreeView.Parent      := self as TWinControl;
+  FTreeView.Name := tiGetUniqueComponentNameFromParent(FTreeView.Parent, 'TreeView');
   FTreeView.Left        := 0;
   FTreeView.Top         := 0;
   FTreeView.Align       := alClient;
