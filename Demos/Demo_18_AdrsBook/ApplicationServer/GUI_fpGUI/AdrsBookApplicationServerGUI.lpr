@@ -1,6 +1,7 @@
 program AdrsBookApplicationServerGUI;
 
 {$mode objfpc}{$H+}
+{$IFDEF WINDOWS}{$apptype gui}{$ENDIF}
 
 uses
   {$IFDEF UNIX}

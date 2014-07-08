@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -51,19 +51,34 @@
     </Units>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <Target>
       <Filename Value="../../_bin/AdrsBookApplicationServerGUI"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="../../../../Core;../../../../../Indy10/Lib/System;$(ProjOutDir)"/>
-      <OtherUnitFiles Value="../../../../../Indy10/Lib/Core;../../../../../Indy10/Lib/Protocols;../../../../../Indy10/Lib/System;../../../../Core;../../../../Options"/>
+      <IncludeFiles Value="../../../../Core;$(ProjOutDir);../../../../../3rdParty/Indy10/Lib/Core"/>
+      <OtherUnitFiles Value="../../../../Core;../../../../Options;../../../../../3rdParty/Indy10/Lib/Core;../../../../../3rdParty/Indy10/Lib/Protocols;../../../../../3rdParty/Indy10/Lib/System"/>
       <UnitOutputDirectory Value="_dcu"/>
     </SearchPaths>
     <Other>
       <CompilerMessages>
         <UseMsgFile Value="True"/>
       </CompilerMessages>
+      <CustomOptions Value="-dLINK_CSVx
+-dLINK_TABx
+-dLINK_FBLx
+-dLINK_SQLDB_IB
+-dLINK_SQLDB_PQx
+-dLINK_SQLDB_Oraclex
+-dLINK_SQLDB_SQLite3x
+-dLINK_SQLDB_ODBCx
+-dLINK_SQLDB_MySQL40x
+-dLINK_SQLDB_MySQL41x
+-dLINK_SQLDB_MySQL50x
+-dLINK_XMLLIGHT
+-dLINK_ZEOS_FBx
+-dUseCThreads
+-Xd"/>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>

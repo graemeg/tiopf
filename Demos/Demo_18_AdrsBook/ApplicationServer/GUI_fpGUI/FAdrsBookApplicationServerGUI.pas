@@ -30,14 +30,10 @@ type
 
 implementation
 uses
+  tiUtils,
   tiLogToEventHandler,
-//  tiUtils,
   tiOPFManager,
-  {$IFDEF FPC}
   tiQuerySqldbIB,
-  {$ELSE}
-  tiQueryIBX,
-  {$ENDIF}
   tiConstants;
 
 
@@ -115,7 +111,7 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  GLog.RegisterLog(TtiLogToEventHandler.Create(@DoLog));
+//  GLog.RegisterLog(TtiLogToEventHandler.Create(@DoLog));
   FAppServer:= TtiDBProxyServer.Create(8088);
   FAppServer.ReadPageLocationAtStartup:= False;
   // ToDo: These are only accessable through the config object
@@ -123,9 +119,9 @@ begin
   //       demo. Fix.
   //FAppServer.StaticPageLocation:= tiGetEXEPath + '\StaticPages\';
   //FAppServer.CGIBinLocation:= tiGetEXEPath + '\CGI-Bin\';
-  GTIOPFManager.DefaultPersistenceLayerName := {$IFDEF FPC}cTIPersistSqldbIB{$ELSE}cTIPersistIBX{$ENDIF};
+  GTIOPFManager.DefaultPersistenceLayerName := cTIPersistSqldbIB;
   GTIOPFManager.ConnectDatabase(
-    'adrs', 'localhost:adrs.fdb', 'SYSDBA', 'masterkey', '', '');
+    'adrs', 'localhost:'+tiAddTrailingSlash(ExtractFilePath(ParamStr(0)))+'adrs.fdb', 'SYSDBA', 'masterkey', '', '');
   Log('Connected to database ' + LineEnding + GTIOPFManager.DefaultDBConnectionPool.DetailsAsString);
 end;
 
