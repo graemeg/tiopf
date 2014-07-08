@@ -1,5 +1,9 @@
 unit AdrsBookUIConsole_BOM;
 
+{$IFDEF FPC}
+  {$mode objfpc}{$H+}
+{$ENDIF}
+
 interface
 uses
   tiBaseObject,

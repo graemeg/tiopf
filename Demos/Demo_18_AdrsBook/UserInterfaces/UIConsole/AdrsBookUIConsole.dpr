@@ -1,6 +1,9 @@
 program AdrsBookUIConsole;
 
 {$APPTYPE CONSOLE}
+{$IFDEF FPC}
+  {$mode objfpc}{$H+}
+{$ENDIF}
 
 uses
   SysUtils,
