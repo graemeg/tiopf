@@ -879,7 +879,9 @@ begin
   // ToDo: RunCGIExtension to execute application types other than exe
   result := (ADocument <> '') and
             (FileExists(LCGI) and
-            (SameText(ExtractFileExt(ADocument), '.exe')));
+            ( (SameText(ExtractFileExt(ADocument), '.exe')) or
+              (SameText(ExtractFileExt(ADocument), '.cgi'))
+            ));
 end;
 
 procedure TtiWebServerAction_RunCGIExtension.Execute(
