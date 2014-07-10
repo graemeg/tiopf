@@ -179,6 +179,8 @@ type
   {: Append value onto existing string. If the existing string is not empty
      add the separator first }
   function tiAppendStr(const AString: string; const AValue: string; const ASeparator: string = ' '): string;
+  {: Return the plural form of the given singular word }
+  function tiPluralize(const ASingularWord: string; const AMakePlural: boolean = true): string;
 
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
   // *
@@ -3406,6 +3408,82 @@ begin
       result := result + ASeparator;
     result := result + AValue;
   end;
+end;
+
+// This is a partial implementation, for English only. There are many
+// rules and exceptions. See:
+// http://www.oxforddictionaries.com/words/plurals-of-nouns
+function tiPluralize(const ASingularWord: string;
+  const AMakePlural: boolean): string;
+var
+  LWord: string;
+  LLast: Char;
+  LLastTwo: string;
+  LSecondLast: Char;
+
+  function _UseUpper: boolean;
+  begin
+    result := ASingularWord[Length(ASingularWord)] = UpperCase(ASingularWord[Length(ASingularWord)]);
+  end;
+
+  function _IsVowel(const AChar: Char): boolean;
+  begin
+    result := CharInSet(AChar, ['a', 'e', 'i', 'o', 'u']);
+  end;
+
+  function _ReplaceLast(const ACount: Integer; const AWith: string): string;
+  begin
+    result := Copy(ASingularWord, 1, Length(ASingularWord) - ACount);
+    if _UseUpper then
+      result := result + UpperCase(AWith)
+    else
+      result := result + AWith;
+  end;
+
+  function _Add(const AAdd: string): string;
+  begin
+    if _UseUpper then
+      result := ASingularWord + UpperCase(AAdd)
+    else
+      result := ASingularWord + AAdd;
+  end;
+
+begin
+  if (not AMakePlural) or (ASingularWord = '') then
+  begin
+    result := ASingularWord;
+    Exit; //==>
+  end;
+
+  LWord := LowerCase(Trim(ASingularWord));
+  LLast := LWord[Length(result)];
+  LLastTwo := Copy(LWord, Length(LWord) - 1, 2);
+  if Length(LWord) > 1 then
+    LSecondLast := LWord[Length(result)-1]
+  else
+    LSecondLast := #0;
+
+  if MatchStr(LLast, ['s','z','x']) or MatchStr(LLastTwo, ['ch','sh','ss']) then
+    result := _Add('es')
+  else if LLast = 'y' then
+  begin
+    if _IsVowel(LSecondLast) then
+      result := _Add('s')
+    else
+      result := _ReplaceLast(1, 'ies');
+  end
+  else if LLastTwo = 'is' then
+    result := _ReplaceLast(2, 'es')
+  else if LWord = 'zero' then
+    result := _Add('es')
+  else if LWord = 'man' then
+    result := _ReplaceLast(2, 'en')
+  else if LWord = 'woman' then
+    result := _ReplaceLast(2, 'en')
+  else if LWord = 'child' then
+    result := _Add('ren')
+  else
+    result := _Add('s');
 end;
 
 function tiDateTimeAsXMLString(const ADateTime: TDateTime): string;

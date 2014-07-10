@@ -8,8 +8,8 @@ uses
 
 type
   TtiFormModelessDialog = class(TForm)
-    procedure FormCreate(Sender: TObject); virtual;
-    procedure FormDestroy(Sender: TObject); virtual;
+    procedure FormCreate(Sender: TObject); // No need to make virtual
+    procedure FormDestroy(Sender: TObject); // No need to make virtual
     procedure FormShow(Sender: TObject); virtual;
     procedure FormDeactivate(Sender: TObject);
     procedure FormActivate(Sender: TObject);

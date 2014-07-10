@@ -87,7 +87,7 @@ type
     FOnCustomButtonEnabled: TtiButtonGetEnabledEvent;
   protected
     procedure   SetChildControlNames; override;
-    procedure   SetupSpeedButton(const pBtn : TSpeedButton); virtual;
+    procedure   SetupSpeedButton(const ABtn: TSpeedButton; const AWidth: Integer); virtual;
     function    GetOnView: TNotifyEvent; override;
     function    GetOnDelete: TNotifyEvent; override;
     function    GetOnEdit: TNotifyEvent; override;
@@ -102,6 +102,7 @@ type
     procedure   EnableButtons; override;
     function    AddCustomButton(const AName: string; const ACaption: string;
         const AHint: string; const AOnClick: TNotifyEvent;
+        const AWidth: Integer = cButtonWidthLabel;
         const AGlyphResourceName: string = '';
         const AOnGetEnabled: TtiButtonGetEnabledEvent = nil): TtiSpeedButton;
 
@@ -275,8 +276,8 @@ end;
 { TtiCtrlBtnPnlButton }
 
 function TtiCtrlBtnPnlButton.AddCustomButton(const AName: string;
-  const ACaption: string; const AHint: string;
-  const AOnClick: TNotifyEvent; const AGlyphResourceName: string;
+  const ACaption: string; const AHint: string; const AOnClick: TNotifyEvent;
+  const AWidth: Integer; const AGlyphResourceName: string;
   const AOnGetEnabled: TtiButtonGetEnabledEvent): TtiSpeedButton;
 begin
   Assert(FBtnCustom = nil, 'Only one custom button is supported');
@@ -286,7 +287,7 @@ begin
 
   FBtnCustom := TtiSpeedButton.Create(Self);
   result := FBtnCustom;
-  SetupSpeedButton(FBtnCustom);
+  SetupSpeedButton(FBtnCustom, AWidth);
   FBtnCustom.Name := tiGetUniqueComponentNameFromParent(Self, AName);
   FBtnCustom.Caption := ACaption;
   FBtnCustom.Hint := AHint;
@@ -310,22 +311,22 @@ begin
   Width := (FBtnWidth + cBtnSpace) * 4;
 
   FBtnView           := TtiSpeedButton.Create(self);
-  SetupSpeedButton(FBtnView);
+  SetupSpeedButton(FBtnView, FBtnWidth);
   FBtnView.Hint    := 'View [Enter]';
   FBtnView.ControlStyle := FBtnView.ControlStyle + [csNoDesignVisible];
 
   FBtnEdit           := TtiSpeedButton.Create(self);
-  SetupSpeedButton(FBtnEdit);
+  SetupSpeedButton(FBtnEdit, FBtnWidth);
   FBtnEdit.Hint      := 'Edit [Enter]';
   FBtnEdit.ControlStyle := FBtnEdit.ControlStyle + [csNoDesignVisible];
 
   FbtnNew            := TtiSpeedButton.Create(self);
-  SetupSpeedButton(FbtnNew);
+  SetupSpeedButton(FbtnNew, FBtnWidth);
   FBtnNew.Hint       := 'New [Ins]';
   FBtnNew.ControlStyle := FBtnNew.ControlStyle + [csNoDesignVisible];
 
   FBtnDelete         := TtiSpeedButton.Create(self);
-  SetupSpeedButton(FBtnDelete);
+  SetupSpeedButton(FBtnDelete, FBtnWidth);
   FBtnDelete.Hint    := 'Delete [Del]';
   FBtnDelete.ControlStyle := FBtnDelete.ControlStyle + [csNoDesignVisible];
 
@@ -353,8 +354,6 @@ begin
   FBtnDelete.ControlStyle := FBtnDelete.ControlStyle + [csNoDesignVisible];
   if Assigned(FBtnCustom) then
     FBtnCustom.ControlStyle := FBtnCustom.ControlStyle + [csNoDesignVisible];
-
-  Visible := FLVVisibleButtons <> [];
 
   if ((csDesigning in ComponentState) or Assigned(FBtnView.OnClick)) and
      (tiLVBtnVisView in FLVVisibleButtons)then
@@ -398,6 +397,13 @@ begin
     FBtnCustom.Left := 1 + (liBtnCount * (FBtnCustom.Width + cBtnSpace));
     FBtnCustom.ControlStyle := FBtnCustom.ControlStyle - [csNoDesignVisible];
   end;
+
+  Visible :=
+      FBtnView.Visible or
+      FBtnNew.Visible or
+      FBtnEdit.Visible or
+      FBtnDelete.Visible or
+      (Assigned(FBtnCustom) and FBtnCustom.Visible);
 
   FBtnNew.Invalidate;
   FBtnEdit.Invalidate;
@@ -521,16 +527,17 @@ begin
   FBtnView.OnClick := AValue;
 end;
 
-procedure TtiCtrlBtnPnlButton.SetupSpeedButton(const pBtn: TSpeedButton);
+procedure TtiCtrlBtnPnlButton.SetupSpeedButton(const ABtn: TSpeedButton;
+  const AWidth: Integer);
 begin
-  pBtn.Parent  := Self;
-  pBtn.Caption := '';
-  pBtn.Visible := false;
-  pBtn.ShowHint := true;
-  pBtn.Flat    := true;
-  pBtn.Top     := 0;
-  pBtn.Height  := FBtnHeight;
-  pBtn.Width   := FBtnWidth;
+  ABtn.Parent  := Self;
+  ABtn.Caption := '';
+  ABtn.Visible := false;
+  ABtn.ShowHint := true;
+  ABtn.Flat    := true;
+  ABtn.Top     := 0;
+  ABtn.Height  := FBtnHeight;
+  ABtn.Width   := AWidth;
 end;
 
 { TtiCtrlBtnPnlMicroButton }

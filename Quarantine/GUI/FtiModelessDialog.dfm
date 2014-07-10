@@ -14,8 +14,10 @@ object tiFormModelessDialog: TtiFormModelessDialog
   OldCreateOrder = False
   OnActivate = FormActivate
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnDeactivate = FormDeactivate
   OnKeyDown = FormKeyDown
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
 end
