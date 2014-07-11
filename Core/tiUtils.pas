@@ -3420,11 +3420,7 @@ var
   LLast: Char;
   LLastTwo: string;
   LSecondLast: Char;
-
-  function _UseUpper: boolean;
-  begin
-    result := ASingularWord[Length(ASingularWord)] = UpperCase(ASingularWord[Length(ASingularWord)]);
-  end;
+  LUseUpper: boolean;
 
   function _IsVowel(const AChar: Char): boolean;
   begin
@@ -3434,7 +3430,7 @@ var
   function _ReplaceLast(const ACount: Integer; const AWith: string): string;
   begin
     result := Copy(ASingularWord, 1, Length(ASingularWord) - ACount);
-    if _UseUpper then
+    if LUseUpper then
       result := result + UpperCase(AWith)
     else
       result := result + AWith;
@@ -3442,7 +3438,7 @@ var
 
   function _Add(const AAdd: string): string;
   begin
-    if _UseUpper then
+    if LUseUpper then
       result := ASingularWord + UpperCase(AAdd)
     else
       result := ASingularWord + AAdd;
@@ -3455,16 +3451,30 @@ begin
     Exit; //==>
   end;
 
+  LUseUpper := ASingularWord[Length(ASingularWord)] =
+      UpperCase(ASingularWord[Length(ASingularWord)]);
   LWord := LowerCase(Trim(ASingularWord));
-  LLast := LWord[Length(result)];
-  LLastTwo := Copy(LWord, Length(LWord) - 1, 2);
+  LLast := LWord[Length(LWord)];
   if Length(LWord) > 1 then
-    LSecondLast := LWord[Length(result)-1]
+  begin
+    LLastTwo := Copy(LWord, Length(LWord) - 1, 2);
+    LSecondLast := LWord[Length(LWord)-1];
+  end
   else
+  begin
+    LLastTwo := LWord;
     LSecondLast := #0;
+  end;
 
-  if MatchStr(LLast, ['s','z','x']) or MatchStr(LLastTwo, ['ch','sh','ss']) then
+  // Common rules
+  // If it ends in -is, change -is to -es
+  if LLastTwo = 'is' then
+    result := _ReplaceLast(2, 'es')
+  // If it ends in -s,z,x,ch,sh,ss, add -es
+  else if MatchStr(LLast, ['s','z','x']) or MatchStr(LLastTwo, ['ch','sh','ss']) then
     result := _Add('es')
+  // If it ends in a vowel and -y, add -s
+  // If it ends in a constonant and -y, change -y to -ies
   else if LLast = 'y' then
   begin
     if _IsVowel(LSecondLast) then
@@ -3472,8 +3482,7 @@ begin
     else
       result := _ReplaceLast(1, 'ies');
   end
-  else if LLastTwo = 'is' then
-    result := _ReplaceLast(2, 'es')
+  // Common word exceptions
   else if LWord = 'zero' then
     result := _Add('es')
   else if LWord = 'man' then
@@ -3482,6 +3491,7 @@ begin
     result := _ReplaceLast(2, 'en')
   else if LWord = 'child' then
     result := _Add('ren')
+  // Default, true for most words
   else
     result := _Add('s');
 end;

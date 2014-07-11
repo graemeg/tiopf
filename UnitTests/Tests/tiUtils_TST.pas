@@ -159,6 +159,7 @@ type
     procedure tiPadL;
     procedure tiPadR;
     procedure tiPosR;
+    procedure tiPluralize;
     procedure tiQuote;
     procedure tiReadFileDateSize;
     procedure tiRemoveCrLf;
@@ -469,6 +470,62 @@ begin
   CheckEquals('123', tiUtils.tiRemoveLeading0('0123'), 'Failed on 4');
   CheckEquals('123', tiUtils.tiRemoveLeading0('00123'), 'Failed on 5');
   CheckEquals('a0123', tiUtils.tiRemoveLeading0('a0123'), 'Failed on 6');
+end;
+
+
+procedure TTestTIUtils.tiPluralize;
+begin
+  // Test AMakePlural (default value, has an effect, around the right way)
+  CheckEquals(tiUtils.tiPluralize('abc'), tiUtils.tiPluralize('abc', true), 'Failed on default true');
+  CheckNotEquals(tiUtils.tiPluralize('abc', false), tiUtils.tiPluralize('abc', true), 'Failed on toggle AMakePlural');
+  CheckEquals('abcs', tiUtils.tiPluralize('abc', true), 'Failed on ''abc'', true');
+  CheckEquals('abc', tiUtils.tiPluralize('abc', false), 'Failed on ''abc'', false');
+
+  // Match case
+  CheckEquals('apps', tiUtils.tiPluralize('app'), 'Failed on ''app''');
+  CheckEquals('Apps', tiUtils.tiPluralize('App'), 'Failed on ''App''');
+  CheckEquals('APPS', tiUtils.tiPluralize('APP'), 'Failed on ''APP''');
+  CheckEquals('TRIES', tiUtils.tiPluralize('TRY'), 'Failed on ''TRY''');
+
+  // No input
+  CheckEquals('', tiUtils.tiPluralize(''), 'Failed on ''''');
+  CheckEquals('', tiUtils.tiPluralize('', false), 'Failed on '''', false');
+
+  // Single-character input
+  CheckEquals('as', tiUtils.tiPluralize('a'), 'Failed on ''a''');
+  CheckEquals('ies', tiUtils.tiPluralize('y'), 'Failed on ''y''');
+  CheckEquals('ses', tiUtils.tiPluralize('s'), 'Failed on ''s''');
+
+  // Double-character input
+  CheckEquals('abs', tiUtils.tiPluralize('ab'), 'Failed on ''ab''');
+  CheckEquals('ches', tiUtils.tiPluralize('ch'), 'Failed on ''ch''');
+  CheckEquals('es', tiUtils.tiPluralize('is'), 'Failed on ''is''');
+  CheckEquals('ays', tiUtils.tiPluralize('ay'), 'Failed on ''ay''');
+  CheckEquals('mies', tiUtils.tiPluralize('my'), 'Failed on ''my''');
+
+  // Common rules
+  CheckEquals('buses', tiUtils.tiPluralize('bus'), 'Failed on ''bus''');
+  CheckEquals('buzzes', tiUtils.tiPluralize('buzz'), 'Failed on ''buzz''');
+  CheckEquals('foxes', tiUtils.tiPluralize('fox'), 'Failed on ''fox''');
+  CheckEquals('churches', tiUtils.tiPluralize('church'), 'Failed on ''church''');
+  CheckEquals('wishes', tiUtils.tiPluralize('wish'), 'Failed on ''wish''');
+  CheckEquals('misses', tiUtils.tiPluralize('miss'), 'Failed on ''miss''');
+  CheckEquals('berries', tiUtils.tiPluralize('berry'), 'Failed on ''berry''');
+  CheckEquals('toys', tiUtils.tiPluralize('toy'), 'Failed on ''toy''');
+  CheckEquals('axes', tiUtils.tiPluralize('axis'), 'Failed on ''axis''');
+
+  // Common word exceptions
+  CheckEquals('zeroes', tiUtils.tiPluralize('zero'), 'Failed on ''zero''');
+  CheckEquals('men', tiUtils.tiPluralize('man'), 'Failed on ''man''');
+  CheckEquals('women', tiUtils.tiPluralize('woman'), 'Failed on ''woman''');
+  CheckEquals('children', tiUtils.tiPluralize('child'), 'Failed on ''child''');
+
+  // Default rule
+  CheckEquals('cars', tiUtils.tiPluralize('car'), 'Failed on ''car''');
+  CheckEquals('vehicles', tiUtils.tiPluralize('vehicle'), 'Failed on ''vehicle''');
+  CheckEquals('parks', tiUtils.tiPluralize('park'), 'Failed on ''park''');
+  CheckEquals('falls', tiUtils.tiPluralize('fall'), 'Failed on ''fall''');
+  CheckEquals('skis', tiUtils.tiPluralize('ski'), 'Failed on ''ski''');
 end;
 
 
