@@ -1,6 +1,6 @@
 unit tiDBProxyServerDependencies;
 
-{$I tiDefines.Inc}
+{$I tiDefines.inc}
 
 interface
 uses
