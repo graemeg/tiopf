@@ -29,7 +29,7 @@ type
   protected
     procedure ExecuteStatement (Statement: TStrings; var StopExecution: Boolean); override;
     procedure ExecuteDirective (Directive, Argument: String; var StopExecution: Boolean); override;
-    procedure ExecuteCommit; override;
+    procedure ExecuteCommit{$if FPC_FULLVERSION >= 20701}(CommitRetaining: boolean=true){$endif}; override;
   public
     procedure Execute; override;
     property  Database : TtiDatabase read FDatabase write FDatabase;
@@ -77,7 +77,7 @@ begin
     FOnDirective (Self, Directive, Argument, StopExecution);
 end;
 
-procedure TtiOPFSQLscript.ExecuteCommit;
+procedure TtiOPFSQLscript.ExecuteCommit{$if FPC_FULLVERSION >= 20701}(CommitRetaining: boolean){$endif};
 begin
   FDatabase.Commit;
 end;
