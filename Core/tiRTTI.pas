@@ -86,7 +86,7 @@ type
   function tiIsReadWriteProp(const AData : TtiBaseObject; const APropName : string): boolean; overload;
   function tiIsReadWriteProp(const AData : TtiBaseObjectClass; const APropName : string): boolean; overload;
 
-  function  tiGetTypeInfo(PropInfo: PPropInfo): PTypeInfo; inline;
+  function  tiGetTypeInfo(PropInfo: PPropInfo): PTypeInfo; {$IFDEF FPC}inline;{$ENDIF}
   function  tiGetProperty(const AObject: TObject; const APropPath: string): Variant;
   {: Get the property as a string. If the property is not valid then return a default. }
   function  tiGetPropertyCoalesce(const AObject: TObject; const APropPath: string; const ADefault: string = ''): string;
@@ -151,7 +151,7 @@ begin
   end
 end;
 
-function tiGetTypeInfo(PropInfo: PPropInfo): PTypeInfo; inline;
+function tiGetTypeInfo(PropInfo: PPropInfo): PTypeInfo; {$IFDEF FPC}inline;{$ENDIF}
 begin
 {$IFDEF FPC}
   Result := PropInfo^.PropType;
