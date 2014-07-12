@@ -176,7 +176,7 @@ end;
 constructor TtiDatabaseTAB.Create;
 begin
   inherited;
-  FilenameExt := 'TXT';
+  FilenameExt := 'txt';
 end;
 
 constructor TtiQueryTAB.Create;
