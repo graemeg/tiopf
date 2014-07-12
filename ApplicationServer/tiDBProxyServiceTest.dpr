@@ -1,11 +1,11 @@
 program tiDBProxyServiceTest;
 
 uses
-  FastMM4,
+//  FastMM4,
   Forms,
   tiLogToGUI,
   FMainTIDBProxy in 'FMainTIDBProxy.pas' {FormMainTIDBProxyServer},
-  tiDBProxyServerDependencies in '..\..\Source\Options\tiDBProxyServerDependencies.pas';
+  tiDBProxyServerDependencies in '..\Options\tiDBProxyServerDependencies.pas';
 
 {$R *.RES}
 
