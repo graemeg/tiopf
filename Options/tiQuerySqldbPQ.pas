@@ -71,8 +71,8 @@ begin
   APersistenceLayerDefaults.PersistenceLayerName:= cTIPersistSqldbPQ;
   APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseName;
   APersistenceLayerDefaults.IsDatabaseNameFilePath:= False;
-  APersistenceLayerDefaults.Username:= 'postgres';
-  APersistenceLayerDefaults.Password:= 'postgres';
+  APersistenceLayerDefaults.Username:= 'postgres';  // sometimes also 'pgsql'
+  APersistenceLayerDefaults.Password:= 'postgres';  // sometimes also 'pgsql'
   APersistenceLayerDefaults.CanCreateDatabase:= True;
   APersistenceLayerDefaults.CanSupportMultiUser:= True;
   APersistenceLayerDefaults.CanSupportSQL:= True;
@@ -202,11 +202,20 @@ begin
           or (lFieldType = 'character') then
         begin
           lField.Kind := qfkString;
-          lField.Width := lFieldLength;
+          if lFieldLength > 0 then
+            lField.Width := lFieldLength
+          else
+          begin
+              lField.Kind := qfkLongString;  // http://dba.stackexchange.com/questions/20974/should-i-add-an-arbitrary-length-limit-to-varchar-columns
+          end;
         end
         else if lFieldType = 'integer' then
         begin
           lField.Kind := qfkInteger;
+        end
+        else if (lFieldType = 'date') or (lFieldType = 'time') then
+        begin
+          lField.Kind := qfkDateTime;
         end
 {
         case lFieldType of
