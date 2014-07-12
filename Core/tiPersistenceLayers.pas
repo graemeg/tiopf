@@ -91,6 +91,7 @@ type
   protected
     function    GetOwner: TtiPersistenceLayers; reintroduce;
     procedure   SetOwner(const AValue: TtiPersistenceLayers); reintroduce;
+    function    GetCaption: string; override;
 
     // These must be overridden in the concrete classes
     function GetDatabaseClass: TtiDatabaseClass; virtual; abstract;
@@ -315,6 +316,11 @@ end;
 procedure TtiPersistenceLayer.SetOwner(const AValue: TtiPersistenceLayers);
 begin
   inherited SetOwner(AValue);
+end;
+
+function TtiPersistenceLayer.GetCaption: string;
+begin
+  Result := PersistenceLayerName;
 end;
 
 destructor TtiPersistenceLayers.Destroy;
