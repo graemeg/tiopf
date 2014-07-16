@@ -30,7 +30,6 @@ type
     FThreadInstanceID: Integer;
   protected
     procedure Execute; override;
-    procedure WakeUpAndTerminate;
     function SleepAndCheckTerminated(ASleepFor: Cardinal): boolean;
     property UpdateEvent: TEvent read FUpdateEvent;
   public
@@ -38,6 +37,7 @@ type
     destructor  Destroy; override;
     procedure   SetThreadName(const AName: string);
     procedure   WakeUp;
+    procedure   WakeUpAndTerminate;
     property    ThreadInstanceID: Integer read FThreadInstanceID;
     property    SleepResponse: Cardinal read FSleepResponse write FSleepResponse;
   end;
@@ -615,8 +615,10 @@ end;
 
 procedure TtiSleepThread.WakeUpAndTerminate;
 begin
-  WakeUp;
+  // Although the method name makes it appear that we wake up first, we signal
+  // the terminate (just a flag) before triggering the wait loop to wake up
   Terminate;
+  WakeUp;
 end;
 
 destructor TtiSleepThread.Destroy;

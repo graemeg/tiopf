@@ -13,6 +13,7 @@ uses
   tiThread,
   tiUtils,
   tiINI,
+  tiLog,
   SyncObjs;
 
 type
@@ -32,50 +33,56 @@ type
   end;
 
   TtiScheduledFilePurgeDetailsList = class(TtiObjectList)
-  private
   protected
     function    GetItems(i: integer): TtiScheduledFilePurgeDetails; reintroduce;
     procedure   SetItems(i: integer; const AValue: TtiScheduledFilePurgeDetails); reintroduce;
-    //function    GetParent: TMyParent; reintroduce;
   public
     property    Items[i:integer] : TtiScheduledFilePurgeDetails read GetItems write SetItems;
     procedure   Add(AObject : TtiScheduledFilePurgeDetails); reintroduce;
-    //property    Parent: TMyParent read GetParent;
-    procedure DeleteOldFiles;    
-  published
-  end;
-  
-  TtiScheduledFilePurgeThread = class(TtiThread)
-  private
-    FProcessEvent: TEvent;
-
-    FDateTimeLastRun: TDateTime;
-    FTimeToRunPurge: TDateTime;
-
-    FScheduledFilePurgeDetailsList: TtiScheduledFilePurgeDetailsList;
-    
-    function TimeUntilNextScheduledRunInMS: Cardinal;
     procedure DeleteOldFiles;
-  public
-    constructor Create(
-        const ATimeToRunPurge: TDateTime; 
-        const AScheduledFilePurgeDetailsList: TtiScheduledFilePurgeDetailsList); reintroduce;
-    destructor Destroy; override;
-    procedure Execute; override;
-    procedure WakeUp;
   end;
-  
-  TtiScheduledFilePurge = class(TtiBaseObject)
+
+  TtiScheduledFilePurgeConfig = class(TtiObject)
   private
-    FTaskThread: TtiScheduledFilePurgeThread;
-    FScheduledFilePurgeDetailsList: TtiScheduledFilePurgeDetailsList;    
+    FINIFile: TtiINIFile;
+    FINIFileSectionName: string;
+    FDetailsList: TtiScheduledFilePurgeDetailsList;
+    FTimeToPurge: TDateTime;
   public
     constructor Create(const AINIFile: TtiINIFile;
-        const AINIFileSectionName: string); reintroduce; overload;
+        const AINIFileSectionName: string); reintroduce;
+    destructor Destroy; override;
+    procedure Read; override;
+    property DetailsList: TtiScheduledFilePurgeDetailsList read FDetailsList;
+    property TimeToPurge: TDateTime read FTimeToPurge write FTimeToPurge;
+  end;
+
+  TtiScheduledFilePurgeThread = class(TtiThread)
+  private
+    FConfig: TtiScheduledFilePurgeConfig;
+    procedure GetNextScheduledRun(out AScheduledRunTime: TDateTime;
+        out ATimeUntilRunInMS: Cardinal);
+    procedure DeleteOldFiles;
+  public
+    constructor Create(const AConfig: TtiScheduledFilePurgeConfig); reintroduce;
+    procedure Execute; override;
+  end;
+
+  TtiScheduledFilePurge = class(TtiBaseObject)
+  private
+    FConfig: TtiScheduledFilePurgeConfig;
+    FTaskThread: TtiScheduledFilePurgeThread;
+  public
+    constructor Create(const AINIFile: TtiINIFile;
+        const AINIFileSectionName: string); reintroduce;
     destructor Destroy; override;
   end;
 
 implementation
+
+uses
+  Math,
+  tiConstants;
 
 const
   CINIIdentFilePurge_Time = 'FilePurgeTime';
@@ -89,121 +96,77 @@ const
   CINIIdentFilePurgeDetails_Recurse = 'RecurseDirectories';
   CINIDefaultFilePurgeDetails_Recurse = false;
     
-{ TtiScheduledTask }
+{ TtiScheduledFilePurgeThread }
 
-constructor TtiScheduledFilePurgeThread.Create(const ATimeToRunPurge: TDateTime;
-    const AScheduledFilePurgeDetailsList: TtiScheduledFilePurgeDetailsList);
+constructor TtiScheduledFilePurgeThread.Create(
+  const AConfig: TtiScheduledFilePurgeConfig);
 begin
+  Assert(AConfig.TestValid(TtiScheduledFilePurgeConfig), CTIErrorInvalidObject);
   inherited Create(true {suspended});
   FreeOnTerminate := false;
-
-  FTimeToRunPurge   := TimeOf(ATimeToRunPurge);
-  FScheduledFilePurgeDetailsList := AScheduledFilePurgeDetailsList;
-
-  FProcessEvent := TEvent.Create(nil, True, False, '');
-end;
-
-destructor TtiScheduledFilePurgeThread.Destroy;
-begin
-  FreeAndNil(FProcessEvent);
-  inherited;
+  FConfig := AConfig;
 end;
 
 procedure TtiScheduledFilePurgeThread.Execute;
+var
+  LScheduledRunTime: TDateTime;
+  LSleepTime: Cardinal;
+const
+  CConfigRefreshIntevalMS = 300000; // 5 mins
 begin
   while not Terminated do
   begin
-    case FProcessEvent.WaitFor(TimeUntilNextScheduledRunInMS) of
-      wrSignaled: FProcessEvent.ResetEvent;
-      wrTimeout: DeleteOldFiles;
-        //wrAbandoned, wrError
-    end;
+    FConfig.Read; // Pick up any changes
+    GetNextScheduledRun(LScheduledRunTime, LSleepTime);
+    LSleepTime := Min(LSleepTime, CConfigRefreshIntevalMS);
+    if SleepAndCheckTerminated(LSleepTime) and
+       (Now >= LScheduledRunTime) then
+      DeleteOldFiles;
   end;
 end;
 
-function TtiScheduledFilePurgeThread.TimeUntilNextScheduledRunInMS: Cardinal;
+procedure TtiScheduledFilePurgeThread.GetNextScheduledRun(
+  out AScheduledRunTime: TDateTime; out ATimeUntilRunInMS: Cardinal);
 var
+  LNow: TDateTime;
   LTimeOfNow: TDateTime;
   LTimeOfRunPurge: TDateTime;
 begin
-  LTimeOfNow := TimeOf(Now);
-  LTimeOfRunPurge := TimeOf(FTimeToRunPurge);
+  LNow := Now;
+  LTimeOfNow := TimeOf(LNow);
+  LTimeOfRunPurge := TimeOf(FConfig.TimeToPurge);
 
   if LTimeOfNow < LTimeOfRunPurge then
-    Result := MilliSecondsBetween(LTimeOfRunPurge, LTimeOfNow)
+    ATimeUntilRunInMS := MilliSecondsBetween(LTimeOfRunPurge, LTimeOfNow)
   else
-    Result := MSecsPerDay - MilliSecondsBetween(LTimeOfNow, LTimeOfRunPurge);
-end;
-
-procedure TtiScheduledFilePurgeThread.WakeUp;
-begin
-  FProcessEvent.SetEvent;
+    ATimeUntilRunInMS := MSecsPerDay - MilliSecondsBetween(LTimeOfNow, LTimeOfRunPurge);
+  AScheduledRunTime := IncMilliSecond(LNow, ATimeUntilRunInMS);
 end;
 
 procedure TtiScheduledFilePurgeThread.DeleteOldFiles;
 begin
-  FScheduledFilePurgeDetailsList.DeleteOldFiles;
-  FDateTimeLastRun := Now;
+  FConfig.DetailsList.DeleteOldFiles;
 end;
 
 { TtiScheduledFilePurge }
 
 constructor TtiScheduledFilePurge.Create(const AINIFile: TtiINIFile;
   const AINIFileSectionName: string);
-var
-  i: Integer;
-  LINIFilePurgeSettingsList: TStringList;
-  LFilePurgeDetails: TtiScheduledFilePurgeDetails;
-  LTimeToPurge: TDateTime;
-  LKeyName: string;
-  LSectionEnabled: Boolean;
 begin
+  Assert(AINIFile <> nil, 'AINIFile must be assigned');
   inherited Create;
-  Assert(Assigned(AINIFile));
-  FScheduledFilePurgeDetailsList := TtiScheduledFilePurgeDetailsList.Create;
-  LINIFilePurgeSettingsList := TStringList.Create;
-  try
-    AINIFile.ReadSection(AINIFileSectionName, LINIFilePurgeSettingsList);
 
-    LTimeToPurge := AINIFile.ReadTime(AINIFileSectionName, CINIIdentFilePurge_Time, StrToTime(CINIDefaultFilePurge_Time));
-
-    for i := 0 to LINIFilePurgeSettingsList.Count - 1 do
-    begin
-      LKeyName := LINIFilePurgeSettingsList.Strings[i];
-
-      if LKeyName <> CINIIdentFilePurge_Time then
-      begin
-        LSectionEnabled := AINIFile.ReadBool(AINIFileSectionName, LKeyName, true);
-
-        if LSectionEnabled then
-        begin
-          LFilePurgeDetails := TtiScheduledFilePurgeDetails.Create;
-    
-          LFilePurgeDetails.Directory          := AINIFile.ReadString( LKeyName, CINIIdentFilePurgeDetails_Directory, CINIDefaultFilePurgeDetails_Directory);
-          LFilePurgeDetails.FilenameWildCard   := AINIFile.ReadString( LKeyName, CINIIdentFilePurgeDetails_WildCard,  CINIDefaultFilePurgeDetails_WildCard);
-          LFilePurgeDetails.FileDaysOld        := AINIFile.ReadInteger(LKeyName, CINIIdentFilePurgeDetails_DaysOld,   CINIDefaultFilePurgeDetails_DaysOld);
-          LFilePurgeDetails.RecurseDirectories := AINIFile.ReadBool(   LKeyName, CINIIdentFilePurgeDetails_Recurse,   CINIDefaultFilePurgeDetails_Recurse);
-
-          FScheduledFilePurgeDetailsList.Add(LFilePurgeDetails);
-        end;
-      end;
-    end;
-  finally
-    FreeAndNil(LINIFilePurgeSettingsList);
-  end;
-
-  FTaskThread := TtiScheduledFilePurgeThread.Create(
-      LTimeToPurge, FScheduledFilePurgeDetailsList);
+  FConfig := TtiScheduledFilePurgeConfig.Create(AINIFile, AINIFileSectionName);
+  FTaskThread := TtiScheduledFilePurgeThread.Create(FConfig);
   FTaskThread.Start;
 end;
 
 destructor TtiScheduledFilePurge.Destroy;
 begin
-  FTaskThread.Terminate;
-  FTaskThread.WakeUp;
+  FTaskThread.WakeUpAndTerminate;
   FTaskThread.WaitFor;
   FreeAndNil(FTaskThread);
-  FreeAndNil(FScheduledFilePurgeDetailsList);
+  FreeAndNil(FConfig);
   inherited;
 end;
 
@@ -245,4 +208,69 @@ begin
   inherited SetItems(i, AValue);
 end;
 
+{ TtiScheduledFilePurgeConfig }
+
+constructor TtiScheduledFilePurgeConfig.Create(const AINIFile: TtiINIFile;
+  const AINIFileSectionName: string);
+begin
+  Assert(AINIFile <> nil, 'AINIFile must be assigned');
+  Assert(AINIFileSectionName <> '', 'INI section must be specified');
+  inherited Create;
+
+  FINIFile := AINIFile;
+  FINIFileSectionName := AINIFileSectionName;
+
+  FDetailsList := TtiScheduledFilePurgeDetailsList.Create;
+  FTimeToPurge := 0;
+end;
+
+destructor TtiScheduledFilePurgeConfig.Destroy;
+begin
+  FDetailsList.Free;
+  FINIFile.Free;
+  inherited;
+end;
+
+procedure TtiScheduledFilePurgeConfig.Read;
+var
+  LSectionEnabled: Boolean;
+  LKeyName: string;
+  LFilePurgeDetails: TtiScheduledFilePurgeDetails;
+  i: Integer;
+  LINIFilePurgeSettingsList: TStringList;
+begin
+  FDetailsList.Clear;
+  LINIFilePurgeSettingsList := nil;
+  FINIFile.Lock;
+  try
+    LINIFilePurgeSettingsList := TStringList.Create;
+    if FINIFile.SectionExists(FINIFileSectionName) then
+    begin
+      FTimeToPurge := FINIFile.ReadTime(FINIFileSectionName, CINIIdentFilePurge_Time, StrToTime(CINIDefaultFilePurge_Time));
+      FINIFile.ReadSection(FINIFileSectionName, LINIFilePurgeSettingsList);
+      for i := 0 to LINIFilePurgeSettingsList.Count - 1 do
+      begin
+        LKeyName := LINIFilePurgeSettingsList.Strings[i];
+        if LKeyName <> CINIIdentFilePurge_Time then
+        begin
+          LSectionEnabled := FINIFile.ReadBool(FINIFileSectionName, LKeyName, true);
+          if LSectionEnabled then
+          begin
+            LFilePurgeDetails := TtiScheduledFilePurgeDetails.Create;
+            LFilePurgeDetails.Directory := FINIFile.ReadString(LKeyName, CINIIdentFilePurgeDetails_Directory, CINIDefaultFilePurgeDetails_Directory);
+            LFilePurgeDetails.FilenameWildCard := FINIFile.ReadString(LKeyName, CINIIdentFilePurgeDetails_WildCard, CINIDefaultFilePurgeDetails_WildCard);
+            LFilePurgeDetails.FileDaysOld := FINIFile.ReadInteger(LKeyName, CINIIdentFilePurgeDetails_DaysOld, CINIDefaultFilePurgeDetails_DaysOld);
+            LFilePurgeDetails.RecurseDirectories := FINIFile.ReadBool(LKeyName, CINIIdentFilePurgeDetails_Recurse, CINIDefaultFilePurgeDetails_Recurse);
+            FDetailsList.Add(LFilePurgeDetails);
+          end;
+        end;
+      end;
+    end;
+  finally
+    FreeAndNil(LINIFilePurgeSettingsList);
+    FINIFile.Unlock;
+  end;
+end;
+
 end.
+
