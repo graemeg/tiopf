@@ -3,6 +3,7 @@ unit tiSyncObjs;
 {$I tiDefines.inc}
 
 interface
+
 uses
   tiBaseObject
   ,Contnrs
@@ -10,6 +11,7 @@ uses
   ,Windows      // Graeme: This must appear before SyncObjs for Free Pascal!
   {$ENDIF}
   ,tiObject
+  ,tiExcept
   ,SyncObjs
   ,Classes  // TThreadList
  ;
@@ -32,6 +34,7 @@ type
     property    RetryLockFrequence: Word Read FRetryLockFrequency Write FRetryLockFrequency;
   end;
 
+  EtiOPFLockTimedOut = class(EtiOPFException);
 
 function  tiWaitForMutex(const AMutexName: string): Boolean; overload;
 function  tiWaitForMutex(const AMutexName: string; ASecondsToWait: Word): Boolean; overload;
