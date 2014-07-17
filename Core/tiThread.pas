@@ -617,8 +617,14 @@ procedure TtiSleepThread.WakeUpAndTerminate;
 begin
   // Although the method name makes it appear that we wake up first, we signal
   // the terminate (just a flag) before triggering the wait loop to wake up
-  Terminate;
-  WakeUp;
+  if FreeOnTerminate then
+    Terminate
+    // Cannot wake up as thread may have already terminated and freed
+  else
+  begin
+    Terminate;
+    WakeUp;
+  end;
 end;
 
 destructor TtiSleepThread.Destroy;

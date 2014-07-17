@@ -33,6 +33,7 @@ type
   private
     FReadOnly : Boolean;
     FAutoLock: boolean;
+    function MutexName: string;
     function AcquireLock: ItiINIFileLock;
   public
     constructor CreateExt(const AFileName : string = ''; pReadOnly: Boolean = false);
@@ -67,6 +68,7 @@ implementation
 uses
    tiUtils
   ,tiSyncObjs
+  ,tiLog
   ,SysUtils
  ;
 
@@ -131,6 +133,13 @@ begin
   Create(lFileName);
 end;
 
+function TtiINIFile.MutexName: string;
+begin
+  // Use the full and direct path to the ini file as the name but strip
+  // backslashes as they have special meaning in mutxes
+  result := tiStrTran(ExpandFileName(FileName), '\', '');
+end;
+
 function TtiINIFile.AcquireLock: ItiINIFileLock;
 begin
   if FAutoLock then
@@ -141,12 +150,12 @@ end;
 
 function TtiINIFile.Lock: boolean;
 begin
-  result := tiWaitForMutex(FileName);
+  result := tiWaitForMutex(MutexName);
 end;
 
 procedure TtiINIFile.Unlock;
 begin
-  tiReleaseMutex(FileName);
+  tiReleaseMutex(MutexName);
 end;
 
 procedure TtiINIFile.DeleteKey(const ASection, AIdent: String);
