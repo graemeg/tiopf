@@ -60,8 +60,10 @@ type
   TtiScheduledFilePurgeThread = class(TtiThread)
   private
     FConfig: TtiScheduledFilePurgeConfig;
+    FLastConfiguredPurgeTime: TDateTime;
+    FLastActualPurge: TDateTime;
     procedure GetNextScheduledRun(out AScheduledRunTime: TDateTime;
-        out ATimeUntilRunInMS: Cardinal);
+        out ATimeUntilRunInMS: Int64);
     procedure DeleteOldFiles;
   public
     constructor Create(const AConfig: TtiScheduledFilePurgeConfig); reintroduce;
@@ -105,47 +107,85 @@ begin
   inherited Create(true {suspended});
   FreeOnTerminate := false;
   FConfig := AConfig;
+  FLastConfiguredPurgeTime := 0;
+  FLastActualPurge := Date;
 end;
 
 procedure TtiScheduledFilePurgeThread.Execute;
 var
+  LLastScheduledRunTime: TDateTime;
   LScheduledRunTime: TDateTime;
+  LTimeUntilRunInMS: Int64;
   LSleepTime: Cardinal;
 const
   CConfigRefreshIntevalMS = 300000; // 5 mins
 begin
+  Log('Scheduled file purge thread started');
+  LLastScheduledRunTime := 0;
   while not Terminated do
   begin
     FConfig.Read; // Pick up any changes
-    GetNextScheduledRun(LScheduledRunTime, LSleepTime);
-    LSleepTime := Min(LSleepTime, CConfigRefreshIntevalMS);
+    GetNextScheduledRun(LScheduledRunTime, LTimeUntilRunInMS);
+    if LScheduledRunTime <> LLastScheduledRunTime then
+    begin
+      Log('Scheduled file purge: next scheduled run time: %s', [DateTimeToStr(LScheduledRunTime)], lsUserInfo);
+      LLastScheduledRunTime := LScheduledRunTime;
+    end;
+
+    LSleepTime := Min(LTimeUntilRunInMS, CConfigRefreshIntevalMS);
     if SleepAndCheckTerminated(LSleepTime) and
        (Now >= LScheduledRunTime) then
       DeleteOldFiles;
   end;
+  Log('Scheduled file purge thread stopped');
 end;
 
 procedure TtiScheduledFilePurgeThread.GetNextScheduledRun(
-  out AScheduledRunTime: TDateTime; out ATimeUntilRunInMS: Cardinal);
+  out AScheduledRunTime: TDateTime; out ATimeUntilRunInMS: Int64);
 var
   LNow: TDateTime;
-  LTimeOfNow: TDateTime;
-  LTimeOfRunPurge: TDateTime;
+  LBase: TDateTime;
+  LTimeOfBase: TDateTime;
+  LConfiguredPurgeTime: TDateTime;
+  LTimeOfConfiguredPurge: TDateTime;
 begin
-  LNow := Now;
-  LTimeOfNow := TimeOf(LNow);
-  LTimeOfRunPurge := TimeOf(FConfig.TimeToPurge);
+  // If this is the first time we scheduled or there was a change in the
+  // configured time then re-calculate from the current time, otherwise
+  // re-calculate from the time we last purged. By basing it on the time we
+  // last purged instead of say, the current time, we avoid skipping a run if
+  // it was due since the last time we calculated the scheduled time (e.g.
+  // within the last second or so).
 
-  if LTimeOfNow < LTimeOfRunPurge then
-    ATimeUntilRunInMS := MilliSecondsBetween(LTimeOfRunPurge, LTimeOfNow)
+  LNow := Now;
+  LConfiguredPurgeTime := FConfig.TimeToPurge;
+  if LConfiguredPurgeTime <> FLastConfiguredPurgeTime then
+    LBase := LNow
   else
-    ATimeUntilRunInMS := MSecsPerDay - MilliSecondsBetween(LTimeOfNow, LTimeOfRunPurge);
-  AScheduledRunTime := IncMilliSecond(LNow, ATimeUntilRunInMS);
+    LBase := FLastActualPurge;
+  FLastConfiguredPurgeTime := LConfiguredPurgeTime;
+  LTimeOfBase := TimeOf(LBase);
+  LTimeOfConfiguredPurge := TimeOf(LConfiguredPurgeTime);
+
+  // Calculate date-time to run
+  // NOTE: This could return a time in the past (back to the last purge) if we
+  // just skipped the scheduled run
+  // Today
+  AScheduledRunTime := DateOf(LBase) + LTimeOfConfiguredPurge;
+  // Tomorrow
+  if LTimeOfConfiguredPurge <= LTimeOfBase then
+    AScheduledRunTime := IncDay(AScheduledRunTime);
+
+  // Calculate milliseconds to the next run, (0 if past the scheduled time)
+  ATimeUntilRunInMS := MilliSecondsBetween(AScheduledRunTime, LNow);
+  if ATimeUntilRunInMS < 0 then
+    ATimeUntilRunInMS := 0;
 end;
 
 procedure TtiScheduledFilePurgeThread.DeleteOldFiles;
 begin
+  Log('Scheduled file purge: Deleting old files', lsUserInfo);
   FConfig.DetailsList.DeleteOldFiles;
+  FLastActualPurge := Now;
 end;
 
 { TtiScheduledFilePurge }
