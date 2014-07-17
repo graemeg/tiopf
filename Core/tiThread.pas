@@ -595,7 +595,7 @@ var
 begin
   // Sleep with instant wake up capability
   LStart := tiGetTickCount;
-  while ((tiGetTickCount - LStart) <= ASleepFor) and (not Terminated) and
+  while ((tiGetTickCount - LStart) < ASleepFor) and (not Terminated) and
         (not Finished) do
     if FUpdateEvent.WaitFor(FSleepResponse) = wrSignaled
       then FUpdateEvent.ResetEvent;
