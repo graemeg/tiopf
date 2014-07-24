@@ -247,7 +247,7 @@ type
     procedure   SetParamAsMacro(const AName: string;
                                  const AValue: string); override;
     procedure   SetParamIsNull(const AName: String; const AValue: Boolean); override;
-
+    procedure   LogParams;
   public
     constructor Create; override;
     destructor  Destroy; override;
@@ -258,6 +258,7 @@ type
 
     function    ParamCount: integer; override;
     function    ParamName(AIndex: integer): string; override;
+    function    ParamsAsStringList: TStringList;
 
     procedure   AssignParamFromStream(     const AName : string;  const AValue: TStream); override;
     procedure   AssignParamToStream(       const AName : string;  const AValue: TStream); override;
@@ -433,6 +434,7 @@ end;
 
 procedure TtiDatabaseRemoteXML.Commit;
 begin
+  Log(ClassName + ': [Commit Trans]', lsSQL);
   FInTransaction := false;
   ClearRequest;
   InsertRemoteRequest(rctCommit, '');
@@ -618,6 +620,7 @@ end;
 
 procedure TtiDatabaseRemoteXML.RollBack;
 begin
+  Log(ClassName + ': [RollBack Trans]', lsSQL);
   FInTransaction := false;
   ClearRequest;
   InsertRemoteRequest(rctRollBack, '');
@@ -673,6 +676,7 @@ end;
 
 procedure TtiDatabaseRemoteXML.StartTransaction;
 begin
+  Log(ClassName + ': [Start Trans]', lsSQL);
   ClearRequest;
   InsertRemoteRequest(rctStartTransaction, '');
   ExecuteRemoteCall;
@@ -942,7 +946,7 @@ function TtiQueryRemoteXML.ExecSQL: integer;
   end;
 
 begin
-
+  Log(ClassName + ': [Prepare] ' + tiNormalizeStr(self.SQLText), lsSQL);
   DBRemoteXML.ClearRequest;
 
   DBRemoteXML.DBRequestXML.StartTransaction;
@@ -1077,6 +1081,27 @@ begin
   result := FParams.ParamName(AIndex);
 end;
 
+function TtiQueryRemoteXML.ParamsAsStringList: TStringList;
+var
+  i: integer;
+  s: string;
+begin
+  result := TStringList.Create;
+  try
+    for i := 0 to ParamCount-1 do
+    begin
+      if ParamIsNull[ ParamName(i)] then      // Display the fact
+        s := 'Null'
+      else
+        s := ParamAsString[ParamName(i)];
+      result.Add(ParamName(i) + '=' + s);
+    end;
+  except
+    on e: exception do
+      LogError(e, true);
+  end;
+end;
+
 procedure TtiQueryRemoteXML.Reset;
 begin
   // Not sure what to put in here
@@ -1172,8 +1197,26 @@ begin
   Active := false;
 end;
 
+procedure TtiQueryRemoteXML.LogParams;
+const
+  cLogLine = '%s: [Param %d] %s = %s';
+var
+  sl: TStringList;
+  i: integer;
+begin
+  sl := ParamsAsStringList;
+  try
+    for i := 0 to sl.Count-1 do
+      Log(Format(cLogLine, [ClassName, i+1, sl.Names[i], sl.ValueFromIndex[i]]), lsSQL);
+  finally
+    sl.Free;
+  end;
+end;
+
 procedure TtiQueryRemoteXML.Open;
 begin
+  Log(ClassName + ': ' + tiNormalizeStr(self.SQLText), lsSQL);
+  LogParams;
   Active := true;
 end;
 
