@@ -42,6 +42,7 @@ type
     procedure   DoButtonClick(sender : TObject); virtual;
     procedure   SetText(sValue : string); virtual;
     function    GetText : string; virtual;
+    procedure   SetName(const NewName: TComponentName); override;
     procedure   SetEnabled(AValue : boolean); Override;
     procedure   SetReadOnly(const AValue: Boolean);virtual;
     procedure   Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -117,6 +118,7 @@ uses
 {$ELSE}
   ,Windows
 {$ENDIF}
+  ,tiGUIUtils
  ;
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -318,6 +320,15 @@ begin
   FEdit.Hint := AValue;
   FSpeedButton.Hint := AValue;
   FHint := AValue;
+end;
+
+procedure TtiPickerAbs.SetName(const NewName: TComponentName);
+begin
+  inherited;
+  if Assigned(FSpeedButton) then
+    FSpeedButton.Name := tiGetUniqueComponentNameFromParent(Self, 'sbPick');
+  if Assigned(FEdit) then
+    FEdit.Name := tiGetUniqueComponentNameFromParent(Self, 'edtPick');
 end;
 
 procedure TtiPickerAbs.SetEnabled(AValue: boolean);

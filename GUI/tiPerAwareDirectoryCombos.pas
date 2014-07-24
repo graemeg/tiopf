@@ -21,6 +21,7 @@ type
     FbCreateDir : boolean;
     procedure   PickDirectoryOnExit(sender : TObject);
   protected
+    procedure   SetName(const NewName: TComponentName); override;
     procedure   DoResize; override;
     procedure   DoButtonClick(sender : TObject); override;
     procedure   DoShowDirectoryButtonClick(sender : TObject);
@@ -47,7 +48,8 @@ uses
 {$ENDIF}
   tiFocusPanel,
   tiResources,
-  tiDialogs;
+  tiDialogs,
+  tiGUIUtils;
 
 { TtiPerAwarePickDirectory }
 
@@ -159,6 +161,13 @@ begin
                               sDirectory + '>');
     end;
   end;
+end;
+
+procedure TtiPickDirectory.SetName(const NewName: TComponentName);
+begin
+  inherited;
+  if Assigned(FSBShowDirectory) then
+    FSBShowDirectory.Name := tiGetUniqueComponentNameFromParent(Self, 'sbShowDirectory');
 end;
 
 end.

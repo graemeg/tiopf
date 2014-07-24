@@ -208,8 +208,8 @@ type
 
   protected
     procedure Loaded; override;
+    procedure SetName(const NewName: TComponentName); override;
     Property  RangeSetterCaptions : TStrings read getRangeSetterCaptions;
-
   published
     property MinDate  : TDateTime    read GetMinDate  write SetMinDate;
     property MaxDate  : TDateTime    read GetMaxDate  write SetMaxDate;
@@ -262,7 +262,6 @@ begin
   FdtpFrom := TDateTimePicker.Create(self);
   with FdtpFrom do begin
     parent  := self;
-    name    := tiGetUniqueComponentNameFromParent(self, 'dtpFrom');
     top     := 16;
     left    := 40;
     height  := 22;
@@ -279,7 +278,6 @@ begin
   FdtpTo  := TDateTimePicker.Create(self);
   with FdtpTo do begin
     parent  := self;
-    name    := tiGetUniqueComponentNameFromParent(self, 'dtpTo');
     top     := 40;
     left    := 40;
     height  := 22;
@@ -294,7 +292,6 @@ begin
   FlblFrom := TLabel.Create(self);
   with FlblFrom do begin
     parent := self;
-    name    := tiGetUniqueComponentNameFromParent(self, 'lblFrom');
     top    := 20;
     left   :=  8;
     caption := '&From';
@@ -304,7 +301,6 @@ begin
   FlblTo := TLabel.Create(self);
   with FlblTo do begin
     parent := self;
-    name    := tiGetUniqueComponentNameFromParent(self, 'lblTo');
     top    :=  44 ;
     left   :=   8 ;
     caption := '&To';
@@ -314,7 +310,6 @@ begin
   FrbSingleDate   := TRadioButton.Create(self);
   with FrbSingleDate do begin
     parent  := self;
-    name    := tiGetUniqueComponentNameFromParent(self, 'rbSingleDate');
     top     := FdtpFrom.Top + (FdtpFrom.Height - Height) div 2  ;
     left    := FdtpFrom.Left + FdtpFrom.Width + 4  ;
     width   := 14;
@@ -328,7 +323,6 @@ begin
   FrbDateRange  := TRadioButton.Create(self);
   with FrbDateRange do begin
     parent  := self;
-    name    := tiGetUniqueComponentNameFromParent(self, 'rbDateRange');
     top     := FdtpTo.Top  ;
     top     := FdtpTo.Top + (FdtpTo.Height - Height) div 2  ;
     left    := FdtpTo.Left + FdtpTo.Width + 4  ;
@@ -344,7 +338,6 @@ begin
   FcbQuick  := TComboBox.Create(self);
   with FcbQuick do begin
     parent  := self;
-    name    := tiGetUniqueComponentNameFromParent(self, 'cbQuick');
     top     := FdtpTo.Top + FdtpTo.Height + 4;
     left    := 40;
     height  := 22;
@@ -356,7 +349,6 @@ begin
   FlblQuick := TLabel.Create(self);
   with FlblQuick do begin
     parent := self;
-    name    := tiGetUniqueComponentNameFromParent(self, 'lblQuick');
     top    :=  FcbQuick.Top + (FcbQuick.Height - Height) div 2 ;
     left   :=   8 ;
     caption := '&Quick';
@@ -366,7 +358,6 @@ begin
   FchbSave := TCheckBox.Create(self);
   with FchbSave do begin
     parent  := self;
-    name    := tiGetUniqueComponentNameFromParent(self, 'chbSave');
     top     := FcbQuick.Top + (FcbQuick.Height - Height) div 2  ;
     left    := FcbQuick.Left + FcbQuick.Width + 4  ;
     width   := 14;
@@ -1012,6 +1003,29 @@ begin
 {$ENDIF}
 end;
 
+procedure TtiDateRange.SetName(const NewName: TComponentName);
+begin
+  inherited;
+  if Assigned(FdtpFrom) then
+    FdtpFrom.Name := tiGetUniqueComponentNameFromParent(Self, 'dtpFrom');
+  if Assigned(FdtpTo) then
+    FdtpTo.Name := tiGetUniqueComponentNameFromParent(Self, 'dtpTo');
+  if Assigned(FlblFrom) then
+    FlblFrom.Name := tiGetUniqueComponentNameFromParent(Self, 'lblFrom');
+  if Assigned(FlblTo) then
+    FlblTo.Name := tiGetUniqueComponentNameFromParent(Self, 'lblTo');
+  if Assigned(FrbSingleDate) then
+    FrbSingleDate.Name := tiGetUniqueComponentNameFromParent(Self, 'rbSingleDate');
+  if Assigned(FrbDateRange) then
+    FrbDateRange.Name := tiGetUniqueComponentNameFromParent(Self, 'rbDateRange');
+  if Assigned(FcbQuick) then
+    FcbQuick.Name := tiGetUniqueComponentNameFromParent(Self, 'cbQuick');
+  if Assigned(FlblQuick) then
+    FlblQuick.Name := tiGetUniqueComponentNameFromParent(Self, 'lblQuick');
+  if Assigned(FchbSave) then
+    FchbSave.Name := tiGetUniqueComponentNameFromParent(Self, 'chbSave');
+end;
+
 procedure TtiDateRange.SetAllowRangeType(const AValue: TAllowRangeType);
 begin
   FAllowRangeType := AValue;
@@ -1125,4 +1139,6 @@ begin
     FcbQuick.ItemIndex:= 0;
   DoOnChangeQuick(nil);
 end;
+
 end.
+
