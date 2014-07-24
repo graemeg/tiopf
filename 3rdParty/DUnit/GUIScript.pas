@@ -140,6 +140,10 @@ type
     procedure RightDoubleClickAtEval(Info: TProgramInfo);
     procedure SelectMenuItemEval(Info: TProgramInfo);
     procedure ControlExistsEval(Info: TProgramInfo);
+    procedure ControlVisibleEval(Info: TProgramInfo);
+    procedure ControlEnabledEval(Info: TProgramInfo);
+    procedure ControlNameEval(Info: TProgramInfo);
+    procedure ChildControlCountEval(Info: TProgramInfo);
     procedure ControlTextEval(Info: TProgramInfo);
     procedure ControlSelectedTextEval(Info: TProgramInfo);
 
@@ -592,6 +596,22 @@ begin
 
   LFunction := _AddFunction('ControlExists', ControlExistsEval);
   LFunction.ResultType := 'Boolean';
+  _AddParameter(LFunction, 'ControlName', 'String');
+
+  LFunction := _AddFunction('ControlVisible', ControlVisibleEval);
+  LFunction.ResultType := 'Boolean';
+  _AddParameter(LFunction, 'ControlName', 'String');
+
+  LFunction := _AddFunction('ControlEnabled', ControlEnabledEval);
+  LFunction.ResultType := 'Boolean';
+  _AddParameter(LFunction, 'ControlName', 'String');
+
+  LFunction := _AddFunction('ControlName', ControlNameEval);
+  LFunction.ResultType := 'String';
+  _AddParameter(LFunction, 'ControlName', 'String');
+
+  LFunction := _AddFunction('ChildControlCount', ChildControlCountEval);
+  LFunction.ResultType := 'Integer';
   _AddParameter(LFunction, 'ControlName', 'String');
 
   LFunction := _AddFunction('ControlText', ControlTextEval);
@@ -1344,28 +1364,36 @@ var
   LControlList: TStringList;
 
   procedure _GetControlList(const AControl: TControl; AControlList: TStringList;
-    const ALevel: Integer);
+    const ALevel: Integer; const AChildIndex: Integer);
   var
     i: Integer;
     LWinControl: TWinControl;
+    LLine: string;
   begin
+    LLine := DupeString(FControlInspectionIndent, ALevel);
     if AControl.Name <> '' then
-      AControlList.Add(DupeString(FControlInspectionIndent, ALevel) + AControl.Name +
-          ' (' + AControl.ClassName + ')');
+      LLine := LLine + AControl.Name + ' (' + AControl.ClassName + ')'
+    else
+    begin
+      if AChildIndex <> -1 then
+        LLine := LLine + '[' + IntToStr(AChildIndex) + '] ';
+      LLine := LLine + '(' + AControl.ClassName + ')';
+    end;
+    AControlList.Add(LLine);
     // Recurse to get child controls
     if AControl is TWinControl then
     begin
       LWinControl := AControl as TWinControl;
       for i := 0 to LWinControl.ControlCount - 1 do
         if LWinControl.Controls[i] is TControl then
-          _GetControlList(LWinControl.Controls[i], AControlList, ALevel + 1);
+          _GetControlList(LWinControl.Controls[i], AControlList, ALevel + 1, i);
     end;
   end;
 
 begin
   LControlList := TStringList.Create;
   try
-    _GetControlList(AControl, LControlList, 0);
+    _GetControlList(AControl, LControlList, 0, -1);
     Result := LControlList.Text;
   finally
     LControlList.Free;
@@ -1493,13 +1521,33 @@ end;
 
 procedure TGUIScript.ControlExistsEval(Info: TProgramInfo);
 begin
-  try
-    Control(Info);
-    Info.ResultAsBoolean := true;
-  except
-    on e: EGUIAutomationControlNotFound do
-      Info.ResultAsBoolean := false;
-  end;
+  Info.ResultAsBoolean := FGUIAutomation.ControlExists(ControlName(Info));
+end;
+
+procedure TGUIScript.ControlVisibleEval(Info: TProgramInfo);
+begin
+  Info.ResultAsBoolean := FGUIAutomation.ControlVisible(ControlName(Info));
+end;
+
+procedure TGUIScript.ControlEnabledEval(Info: TProgramInfo);
+begin
+  Info.ResultAsBoolean := FGUIAutomation.ControlEnabled(ControlName(Info));
+end;
+
+procedure TGUIScript.ControlNameEval(Info: TProgramInfo);
+begin
+  Info.ResultAsString := Control(Info).Name;
+end;
+
+procedure TGUIScript.ChildControlCountEval(Info: TProgramInfo);
+var
+  LControl: TControl;
+begin
+  LControl := Control(Info);
+  if LControl is TWinControl then
+    Info.ResultAsInteger := (LControl as TWinControl).ControlCount
+  else
+    Info.ResultAsInteger := 0;
 end;
 
 procedure TGUIScript.ControlTextEval(Info: TProgramInfo);

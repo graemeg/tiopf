@@ -94,10 +94,11 @@ const
   CClickCommand = 'Click';
   CClickAtCommand = 'At';
   CClickToCommand = 'To';
+  CChildControlNameToken = '/';
 
 type
   TGUIActionAbs = class;
-  TGUIActionMouseDown = class;
+  TGUIActionMouseButtonAbs = class;
   TGUIActionRecorder = class;
 
   TGUIActionRecorderEvent = procedure(Sender: TGUIActionRecorder) of object;
@@ -149,7 +150,7 @@ type
     FControl: TControl;
     FHwnd: HWND;
     FHighlightHwnd: HWND;
-    FMouseDownAction: TGUIActionMouseDown;
+    FMouseButtonAction: TGUIActionMouseButtonAbs;
     FMouseDownMoved: Boolean;
 
     FGUI: TWinControl;
@@ -169,7 +170,13 @@ type
         const ANewKeyState: string): boolean;
     procedure SetActive(const AValue: boolean);
     procedure SetControl(const AHwnd: HWND; var APoint: TPoint; var AContinue: Boolean);
-    function ControlByName(const AControl: TControl): boolean;
+    // Does the control itself have a name?
+    function ControlHasName(const AControl: TControl): boolean;
+    // Does the control or any parent have a name? We can address using
+    // the name hierarchy and child control index. e.g. ParentName/0
+    function ControlCanBeAddressedByName(const AControl: TControl): boolean;
+    function ControlNameHierarchy(const AControl: TControl;
+        out ANamedControl: TControl; out AHeirarchicalName: string): boolean;
     function ControlName: string;
     function ValidControl: boolean;
     procedure SetHighlightControl(const AValue: Boolean);
@@ -487,7 +494,7 @@ begin
   FControl := nil;
   FHwnd := 0;
   FHighlightHwnd := 0;
-  FMouseDownAction := nil;
+  FMouseButtonAction := nil;
   FMouseDownMoved := false;
 
   FGUI := nil;
@@ -523,17 +530,92 @@ begin
   FHwnd := 0;
 end;
 
-function TGUIActionRecorder.ControlByName(const AControl: TControl):
+function TGUIActionRecorder.ControlHasName(const AControl: TControl):
   boolean;
 begin
   Result := Assigned(FControl) and (FControl.Name <> '');
 end;
 
-function TGUIActionRecorder.ControlName: string;
+function TGUIActionRecorder.ControlCanBeAddressedByName(
+  const AControl: TControl): boolean;
+var
+  LControl: TControl;
 begin
-  if ControlByName(FControl) then
-    Result := FControl.Name
+  result := false;
+  LControl := AControl;
+  while (not result) and (LControl <> nil) do
+  begin
+    result := LControl.Name <> '';
+    LControl := LControl.Parent;
+  end;
+end;
+
+// Note: Currently this requires at least one control in the parent hierarchy
+// to have a name but this is not strictly required as we could use the index
+// even from the top level (first index would be the child control index of
+// the active form).
+function TGUIActionRecorder.ControlNameHierarchy(
+  const AControl: TControl; out ANamedControl: TControl;
+  out AHeirarchicalName: string): boolean;
+var
+  LControl: TControl;
+
+  function _IndexInParent(const AChildControl: TControl): Integer;
+  var
+    LParent: TWinControl;
+    i: Integer;
+  begin
+    result := -1;
+    LParent := AChildControl.Parent;
+    if LParent <> nil then
+      for i := 0 to LParent.ControlCount - 1 do
+        if LParent.Controls[i] = AChildControl then
+        begin
+          result := i;
+          break;
+        end;
+  end;
+  
+  procedure _PrependName(const AName: string);
+  begin
+    if AHeirarchicalName <> '' then
+      AHeirarchicalName := CChildControlNameToken + AHeirarchicalName;
+    AHeirarchicalName := AName + AHeirarchicalName;
+  end;
+  
+begin
+  AHeirarchicalName := '';
+
+  LControl := AControl;
+  while (LControl <> nil) and (LControl.Name = '') do
+  begin
+    _PrependName(IntToStr(_IndexInParent(LControl)));
+    LControl := LControl.Parent;
+  end;
+  
+  if LControl <> nil then
+  begin
+    result := true;
+    ANamedControl := LControl;
+    _PrependName(LControl.Name);
+  end
   else
+  begin
+    result := false;
+    ANamedControl := nil;
+    AHeirarchicalName := '';
+  end;
+end;
+
+function TGUIActionRecorder.ControlName: string;
+var
+  LControl: TControl;
+begin
+  if ControlHasName(FControl) then
+    Result := FControl.Name
+  else if ControlCanBeAddressedByName(FControl) then
+    ControlNameHierarchy(FControl, LControl, Result)
+  else       
     Result := '';
 end;
 
@@ -657,7 +739,7 @@ begin
     // it has a name then we can use it instead of the windowed parent but we
     // need to translate the co-ords
     LHitControl := _ControlAtPos(LWinControl, APoint, true {AllowDisabled});
-    if Assigned(LHitControl) and ControlByName(LHitControl) then
+    if Assigned(LHitControl) and ControlHasName(LHitControl) then
       // Get point relative to child
       APoint := _SourceToTarget(APoint, LWinControl, LHitControl)
     else
@@ -883,14 +965,15 @@ begin
 
           // If control cannot be identified by name then find the control
           // at runtime based on co-ords from foreground window.
-          if not ControlByName(FControl) then
+          if (not ControlHasName(FControl)) and
+             (not ControlCanBeAddressedByName(FControl)) then
             LPoint := _ControlToWindowCoords(LPoint);
 
           // For single click we record a mouse down but if the mouse up is at the
           // same position the action will be changed to a click for simplicity
-          FMouseDownAction := TGUIActionMouseDown.Create(AHwnd, FControl,
+          FMouseButtonAction := TGUIActionMouseDown.Create(AHwnd, FControl,
               ControlName, LPoint.X, LPoint.Y, LButton);
-          AddAction(FMouseDownAction, AContinue);
+          AddAction(FMouseButtonAction, AContinue);
           FMouseDownMoved := false;
         end;
       end;
@@ -910,11 +993,28 @@ begin
 
           // If control cannot be identified by name then find the control
           // at runtime based on co-ords from foreground window.
-          if not ControlByName(FControl) then
+          if (not ControlHasName(FControl)) and
+             (not ControlCanBeAddressedByName(FControl)) then
             LPoint := _ControlToWindowCoords(LPoint);
 
-          AddAction(TGUIActionClick.Create(AHwnd, FControl, ControlName,
-              LPoint.X, LPoint.Y, LButton, mcsDouble), AContinue);
+          // If same control and position as single mouse click then remove the
+          // single click action. Message sequence for a double click is:
+          // Mouse down
+          // Mouse up
+          // Double click down
+          // Mouse up
+          if Assigned(FMouseButtonAction) and
+             (FMouseButtonAction is TGUIActionClick) and
+             ((FMouseButtonAction as TGUIActionClick).ClickState = mcsSingle) and
+             (AHwnd = FMouseButtonAction.Hwnd) and
+             (not FMouseDownMoved) and (LPoint.X = FMouseButtonAction.X) and
+             (LPoint.Y = FMouseButtonAction.Y) then
+            FActions.Remove(FMouseButtonAction);
+
+          // Remember the double-click so that we skip the mouse up action
+          FMouseButtonAction := TGUIActionClick.Create(AHwnd, FControl,
+              ControlName, LPoint.X, LPoint.Y, LButton, mcsDouble);
+          AddAction(FMouseButtonAction, AContinue);
         end;
       end;
     WM_LBUTTONUP,
@@ -933,28 +1033,39 @@ begin
 
           // If control cannot be identified by name then find the control
           // at runtime based on co-ords from foreground window.
-          if not ControlByName(FControl) then
+          if (not ControlHasName(FControl)) and
+             (not ControlCanBeAddressedByName(FControl)) then
             LPoint := _ControlToWindowCoords(LPoint);
 
-          // If same control and position as mouse down then change to single click
-          if Assigned(FMouseDownAction) and (AHwnd = FMouseDownAction.Hwnd) and
-             (not FMouseDownMoved) and (LPoint.X = FMouseDownAction.X) and
-             (LPoint.Y = FMouseDownAction.Y) then
+          // If same control and position as mouse down then:
+          // - change mouse down, mouse up to single click action
+          // - ignore mouse up for double-click action (it is built in)
+          if Assigned(FMouseButtonAction) and (AHwnd = FMouseButtonAction.Hwnd) and
+             (not FMouseDownMoved) and (LPoint.X = FMouseButtonAction.X) and
+             (LPoint.Y = FMouseButtonAction.Y) then
           begin
-            FActions.Remove(FMouseDownAction);
-            FMouseDownAction := nil;
-            AddAction(TGUIActionClick.Create(AHwnd, FControl, ControlName,
-                LPoint.X, LPoint.Y, LButton, mcsSingle), AContinue);
+            if not (FMouseButtonAction is TGUIActionClick) {is double-click} then
+            begin
+              FActions.Remove(FMouseButtonAction);
+              // Remember the new click as double-click will need to remove it
+              FMouseButtonAction := TGUIActionClick.Create(AHwnd, FControl,
+                  ControlName, LPoint.X, LPoint.Y, LButton, mcsSingle);
+              AddAction(FMouseButtonAction, AContinue);
+            end else
+              FMouseButtonAction := nil;
           end
           else
+          begin
             AddAction(TGUIActionMouseUp.Create(AHwnd, FControl, ControlName,
                 LPoint.X, LPoint.Y, LButton), AContinue);
+            FMouseButtonAction := nil;
+          end;
         end
         else
-          FMouseDownAction := nil;
+          FMouseButtonAction := nil;
       end;
     WM_MOUSEMOVE:
-      if FRecordMouseMove or Assigned(FMouseDownAction) then
+      if FRecordMouseMove or Assigned(FMouseButtonAction) then
       begin
         LPoint := Point(AX, AY);
         SetControl(AHwnd, LPoint, AContinue);
@@ -964,14 +1075,15 @@ begin
         begin
           // If control cannot be identified by name then find the control
           // at runtime based on co-ords from foreground window.
-          if not ControlByName(FControl) then
+          if (not ControlHasName(FControl)) and
+             (not ControlCanBeAddressedByName(FControl)) then
             LPoint := _ControlToWindowCoords(LPoint);
 
           // Record if position is different to mouse down
-          if (not Assigned(FMouseDownAction)) or
-             ((AHwnd <> FMouseDownAction.Hwnd) or
-              (LPoint.X <> FMouseDownAction.X) or
-              (LPoint.Y <> FMouseDownAction.Y)) then
+          if (not Assigned(FMouseButtonAction)) or
+             ((AHwnd <> FMouseButtonAction.Hwnd) or
+              (LPoint.X <> FMouseButtonAction.X) or
+              (LPoint.Y <> FMouseButtonAction.Y)) then
           begin
             FMouseDownMoved := true;
 

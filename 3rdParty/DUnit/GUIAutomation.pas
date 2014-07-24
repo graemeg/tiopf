@@ -30,8 +30,6 @@
  * Jon Bertrand <jonbsfnet@users.sourceforge.net>
  * The DUnit group at SourceForge <http://dunit.sourceforge.net>
  *
- * TODO:
- *   Allow replay of a text script.
  *)
 
 {$I DUnit.inc}
@@ -75,6 +73,31 @@ type
   EGUIAutomationControlNotFound = class(EGUIAutomation);
 
   TOnGetContinueExecutionEvent = procedure(var AContinueExecution: boolean) of object;
+
+  // Control Names
+  // -------------
+  // If control name is numeric:
+  // - If the parent component is a TWinControl then return the immediate child
+  //   control with that numeric index (0 based)
+  // If the control name is not numeric:
+  // - Find a control with the given name, recursing through child controls
+  //   hierarchically in reverse order. This will find the last instance, which
+  //   is probably the better default to handle the case where there are multiple
+  //   controls with the same name (e.g. multiple instances of the same parented
+  //   form). You can control this behavior (e.g. get "find first") if you use
+  //   the hierarchical child control name feature below to find the correct
+  //   parent before finding within its child controls.
+  //
+  // Control name can be specified hierarchically by separating the name at
+  // each level with a slash (/). Examples:
+  // - ControlA/ControlB : find control with name ControlA and then return its
+  //   last child (found recursively as above) with name ControlB
+  // - ControlA/3 : find control with name ControlA and then return its child
+  //   control with index 3
+  // - 3/4/1 : find child control with index 3, its child with index 4 (the
+  //   grandchild) and return its child with index 1 (the great-grandchild)
+  // - 3/ControlB : find child control with index 3 and return the last child
+  //   (found recursively) with name ControlB
 
   TGUIAutomation = class(TObject)
   private
@@ -143,6 +166,9 @@ type
     // Find in given parent component
     function FindControl(const AComp: TComponent; const AControlName: string; const AAddrs: Pointer = nil): TControl; overload;
 
+    function ControlExists(const AControlName: string): boolean;
+    function ControlVisible(const AControlName: string): boolean;
+    function ControlEnabled(const AControlName: string): boolean;
     function WaitForControlExists(const AControlName: string; const AExists: Boolean = true; const AInterval: Cardinal = CDefaultControlWaitInterval): boolean;
     function WaitForControlVisible(const AControlName: string; const AVisible: Boolean = true; const AInterval: Cardinal = CDefaultControlWaitInterval): boolean;
     function WaitForControlEnabled(const AControlName: string; const AEnabled: Boolean = true; const AInterval: Cardinal = CDefaultControlWaitInterval): boolean;
@@ -240,6 +266,7 @@ const
   CDefaultGUITextEntryDelay = 100; // Milliseconds
   CDefaultGUIControlWaitPeriod = 1000; // Milliseconds
   CGUIPositionalClickDelay = 400; // Milliseconds
+  CChildControlNameToken = '/';
 
 implementation
 
@@ -430,28 +457,65 @@ var
   LControlName: string;
   LWinControl: TWinControl;
   i: Integer;
+  LChildControlTokenPos: Integer;
+  LChildControlSpecified: boolean;
+  LChildControlName: string;
+  LControlIndex: Integer;
 begin
-  LControlName := UpperCase(AControlName);
-  if (AComp is TControl) and (UpperCase(AComp.Name) = LControlName) then
-    Result := AComp as TControl
+  Result := nil;
+
+  // Look for child control reference and extract names
+  LChildControlTokenPos := Pos(CChildControlNameToken, AControlName);
+  LChildControlSpecified := LChildControlTokenPos > 0;
+  if LChildControlSpecified then
+  begin
+    // First is the immediate control to find
+    LControlName := Trim(Copy(AControlName, 1, LChildControlTokenPos - 1));
+    // Remainder is the child control(s) (skip the token)
+    LChildControlName := Trim(Copy(AControlName, LChildControlTokenPos + 1,
+        Length(AControlName)));
+    LChildControlSpecified := LChildControlName <> '';
+  end
   else
   begin
-    Result := nil;
+    LControlName := Trim(AControlName);
+    LChildControlName := '';
+  end;
 
+  // Control by index
+  if TryStrToInt(LControlName, LControlIndex) then
+  begin
     if AComp is TWinControl then
     begin
       LWinControl := AComp as TWinControl;
-      // Search in reverse to get latest instance. There can be multiple
-      // controls with the same name if the form is hosting embedded child
-      // forms (parented to another form)
-      i := LWinControl.ControlCount - 1;
-      while (Result = nil) and (i >= 0) do
+      if LControlIndex < LWinControl.ControlCount then
+        result := LWinControl.Controls[LControlIndex];
+    end;
+  end
+  else
+  begin
+    // Control by name, recurse into child controls
+    if (AComp is TControl) and (UpperCase(AComp.Name) = UpperCase(LControlName)) then
+      Result := AComp as TControl
+    else
+    begin
+      if AComp is TWinControl then
       begin
-        Result := FindControlInstance(LWinControl.Controls[i], AControlName);
-        Dec(i);
+        LWinControl := AComp as TWinControl;
+        // Search in reverse to get last instance
+        i := LWinControl.ControlCount - 1;
+        while (Result = nil) and (i >= 0) do
+        begin
+          Result := FindControlInstance(LWinControl.Controls[i], LControlName);
+          Dec(i);
+        end;
       end;
     end;
   end;
+
+  // Recurse to find the child control if specified
+  if Assigned(Result) and LChildControlSpecified then
+    Result := FindControlInstance(Result, LChildControlName);
 end;
 
 function TGUIAutomation.FindControlInstance(const AComp: TComponent;
@@ -906,6 +970,33 @@ begin
       APoint := LPoint;
     end;
   end;
+end;
+
+function TGUIAutomation.ControlExists(const AControlName: string): boolean;
+begin
+  if Trim(AControlName) = '' then
+    raise EGUIAutomation.Create('No control name') at CallerAddr;
+  result := FindControlInstance(Screen.ActiveForm, AControlName) <> nil;
+end;
+
+function TGUIAutomation.ControlVisible(const AControlName: string): boolean;
+var
+  LControl: TControl;
+begin
+  if Trim(AControlName) = '' then
+    raise EGUIAutomation.Create('No control name') at CallerAddr;
+  LControl := FindControlInstance(Screen.ActiveForm, AControlName);
+  result := Assigned(LControl) and LControl.Visible;
+end;
+
+function TGUIAutomation.ControlEnabled(const AControlName: string): boolean;
+var
+  LControl: TControl;
+begin
+  if Trim(AControlName) = '' then
+    raise EGUIAutomation.Create('No control name') at CallerAddr;
+  LControl := FindControlInstance(Screen.ActiveForm, AControlName);
+  result := Assigned(LControl) and LControl.Visible and LControl.Enabled;
 end;
 
 function TGUIAutomation.WaitForControlExists(const AControlName: string;
