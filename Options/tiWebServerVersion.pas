@@ -13,6 +13,8 @@ unit tiWebServerVersion;
 // supported and using an earlier version number may cause existing (old)
 // applications to think that they are up-to-date.
 
+{$I tiDefines.inc}
+
 interface
 uses
   tiBaseObject
@@ -27,7 +29,7 @@ const
   // NOTE: The following old file sync version is only used if an application
   // specific version is not defined, that is if an app server version class is
   // not registered, and is maintained here for backwards compatibility.
-  // Do not increment this in future. 
+  // Do not increment this in future.
   ctiOPFOldFileSyncVersion = '2.0';
 
 type
