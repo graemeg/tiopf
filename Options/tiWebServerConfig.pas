@@ -132,8 +132,11 @@ begin
 end;
 
 function TtiWebServerConfig.GetINIFileName: string;
+var
+  LDefaultFilePath: string;
 begin
-  Result:= GetRegistryValue('Shared INI File Location', '\TechInsite\Shared\Config.ini');
+  LDefaultFilePath := GetEnvironmentVariable('APPDATA') + '\TechInsite\Shared\Config.ini';
+  Result:= GetRegistryValue('Shared INI File Location', LDefaultFilePath);
   if not DirectoryExists(ExtractFilePath(Result)) then
     ForceDirectories(ExtractFilePath(Result));
 end;
@@ -160,7 +163,7 @@ var
 begin
   LRegistry := TRegistry.Create;
   try
-    LNewValue := ExtractFileDrive(ParamStr(0)) + ADefault;
+    LNewValue := ADefault;
     Result := '';
 
     LRegistry.RootKey := HKEY_LOCAL_MACHINE;
