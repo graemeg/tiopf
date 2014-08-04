@@ -279,7 +279,10 @@ begin
   if Assigned(FFindLabel) then
     FFindLabel.Name := tiGetUniqueComponentNameFromParent(Self, 'FindLabel');
   if Assigned(FFindText) then
+  begin
     FFindText.Name := tiGetUniqueComponentNameFromParent(Self, 'FindText');
+    FFindText.Text := '';
+  end;
   if Assigned(FClose) then
     FClose.Name := tiGetUniqueComponentNameFromParent(Self, 'Close');
   if Assigned(FFindNext) then
