@@ -258,6 +258,7 @@ type
     procedure TestEmptySeparator2;
     procedure TestEmptySeparator3;
     procedure TestEmptySeparator4;
+    procedure TestEmailRecipients;
   end;
 
 procedure RegisterTests;
@@ -4414,6 +4415,14 @@ begin
   if DirectoryExists(TempDirectory) then
     tiUtils.tiForceRemoveDir(TempDirectory);
   inherited;
+end;
+
+procedure TtiTokenTests.TestEmailRecipients;
+begin
+  CheckEquals('"Test Support" <testsupport@domain.com>',
+    tiToken('"Test Support" <testsupport@domain.com>,"Test Team" <fred.smith@domain.com>', ',', 1));
+  CheckEquals('"Test Team" <fred.smith@domain.com>',
+    tiToken('"Test Support" <testsupport@domain.com>,"Test Team" <fred.smith@domain.com>', ',', 2));
 end;
 
 procedure TtiTokenTests.TestEmptyFinishToken1;
