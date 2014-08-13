@@ -1520,6 +1520,7 @@ begin
   inherited Create(AOwner);
   Parent:= AOwner;
   Name := tiGetUniqueComponentNameFromParent(Parent, 'ChartLegendItem');
+  Caption := '';
   FtiChart:= AChart;
   FChartSeries:= ASeries;
   ControlStyle  := ControlStyle - [csSetCaption];
