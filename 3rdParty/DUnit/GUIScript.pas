@@ -108,6 +108,7 @@ type
     procedure TerminateScriptEval(Info: TProgramInfo);
     procedure ContinueExecutionEval(Info: TProgramInfo);
     procedure CallApplicationEval(Info: TProgramInfo);
+    procedure ValueOfConditionalEval(Info: TProgramInfo);
 
     procedure SetActionDelayEval(Info: TProgramInfo);
     procedure SetMouseMoveDelayEval(Info: TProgramInfo);
@@ -495,6 +496,10 @@ begin
   LFunction.ResultType := 'String';
   _AddParameter(LFunction, 'ActionName', 'String', '');
   _AddParameter(LFunction, 'Value', 'String', '');
+
+  LFunction := _AddFunction('ValueOfConditional', ValueOfConditionalEval);
+  LFunction.ResultType := 'String';
+  _AddParameter(LFunction, 'ConditionalName', 'String');
 
   // GUI automation methods
 
@@ -974,6 +979,12 @@ begin
   if Assigned(FOnCallApplication) then
     FOnCallApplication(Info.ValueAsString['ActionName'], LValue);
   Info.ResultAsString := LValue;
+end;
+
+procedure TGUIScript.ValueOfConditionalEval(Info: TProgramInfo);
+begin
+  Info.ResultAsString := FDWScript.Config.Conditionals.Values[
+      Info.ValueAsString['ConditionalName']];
 end;
 
 procedure TGUIScript.SetActionDelayEval(Info: TProgramInfo);
