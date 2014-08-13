@@ -31,17 +31,13 @@
  * The DUnit group at SourceForge <http://dunit.sourceforge.net>
  *
  * TODO:
- *   Select popup and main menu items (WM_SYSCOMMAND?)
+ *   Select main menu items (WM_SYSCOMMAND?)
  *   Copy/paste using keyboard (simulate with keypresses or need WM_COPY,
  *     WM_CUT, WM_PASTE?)
  *   Mouse wheel messages
  *   Context menu key
  *   Drag and drop
  *   TComboBox item selection using keyboard
- *   Use control hierarchy and index to find window handle of control at
- *     runtime for unnamed controls instead of using an absolute cursor
- *     position. This allows the control position to change such as when
- *     the window resized. e.g. Use '#<index>' as control name
  *   Optionally record timing. Calculate time between actions and add delay
  *     to commands to simulate actual usage.
  *   Detect change in foreground window and add a WaitForNewForegroundWindow
@@ -83,6 +79,8 @@ const
   CEnterTextCommandName = 'EnterText';
   CEnterKeyCommandName = 'EnterKey';
   CSelectMenuItemCommandName = 'SelectMenuItem';
+  CHorizontalScrollCommandName = 'HorizontalScroll';
+  CVerticalScrollCommandName = 'VerticalScroll';
   CLeftButtonCommand = 'Left';
   CRightButtonCommand = 'Right';
   CMiddleButtonCommand = 'Middle';
@@ -95,6 +93,7 @@ const
   CClickAtCommand = 'At';
   CClickToCommand = 'To';
   CChildControlNameToken = '/';
+  CChildControlNameWindowToken = '@';
 
 type
   TGUIActionAbs = class;
@@ -149,9 +148,9 @@ type
     FEnteredText: string;
     FControl: TControl;
     FHwnd: HWND;
+    FControlName: string;
     FHighlightHwnd: HWND;
     FMouseButtonAction: TGUIActionMouseButtonAbs;
-    FMouseDownMoved: Boolean;
 
     FGUI: TWinControl;
     FActive: boolean;
@@ -168,16 +167,24 @@ type
     function CharFromVirtualKey(const AKey: Word): string;
     function CheckKeyState(const AVKCode: Word; var AKeyState: string;
         const ANewKeyState: string): boolean;
+    function GetMouseButton(const AMessage: UINT): TMouseButton;
     procedure SetActive(const AValue: boolean);
-    procedure SetControl(const AHwnd: HWND; var APoint: TPoint; var AContinue: Boolean);
+    procedure SetControl(const AHwnd: HWND; const AControl: TControl; var AContinue: Boolean); overload;
+    procedure SetControl(const AHwnd: HWND; var AContinue: Boolean); overload;
+    procedure SetControl(const AHwnd: HWND; var APoint: TPoint; var AContinue: Boolean); overload;
     // Does the control itself have a name?
     function ControlHasName(const AControl: TControl): boolean;
     // Does the control or any parent have a name? We can address using
     // the name hierarchy and child control index. e.g. ParentName/0
     function ControlCanBeAddressedByName(const AControl: TControl): boolean;
     function ControlNameHierarchy(const AControl: TControl;
-        out ANamedControl: TControl; out AHeirarchicalName: string): boolean;
-    function ControlName: string;
+        out ANamedControl: TControl;
+        out AHeirarchicalName: string): boolean; overload;
+{$IFDEF MSWINDOWS}
+    function ControlNameHierarchy(const AHwnd: HWND;
+        out ANamedControl: TControl;
+        out AHeirarchicalName: string): boolean; overload;
+{$ENDIF}
     function ValidControl: boolean;
     procedure SetHighlightControl(const AValue: Boolean);
     procedure ToggleHighlight(const AHwnd: HWND);
@@ -187,7 +194,7 @@ type
     procedure Initialize;
     procedure Finalize;
     procedure ProcessMessage(const AMessage: UINT; const AHwnd: HWND;
-        const AWParam: WPARAM; var AContinue: boolean;
+        const AWParam: WPARAM; const ALParam: LPARAM; var AContinue: boolean;
         const AX: Integer = -1; const AY: Integer = -1);
     procedure PerformHighlight;
     procedure StopRecording;
@@ -305,6 +312,36 @@ type
     property ID: Integer read FID;
   end;
 
+  TGUIActionScrollAbs = class(TGUIActionAbs)
+  private
+    FCommand: Word;
+    FPosition: Word;
+    FCount: Integer;
+    FX: Integer;
+    FY: Integer;
+  protected
+    function GetCommandParameters(const ACommandFormat: TGUIActionCommandFormat): string; override;
+  public
+    constructor Create(
+        const AHwnd: HWND; const AControl: TControl; const AControlName: string;
+        const ACommand: Word; const APosition: Word; const ACount: Integer);
+    property Command: Word read FCommand;
+    property Position: Word read FPosition;
+    property Count: Integer read FCount write FCount;
+  end;
+
+  TGUIActionScrollClass = class of TGUIActionScrollAbs;
+
+  TGUIActionHorizontalScroll = class(TGUIActionScrollAbs)
+  protected
+    function GetCommandName: string; override;
+  end;
+
+  TGUIActionVerticalScroll = class(TGUIActionScrollAbs)
+  protected
+    function GetCommandName: string; override;
+  end;
+
 function GGUIActionRecorder: TGUIActionRecorder;
 
 implementation
@@ -315,12 +352,18 @@ uses
 {$IFDEF MSWINDOWS}
   ,Menus
 {$ENDIF}
+  ,GUIUtils
+  ,StrUtils
+{
+// Debugging
+  ,tiLog
+}
   ;
 
 var
   URecorder: TGUIActionRecorder;
   UProcessGetMessageHook: HHOOK;
-//  UCallWndProcHook: HHOOK;
+  UCallWndProcHook: HHOOK;
 
 {$IFNDEF LINUX}
   {$IFNDEF DELPHI2010_UP}
@@ -358,7 +401,7 @@ var
   LMsg: PMsg;
   LContinue: boolean;
 begin
-  LProcess := (AnCode = HC_ACTION) and (AwParam = PM_REMOVE) and
+  LProcess := (AnCode = HC_ACTION) and (AwParam = PM_REMOVE {Message processed}) and
       Assigned(URecorder) and URecorder.Active;
 
   LContinue := true;
@@ -367,7 +410,7 @@ begin
     begin
       LMsg := PMsg(AlParam);
       URecorder.ProcessMessage(LMsg.message, LMsg.hwnd, LMsg.wParam,
-          LContinue, LoWord(LMsg.lParam), HiWord(LMsg.lParam));
+          LMsg.lParam, LContinue, LoWord(LMsg.lParam), HiWord(LMsg.lParam));
     end;
   finally
     if LContinue then
@@ -385,26 +428,43 @@ begin
     URecorder.StopRecording;
 end;
 
-//function ProcessCallWndProcHook(AnCode: Integer;
-//  AwParam: WPARAM; AlParam: LPARAM): Integer; stdcall;
-//var
-//  LStruct: PCWPStruct;
-//  LContinue: boolean;
-//begin
-//  LContinue := true;
-//  if Assigned(URecorder) and URecorder.Active then
-//  begin
-//    LStruct := PCWPStruct(AlParam);
-//    URecorder.ProcessMessage(LStruct.message, LStruct.hwnd, LStruct.wParam,
-//        LContinue);
-//  end;
-//
-//  Result := CallNextHookEx(UCallWndProcHook, AnCode, AwParam, AlParam);
-//
-//  // Must only unhook after CallNextHookEx
-//  if Assigned(URecorder) and (not LContinue) then
-//    URecorder.StopRecording;
-//end;
+function ProcessCallWndProcHook(AnCode: Integer;
+  AwParam: WPARAM; AlParam: LPARAM): LRESULT; stdcall;
+var
+  LProcess: Boolean;
+  LStruct: PCWPStruct;
+  LContinue: boolean;
+begin
+  LProcess := (AnCode = HC_ACTION) and Assigned(URecorder) and URecorder.Active;
+
+  LContinue := true;
+  try
+    if LProcess then
+    begin
+      LStruct := PCWPStruct(AlParam);
+      URecorder.ProcessMessage(LStruct.message, LStruct.hwnd, LStruct.wParam,
+          LStruct.lParam, LContinue, LoWord(LStruct.lParam),
+          HiWord(LStruct.lParam));
+    end;
+  finally
+    if LContinue then
+      Result := CallNextHookEx(UCallWndProcHook, AnCode, AwParam, AlParam)
+    else
+      Result := 0;
+  end;
+
+  // Highlight after the window has processed the message
+  if LProcess and URecorder.HighlightControl then
+    URecorder.PerformHighlight;
+
+  // Must only unhook after CallNextHookEx
+  if LProcess and (not LContinue) then
+    URecorder.StopRecording;
+
+  // Must only unhook after CallNextHookEx
+  if Assigned(URecorder) and (not LContinue) then
+    URecorder.StopRecording;
+end;
 
 { TGUIActionAbs }
 
@@ -495,7 +555,6 @@ begin
   FHwnd := 0;
   FHighlightHwnd := 0;
   FMouseButtonAction := nil;
-  FMouseDownMoved := false;
 
   FGUI := nil;
   FActive := false;
@@ -528,12 +587,13 @@ begin
   FlushTextEntry(LContinue);
   FControl := nil;
   FHwnd := 0;
+  FMouseButtonAction := nil;
 end;
 
 function TGUIActionRecorder.ControlHasName(const AControl: TControl):
   boolean;
 begin
-  Result := Assigned(FControl) and (FControl.Name <> '');
+  Result := Assigned(AControl) and (AControl.Name <> '');
 end;
 
 function TGUIActionRecorder.ControlCanBeAddressedByName(
@@ -586,13 +646,17 @@ var
 begin
   AHeirarchicalName := '';
 
+  // Work up the parent control hierarchy until we find a control with a name,
+  // using the child control index as the name at each level
   LControl := AControl;
   while (LControl <> nil) and (LControl.Name = '') do
   begin
     _PrependName(IntToStr(_IndexInParent(LControl)));
     LControl := LControl.Parent;
   end;
-  
+
+  // If we found a control with a name then start with it, else we can't use
+  // the hierarchy
   if LControl <> nil then
   begin
     result := true;
@@ -607,17 +671,107 @@ begin
   end;
 end;
 
-function TGUIActionRecorder.ControlName: string;
+{$IFDEF MSWINDOWS}
+type
+  TIndexOfChildWindowParams = record
+    HwndToFind: HWND;
+    CurrentIndex: Integer;
+    ResultIndex: Integer;
+  end;
+  PIndexOfChildWindowParams = ^TIndexOfChildWindowParams;
+{$ENDIF}
+
+{$IFDEF MSWINDOWS}
+function IndexOfChildWindowProc(AHwnd: HWND; ALParam: LPARAM): BOOL; stdcall;
 var
-  LControl: TControl;
+  LParams: PIndexOfChildWindowParams;
 begin
-  if ControlHasName(FControl) then
-    Result := FControl.Name
-  else if ControlCanBeAddressedByName(FControl) then
-    ControlNameHierarchy(FControl, LControl, Result)
-  else       
-    Result := '';
+  LParams := PIndexOfChildWindowParams(ALParam);
+  if AHwnd = LParams^.HwndToFind then
+  begin
+    LParams^.ResultIndex := LParams^.CurrentIndex;
+    Result := false; // Stop enumeration
+  end
+  else
+  begin
+    Inc(LParams^.CurrentIndex);
+    Result := true; // Continue enumeration
+  end;
 end;
+{$ENDIF}
+
+{$IFDEF MSWINDOWS}
+function TGUIActionRecorder.ControlNameHierarchy(const AHwnd: HWND;
+    out ANamedControl: TControl;
+    out AHeirarchicalName: string): boolean;
+var
+  LHwnd: HWND;
+  LParentHwnd: HWND;
+  LRootParentHwnd: HWND;
+  LControl: TControl;
+  LHeirarchicalName: string;
+
+  function _IndexInParent(const AParentHwnd: HWND; const AChildHwnd: HWND): Integer;
+  var
+    LParams: TIndexOfChildWindowParams;
+  begin
+    if AParentHwnd <> 0 then
+    begin
+      LParams.HwndToFind := AChildHwnd;
+      LParams.CurrentIndex := 0;
+      LParams.ResultIndex := -1;
+      EnumChildWindows(AParentHwnd, @IndexOfChildWindowProc, LPARAM(@LParams));
+      result := LParams.ResultIndex;
+    end
+    else
+      result := -1;
+  end;
+
+  procedure _PrependName(const AName: string);
+  begin
+    if AHeirarchicalName <> '' then
+      AHeirarchicalName := CChildControlNameToken + AHeirarchicalName;
+    AHeirarchicalName := AName + AHeirarchicalName;
+  end;
+
+begin
+  AHeirarchicalName := '';
+
+  // Work up the parent window hierarchy until a) we find a TControl and build
+  // the hierarchy from it, or b) get to the root parent window, using the
+  // child window index as the name at each level.
+  // The further we traverse the greater the number of child windows in the
+  // hierarchy and the more likely it is that the index will be wrong in a
+  // repeated test as the creation order may be different.
+  LRootParentHwnd := GetAncestor(AHwnd, GA_ROOT);
+  //LRootParentHwnd := GetTopmostWindow; // Alternative but less likely to be correct
+  LHwnd := AHwnd;
+  LControl := FindControl(LHwnd);
+  while (LHwnd <> 0) and (LHwnd <> LRootParentHwnd {topmost window}) and
+        (LHwnd <> Menus.PopupList.Window {popup menu}) and (LControl = nil) do
+  begin
+    LParentHwnd := GetAncestor(LHwnd, GA_PARENT);
+    if LParentHwnd <> 0 then
+      _PrependName(CChildControlNameWindowToken +
+          IntToStr(_IndexInParent(LParentHwnd, LHwnd)));
+
+    LHwnd := LParentHwnd;
+    LControl := FindControl(LHwnd);
+  end;
+
+  // If we found a VCL control then continue up the hierarchy using it as
+  // hopefully we can find a control with a name or at the least the child
+  // index should be more consistent
+  if Assigned(LControl) then
+  begin
+    Result := ControlNameHierarchy(LControl, ANamedControl, LHeirarchicalName);
+    if Result then
+      _PrependName(LHeirarchicalName);
+  end;
+
+  Result := AHeirarchicalName <> '';
+end;
+{$ENDIF}
 
 procedure TGUIActionRecorder.AddAction(AAction: TGUIActionAbs;
   var AContinue: Boolean);
@@ -641,13 +795,19 @@ begin
   begin
     if AValue then
     begin
+      // Mouse, keyboard, menu actions
       if UProcessGetMessageHook = 0 then
         UProcessGetMessageHook := SetWindowsHookEx(WH_GETMESSAGE,
             ProcessGetMessageProcHook, 0, GetCurrentThreadId);
-//      if UCallWndProcHook = 0 then
-//        UCallWndProcHook := SetWindowsHookEx(WH_CALLWNDPROC,
-//            ProcessCallWndProcHook, 0, GetCurrentThreadId);
-// Also look at WH_JOURNALRECORD as a possibile alternative
+      // Scroll
+      if UCallWndProcHook = 0 then
+        UCallWndProcHook := SetWindowsHookEx(WH_CALLWNDPROC,
+            ProcessCallWndProcHook, 0, GetCurrentThreadId);
+      // The hook WH_JOURNALRECORD might seem perfectly suited at first:
+      //   http://msdn.microsoft.com/en-us/library/windows/desktop/ms644983(v=vs.85).aspx
+      // The problem is that it can only be used under very strict security
+      // conditions:
+      //   http://www.wintellect.com/CS/blogs/jrobbins/archive/2008/08/30/so-you-want-to-set-a-windows-journal-recording-hook-on-vista-it-s-not-nearly-as-easy-as-you-think.aspx
     end
     else
     begin
@@ -657,8 +817,8 @@ begin
         FHighlightHwnd := 0;
       end;
 
-//      UnHookWindowsHookEx(UCallWndProcHook);
-//      UCallWndProcHook := 0;
+      UnHookWindowsHookEx(UCallWndProcHook);
+      UCallWndProcHook := 0;
       UnHookWindowsHookEx(UProcessGetMessageHook);
       UProcessGetMessageHook := 0;
       Finalize;
@@ -725,13 +885,52 @@ begin
     end;
 end;
 
+procedure TGUIActionRecorder.SetControl(const AHwnd: HWND;
+  const AControl: TControl; var AContinue: Boolean);
+var
+  LControl: TControl;
+begin
+  // Record the window handle
+  if AHwnd <> FHwnd then
+  begin
+    FlushTextEntry(AContinue);
+    FHwnd := AHwnd;
+  end;
+
+  // Record the control
+  FControl := AControl;
+
+  // Record the control name (if we can get one)
+  if ControlHasName(AControl) then
+    // Yes, we have a direct name
+    FControlName := AControl.Name
+  else if Assigned(AControl) and ControlCanBeAddressedByName(AControl) then
+    // Try to name from the parent control using child control index
+    ControlNameHierarchy(AControl, LControl, FControlName)
+  else
+{$IFDEF MSWINDOWS}
+    // Try to name from the parent window using child window index
+    ControlNameHierarchy(AHwnd, LControl, FControlName);
+{$ELSE}
+    FControlName := '';
+{$ENDIF}
+end;
+
+procedure TGUIActionRecorder.SetControl(const AHwnd: HWND;
+  var AContinue: Boolean);
+begin
+  // Look for a windowed VCL control with the given window handle
+  SetControl(AHWnd, FindControl(AHwnd), AContinue);
+end;
+
 procedure TGUIActionRecorder.SetControl(const AHwnd: HWND; var APoint: TPoint;
   var AContinue: Boolean);
 var
   LWinControl: TWinControl;
   LHitControl: TControl;
 begin
-  // Find the VCL control with the given window handle
+  // Look for a windowed or non-windowed VCL control from the given window
+  // handle and position
   LWinControl := FindControl(AHwnd);
   if Assigned(LWinControl) then
   begin
@@ -747,13 +946,7 @@ begin
   end else
     LHitControl := nil;
 
-  if LHitControl <> FControl then
-  begin
-    FlushTextEntry(AContinue);
-    FControl := LHitControl;
-  end;
-
-  FHwnd := AHwnd;
+  SetControl(AHWnd, LHitControl, AContinue);
 end;
 
 procedure TGUIActionRecorder.SetHighlightControl(const AValue: Boolean);
@@ -821,9 +1014,9 @@ end;
 
 procedure TGUIActionRecorder.FlushTextEntry(var AContinue: Boolean);
 begin
-  if Assigned(FControl) and (FEnteredText <> '') then
+  if (FHwnd <> 0) and (FEnteredText <> '') then
   begin
-    AddAction(TGUIActionEnterTextInto.Create(FHwnd, FControl, ControlName,
+    AddAction(TGUIActionEnterTextInto.Create(FHwnd, FControl, FControlName,
         FEnteredText), AContinue);
     FEnteredText := '';
   end;
@@ -869,14 +1062,112 @@ begin
   end;
 end;
 
+function TGUIActionRecorder.GetMouseButton(const AMessage: UINT): TMouseButton;
+begin
+  case AMessage of
+    WM_LBUTTONDOWN,
+    WM_NCLBUTTONDOWN,
+    WM_LBUTTONDBLCLK,
+    WM_NCLBUTTONDBLCLK,
+    WM_LBUTTONUP,
+    WM_NCLBUTTONUP:
+      Result := mbLeft;
+    WM_RBUTTONDOWN,
+    WM_NCRBUTTONDOWN,
+    WM_RBUTTONDBLCLK,
+    WM_NCRBUTTONDBLCLK,
+    WM_RBUTTONUP,
+    WM_NCRBUTTONUP:
+      Result := mbRight;
+    WM_MBUTTONDOWN,
+    WM_NCMBUTTONDOWN,
+    WM_MBUTTONDBLCLK,
+    WM_NCMBUTTONDBLCLK,
+    WM_MBUTTONUP,
+    WM_NCMBUTTONUP:
+      Result := mbMiddle;
+  else
+    raise Exception.Create('Unhandled message: ' + IntToStr(Ord(AMessage)));
+  end;
+end;
+
+{
+// Debugging:
+procedure _LogWindowDetails(const AHwnd: HWND; const APrefix: string = '');
+var
+  LControl: TControl;
+  LClassName: string;
+  LControlInfo: string;
+  LRect: TRect;
+begin
+  SetLength(LClassName, 200);
+  SetLength(LClassName, GetClassName(AHwnd, PChar(LClassName), 200));
+  LControl := FindControl(AHwnd);
+  if Assigned(LControl) then
+    LControlInfo := LControl.ClassName + ' (' + LControl.Name + ')'
+  else
+    LControlInfo := '';
+  LRect := Rect(0, 0, 0, 0);
+  GetWindowRect(AHwnd, LRect);
+  Log(APrefix + '0x%.8x %s [%s] (%d,%d %d,%d)', [AHwnd, LClassName,
+      LControlInfo, LRect.Left, LRect.Top, LRect.Width, LRect.Height], lsUserInfo);
+end;
+
+function _LogChildWindowsProc(AHwnd: HWND; ALParam: LPARAM): BOOL; stdcall;
+var
+  LLevel: Integer;
+begin
+  LLevel := Integer(ALParam);
+  _LogWindowDetails(AHwnd, '=> ' + DupeString('  ', LLevel));
+  Result := true; // Continue enumeration
+end;
+
+procedure _LogMessage(const AMessage: UINT; const AHwnd: HWND;
+  const AWParam: WPARAM; const ALParam: LPARAM; const AX: Integer;
+  const AY: Integer);
+var
+  LHwnd: HWND;
+  LLevel: Integer;
+begin
+  Log('Message: 0x%.4x', [AMessage], lsUserInfo);
+  Log('HWND: 0x%.8x', [AHwnd], lsUserInfo);
+  Log('wParam: 0x%.8x', [AWParam], lsUserInfo);
+  Log('lParam: 0x%.8x', [ALParam], lsUserInfo);
+  Log('X: %d', [AX], lsUserInfo);
+  Log('Y: %d', [AY], lsUserInfo);
+
+  // Work up the parent window hierarchy until a) we find a TControl and build
+  // the hierarchy from it, or b) get to the top window, using the child window
+  // index as the name at each level
+  LHwnd := AHwnd;
+  LLevel := 0;
+  while LHwnd <> 0 do
+  begin
+    _LogWindowDetails(LHwnd, DupeString('  ', LLevel));
+    LHwnd := GetAncestor(LHwnd, GA_PARENT);
+    Inc(LLevel);
+  end;
+
+  _LogWindowDetails(GetTopmostWindow, 'Topmost: ');
+  _LogWindowDetails(GetForegroundWindow, 'Foreground: ');
+  _LogWindowDetails(GetAncestor(AHwnd, GA_ROOT), 'Root: ');
+  EnumChildWindows(GetAncestor(AHwnd, GA_ROOT), @_LogChildWindowsProc, LPARAM(0));
+end;
+}
+
 procedure TGUIActionRecorder.ProcessMessage(const AMessage: UINT;
-  const AHwnd: HWND; const AWParam: WPARAM; var AContinue: boolean;
-  const AX: Integer; const AY: Integer);
+  const AHwnd: HWND; const AWParam: WPARAM; const ALParam: LPARAM;
+  var AContinue: boolean; const AX: Integer; const AY: Integer);
 var
   LKeyState: string;
   LText: string;
   LPoint: TPoint;
   LButton: TMouseButton;
+  LScrollClass: TGUIActionScrollClass;
+  LScrollCommand: Word;
+  LScrollPosition: Word;
+  LLastActionAsEnterKey: TGUIActionEnterKey;
+  LLastActionAsScroll: TGUIActionScrollAbs;
 
   // Translate control co-ords to window co-ords as we don't have a
   // repeatable window name or handle to rely on so we record it as
@@ -888,7 +1179,8 @@ var
     Result := APoint;
     ClientToScreen(AHwnd, Result);
     //LWindowHwnd := GetAncestor(AHwnd, GA_ROOT);
-    LWindowHwnd := GetForegroundWindow;
+    //LWindowHwnd := GetForegroundWindow;
+    LWindowHwnd := GetTopmostWindow; // Works for popup menus
     ScreenToClient(LWindowHwnd, Result);
   end;
 
@@ -908,8 +1200,7 @@ begin
           Exit; //==>
         end;
 
-        LPoint := Point(AX, AY);
-        SetControl(AHwnd, LPoint, AContinue);
+        SetControl(AHwnd, AContinue);
 
         if ValidControl then
         begin
@@ -936,21 +1227,28 @@ begin
 
               // If the last action was EnterKey and it is the same key then
               // increment the count instead of creating a new action
-              if (FActions.Last is TGUIActionEnterKey) and
-                 (AHwnd = TGUIActionEnterKey(FActions.Last).Hwnd) and
-                 (AWParam = TGUIActionEnterKey(FActions.Last).KeyCode) and
-                 (LKeyState = TGUIActionEnterKey(FActions.Last).KeyState) then
-                TGUIActionEnterKey(FActions.Last).Count :=
-                    TGUIActionEnterKey(FActions.Last).Count + 1
+              if (FActions.Count > 0) and (FActions.Last is TGUIActionEnterKey) then
+                LLastActionAsEnterKey := FActions.Last as TGUIActionEnterKey
               else
-                AddAction(TGUIActionEnterKey.Create(AHwnd, FControl, ControlName,
+                LLastActionAsEnterKey := nil;
+              if Assigned(LLastActionAsEnterKey) and
+                 (AHwnd = LLastActionAsEnterKey.Hwnd) and
+                 (AWParam = LLastActionAsEnterKey.KeyCode) and
+                 (LKeyState = LLastActionAsEnterKey.KeyState) then
+                LLastActionAsEnterKey.Count := LLastActionAsEnterKey.Count + 1
+              else
+                AddAction(TGUIActionEnterKey.Create(AHwnd, FControl, FControlName,
                     AWParam, LKeyState, 1), AContinue);
             end;
           end;
         end;
       end;
     WM_LBUTTONDOWN,
-    WM_RBUTTONDOWN:
+    WM_RBUTTONDOWN,
+    WM_MBUTTONDOWN:
+    //WM_NCLBUTTONDOWN
+    //WM_NCRBUTTONDOWN
+    //WM_NCMBUTTONDOWN
       begin
         LPoint := Point(AX, AY);
         SetControl(AHwnd, LPoint, AContinue);
@@ -958,27 +1256,30 @@ begin
 
         if ValidControl then
         begin
-          if AMessage = WM_LBUTTONDOWN then
-            LButton := mbLeft
-          else
-            LButton := mbRight;
-
           // If control cannot be identified by name then find the control
           // at runtime based on co-ords from foreground window.
-          if (not ControlHasName(FControl)) and
-             (not ControlCanBeAddressedByName(FControl)) then
+          if FControlName = '' then
             LPoint := _ControlToWindowCoords(LPoint);
 
           // For single click we record a mouse down but if the mouse up is at the
           // same position the action will be changed to a click for simplicity
+          LButton := GetMouseButton(AMessage);
+{
+// Debugging:
+//          if LButton = mbRight then
+          _LogMessage(AMessage, AHwnd, AWParam, ALParam, AX, AY);
+}
           FMouseButtonAction := TGUIActionMouseDown.Create(AHwnd, FControl,
-              ControlName, LPoint.X, LPoint.Y, LButton);
+              FControlName, LPoint.X, LPoint.Y, LButton);
           AddAction(FMouseButtonAction, AContinue);
-          FMouseDownMoved := false;
         end;
       end;
     WM_LBUTTONDBLCLK,
-    WM_RBUTTONDBLCLK:
+    WM_RBUTTONDBLCLK,
+    WM_MBUTTONDBLCLK:
+    //WM_NCLBUTTONDBLCLK
+    //WM_NCRBUTTONDBLCLK
+    //WM_NCMBUTTONDBLCLK
       begin
         LPoint := Point(AX, AY);
         SetControl(AHwnd, LPoint, AContinue);
@@ -986,15 +1287,9 @@ begin
 
         if ValidControl then
         begin
-          if AMessage = WM_LBUTTONDBLCLK then
-            LButton := mbLeft
-          else
-            LButton := mbRight;
-
           // If control cannot be identified by name then find the control
           // at runtime based on co-ords from foreground window.
-          if (not ControlHasName(FControl)) and
-             (not ControlCanBeAddressedByName(FControl)) then
+          if FControlName = '' then
             LPoint := _ControlToWindowCoords(LPoint);
 
           // If same control and position as single mouse click then remove the
@@ -1003,69 +1298,77 @@ begin
           // Mouse up
           // Double click down
           // Mouse up
+          LButton := GetMouseButton(AMessage);
           if Assigned(FMouseButtonAction) and
              (FMouseButtonAction is TGUIActionClick) and
              ((FMouseButtonAction as TGUIActionClick).ClickState = mcsSingle) and
              (AHwnd = FMouseButtonAction.Hwnd) and
-             (not FMouseDownMoved) and (LPoint.X = FMouseButtonAction.X) and
+             (LButton = FMouseButtonAction.Button) and
+             (LPoint.X = FMouseButtonAction.X) and
              (LPoint.Y = FMouseButtonAction.Y) then
             FActions.Remove(FMouseButtonAction);
 
           // Remember the double-click so that we skip the mouse up action
           FMouseButtonAction := TGUIActionClick.Create(AHwnd, FControl,
-              ControlName, LPoint.X, LPoint.Y, LButton, mcsDouble);
+              FControlName, LPoint.X, LPoint.Y, LButton, mcsDouble);
           AddAction(FMouseButtonAction, AContinue);
         end;
       end;
     WM_LBUTTONUP,
-    WM_RBUTTONUP:
+    WM_RBUTTONUP,
+    WM_MBUTTONUP:
+    //WM_NCLBUTTONUP
+    //WM_NCRBUTTONUP
+    //WM_NCMBUTTONUP
       begin
-        LPoint := Point(AX, AY);
-        SetControl(AHwnd, LPoint, AContinue);
-        FlushTextEntry(AContinue);
-
-        if ValidControl then
+        // Ignore mouse up after scroll as the scroll message does the work
+        // This is OK for the scenarios discovered so far
+        if (FActions.Count = 0) or (not (FActions.Last is TGUIActionScrollAbs)) then
         begin
-          if AMessage = WM_LBUTTONUP then
-            LButton := mbLeft
-          else
-            LButton := mbRight;
+          LPoint := Point(AX, AY);
+          SetControl(AHwnd, LPoint, AContinue);
+          FlushTextEntry(AContinue);
 
-          // If control cannot be identified by name then find the control
-          // at runtime based on co-ords from foreground window.
-          if (not ControlHasName(FControl)) and
-             (not ControlCanBeAddressedByName(FControl)) then
-            LPoint := _ControlToWindowCoords(LPoint);
-
-          // If same control and position as mouse down then:
-          // - change mouse down, mouse up to single click action
-          // - ignore mouse up for double-click action (it is built in)
-          if Assigned(FMouseButtonAction) and (AHwnd = FMouseButtonAction.Hwnd) and
-             (not FMouseDownMoved) and (LPoint.X = FMouseButtonAction.X) and
-             (LPoint.Y = FMouseButtonAction.Y) then
+          if ValidControl then
           begin
-            if not (FMouseButtonAction is TGUIActionClick) {is double-click} then
+            // If control cannot be identified by name then find the control
+            // at runtime based on co-ords from foreground window.
+            if FControlName = '' then
+              LPoint := _ControlToWindowCoords(LPoint);
+
+            // If same control and position as mouse down then:
+            // - change mouse down, mouse up to single click action
+            // - ignore mouse up for double-click action (it is built in)
+            LButton := GetMouseButton(AMessage);
+            if Assigned(FMouseButtonAction) and
+               (AHwnd = FMouseButtonAction.Hwnd) and
+               (LButton = FMouseButtonAction.Button) and
+               (LPoint.X = FMouseButtonAction.X) and
+               (LPoint.Y = FMouseButtonAction.Y) then
             begin
-              FActions.Remove(FMouseButtonAction);
-              // Remember the new click as double-click will need to remove it
-              FMouseButtonAction := TGUIActionClick.Create(AHwnd, FControl,
-                  ControlName, LPoint.X, LPoint.Y, LButton, mcsSingle);
-              AddAction(FMouseButtonAction, AContinue);
-            end else
+              if not (FMouseButtonAction is TGUIActionClick) {is double-click} then
+              begin
+                FActions.Remove(FMouseButtonAction);
+                // Remember the new click as double-click will need to remove it
+                FMouseButtonAction := TGUIActionClick.Create(AHwnd, FControl,
+                    FControlName, LPoint.X, LPoint.Y, LButton, mcsSingle);
+                AddAction(FMouseButtonAction, AContinue);
+              end else
+                FMouseButtonAction := nil;
+            end
+            else
+            begin
+              AddAction(TGUIActionMouseUp.Create(AHwnd, FControl, FControlName,
+                  LPoint.X, LPoint.Y, LButton), AContinue);
               FMouseButtonAction := nil;
+            end;
           end
           else
-          begin
-            AddAction(TGUIActionMouseUp.Create(AHwnd, FControl, ControlName,
-                LPoint.X, LPoint.Y, LButton), AContinue);
             FMouseButtonAction := nil;
-          end;
-        end
-        else
-          FMouseButtonAction := nil;
+        end;
       end;
     WM_MOUSEMOVE:
-      if FRecordMouseMove or Assigned(FMouseButtonAction) then
+      if FRecordMouseMove then
       begin
         LPoint := Point(AX, AY);
         SetControl(AHwnd, LPoint, AContinue);
@@ -1075,8 +1378,7 @@ begin
         begin
           // If control cannot be identified by name then find the control
           // at runtime based on co-ords from foreground window.
-          if (not ControlHasName(FControl)) and
-             (not ControlCanBeAddressedByName(FControl)) then
+          if FControlName = '' then
             LPoint := _ControlToWindowCoords(LPoint);
 
           // Record if position is different to mouse down
@@ -1084,13 +1386,8 @@ begin
              ((AHwnd <> FMouseButtonAction.Hwnd) or
               (LPoint.X <> FMouseButtonAction.X) or
               (LPoint.Y <> FMouseButtonAction.Y)) then
-          begin
-            FMouseDownMoved := true;
-
-            if FRecordMouseMove then
-              AddAction(TGUIActionMouseMove.Create(AHwnd, FControl, ControlName,
-                  LPoint.X, LPoint.Y), AContinue);
-          end;
+            AddAction(TGUIActionMouseMove.Create(AHwnd, FControl, FControlName,
+                LPoint.X, LPoint.Y), AContinue);
         end;
       end;
     WM_COMMAND:
@@ -1101,9 +1398,51 @@ begin
 {$ENDIF}
       begin
         if HiWord(AWParam) = 0 {menu} then
-          AddAction(TGUIActionSelectMenuItem.Create(AHwnd, FControl, ControlName,
-              LoWord(AWParam) {ID_xxxx}), AContinue);
+          AddAction(TGUIActionSelectMenuItem.Create(AHwnd, FControl,
+              FControlName, LoWord(AWParam) {ID_xxxx}), AContinue);
       end;
+    WM_HSCROLL,
+    WM_VSCROLL:
+      begin
+        SetControl(AHwnd, AContinue);
+        FlushTextEntry(AContinue);
+
+        if AMessage = WM_HSCROLL then
+          LScrollClass := TGUIActionHorizontalScroll
+        else
+          LScrollClass := TGUIActionVerticalScroll;
+        LScrollCommand := LoWord(AWParam) {SB_xxxx};
+        LScrollPosition := HiWord(AWParam); { For SB_THUMB... }
+
+        if ValidControl
+          {$IFDEF MSWINDOWS} and (LScrollCommand <> SB_ENDSCROLL) {$ENDIF} then
+        begin
+          // Increment existing count if multiple in a row
+          if (FActions.Count > 0) and (FActions.Last is TGUIActionScrollAbs) then
+            LLastActionAsScroll := FActions.Last as TGUIActionScrollAbs
+          else
+            LLastActionAsScroll := nil;
+          if Assigned(LLastActionAsScroll) and
+            (LLastActionAsScroll is LScrollClass) and
+            (LLastActionAsScroll.Hwnd = AHwnd) and
+            (LLastActionAsScroll.Command = LScrollCommand) and
+            (LLastActionAsScroll.Position = LScrollPosition) then
+            LLastActionAsScroll.Count := LLastActionAsScroll.Count + 1
+          else
+            AddAction(LScrollClass.Create(AHwnd, FControl, FControlName,
+                LScrollCommand, LScrollPosition, 1), AContinue);
+        end;
+      end;
+{
+// Debugging:
+    else
+      if (AMessage <> WM_MOUSEMOVE) and (AMessage <> WM_NCMOUSEMOVE) and
+         (AMessage <> WM_MOUSELEAVE) and (AMessage <> WM_NCMOUSELEAVE) and
+         (AMessage <> WM_TIMER) and (AMessage <> WM_PAINT) and
+         (AMessage <> WM_DWMNCRENDERINGCHANGED) then
+        // See unit: Winapi.Messages
+        Log('Message: 0x%.4x 0x%.8x 0x%.8x 0x%.8x', [AMessage, AHwnd, AWParam, ALParam], lsUserInfo);
+}
   end;
 end;
 
@@ -1282,7 +1621,7 @@ begin
   case FButton of
     mbLeft: Result := CLeftButtonCommand;
     mbRight: Result := CRightButtonCommand;
-//    mbMiddle: Result := CMiddleButtonCommand;
+    mbMiddle: Result := CMiddleButtonCommand;
   else
     raise Exception.Create('Unhandled mouse button: ' + IntToStr(Ord(FButton)));
   end;
@@ -1356,9 +1695,98 @@ begin
       IntToStr(FID));
 end;
 
+{ TGUIActionScrollAbs }
+
+constructor TGUIActionScrollAbs.Create(const AHwnd: HWND; const AControl: TControl;
+  const AControlName: string; const ACommand: Word; const APosition: Word;
+  const ACount: Integer);
+var
+  LRect: TRect;
+begin
+  inherited Create(AHwnd, AControl, AControlName);
+  FCommand := ACommand;
+  FPosition := APosition;
+  FCount := ACount;
+  // Use X and Y of the centre of the window to find it during playback
+  if GetWindowRect(Hwnd, LRect) then
+  begin
+    FX := LRect.Width div 2;
+    FY := LRect.Height div 2;
+  end;
+end;
+
+function TGUIActionScrollAbs.GetCommandParameters(
+  const ACommandFormat: TGUIActionCommandFormat): string;
+var
+  LCommand: string;
+  LCoordParams: string;
+  LHasPosition: Boolean;
+  LCountParam: string;
+  LPositionParam: string;
+begin
+  if ControlName = '' then
+    LCoordParams := Format('%d, %d, ', [FX, FY])
+  else
+    LCoordParams := '';
+
+{$IFDEF MSWINDOWS}
+  case FCommand of
+    SB_LINEUP {, SB_LINELEFT}: LCommand := 'SB_LINEBACK';
+    SB_LINEDOWN {, SB_LINERIGHT}: LCommand := 'SB_LINEFORWARD';
+    SB_PAGEUP {, SB_PAGELEFT}: LCommand := 'SB_PAGEBACK';
+    SB_PAGEDOWN {, SB_PAGERIGHT}: LCommand := 'SB_PAGEFORWARD';
+    SB_THUMBPOSITION: LCommand := 'SB_THUMBPOSITION';
+    SB_THUMBTRACK: LCommand := 'SB_THUMBTRACK';
+    SB_TOP {, SB_LEFT}: LCommand := 'SB_HOME';
+    SB_BOTTOM {, SB_RIGHT}: LCommand := 'SB_END';
+    SB_ENDSCROLL: LCommand := 'SB_ENDSCROLL';
+  else
+    LCommand := IntToStr(FCommand);
+  end;
+
+  LHasPosition := (FCommand = SB_THUMBPOSITION) or (FCommand = SB_THUMBTRACK);
+{$ELSE}
+  LCommand := IntToStr(FCommand);
+  LHasPosition := false;
+{$ENDIF}
+
+  // Count is optional if position is not needed
+  if (FCount = 1) and (not LHasPosition) then
+    LCountParam := ''
+  else
+    LCountParam := Format(', %d', [FCount]);
+
+  // Position is only specified with thumb tracking
+{$IFDEF MSWINDOWS}
+  if LHasPosition then
+    LPositionParam := Format(', %d', [FPosition])
+  else
+    LPositionParam := '';
+{$ELSE}
+  LPositionParam := '';
+{$ENDIF}
+
+  Result := JoinParams((inherited GetCommandParameters(ACommandFormat)),
+      Format('%s%s%s%s', [LCoordParams, LCommand, LCountParam, LPositionParam]));
+end;
+
+{ TGUIActionHorizontalScroll }
+
+function TGUIActionHorizontalScroll.GetCommandName: string;
+begin
+  Result := CHorizontalScrollCommandName;
+end;
+
+{ TGUIActionVerticalScroll }
+
+function TGUIActionVerticalScroll.GetCommandName: string;
+begin
+  Result := CVerticalScrollCommandName;
+end;
+
 initialization
   URecorder := nil;
-//  UCallWndProcHook := 0;
+  UCallWndProcHook := 0;
   UProcessGetMessageHook := 0;
 
 finalization

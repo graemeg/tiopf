@@ -102,6 +102,7 @@ type
     procedure FileToStringEval(Info: TProgramInfo);
     procedure GetClipboardTextEval(Info: TProgramInfo);
     procedure SetClipboardTextEval(Info: TProgramInfo);
+    procedure SaveScreenshotEval(Info: TProgramInfo);
 
     procedure RunScriptEval(Info: TProgramInfo);
     procedure TerminateScriptEval(Info: TProgramInfo);
@@ -113,6 +114,7 @@ type
     procedure SetKeyDownDelayEval(Info: TProgramInfo);
     procedure SetTextEntryDelayEval(Info: TProgramInfo);
     procedure SetControlWaitPeriodEval(Info: TProgramInfo);
+    procedure SetMoveMouseCursorEval(Info: TProgramInfo);
 
     procedure WaitForControlExistsEval(Info: TProgramInfo);
     procedure WaitForControlVisibleEval(Info: TProgramInfo);
@@ -139,6 +141,10 @@ type
     procedure RightDoubleClickEval(Info: TProgramInfo);
     procedure RightDoubleClickAtEval(Info: TProgramInfo);
     procedure SelectMenuItemEval(Info: TProgramInfo);
+    procedure HorizontalScrollEval(Info: TProgramInfo);
+    procedure VerticalScrollEval(Info: TProgramInfo);
+    procedure HorizontalScrollAtEval(Info: TProgramInfo);
+    procedure VerticalScrollAtEval(Info: TProgramInfo);
     procedure ControlExistsEval(Info: TProgramInfo);
     procedure ControlVisibleEval(Info: TProgramInfo);
     procedure ControlEnabledEval(Info: TProgramInfo);
@@ -236,7 +242,8 @@ uses
   dwsVCLGUIFunctions,
 {$ENDIF}
 
-  dwsSymbols;
+  dwsSymbols,
+  GUIUtils;
 
 {
   String/set conversion methods from:
@@ -396,6 +403,7 @@ begin
   // Constants
 
 {$IFDEF MSWINDOWS}
+  // Virtual keys
   _AddConstant('VK_BACK', 'Integer', Ord(VK_BACK));
   _AddConstant('VK_TAB', 'Integer', Ord(VK_TAB));
   _AddConstant('VK_RETURN', 'Integer', Ord(VK_RETURN));
@@ -425,6 +433,29 @@ begin
   _AddConstant('VK_F10', 'Integer', Ord(VK_F10));
   _AddConstant('VK_F11', 'Integer', Ord(VK_F11));
   _AddConstant('VK_F12', 'Integer', Ord(VK_F12));
+
+  // Scrolling
+  _AddConstant('SB_LINEBACK', 'Integer', Ord(SB_LINEUP)); // Custom
+  _AddConstant('SB_LINEUP', 'Integer', Ord(SB_LINEUP));
+  _AddConstant('SB_LINELEFT', 'Integer', Ord(SB_LINELEFT));
+  _AddConstant('SB_LINEFORWARD', 'Integer', Ord(SB_LINEDOWN)); // Custom
+  _AddConstant('SB_LINEDOWN', 'Integer', Ord(SB_LINEDOWN));
+  _AddConstant('SB_LINERIGHT', 'Integer', Ord(SB_LINERIGHT));
+  _AddConstant('SB_PAGEBACK', 'Integer', Ord(SB_PAGEUP)); // Custom
+  _AddConstant('SB_PAGEUP', 'Integer', Ord(SB_PAGEUP));
+  _AddConstant('SB_PAGELEFT', 'Integer', Ord(SB_PAGELEFT));
+  _AddConstant('SB_PAGEFORWARD', 'Integer', Ord(SB_PAGEDOWN)); // Custom
+  _AddConstant('SB_PAGEDOWN', 'Integer', Ord(SB_PAGEDOWN));
+  _AddConstant('SB_PAGERIGHT', 'Integer', Ord(SB_PAGERIGHT));
+  _AddConstant('SB_THUMBPOSITION', 'Integer', Ord(SB_THUMBPOSITION));
+  _AddConstant('SB_THUMBTRACK', 'Integer', Ord(SB_THUMBTRACK));
+  _AddConstant('SB_HOME', 'Integer', Ord(SB_TOP)); // Custom
+  _AddConstant('SB_TOP', 'Integer', Ord(SB_TOP));
+  _AddConstant('SB_LEFT', 'Integer', Ord(SB_LEFT));
+  _AddConstant('SB_END', 'Integer', Ord(SB_BOTTOM)); // Custom
+  _AddConstant('SB_BOTTOM', 'Integer', Ord(SB_BOTTOM));
+  _AddConstant('SB_RIGHT', 'Integer', Ord(SB_RIGHT));
+  _AddConstant('SB_ENDSCROLL', 'Integer', Ord(SB_ENDSCROLL));
 {$ENDIF}
 
   // General methods
@@ -445,6 +476,10 @@ begin
 
   LFunction := _AddFunction('GetClipboardText', GetClipboardTextEval);
   LFunction.ResultType := 'String';
+
+  LFunction := _AddFunction('SaveScreenshot', SaveScreenshotEval);
+  _AddParameter(LFunction, 'FileName', 'String');
+  _AddParameter(LFunction, 'ActiveWindowOnly', 'Boolean', false);
 
   // General script control methods
 
@@ -477,6 +512,9 @@ begin
 
   LFunction := _AddFunction('SetControlWaitPeriod', SetControlWaitPeriodEval);
   _AddParameter(LFunction, 'Milliseconds', 'Integer');
+
+  LFunction := _AddFunction('SetMoveMouseCursor', SetMoveMouseCursorEval);
+  _AddParameter(LFunction, 'Move', 'Boolean', true);
 
   LFunction := _AddFunction('WaitForControlExists', WaitForControlExistsEval);
   LFunction.ResultType := 'Boolean';
@@ -591,6 +629,32 @@ begin
 
   LFunction := _AddFunction('SelectMenuItem', SelectMenuItemEval);
   _AddParameter(LFunction, 'ID', 'Integer');
+
+  LFunction := _AddFunction('HorizontalScroll', HorizontalScrollEval);
+  _AddParameter(LFunction, 'ControlName', 'String');
+  _AddParameter(LFunction, 'Command', 'Integer');
+  _AddParameter(LFunction, 'Count', 'Integer', 1);
+  _AddParameter(LFunction, 'Position', 'Integer', 0);
+
+  LFunction := _AddFunction('VerticalScroll', VerticalScrollEval);
+  _AddParameter(LFunction, 'ControlName', 'String');
+  _AddParameter(LFunction, 'Command', 'Integer');
+  _AddParameter(LFunction, 'Count', 'Integer', 1);
+  _AddParameter(LFunction, 'Position', 'Integer', 0);
+
+  LFunction := _AddFunction('HorizontalScrollAt', HorizontalScrollAtEval);
+  _AddParameter(LFunction, 'X', 'Integer');
+  _AddParameter(LFunction, 'Y', 'Integer');
+  _AddParameter(LFunction, 'Command', 'Integer');
+  _AddParameter(LFunction, 'Count', 'Integer', 1);
+  _AddParameter(LFunction, 'Position', 'Integer', 0);
+
+  LFunction := _AddFunction('VerticalScrollAt', VerticalScrollAtEval);
+  _AddParameter(LFunction, 'X', 'Integer');
+  _AddParameter(LFunction, 'Y', 'Integer');
+  _AddParameter(LFunction, 'Command', 'Integer');
+  _AddParameter(LFunction, 'Count', 'Integer', 1);
+  _AddParameter(LFunction, 'Position', 'Integer', 0);
 
   // GUI inspection
 
@@ -859,6 +923,17 @@ begin
   Clipboard.AsText := Info.ValueAsString['String'];
 end;
 
+procedure TGUIScript.SaveScreenshotEval(Info: TProgramInfo);
+var
+  LHwnd: HWND;
+begin
+  if Info.ValueAsBoolean['ActiveWindowOnly'] then
+    LHwnd := GetTopmostWindow
+  else
+    LHwnd := HWND_DESKTOP;
+  SaveScreenshot(LHwnd, Info.ValueAsString['FileName']);
+end;
+
 procedure TGUIScript.RunScriptEval(Info: TProgramInfo);
 var
   LScript: TGUIScript;
@@ -924,6 +999,11 @@ end;
 procedure TGUIScript.SetControlWaitPeriodEval(Info: TProgramInfo);
 begin
   FGUIAutomation.ControlWaitPeriod := Info.ValueAsInteger['Milliseconds'];
+end;
+
+procedure TGUIScript.SetMoveMouseCursorEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.MoveMouseCursor := Info.ValueAsBoolean['Move'];
 end;
 
 procedure TGUIScript.WaitForControlExistsEval(Info: TProgramInfo);
@@ -1112,6 +1192,44 @@ end;
 procedure TGUIScript.SelectMenuItemEval(Info: TProgramInfo);
 begin
   FGUIAutomation.SelectMenuItem(Info.ValueAsInteger['ID']);
+end;
+
+procedure TGUIScript.HorizontalScrollEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.HorizontalScroll(
+      ControlName(Info),
+      Info.ValueAsInteger['Command'],
+      Info.ValueAsInteger['Count'],
+      Info.ValueAsInteger['Position']);
+end;
+
+procedure TGUIScript.VerticalScrollEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.VerticalScroll(
+      ControlName(Info),
+      Info.ValueAsInteger['Command'],
+      Info.ValueAsInteger['Count'],
+      Info.ValueAsInteger['Position']);
+end;
+
+procedure TGUIScript.HorizontalScrollAtEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.HorizontalScroll(
+      Info.ValueAsInteger['X'],
+      Info.ValueAsInteger['Y'],
+      Info.ValueAsInteger['Command'],
+      Info.ValueAsInteger['Count'],
+      Info.ValueAsInteger['Position']);
+end;
+
+procedure TGUIScript.VerticalScrollAtEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.VerticalScroll(
+      Info.ValueAsInteger['X'],
+      Info.ValueAsInteger['Y'],
+      Info.ValueAsInteger['Command'],
+      Info.ValueAsInteger['Count'],
+      Info.ValueAsInteger['Position']);
 end;
 
 function TGUIScript.GetControlText(const AControl: TControl): string;
