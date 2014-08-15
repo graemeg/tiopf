@@ -260,6 +260,7 @@ uses
   {$IFDEF LINK_SQLDB_MySQL41}   ,tiQuerySqldbMySQL41  {$ENDIF}
   {$IFDEF LINK_SQLDB_MySQL50}   ,tiQuerySqldbMySQL50  {$ENDIF}
   {$IFDEF LINK_SQLDB_MySQL55}   ,tiQuerySqldbMySQL55  {$ENDIF}
+  {$IFDEF LINK_SQLDB_MSSQL}     ,tiQuerySqldbMSSQL    {$ENDIF}
   {$IFDEF LINK_TAB}             ,tiQueryTAB           {$ENDIF}
   {$IFDEF LINK_XML}             ,tiQueryXML           {$ENDIF}
   {$IFDEF LINK_XMLLIGHT}        ,tiQueryXMLLight      {$ENDIF}
@@ -975,6 +976,7 @@ initialization
   {$IFDEF LINK_SQLDB_IB}      GTIOPFManager.DefaultPersistenceLayerName := cTIPersistSqldbIB;     {$ENDIF}
   {$IFDEF LINK_SQLDB_MySQL50} GTIOPFManager.DefaultPersistenceLayerName := cTIPersistSqldbMySQL50;{$ENDIF}
   {$IFDEF LINK_SQLDB_MySQL55} GTIOPFManager.DefaultPersistenceLayerName := cTIPersistSqldbMySQL55;{$ENDIF}
+  {$IFDEF LINK_SQLDB_MSSQL}   GTIOPFManager.DefaultPersistenceLayerName := cTIPersistSqldbMSSQL;  {$ENDIF}
   {$IFDEF LINK_TAB}           GTIOPFManager.DefaultPersistenceLayerName := cTIPersistTAB;         {$ENDIF}
   {$IFDEF LINK_XML}           GTIOPFManager.DefaultPersistenceLayerName := cTIPersistXML;         {$ENDIF}
   {$IFDEF LINK_XMLLIGHT}      GTIOPFManager.DefaultPersistenceLayerName := cTIPersistXMLLight;    {$ENDIF}
