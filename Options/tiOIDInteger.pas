@@ -277,6 +277,7 @@ end;
 function TVisDBNextOIDAmblerRead.AcceptVisitor: boolean;
 begin
   Result := (Visited is TNextOIDData);
+  Log([ClassName, Visited.ClassName, Visited.ObjectStateAsString, Result], lsAcceptVisitor);
 end;
 
 procedure TVisDBNextOIDAmblerRead.Execute(const AData: TtiVisited);
@@ -302,6 +303,7 @@ end;
 function TVisDBNextOIDAmblerUpdate.AcceptVisitor: boolean;
 begin
   Result := (Visited is TNextOIDData) and not CanSupportMultiUser;
+  Log([ClassName, Visited.ClassName, Visited.ObjectStateAsString, Result], lsAcceptVisitor);
 end;
 
 procedure TVisDBNextOIDAmblerUpdate.Execute(const AData: TtiVisited);
@@ -330,6 +332,7 @@ end;
 function TVisDBNextOIDSqlAmblerUpdate.AcceptVisitor: boolean;
 begin
   Result := (Visited is TNextOIDData) and CanSupportMultiUser;
+  Log([ClassName, Visited.ClassName, Visited.ObjectStateAsString, Result], lsAcceptVisitor);
 end;
 
 procedure TVisDBNextOIDSqlAmblerUpdate.Execute(const AData: TtiVisited);
