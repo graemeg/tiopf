@@ -147,6 +147,10 @@ type
         const AX: Integer = -1; const AY: Integer = -1); overload;
     procedure Scroll(const AControlHwnd: HWND; const AMessage: UINT;
         const ACommand: Word; const ACount: Integer; const APosition: Word);
+{$IFDEF MSWINDOWS}
+    procedure SelectTreeViewItem(const AHwnd: HWND; const AX: Integer;
+        const AY: Integer);
+{$ENDIF}
   protected
     procedure SyncMessages;
     function WaitForWindowEnabled(const AHwnd: HWND): boolean;
@@ -307,6 +311,7 @@ uses
 {$ENDIF}
 {$IFDEF MSWINDOWS}
   ,Menus
+  ,CommCtrl
 {$ENDIF}
   ,GUIUtils
   ;
@@ -746,7 +751,15 @@ begin
         Integer(ButtonState_RightButton), AX, AY);
 {$ELSE}
   if AButton = mbLeft then
-    ClickMouseButtonOn(AHwnd, WM_LBUTTONDOWN, WM_LBUTTONUP, AX, AY)
+  begin
+    ClickMouseButtonOn(AHwnd, WM_LBUTTONDOWN, WM_LBUTTONUP, AX, AY);
+{$IFDEF MSWINDOWS}
+    // If clicking on a tree view window then we need an additional message
+    // to select the item
+    if WindowClassName(AHwnd) = WC_TREEVIEW then
+      SelectTreeViewItem(AHwnd, AX, AY);
+{$ENDIF}
+  end
   else if AButton = mbRight then
     ClickMouseButtonOn(AHwnd, WM_RBUTTONDOWN, WM_RBUTTONUP, AX, AY);
 {$ENDIF}
@@ -1673,6 +1686,24 @@ begin
   PostMessage(LHwnd, WM_COMMAND, LwParam, 0);
 {$ENDIF}
 end;
+
+{$IFDEF MSWINDOWS}
+procedure TGUIAutomation.SelectTreeViewItem(const AHwnd: HWND; const AX: Integer;
+  const AY: Integer);
+var
+  LHitTestInfo: TTVHitTestInfo;
+begin
+  // Find the tree view item at the given location and select it
+  LHitTestInfo.pt.X := AX;
+  LHitTestInfo.pt.Y := AY;
+  LHitTestInfo.flags := 0;
+  LHitTestInfo.hItem := nil;
+  SendMessage(AHwnd, TVM_HITTEST, 0, LPARAM(@LHitTestInfo));
+  if ((LHitTestInfo.flags and TVHT_ONITEM) <> 0) and
+     (LHitTestInfo.hItem <> nil) then
+    SendMessage(AHwnd, TVM_SELECTITEM, TVGN_CARET, LPARAM(LHitTestInfo.hItem));
+end;
+{$ENDIF}
 
 procedure TGUIAutomation.Scroll(const AControlHwnd: HWND; const AMessage: UINT;
   const ACommand: Word; const ACount: Integer; const APosition: Word);

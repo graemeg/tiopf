@@ -94,6 +94,7 @@ const
   function GetWinControl(var AControl: TControl; var AX: Integer;
       var AY: Integer; const AIsTargetControl: Boolean): boolean;
 {$IFDEF MSWINDOWS}
+  function WindowClassName(const AHwnd: HWND): string;
   // The window highest in the z-order for this process
   function GetTopmostWindow: HWND;
   procedure SaveScreenshot(const AHwnd: HWND; const AFileName: string);
@@ -404,18 +405,25 @@ begin
 end;
 
 {$IFDEF MSWINDOWS}
+function WindowClassName(const AHwnd: HWND): string;
+const
+  CMaxClassNameLength = 256;
+begin
+  SetLength(Result, CMaxClassNameLength);
+  SetLength(Result, GetClassName(AHwnd, PChar(Result), CMaxClassNameLength));
+end;
+{$ENDIF}
+
+{$IFDEF MSWINDOWS}
 function GetTopmostWindowProc(AHwnd: HWND; ALParam: LPARAM): BOOL; stdcall;
 var
   LdwProcessId: DWORD;
   LClassName: string;
-const
-  CMaxClassNameLength = 200;
 begin
   // Windows are enumerated in reverse z-order so the topmost window for the
   // process is the first visible and enabled for input
   GetWindowThreadProcessId(AHwnd, LdwProcessId);
-  SetLength(LClassName, CMaxClassNameLength);
-  SetLength(LClassName, GetClassName(AHwnd, PChar(LClassName), CMaxClassNameLength));
+  LClassName := WindowClassName(AHwnd);
   // Note: Some higher z-order windows may be present that we need to skip to
   // get to the real window.
   // For example, Windows will create an additional window with class name
