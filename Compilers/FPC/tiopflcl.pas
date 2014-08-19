@@ -2,13 +2,14 @@
   This source is only used to compile and install the package.
  }
 
-unit tiopfLCL; 
+unit tiopfLCL;
 
 interface
 
 uses
-    tiMediators, tiListMediators, tiGUIINI, tiDialogs, tiGUIConstants, tiGUIUtils, 
-  tiLogToGUI, tiTreeBuildVisitor, tiGenericTreeViewMediator, tiDataset;
+  tiMediators, tiListMediators, tiGUIINI, tiDialogs, tiGUIConstants, 
+  tiGUIUtils, tiLogToGUI, tiTreeBuildVisitor, tiGenericTreeViewMediator, 
+  tiDataset, tiImageMgr;
 
 implementation
 
