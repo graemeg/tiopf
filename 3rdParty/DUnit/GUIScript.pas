@@ -42,8 +42,12 @@ unit GUIScript;
 interface
 
 uses
-  SysUtils, Controls, GUIActionRecorder, GUIAutomation, dwsExprs, dwsCompiler,
-  dwsComp;
+  SysUtils, Controls, dwsExprs, dwsCompiler, dwsComp,
+{$IFDEF MSWINDOWS}
+  Windows,
+{$ENDIF}
+  GUIActionRecorder,
+  GUIAutomation;
 
 const
   rcs_id: string = '#(@)$Id$';
@@ -89,7 +93,8 @@ type
     function ControlName(Info: TProgramInfo): string;
     function Control(const AControlName: string): TControl; overload;
     function Control(Info: TProgramInfo): TControl; overload;
-    procedure Check(const ACheckResult: Boolean; const AErrorMessage: string);
+    function FormatCheckFailMessage(Info: TProgramInfo; const AMessageSuffix: string): string;
+    procedure Check(const ACheckResult: Boolean; const AFailMessage: string);
     procedure StringToFile(const AString: string; const AFileName: string);
     function FileToString(const AFileName: string): string;
     function IsTextControl(const AControl: TControl): Boolean;
@@ -146,6 +151,7 @@ type
     procedure VerticalScrollEval(Info: TProgramInfo);
     procedure HorizontalScrollAtEval(Info: TProgramInfo);
     procedure VerticalScrollAtEval(Info: TProgramInfo);
+    procedure SetFocusEval(Info: TProgramInfo);
     procedure ControlExistsEval(Info: TProgramInfo);
     procedure ControlVisibleEval(Info: TProgramInfo);
     procedure ControlEnabledEval(Info: TProgramInfo);
@@ -180,15 +186,21 @@ type
     function Execute(const AScript: string): Boolean;
     procedure StopExecution;
     procedure RegisterTextControl(AControlClass: TControlClass);
-    function GetControlText(const AControl: TControl): string;
-    function GetControlSelectedText(const AControl: TControl): string;
+    function GetControlText(const AHwnd: HWND): string; overload;
+    function GetControlText(const AControl: TControl): string; overload;
+    function GetControlSelectedText(const AHwnd: HWND): string; overload;
+    function GetControlSelectedText(const AControl: TControl): string; overload;
     // Get the name and type of all controls in the hierarchy
     function GetControlList(const AControl: TControl): string;
     // Generate a script to check the state of all controls in the hierarchy
     function GetControlStates(const AControl: TControl): string;
     // Generate a single script command to check the text of a control
+    function GenerateCheckControlTextCommand(const AText: string;
+        const AControlName: string; const ACheckAllText: Boolean): string; overload;
     function GenerateCheckControlTextCommand(const AControl: TControl;
-        const ACheckAllText: Boolean): string;
+        const AControlName: string; const ACheckAllText: Boolean): string; overload;
+    function GenerateCheckControlTextCommand(const AHwnd: HWND;
+        const AControlName: string; const ACheckAllText: Boolean): string; overload;
 
     property OnExecutionStarted: TOnExecutionStateEvent read FOnExecutionStarted write FOnExecutionStarted;
     property OnExecutionEnded: TOnExecutionStateEvent read FOnExecutionEnded write FOnExecutionEnded;
@@ -219,7 +231,6 @@ uses
   CheckLst,
   Grids,
 {$IFDEF MSWINDOWS}
-  Windows,
   ComCtrls,
   Calendar,
 {$ENDIF}
@@ -436,24 +447,24 @@ begin
   _AddConstant('VK_F12', 'Integer', Ord(VK_F12));
 
   // Scrolling
-  _AddConstant('SB_LINEBACK', 'Integer', Ord(SB_LINEUP)); // Custom
+  _AddConstant('SB_LINEBACK', 'Integer', Ord(SB_LINEUP)); // Custom: left or up
   _AddConstant('SB_LINEUP', 'Integer', Ord(SB_LINEUP));
   _AddConstant('SB_LINELEFT', 'Integer', Ord(SB_LINELEFT));
-  _AddConstant('SB_LINEFORWARD', 'Integer', Ord(SB_LINEDOWN)); // Custom
+  _AddConstant('SB_LINEFORWARD', 'Integer', Ord(SB_LINEDOWN)); // Custom: right or down
   _AddConstant('SB_LINEDOWN', 'Integer', Ord(SB_LINEDOWN));
   _AddConstant('SB_LINERIGHT', 'Integer', Ord(SB_LINERIGHT));
-  _AddConstant('SB_PAGEBACK', 'Integer', Ord(SB_PAGEUP)); // Custom
+  _AddConstant('SB_PAGEBACK', 'Integer', Ord(SB_PAGEUP)); // Custom: left or up
   _AddConstant('SB_PAGEUP', 'Integer', Ord(SB_PAGEUP));
   _AddConstant('SB_PAGELEFT', 'Integer', Ord(SB_PAGELEFT));
-  _AddConstant('SB_PAGEFORWARD', 'Integer', Ord(SB_PAGEDOWN)); // Custom
+  _AddConstant('SB_PAGEFORWARD', 'Integer', Ord(SB_PAGEDOWN)); // Custom: right or down
   _AddConstant('SB_PAGEDOWN', 'Integer', Ord(SB_PAGEDOWN));
   _AddConstant('SB_PAGERIGHT', 'Integer', Ord(SB_PAGERIGHT));
   _AddConstant('SB_THUMBPOSITION', 'Integer', Ord(SB_THUMBPOSITION));
   _AddConstant('SB_THUMBTRACK', 'Integer', Ord(SB_THUMBTRACK));
-  _AddConstant('SB_HOME', 'Integer', Ord(SB_TOP)); // Custom
+  _AddConstant('SB_HOME', 'Integer', Ord(SB_TOP)); // Custom: left or top
   _AddConstant('SB_TOP', 'Integer', Ord(SB_TOP));
   _AddConstant('SB_LEFT', 'Integer', Ord(SB_LEFT));
-  _AddConstant('SB_END', 'Integer', Ord(SB_BOTTOM)); // Custom
+  _AddConstant('SB_END', 'Integer', Ord(SB_BOTTOM)); // Custom: right or bottom
   _AddConstant('SB_BOTTOM', 'Integer', Ord(SB_BOTTOM));
   _AddConstant('SB_RIGHT', 'Integer', Ord(SB_RIGHT));
   _AddConstant('SB_ENDSCROLL', 'Integer', Ord(SB_ENDSCROLL));
@@ -661,6 +672,9 @@ begin
   _AddParameter(LFunction, 'Count', 'Integer', 1);
   _AddParameter(LFunction, 'Position', 'Integer', 0);
 
+  LFunction := _AddFunction('SetFocus', SetFocusEval);
+  _AddParameter(LFunction, 'ControlName', 'String');
+
   // GUI inspection
 
   LFunction := _AddFunction('ControlExists', ControlExistsEval);
@@ -694,60 +708,75 @@ begin
   // General testing check methods
 
   LFunction := _AddFunction('Fail', FailEval);
-  _AddParameter(LFunction, 'ErrorMessage', 'String');
+  _AddParameter(LFunction, 'FailMessage', 'String');
 
   LFunction := _AddFunction('CheckTrue', CheckTrueEval);
   _AddParameter(LFunction, 'Value', 'Boolean');
+  _AddParameter(LFunction, 'FailMessage', 'String', '');
 
   LFunction := _AddFunction('CheckFalse', CheckFalseEval);
   _AddParameter(LFunction, 'Value', 'Boolean');
+  _AddParameter(LFunction, 'FailMessage', 'String', '');
 
   LFunction := _AddFunction('CheckEquals', CheckEqualsEval);
   _AddParameter(LFunction, 'ExpectedValue', 'String');
   _AddParameter(LFunction, 'ActualValue', 'String');
+  _AddParameter(LFunction, 'FailMessage', 'String', '');
 
   LFunction := _AddFunction('CheckNotEquals', CheckNotEqualsEval);
   _AddParameter(LFunction, 'NotExpectedValue', 'String');
   _AddParameter(LFunction, 'ActualValue', 'String');
+  _AddParameter(LFunction, 'FailMessage', 'String', '');
 
   LFunction := _AddFunction('CheckFilesEqual', CheckFilesEqualEval);
   _AddParameter(LFunction, 'FileName1', 'String');
   _AddParameter(LFunction, 'FileName2', 'String');
+  _AddParameter(LFunction, 'FailMessage', 'String', '');
 
   LFunction := _AddFunction('CheckFilesNotEqual', CheckFilesNotEqualEval);
   _AddParameter(LFunction, 'FileName1', 'String');
   _AddParameter(LFunction, 'FileName2', 'String');
+  _AddParameter(LFunction, 'FailMessage', 'String', '');
 
   // GUI testing check methods
 
   LFunction := _AddFunction('CheckEnabled', CheckEnabledEval);
   _AddParameter(LFunction, 'ControlName', 'String');
+  _AddParameter(LFunction, 'FailMessage', 'String', '');
 
   LFunction := _AddFunction('CheckNotEnabled', CheckNotEnabledEval);
   _AddParameter(LFunction, 'ControlName', 'String');
+  _AddParameter(LFunction, 'FailMessage', 'String', '');
 
   LFunction := _AddFunction('CheckVisible', CheckVisibleEval);
   _AddParameter(LFunction, 'ControlName', 'String');
+  _AddParameter(LFunction, 'FailMessage', 'String', '');
 
   LFunction := _AddFunction('CheckNotVisible', CheckNotVisibleEval);
   _AddParameter(LFunction, 'ControlName', 'String');
+  _AddParameter(LFunction, 'FailMessage', 'String', '');
 
   LFunction := _AddFunction('CheckExists', CheckExistsEval);
   _AddParameter(LFunction, 'ControlName', 'String');
+  _AddParameter(LFunction, 'FailMessage', 'String', '');
 
   LFunction := _AddFunction('CheckNotExists', CheckNotExistsEval);
   _AddParameter(LFunction, 'ControlName', 'String');
+  _AddParameter(LFunction, 'FailMessage', 'String', '');
 
   LFunction := _AddFunction('CheckFocused', CheckFocusedEval);
   _AddParameter(LFunction, 'ControlName', 'String');
+  _AddParameter(LFunction, 'FailMessage', 'String', '');
 
   LFunction := _AddFunction('CheckControlTextEqual', CheckControlTextEqualEval);
   _AddParameter(LFunction, 'ControlName', 'String');
   _AddParameter(LFunction, 'Text', 'String');
+  _AddParameter(LFunction, 'FailMessage', 'String', '');
 
   LFunction := _AddFunction('CheckControlSelectedTextEqual', CheckControlSelectedTextEqualEval);
   _AddParameter(LFunction, 'ControlName', 'String');
   _AddParameter(LFunction, 'Text', 'String');
+  _AddParameter(LFunction, 'FailMessage', 'String', '');
 end;
 
 destructor TGUIScript.Destroy;
@@ -1243,6 +1272,16 @@ begin
       Info.ValueAsInteger['Position']);
 end;
 
+procedure TGUIScript.SetFocusEval(Info: TProgramInfo);
+begin
+  FGUIAutomation.SetFocus(ControlName(Info));
+end;
+
+function TGUIScript.GetControlText(const AHwnd: HWND): string;
+begin
+  result := WindowText(AHwnd);
+end;
+
 function TGUIScript.GetControlText(const AControl: TControl): string;
 var
   i, x, y: Integer;
@@ -1355,6 +1394,12 @@ begin
   if not LHandled then
     raise EGUIScriptUnhandledControlType.CreateFmt(
         'Unhandled control type for control ''%s''', [AControl.Name]);
+end;
+
+function TGUIScript.GetControlSelectedText(const AHwnd: HWND): string;
+begin
+  //TODO: Implement selected text
+  result := GetControlText(AHwnd);
 end;
 
 function TGUIScript.GetControlSelectedText(const AControl: TControl): string;
@@ -1557,8 +1602,50 @@ begin
   Result := Result + ');';
 end;
 
+function TGUIScript.GenerateCheckControlTextCommand(const AText: string;
+  const AControlName: string; const ACheckAllText: Boolean): string;
+var
+  LText: string;
+begin
+  if AControlName = '' then
+    raise Exception.Create('Error Message');
+
+  LText := AText;
+  // Escape single quotes
+  LText :=  StringReplace(LText, '''', '''''', [rfReplaceAll]);
+  // Encode tabs
+  LText := StringReplace(LText, #9, '''#9''', [rfReplaceAll]);
+  // Split into nice Pascal multi-line string
+  LText := StringReplace(LText, #13#10,
+      '''#13#10 +'#13#10 +
+      '    ''', [rfReplaceAll]);
+
+  if ACheckAllText then
+    Result := FormatScriptCheckCommand('CheckControlTextEqual', AControlName, '''' + LText + '''')
+  else
+    Result := FormatScriptCheckCommand('CheckControlSelectedTextEqual', AControlName, '''' + LText + '''');
+end;
+
+function TGUIScript.GenerateCheckControlTextCommand(const AHwnd: HWND;
+  const AControlName: string; const ACheckAllText: Boolean): string;
+var
+  LText: string;
+begin
+  Assert(AHwnd <> 0, 'AHwnd must be assigned');
+  try
+    if ACheckAllText then
+      LText := GetControlText(AHwnd)
+    else
+      LText := GetControlSelectedText(AHwnd);
+    Result := GenerateCheckControlTextCommand(LText, AControlName, ACheckAllText);
+  except
+    on e: EGUIScriptUnhandledControlType do
+      Result := '';
+  end;
+end;
+
 function TGUIScript.GenerateCheckControlTextCommand(const AControl: TControl;
-  const ACheckAllText: Boolean): string;
+  const AControlName: string; const ACheckAllText: Boolean): string;
 var
   LText: string;
 begin
@@ -1568,20 +1655,7 @@ begin
       LText := GetControlText(AControl)
     else
       LText := GetControlSelectedText(AControl);
-
-    // Escape single quotes
-    LText :=  StringReplace(LText, '''', '''''', [rfReplaceAll]);
-    // Encode tabs
-    LText := StringReplace(LText, #9, '''#9''', [rfReplaceAll]);
-    // Split into nice Pascal multi-line string
-    LText := StringReplace(LText, #13#10,
-        '''#13#10 +'#13#10 +
-        '    ''', [rfReplaceAll]);
-
-    if ACheckAllText then
-      Result := FormatScriptCheckCommand('CheckControlTextEqual', AControl.Name, '''' + LText + '''')
-    else
-      Result := FormatScriptCheckCommand('CheckControlSelectedTextEqual', AControl.Name, '''' + LText + '''');
+    Result := GenerateCheckControlTextCommand(LText, AControlName, ACheckAllText);
   except
     on e: EGUIScriptUnhandledControlType do
       Result := '';
@@ -1623,7 +1697,7 @@ var
       // like grids, treeviews and list views can be huge so we only get the
       // full text of edit/text controls like edits and memos.
       LCheckAllText := IsTextControl(AControl);
-      LCommand := GenerateCheckControlTextCommand(AControl, LCheckAllText);
+      LCommand := GenerateCheckControlTextCommand(AControl, AControl.Name, LCheckAllText);
       if LCommand <> '' then
         AScript.Add(LCommand);
 
@@ -1689,15 +1763,24 @@ begin
   Info.ResultAsString := GetControlSelectedText(Control(Info));
 end;
 
-procedure TGUIScript.Check(const ACheckResult: Boolean; const AErrorMessage: string);
+function TGUIScript.FormatCheckFailMessage(Info: TProgramInfo;
+  const AMessageSuffix: string): string;
+begin
+  Result := Info.ValueAsString['FailMessage'];
+  if Result <> '' then
+    Result := Result + ': ';
+  Result := Result + AMessageSuffix;
+end;
+
+procedure TGUIScript.Check(const ACheckResult: Boolean; const AFailMessage: string);
 begin
   if not ACheckResult then
-    raise EGUIScriptCheckFail.Create(AErrorMessage);
+    raise EGUIScriptCheckFail.Create(AFailMessage);
 end;
 
 procedure TGUIScript.FailEval(Info: TProgramInfo);
 begin
-  Check(false, Format('Fail: %s', [Info.ValueAsString['ErrorMessage']]));
+  Check(false, Format('Fail: %s', [Info.ValueAsString['FailMessage']]));
 end;
 
 procedure TGUIScript.CheckEqualsEval(Info: TProgramInfo);
@@ -1712,12 +1795,14 @@ end;
 
 procedure TGUIScript.CheckTrueEval(Info: TProgramInfo);
 begin
-  Check(Info.ValueAsBoolean['Value'], 'Expected true but was false');
+  Check(Info.ValueAsBoolean['Value'],
+      FormatCheckFailMessage(Info, 'Expected true but was false'));
 end;
 
 procedure TGUIScript.CheckFalseEval(Info: TProgramInfo);
 begin
-  Check(not Info.ValueAsBoolean['Value'], 'Expected false but was true');
+  Check(not Info.ValueAsBoolean['Value'],
+      FormatCheckFailMessage(Info, 'Expected false but was true'));
 end;
 
 procedure TGUIScript.CheckNotEqualsEval(Info: TProgramInfo);
@@ -1727,7 +1812,8 @@ var
 begin
   LNotExpected := Info.ValueAsString['NotExpectedValue'];
   LActual := Info.ValueAsString['ActualValue'];
-  Check(LActual <> LNotExpected, Format('Actual <%s>', [LActual]));
+  Check(LActual <> LNotExpected,
+      FormatCheckFailMessage(Info, Format('Actual <%s>', [LActual])));
 end;
 
 procedure TGUIScript.CheckFilesEqualEval(Info: TProgramInfo);
@@ -1741,8 +1827,9 @@ begin
   LFileName2 := Info.ValueAsString['FileName2'];
   LContents1 := FileToString(LFileName1);
   LContents2 := FileToString(LFileName2);
-  Check(LContents1 = LContents2, Format('File ''%s'' equals file ''%s''',
-      [LFileName1, LFileName2]));
+  Check(LContents1 = LContents2,
+      FormatCheckFailMessage(Info, Format('File ''%s'' equals file ''%s''',
+          [LFileName1, LFileName2])));
 end;
 
 procedure TGUIScript.CheckFilesNotEqualEval(Info: TProgramInfo);
@@ -1756,28 +1843,37 @@ begin
   LFileName2 := Info.ValueAsString['FileName2'];
   LContents1 := FileToString(LFileName1);
   LContents2 := FileToString(LFileName2);
-  Check(LContents1 <> LContents2, Format('File ''%s'' not equals file ''%s''',
-      [LFileName1, LFileName2]));
+  Check(LContents1 <> LContents2,
+      FormatCheckFailMessage(Info, Format('File ''%s'' not equals file ''%s''',
+          [LFileName1, LFileName2])));
 end;
 
 procedure TGUIScript.CheckEnabledEval(Info: TProgramInfo);
 begin
-  Check(Control(Info).Enabled, Format('Control ''%s'' enabled', [ControlName(Info)]));
+  Check(Control(Info).Enabled,
+      FormatCheckFailMessage(Info, Format('Control ''%s'' enabled',
+          [ControlName(Info)])));
 end;
 
 procedure TGUIScript.CheckNotEnabledEval(Info: TProgramInfo);
 begin
-  Check(not Control(Info).Enabled, Format('Control ''%s'' not enabled', [ControlName(Info)]));
+  Check(not Control(Info).Enabled,
+      FormatCheckFailMessage(Info, Format('Control ''%s'' not enabled',
+          [ControlName(Info)])));
 end;
 
 procedure TGUIScript.CheckVisibleEval(Info: TProgramInfo);
 begin
-  Check(Control(Info).Visible, Format('Control ''%s'' visible', [ControlName(Info)]));
+  Check(Control(Info).Visible,
+      FormatCheckFailMessage(Info, Format('Control ''%s'' visible',
+          [ControlName(Info)])));
 end;
 
 procedure TGUIScript.CheckNotVisibleEval(Info: TProgramInfo);
 begin
-  Check(not Control(Info).Visible, Format('Control ''%s'' not visible', [ControlName(Info)]));
+  Check(not Control(Info).Visible,
+      FormatCheckFailMessage(Info, Format('Control ''%s'' not visible',
+          [ControlName(Info)])));
 end;
 
 procedure TGUIScript.CheckExistsEval(Info: TProgramInfo);
@@ -1786,7 +1882,9 @@ begin
     Control(Info);
   except
     on e: EGUIAutomationControlNotFound do
-      Check(false, Format('Control ''%s'' exists', [ControlName(Info)]));
+      Check(false,
+          FormatCheckFailMessage(Info, Format('Control ''%s'' exists',
+              [ControlName(Info)])));
   end;
 end;
 
@@ -1794,7 +1892,9 @@ procedure TGUIScript.CheckNotExistsEval(Info: TProgramInfo);
 begin
   try
     Control(Info);
-    Check(false, Format('Control ''%s'' not exists', [ControlName(Info)]));
+    Check(false,
+        FormatCheckFailMessage(Info, Format('Control ''%s'' not exists',
+            [ControlName(Info)])));
   except
     on e: EGUIAutomationControlNotFound do;
   end;
@@ -1805,8 +1905,9 @@ var
   LControl: TWinControl;
 begin
   LControl := Control(Info) as TWinControl;
-  Check(Assigned(LControl) and LControl.Focused, Format('Control ''%s'' focused',
-      [ControlName(Info)]));
+  Check(Assigned(LControl) and LControl.Focused,
+      FormatCheckFailMessage(Info, Format('Control ''%s'' focused',
+          [ControlName(Info)])));
 end;
 
 procedure TGUIScript.CheckControlTextEqualEval(Info: TProgramInfo);
@@ -1816,8 +1917,9 @@ var
 begin
   LExpected := Info.ValueAsString['Text'];
   LActual := GetControlText(Control(Info));
-  Check(LExpected = LActual, Format('Control ''%s'' text expected <%s> actual <%s>',
-      [ControlName(Info), LExpected, LActual]));
+  Check(LExpected = LActual,
+      FormatCheckFailMessage(Info, Format('Control ''%s'' text expected <%s> actual <%s>',
+          [ControlName(Info), LExpected, LActual])));
 end;
 
 procedure TGUIScript.CheckControlSelectedTextEqualEval(Info: TProgramInfo);
@@ -1827,8 +1929,9 @@ var
 begin
   LExpected := Info.ValueAsString['Text'];
   LActual := GetControlSelectedText(Control(Info));
-  Check(LExpected = LActual, Format('Control ''%s'' selected text expected <%s> actual <%s>',
-      [ControlName(Info), LExpected, LActual]));
+  Check(LExpected = LActual,
+      FormatCheckFailMessage(Info, Format('Control ''%s'' selected text expected <%s> actual <%s>',
+          [ControlName(Info), LExpected, LActual])));
 end;
 
 end.

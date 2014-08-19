@@ -1894,8 +1894,20 @@ begin
 end;
 
 procedure TGUIAutomation.SetFocus(const AControlName: string);
+{$IFDEF MSWINDOWS}
+var
+  LX, LY: Integer;
+  LHwnd: HWND;
+{$ENDIF}
 begin
+{$IFDEF MSWINDOWS}
+  LX := 0;
+  LY := 0;
+  LHwnd := FindControlWindow(AControlName, LX, LY, CallerAddr);
+  Windows.SetFocus(LHwnd);
+{$ELSE}
   SetFocus(FindControl(AControlName, CallerAddr), CallerAddr);
+{$ENDIF}
 end;
 
 end.

@@ -95,6 +95,7 @@ const
       var AY: Integer; const AIsTargetControl: Boolean): boolean;
 {$IFDEF MSWINDOWS}
   function WindowClassName(const AHwnd: HWND): string;
+  function WindowText(const AHwnd: HWND): string;
   // The window highest in the z-order for this process
   function GetTopmostWindow: HWND;
   procedure SaveScreenshot(const AHwnd: HWND; const AFileName: string);
@@ -411,6 +412,16 @@ const
 begin
   SetLength(Result, CMaxClassNameLength);
   SetLength(Result, GetClassName(AHwnd, PChar(Result), CMaxClassNameLength));
+end;
+{$ENDIF}
+
+{$IFDEF MSWINDOWS}
+function WindowText(const AHwnd: HWND): string;
+const
+  CMaxTextLength = 1000000;
+begin
+  SetLength(Result, CMaxTextLength);
+  SetLength(Result, GetWindowText(AHwnd, PChar(Result), CMaxTextLength));
 end;
 {$ENDIF}
 
