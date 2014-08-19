@@ -97,7 +97,7 @@ type
     property Visible: Boolean read FVisible write SetVisible;
   end;
 
-  TLblMessageOnHotSpotClickEvent = procedure(const ASrc: string) of object;
+  TMessageOnHotSpotClickEvent = procedure(const ASrc: string) of object;
 
   TtiApplicationMenuSystemDisplaySetings = class
   private
@@ -174,7 +174,7 @@ type
     FPnlEmptyMessage: TtiRoundedPanel;
     FPnlProgress: TtiRoundedPanel;
     FPnlMessageText: TtiRoundedPanel;
-    FlblMessage: THTMLViewer;
+    FhtmlMessage: THTMLViewer;
 
     FWhatsThis : TWhatsThis;
 
@@ -191,7 +191,7 @@ type
     FUpdateCount: Integer;
     FBruteForceNoFlicker: TtiBruteForceNoFlicker;
     FAboutFormClass : TFormClass;
-    FLblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent;
+    FhtmlMessageOnHotSpotClickEvent: TMessageOnHotSpotClickEvent;
     FEscapeContextAction: TAction;
 
     procedure CreateDockSystem;
@@ -255,7 +255,7 @@ type
                         const AHelpFileName: string;
                         const ADefHelpContext: Integer;
                         const AAboutFormClass: TFormClass;
-                        const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent;
+                        const ALblMessageOnHotSpotClickEvent: TMessageOnHotSpotClickEvent;
                         const AContactName: string = '';
                         const AContactEmailAddress: string = '';
                         const ADisplaySettings: TtiApplicationMenuSystemDisplaySetings = nil
@@ -338,7 +338,7 @@ procedure CreateAMS(
   const AHelpFileName: string;
   const ADefHelpContext : Integer;
   const AFormAboutClass: TFormClass;
-  const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent;
+  const ALblMessageOnHotSpotClickEvent: TMessageOnHotSpotClickEvent;
   const AContactName: string = '';
   const AContactEmailAddress: string = '';
   const ADisplaySettings: TtiApplicationMenuSystemDisplaySetings = nil);
@@ -379,7 +379,7 @@ procedure CreateAMS(
   const AHelpFileName: string;
   const ADefHelpContext : Integer;
   const AFormAboutClass: TFormClass;
-  const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent;
+  const ALblMessageOnHotSpotClickEvent: TMessageOnHotSpotClickEvent;
   const AContactName: string = '';
   const AContactEmailAddress: string = '';
   const ADisplaySettings: TtiApplicationMenuSystemDisplaySetings = nil);
@@ -634,7 +634,7 @@ constructor TtiApplicationMenuSystem.Create(
   const AHelpFileName: string;
   const ADefHelpContext : Integer;
   const AAboutFormClass: TFormClass;
-  const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent;
+  const ALblMessageOnHotSpotClickEvent: TMessageOnHotSpotClickEvent;
   const AContactName: string = '';
   const AContactEmailAddress: string = '';
   const ADisplaySettings: TtiApplicationMenuSystemDisplaySetings = nil);
@@ -707,7 +707,7 @@ begin
   CreateHelpSystem;
   CreateContextMenuItems;
   FMainForm.OnResize := OnMainFormResize;
-  FLblMessageOnHotSpotClickEvent:= ALblMessageOnHotSpotClickEvent;
+  FhtmlMessageOnHotSpotClickEvent:= ALblMessageOnHotSpotClickEvent;
   FEscapeContextAction:= nil;
 
 end;
@@ -1054,16 +1054,16 @@ begin
   FPnlMessageText.HelpContext := FDefHelpContext;
   FPnlMessageText.CornerRadius := 5;
 
-  FlblMessage:= THTMLViewer.Create(FPnlMessageText);
-  FlblMessage.Name := 'lblMessageAMS';
-  FlblMessage.Parent := FPnlMessageText;
-  FlblMessage.Align  := alClient;
-  FlblMessage.DefFontSize := 8;
-  FlblMessage.MarginHeight := 0;
-  FlblMessage.MarginWidth := 0;
-  FlblMessage.BorderStyle := htNone;
-  FlblMessage.DefFontName := FPnlMessageText.Font.Name;
-  FlblMessage.OnHotSpotClick := DoLblMessageOnHotSpotClick;
+  FhtmlMessage:= THTMLViewer.Create(FPnlMessageText);
+  FhtmlMessage.Name := 'htmlApplicationMessage';
+  FhtmlMessage.Parent := FPnlMessageText;
+  FhtmlMessage.Align  := alClient;
+  FhtmlMessage.DefFontSize := 8;
+  FhtmlMessage.MarginHeight := 0;
+  FhtmlMessage.MarginWidth := 0;
+  FhtmlMessage.BorderStyle := htNone;
+  FhtmlMessage.DefFontName := FPnlMessageText.Font.Name;
+  FhtmlMessage.OnHotSpotClick := DoLblMessageOnHotSpotClick;
 
   ltbDockRight:= TTBXDock.Create(FMainForm);
   ltbDockRight.Name := 'tbDockRight';
@@ -1650,25 +1650,25 @@ begin
     case pMessageType of
     tiufmtInfo: begin
                    FPnlMessageText.Color := clPaleBlue;
-                   FlblMessage.OnClick := DoLblMessageClick;
-                   FlblMessage.Hint := cMessageWindowHint;
-                   FlblMessage.ShowHint := True;
+                   FhtmlMessage.OnClick := DoLblMessageClick;
+                   FhtmlMessage.Hint := cMessageWindowHint;
+                   FhtmlMessage.ShowHint := True;
                 end;
     tiufmtError: begin
                    FPnlMessageText.Color := clYellow;
-                   FlblMessage.OnClick := nil;
-                   FlblMessage.Hint := '';
-                   FlblMessage.ShowHint := False;
+                   FhtmlMessage.OnClick := nil;
+                   FhtmlMessage.Hint := '';
+                   FhtmlMessage.ShowHint := False;
                  end;
     else
       raise EtiOPFProgrammerException.Create('Invalid pMessageType');
     end;
 
-    FlblMessage.DefBackground := FPnlMessageText.Color;
+    FhtmlMessage.DefBackground := FPnlMessageText.Color;
     LMessage := tiStrTran(AMessage, CrLf, Cr);
     LMessage := tiStrTran(LMessage, Lf, Cr);
     LMessage := tiStrTran(LMessage, Cr, '<br>');
-    FlblMessage.LoadFromString('<strong>' + LMessage + '</strong>');
+    FhtmlMessage.LoadFromString('<strong>' + LMessage + '</strong>');
     FpnlMessageText.Visible := True;
   end;
 
@@ -1873,8 +1873,8 @@ begin
   // 'self://...'
   else if Pos(CTIProtocolSelf + ':', ASrc) = 1 then
   begin
-    if Assigned(FLblMessageOnHotSpotClickEvent) then
-      FLblMessageOnHotSpotClickEvent(ASrc);
+    if Assigned(FhtmlMessageOnHotSpotClickEvent) then
+      FhtmlMessageOnHotSpotClickEvent(ASrc);
     AHandled := true;
   end
   // 'http://...' or 'mailto://...'
