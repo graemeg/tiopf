@@ -13,8 +13,7 @@ uses
   ,OleCtnrs
   ,Messages
   {$ELSE}
-  LMessages
-  ,LCLType
+   LCLType
   ,LCLIntf
   ,InterfaceBase
   ,EditBtn
