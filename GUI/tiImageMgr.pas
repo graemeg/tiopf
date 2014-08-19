@@ -82,7 +82,6 @@ type
     FILNormal16      : TImageList;
     FILHot16         : TImageList;
     FILDisabled16    : TImageList;
-
     FILNormal24      : TImageList;
     FILHot24         : TImageList;
     FILDisabled24    : TImageList;
@@ -547,11 +546,7 @@ end;
 
 procedure TtiImageListMgr.LoadIconFromRes(const pResName: string);
 begin
-{$IFNDEF FPC}
   Application.Icon.Handle := LoadIcon(FResFileInstance, PChar(pResName));
-{$ELSE}
- {$Warning Application.Icon.Handle not supported under Lazarus}
-{$ENDIF}
 end;
 
 procedure TtiImageListMgr.LoadBMPToTISPeedButton16(const pResName: string; const pButton: TtiSpeedButton);
@@ -580,4 +575,4 @@ finalization
   if Assigned(uTIImageListMgr) then
     uTIImageListMgr.Free;
 
-end.
+end.
