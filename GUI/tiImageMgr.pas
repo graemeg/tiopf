@@ -92,7 +92,7 @@ type
     FResFileName     : String;
     FOwnsImageLists: boolean;
     FtiOPFImagesLoaded : Boolean;
-    procedure  LoadStateImagesFromResouce(const pResName, pRefName: string; pSize: TtiImageSize; pState: TtiImageState);
+    procedure  LoadStateImagesFromResource(const pResName, pRefName: string; pSize: TtiImageSize; pState: TtiImageState);
     function   GetILDisabled16 : TImageList;
     function   GetILHot16     : TImageList;
     function   GetILNormal16  : TImageList;
@@ -224,7 +224,7 @@ begin
     if lSize in pSizes then
       for lState := Low(TtiImageState) to High(TtiImageState) do
         if lState in pStates then
-          LoadStateImagesFromResouce(pResName, pRefName, lSize, lState);
+          LoadStateImagesFromResource(pResName, pRefName, lSize, lState);
 end;
 
 procedure TtiImageListMgr.LoadResourceDLL(const pDLLName: string);
@@ -253,7 +253,7 @@ begin
 {$ENDIF}
 end;
 
-procedure TtiImageListMgr.LoadStateImagesFromResouce(const pResName, pRefName : string; pSize : TtiImageSize; pState : TtiImageState);
+procedure TtiImageListMgr.LoadStateImagesFromResource(const pResName, pRefName : string; pSize : TtiImageSize; pState : TtiImageState);
 var
   lBMP : TBitMap;
   lResName : string;
