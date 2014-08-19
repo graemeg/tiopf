@@ -256,39 +256,23 @@ begin
   Assert(ILHot24      <> nil, 'FILHot24      not assigned');
   Assert(ILDisabled24 <> nil, 'FILDisabled24 not assigned');
 
-  {$IFNDEF FPC}
   lBMP := TBitMap.Create;
-  {$ENDIF}
   try
     lResName := pResName + '_' +
                 ctiImageSizes[pSize] +
                 ctiImageStates[pState];
-    {$IFNDEF FPC}
     LoadBMPFromRes(lResName, lBMP);
-    {$ENDIF}
     if (pSize = tiIS16) then
     begin
       if (pState = tiISNormal) then
       begin
         FImageNames16.Add(UpperCase(pRefName));
-        {$IFNDEF FPC}
         ILNormal16.AddMasked(lBMP, clDefault);
-        {$ELSE}
-        ILNormal16.AddLazarusResource(lResName);
-        {$ENDIF}
       end
       else if (pState = tiISHot) then
-        {$IFNDEF FPC}
         ILHot16.AddMasked(lBMP, clDefault)
-        {$ELSE}
-        ILHot16.AddLazarusResource(lResName)
-        {$ENDIF}
       else if (pState = tiISDisabled) then
-        {$IFNDEF FPC}
         ILDisabled16.AddMasked(lBMP, clDefault)
-        {$ELSE}
-        ILDisabled16.AddLazarusResource(lResName)
-        {$ENDIF}
       else
         raise Exception.CreateFmt(cErrorInvalidImageState, [ClassName + '.LoadSingleImage']);
     end
@@ -297,24 +281,12 @@ begin
       if (pState = tiISNormal) then
       begin
         FImageNames24.Add(UpperCase(pRefName));
-        {$IFNDEF FPC}
         ILNormal24.AddMasked(lBMP, clDefault);
-        {$ELSE}
-        ILNormal24.AddLazarusResource(lResName);
-        {$ENDIF}
       end
       else if (pState = tiISHot) then
-        {$IFNDEF FPC}
         ILHot24.AddMasked(lBMP, clDefault)
-        {$ELSE}
-        ILHot24.AddLazarusResource(lResName)
-        {$ENDIF}
       else if (pState = tiISDisabled) then
-        {$IFNDEF FPC}
         ILDisabled24.AddMasked(lBMP, clDefault)
-        {$ELSE}
-        ILDisabled24.AddLazarusResource(lResName)
-        {$ENDIF}
       else
         raise Exception.CreateFmt(cErrorInvalidImageState, [ClassName + '.LoadSingleImage']);
     end
@@ -322,9 +294,7 @@ begin
         raise Exception.CreateFmt(cErrorInvalidImageSize, [ClassName + '.LoadSingleImage']);
 
   finally
-   {$IFNDEF FPC}
     lBMP.Free;
-    {$ENDIF}
   end;
 end;
 
@@ -567,4 +537,4 @@ finalization
   if Assigned(uTIImageListMgr) then
     uTIImageListMgr.Free;
 
-end.
+end.
