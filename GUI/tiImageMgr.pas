@@ -23,22 +23,19 @@
 
   === Lazarus ===
 
-  To add resources into a unit you can use the 'lazres' tool included with
-  Lazarus.
-  
-  lazarus/tools/lazres myres.lrs *.xpm *.bmp *.jpg
-  
-  Will include all XPM, BMP and JPG files into a myres.lrs resource file.
-  To add this resource to your application you do the following in
-  the Initialization section.
-     {$I myres.lrs}
+  Add the resources to a .rc file (as shown above)
 
-    
-  NOTE to all Lazarus users:
-    The function name to load resources like images into a TImageList has
-    changed. Lazarus 0.9.22 and earlier used .AddFromLazarusResource().
-    Lazarus 0.9.23 and later uses the name .AddLazarusResource().
-    tiOPF code is always based on the latest Lazarus development version.
+  Then include the the resource file in your project
+    {$R MyRes.rc}
+
+  Compile your project. FPC will automatically compile the
+  .rc file and include the .res version. You can also pre-compile
+  the .rc file and include the .res file (as shown in the Delphi
+  instructions).
+
+  If the resources are in the main exe, then just use
+    gTIImateListMgr
+
 
 *)
 
@@ -237,19 +234,14 @@ begin
 {$ENDIF}
 end;
 
-
 procedure TtiImageListMgr.LoadBMPFromRes(const pResName : string; const pBMP : TBitMap);
 const
   RT_BITMAP = MAKEINTRESOURCE(2);
 begin
-{$IFNDEF FPC}
  if FindResource(FResFileInstance, PChar(pResName), RT_BITMAP) <> 0 then
     pBMP.LoadFromResourceName(FResFileInstance, pResName)
   else
-    pBMP.LoadFromResourceName(HInstance, pResName)
-{$ELSE}
- pBMP.LoadFromLazarusResource(pResName);
-{$ENDIF}
+    pBMP.LoadFromResourceName(HInstance, pResName);
 end;
 
 procedure TtiImageListMgr.LoadStateImagesFromResource(const pResName, pRefName : string; pSize : TtiImageSize; pState : TtiImageState);
