@@ -3,7 +3,10 @@
 }
 unit model;
 
-{$I tiDefines.inc}
+{$IFDEF FPC}
+  {$mode objfpc}{$H+}
+{$ENDIF}
+
 interface
 
 uses
@@ -141,7 +144,6 @@ type
     procedure SetItems(i: integer; const AValue: TAddress); reintroduce;
   public
     function Add(const AObject: TAddress): integer; reintroduce;
-    procedure Update(ASubject: TtiObject); override;
     property Items[i: integer]: TAddress read GetItems write SetItems; default;
   end;
 
@@ -166,20 +168,24 @@ type
     FFirstName: string;
     FLastName: string;
     FMobile: string;
+    FPhoto: TMemoryStream;
     FDateOfBirth: TDateTime;
+    FIsConfirmed: Boolean;
     procedure SetComments(const AValue: string);
     procedure SetEmail(const AValue: string);
     procedure SetFirstName(const AValue: string);
     procedure SetLastName(const AValue: string);
     procedure SetMobile(const AValue: string);
+    procedure SetPhoto(const AValue: TMemoryStream);
     procedure SetDateOfBirth(const AValue: TDateTime);
+    procedure SetIsConfirmed(const AValue: Boolean);
     function GetHomeAddress: string;
     function GetMemento: TContactMemento;
     procedure SetMemento(const Value: TContactMemento);
   public
     constructor Create; override;
     destructor Destroy; override;
-    procedure Update(ASubject: TtiObject); override;
+    function IsValid(const AErrors: TtiObjectErrors): boolean; override;
     property Memento : TContactMemento read GetMemento Write SetMemento;
   published
     property FirstName: string read FFirstName write SetFirstName;
@@ -189,6 +195,8 @@ type
     property Comments: string read FComments write SetComments;
     property DateOfBirth: TDateTime read FDateOfBirth write SetDateOfBirth;
     property AddressList: TAddressList read FAddressList;
+    property Photo: TMemoryStream read FPhoto write SetPhoto;
+    property IsConfirmed: Boolean read FIsConfirmed write SetIsConfirmed;
     property HomeAddress: string read GetHomeAddress;
   end;
   
@@ -352,11 +360,17 @@ end;
 procedure TAddress.SetTelephone2(const AValue: string);
 begin
   if FTelephone2=AValue then exit;
-
+  
   BeginUpdate;
   FTelephone2:=AValue;
   Mark;
   EndUpdate;
+end;
+
+function TAddress.GetFullAddress: string;
+begin
+  result := Format('%d %s, %s, %s, %s', [Nr, Street, City.Name, City.ZIP,
+    City.Country.Name]);
 end;
 
 constructor TAddress.Create;
@@ -410,17 +424,11 @@ end;
 procedure TAddress.SetFax(const AValue: string);
 begin
   if FFax=AValue then exit;
-
+  
   BeginUpdate;
   FFax:=AValue;
   Mark;
   EndUpdate;
-end;
-
-function TAddress.GetFullAddress: string;
-begin
-  result := Format('%d %s, %s, %s, %s', [Nr, Street, City.Name, City.ZIP,
-      City.Country.Name]);
 end;
 
 { TContact }
@@ -470,6 +478,18 @@ begin
   EndUpdate;
 end;
 
+procedure TContact.SetPhoto(const AValue: TMemoryStream);
+begin
+  if FPhoto=AValue then exit;
+  BeginUpdate;
+  // free old photo if it exits
+  if Assigned(FPhoto) then
+    FPhoto.Free;
+  FPhoto:=AValue;
+  Mark;
+  EndUpdate;
+end;
+
 procedure TContact.SetDateOfBirth(const AValue: TDateTime);
 begin
   if FDateOfBirth = AValue then exit;
@@ -479,20 +499,12 @@ begin
   EndUpdate;
 end;
 
-constructor TContact.Create;
+procedure TContact.SetIsConfirmed(const AValue: Boolean);
 begin
-  inherited Create;
-  FAddressList:= TAddressList.Create;
-  FAddressList.Owner:= self;
-  // ToDo: Refactor to remove need for ItemOwner. Use Parent instead
-  FAddressList.ItemOwner:= self;
-  FAddressList.AttachObserver(Self);
-end;
-
-destructor TContact.Destroy;
-begin
-  FAddressList.Free;
-  inherited Destroy;
+  if FIsConfirmed = AValue then exit;
+  BeginUpdate;
+  FIsConfirmed := AValue;
+  EndUpdate;
 end;
 
 function TContact.GetHomeAddress: string;
@@ -535,9 +547,35 @@ begin
   end;
 end;
 
-procedure TContact.Update(ASubject: TtiObject);
+constructor TContact.Create;
 begin
-  NotifyObserversHelper;
+  inherited Create;
+  FAddressList:= TAddressList.Create;
+  FAddressList.Owner:= self;
+  // ToDo: Refactor to remove need for ItemOwner. Use Parent instead
+  FAddressList.ItemOwner:= self;
+  FPhoto := nil;
+end;
+
+destructor TContact.Destroy;
+begin
+  FAddressList.Free;
+  if Assigned(FPhoto) then
+    FPhoto.Free;
+  inherited Destroy;
+end;
+
+function TContact.IsValid(const AErrors: TtiObjectErrors): boolean;
+begin
+  inherited IsValid(AErrors);
+
+  if Trim(FirstName) = '' then
+    AErrors.AddError('FirstName', 'Firstname property is missing information', 1);
+
+  if Trim(LastName) = '' then
+    AErrors.AddError('LastName', 'Lastname property is missing information', 1);
+
+  Result := (AErrors.Count = 0);
 end;
 
 { TCountryList }
@@ -589,12 +627,6 @@ end;
 function TAddressList.Add(const AObject: TAddress): integer;
 begin
   result:= inherited Add(AObject);
-  AObject.AttachObserver(Self);
-end;
-
-procedure TAddressList.Update(ASubject: TtiObject);
-begin
-  NotifyObserversHelper;
 end;
 
 { TContactList }

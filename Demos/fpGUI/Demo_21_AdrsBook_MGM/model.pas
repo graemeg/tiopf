@@ -121,6 +121,7 @@ type
     procedure SetStreet(const AValue: string);
     procedure SetTelephone1(const AValue: string);
     procedure SetTelephone2(const AValue: string);
+    function GetFullAddress: string;
   public
     constructor Create; override;
     procedure AssignClassProps(ASource: TtiObject); override;
@@ -133,6 +134,7 @@ type
     property AddressType: TAddressType read FAddressType write SetAddressType;
     property AddressType4GUI: string read GetAddressType4GUI;
     property City: TCity read FCity write SetCity;
+    property FullAddress: string read GetFullAddress;
   end;
   
   
@@ -145,7 +147,19 @@ type
     property Items[i: integer]: TAddress read GetItems write SetItems; default;
   end;
 
-  
+
+  TContactMemento = class
+  private
+    FObjectState : TPerObjectState;
+    FOID : String;
+    FFirstName : String;
+    FLastName : String;
+    FMobile : String;
+    FEMail : String;
+    FDOB : TDateTime;
+    FComments : String;
+  end;
+
   TContact = class(TMarkObject)
   private
     FAddressList: TAddressList;
@@ -155,24 +169,35 @@ type
     FLastName: string;
     FMobile: string;
     FPhoto: TMemoryStream;
+    FDateOfBirth: TDateTime;
+    FIsConfirmed: Boolean;
     procedure SetComments(const AValue: string);
     procedure SetEmail(const AValue: string);
     procedure SetFirstName(const AValue: string);
     procedure SetLastName(const AValue: string);
     procedure SetMobile(const AValue: string);
     procedure SetPhoto(const AValue: TMemoryStream);
+    procedure SetDateOfBirth(const AValue: TDateTime);
+    procedure SetIsConfirmed(const AValue: Boolean);
+    function GetHomeAddress: string;
+    function GetMemento: TContactMemento;
+    procedure SetMemento(const Value: TContactMemento);
   public
     constructor Create; override;
     destructor Destroy; override;
     function IsValid(const AErrors: TtiObjectErrors): boolean; override;
+    property Memento : TContactMemento read GetMemento Write SetMemento;
   published
     property FirstName: string read FFirstName write SetFirstName;
     property LastName: string read FLastName write SetLastName;
     property EMail: string read FEmail write SetEmail;
     property Mobile: string read FMobile write SetMobile;
     property Comments: string read FComments write SetComments;
+    property DateOfBirth: TDateTime read FDateOfBirth write SetDateOfBirth;
     property AddressList: TAddressList read FAddressList;
     property Photo: TMemoryStream read FPhoto write SetPhoto;
+    property IsConfirmed: Boolean read FIsConfirmed write SetIsConfirmed;
+    property HomeAddress: string read GetHomeAddress;
   end;
   
   
@@ -342,6 +367,12 @@ begin
   EndUpdate;
 end;
 
+function TAddress.GetFullAddress: string;
+begin
+  result := Format('%d %s, %s, %s, %s', [Nr, Street, City.Name, City.ZIP,
+    City.Country.Name]);
+end;
+
 constructor TAddress.Create;
 begin
   inherited Create;
@@ -368,7 +399,7 @@ procedure TAddress.SetAddressType(const AValue: TAddressType);
 begin
   if FAddressType = AValue then
     Exit; //==>
-  
+
   BeginUpdate;
   FAddressType := AValue;
   Mark;
@@ -405,7 +436,6 @@ end;
 procedure TContact.SetFirstName(const AValue: string);
 begin
   if FFirstName=AValue then exit;
-  
   BeginUpdate;
   FFirstName:=AValue;
   Mark;
@@ -415,7 +445,6 @@ end;
 procedure TContact.SetEmail(const AValue: string);
 begin
   if FEmail=AValue then exit;
-  
   BeginUpdate;
   FEmail:=AValue;
   Mark;
@@ -425,7 +454,6 @@ end;
 procedure TContact.SetComments(const AValue: string);
 begin
   if FComments=AValue then exit;
-  
   BeginUpdate;
   FComments:=AValue;
   Mark;
@@ -435,7 +463,6 @@ end;
 procedure TContact.SetLastName(const AValue: string);
 begin
   if FLastName=AValue then exit;
-  
   BeginUpdate;
   FLastName:=AValue;
   Mark;
@@ -445,7 +472,6 @@ end;
 procedure TContact.SetMobile(const AValue: string);
 begin
   if FMobile=AValue then exit;
-  
   BeginUpdate;
   FMobile:=AValue;
   Mark;
@@ -462,6 +488,63 @@ begin
   FPhoto:=AValue;
   Mark;
   EndUpdate;
+end;
+
+procedure TContact.SetDateOfBirth(const AValue: TDateTime);
+begin
+  if FDateOfBirth = AValue then exit;
+  BeginUpdate;
+  FDateOfBirth := AValue;
+  Mark;
+  EndUpdate;
+end;
+
+procedure TContact.SetIsConfirmed(const AValue: Boolean);
+begin
+  if FIsConfirmed = AValue then exit;
+  BeginUpdate;
+  FIsConfirmed := AValue;
+  EndUpdate;
+end;
+
+function TContact.GetHomeAddress: string;
+var
+  i: Integer;
+begin
+  result := '';
+  for i := 0 to AddressList.Count - 1 do
+    if AddressList.Items[i].AddressType.Name = 'Home' then
+    begin
+      result := AddressList.Items[i].FullAddress;
+      break;
+    end;
+end;
+
+function TContact.GetMemento: TContactMemento;
+begin
+  Result := TContactMemento.Create;
+  Result.FOID := OID.AsString;
+  Result.FObjectState := ObjectState;
+  Result.FFirstName := FFirstName;
+  Result.FLastName := FLastName;
+  Result.FMobile := FMobile;
+  Result.FEMail := FEmail;
+  Result.FDOB := FDateOfBirth;
+  Result.FComments := FComments;
+end;
+
+procedure TContact.SetMemento(const Value: TContactMemento);
+begin
+  If (OID.AsString = Value.FOID) then
+  begin
+    ObjectState := Value.FObjectState;
+    FFirstName := Value.FFirstName;
+    FLastName := Value.FLastName;
+    FMobile := Value.FMobile;
+    FEmail := Value.FEMail;
+    FComments:= Value.FComments;
+    FDateOfBirth := Value.FDOB;
+  end;
 end;
 
 constructor TContact.Create;
@@ -562,7 +645,6 @@ function TContactList.Add(const AObject: TContact): integer;
 begin
   result:= inherited Add(AObject);
 end;
-
 
 { TAddressTypeList }
 
