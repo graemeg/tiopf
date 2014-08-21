@@ -8,19 +8,13 @@ object CityListForm: TCityListForm
   Caption = 'CityListForm'
   ClientHeight = 315
   ClientWidth = 420
-  ParentFont = False
-  LCLVersion = '0.9.27'
+  LCLVersion = '1.3'
   object GCities: TStringGrid
     Left = 8
     Height = 224
     Top = 40
     Width = 392
-    ExtendedSelect = True
-    FixedColor = clBtnFace
     FixedCols = 0
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goSmoothScroll]
-    ParentColor = False
-    RowCount = 5
     TabOrder = 0
   end
   object BClose: TButton

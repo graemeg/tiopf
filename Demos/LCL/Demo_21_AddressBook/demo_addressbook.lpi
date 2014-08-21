@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -10,6 +10,7 @@
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
       <Title Value="demo_addressbook"/>
+      <ResourceType Value="res"/>
     </General>
     <VersionInfo>
       <StringTable ProductVersion=""/>
@@ -41,7 +42,6 @@
       <Unit0>
         <Filename Value="demo_addressbook.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="demo_addressbook"/>
       </Unit0>
       <Unit1>
         <Filename Value="frmmain.pp"/>
@@ -54,12 +54,10 @@
       <Unit2>
         <Filename Value="model.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="model"/>
       </Unit2>
       <Unit3>
         <Filename Value="contactmanager.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="contactmanager"/>
       </Unit3>
       <Unit4>
         <Filename Value="frmeditcontact.pp"/>
@@ -67,12 +65,13 @@
         <ComponentName Value="ContactEditForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="frmeditcontact"/>
+        <UnitName Value="frmEditContact"/>
       </Unit4>
       <Unit5>
         <Filename Value="frmeditaddress.pp"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="EditAddressForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmEditAddress"/>
       </Unit5>
@@ -80,6 +79,7 @@
         <Filename Value="frmcitylist.pp"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="CityListForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmCityList"/>
       </Unit6>
@@ -87,13 +87,15 @@
         <Filename Value="frmeditcity.pp"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="EditCityForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="frmeditcity"/>
+        <UnitName Value="frmEditCity"/>
       </Unit7>
       <Unit8>
         <Filename Value="frmcountrylist.pp"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="CountryListForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmCountryList"/>
       </Unit8>
@@ -101,20 +103,21 @@
         <Filename Value="frmeditcountry.pp"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="EditCountryForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="frmeditcountry"/>
+        <UnitName Value="frmEditCountry"/>
       </Unit9>
       <Unit10>
         <Filename Value="frmaddresstypelist.pp"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="AddressTypeListForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmAddressTypeList"/>
       </Unit10>
       <Unit11>
         <Filename Value="contactdisplay.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="ContactDisplay"/>
       </Unit11>
       <Unit12>
         <Filename Value="displayhelpers.pas"/>
@@ -142,11 +145,7 @@
       </Options>
     </Linking>
     <Other>
-      <CompilerMessages>
-        <UseMsgFile Value="True"/>
-      </CompilerMessages>
       <CustomOptions Value="-FUunits"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
 </CONFIG>

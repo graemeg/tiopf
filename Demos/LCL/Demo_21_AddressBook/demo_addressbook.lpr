@@ -8,11 +8,11 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, SysUtils, frmmain, model, contactmanager,
-  frmeditcontact, frmEditAddress, frmCityList, frmeditcity, frmCountryList,
-  frmeditcountry, frmAddressTypeList, ContactDisplay, DisplayHelpers;
+  frmEditContact, frmEditAddress, frmCityList, frmEditCity, frmCountryList,
+  frmEditCountry, frmAddressTypeList, ContactDisplay, DisplayHelpers;
 
 begin
-  { Let default to the ISO international date format }
+  { Lets default to the ISO international date format }
   ShortDateFormat := 'yyyy-mm-dd';
 
   Application.Initialize;

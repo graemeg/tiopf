@@ -1,11 +1,11 @@
-unit frmeditcity;
+unit frmEditCity;
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, model,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, model,
   tiModelMediator, StdCtrls;
 
 type
@@ -36,6 +36,8 @@ var
 function EditCity(AData: TCity): boolean;
 
 implementation
+
+{$R *.lfm}
 
 uses
   tiBaseMediator, contactmanager, typinfo;
@@ -74,9 +76,6 @@ begin
   FMediator.Subject := FData;
   FMediator.Active := True;
 end;
-
-initialization
-  {$I frmeditcity.lrs}
 
 end.
 

@@ -1,11 +1,11 @@
-unit frmeditcountry;
+unit frmEditCountry;
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, model,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, model,
   tiModelMediator, StdCtrls;
 
 type
@@ -34,6 +34,8 @@ var
 function EditCountry(AData: TCountry): boolean;
 
 implementation
+
+{$R *.lfm}
 
 function EditCountry(AData: TCountry): boolean;
 
@@ -69,9 +71,6 @@ begin
   FMediator.Subject := FData;
   FMediator.Active := True;
 end;
-
-initialization
-  {$I frmeditcountry.lrs}
 
 end.
 

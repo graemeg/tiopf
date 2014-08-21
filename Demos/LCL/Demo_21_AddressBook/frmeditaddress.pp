@@ -5,7 +5,7 @@ unit frmEditAddress;
 interface
 
 uses
-  Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs,
   StdCtrls, model, tiModelMediator;
 
 type
@@ -45,6 +45,8 @@ var
   EditAddressForm: TEditAddressForm;
 
 implementation
+
+{$R *.lfm}
 
 uses
   contactmanager;
@@ -90,8 +92,6 @@ begin
   FMediator.Active := True;
 end;
 
-initialization
-  {$I frmeditaddress.lrs}
 
 end.
 

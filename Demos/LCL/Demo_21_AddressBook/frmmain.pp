@@ -58,7 +58,7 @@ implementation
 uses
   model,
   contactmanager,
-  frmeditcontact,
+  frmEditContact,
   frmcitylist,
   frmCountryList,
   frmAddressTypeList;

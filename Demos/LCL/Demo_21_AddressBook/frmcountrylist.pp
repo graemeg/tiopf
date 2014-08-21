@@ -5,7 +5,7 @@ unit frmCountryList;
 interface
 
 uses
-  Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
   Grids, model, tiModelMediator;
 
 type
@@ -36,6 +36,8 @@ var
 procedure ShowCountries(const AList: TCountryList);
 
 implementation
+
+{$R *.lfm}
 
 uses
   contactmanager,tiBaseMediator,tiListMediators,frmEditCountry;
@@ -119,9 +121,6 @@ begin
   FMediator.Subject := FData;
   FMediator.Active := True;
 end;
-
-initialization
-  {$I frmcountrylist.lrs}
 
 end.
 

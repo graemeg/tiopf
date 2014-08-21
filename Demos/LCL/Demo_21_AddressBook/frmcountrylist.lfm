@@ -6,8 +6,7 @@ object CountryListForm: TCountryListForm
   Caption = 'Country list'
   ClientHeight = 300
   ClientWidth = 400
-  ParentFont = False
-  LCLVersion = '0.9.27'
+  LCLVersion = '1.3'
   object BAdd: TButton
     Left = 13
     Height = 25
@@ -43,12 +42,7 @@ object CountryListForm: TCountryListForm
     Height = 224
     Top = 40
     Width = 376
-    ExtendedSelect = True
-    FixedColor = clBtnFace
     FixedCols = 0
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goSmoothScroll]
-    ParentColor = False
-    RowCount = 5
     TabOrder = 3
   end
   object BClose: TButton

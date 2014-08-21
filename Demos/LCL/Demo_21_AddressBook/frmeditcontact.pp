@@ -1,11 +1,11 @@
-unit frmeditcontact;
+unit frmEditContact;
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
   model,ComCtrls, tiModelMediator, tiListMediators, EditBtn;
 
 type
@@ -57,6 +57,8 @@ var
 
 
 implementation
+
+{$R *.lfm}
 
 uses
   frmEditAddress, tiDialogs;
@@ -150,8 +152,6 @@ begin
   FAdrsMediator.Active := True;
 end;
 
-initialization
-  {$I frmeditcontact.lrs}
 
 end.
 

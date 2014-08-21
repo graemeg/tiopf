@@ -5,7 +5,7 @@ unit frmAddressTypeList;
 interface
 
 uses
-  Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
   model, tiModelMediator, Grids;
 
 type
@@ -37,6 +37,8 @@ var
 procedure ShowAddressTypes(const AList: TAddressTypeList);
 
 implementation
+
+{$R *.lfm}
 
 uses
   tiBaseMediator,contactmanager,tiListMediators;
@@ -139,9 +141,6 @@ begin
   FMediator.Subject := FData;
   FMediator.Active := True;
 end;
-
-initialization
-  {$I frmaddresstypelist.lrs}
 
 end.
 

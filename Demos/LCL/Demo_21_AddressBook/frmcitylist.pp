@@ -5,7 +5,7 @@ unit frmCityList;
 interface
 
 uses
-  Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs,
   model, tiModelMediator, ExtCtrls, Grids, StdCtrls;
 
 type
@@ -36,6 +36,8 @@ var
 procedure ShowCities(const AList: TCityList);
 
 implementation
+
+{$R *.lfm}
 
 uses
   tiBaseMediator,contactmanager,tiListMediators, frmEditCity;
@@ -120,9 +122,6 @@ begin
   FMediator.Subject := FData;
   FMediator.Active := True;
 end;
-
-initialization
-  {$I frmcitylist.lrs}
 
 end.
 
