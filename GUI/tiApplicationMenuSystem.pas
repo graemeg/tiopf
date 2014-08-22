@@ -1643,7 +1643,10 @@ var
 begin
   // ToDo: Must sort this out so the two can co-exist
   if AMessage = '' then
-    FpnlMessageText.Visible := false
+  begin
+    FhtmlMessage.LoadFromString('');
+    FpnlMessageText.Visible := false;
+  end
   else
   begin
     // Sould be able to control color of message from outside the AMS

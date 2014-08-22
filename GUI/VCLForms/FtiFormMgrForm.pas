@@ -68,12 +68,14 @@ type
                         const AOnExecute: TNotifyEvent;
                         const AHint: string = '';
                         const AImageIndex: Integer = -1;
-                        const AHelpContext: Integer = -1): TtiAMSAction; overload;
+                        const AHelpContext: Integer = -1;
+                        const AName: string = ''): TtiAMSAction; overload;
     function  AddAction(const ACaption: string;
                         const AHint: string;
                         const AOnExecute: TNotifyEvent;
                         const AShortCutKey: Word;
-                        const AShortCutShiftState: TShiftState): TtiAMSAction; overload;
+                        const AShortCutShiftState: TShiftState;
+                        const AName: string = ''): TtiAMSAction; overload;
     procedure DoCloseForm(const ACloseHandler: TtiFormCloseHandler = nil);
 
     procedure aCloseExecute(Sender: TObject); virtual;
@@ -236,14 +238,18 @@ begin
   {$ENDIF}
 
   FAL := TActionList.Create(Self);
+  if Self.Name <> '' then
+    FAL.Name := 'al' + Self.Name
+  else
+    FAL.Name := 'al' + Self.ClassName;
   FAL.OnUpdate := DoALUpdate;
 
-  FaClose := AddAction(cCaptionClose, 'Close this page' + ClassName , aCloseExecute, VK_ESCAPE, []);
+  FaClose := AddAction(cCaptionClose, 'Close this page ' + ClassName, aCloseExecute, VK_ESCAPE, [], 'aClose');
   FaClose.ImageIndex := gTIImageListMgr.ImageIndex16(cResTI_CloseWindow);
 
   // At least one action must be hooked up to the UI so that the action list
   // OnUpdate is called.
-  FaDummy := AddAction('DummyAction', aDummyExecute);
+  FaDummy := AddAction('DummyAction', aDummyExecute, '', -1, -1, 'aDummy');
   // A panel is used as it can be set to zero width and height. A label
   lblDummyAction.Action := FaDummy;
 
@@ -372,9 +378,38 @@ function TtiFormMgrForm.AddAction(
   const AOnExecute: TNotifyEvent;
   const AHint: string = '';
   const AImageIndex: Integer = -1;
-  const AHelpContext: Integer = -1): TtiAMSAction;
+  const AHelpContext: Integer = -1;
+  const AName: string = ''): TtiAMSAction;
+
+  procedure _SetUniqueName(AAction: TtiAMSAction; const AName: string);
+  var
+    i: Integer;
+  const
+    CMaxUniqueNameAttempts = 100;
+  begin
+    for i := 1 to CMaxUniqueNameAttempts do
+    begin
+      try
+        if i = 1 then
+          Result.Name := AName
+        else
+          Result.Name := AName + IntToStr(i);
+        break;
+      except
+        on e: EComponentError do
+          if i = CMaxUniqueNameAttempts then
+            raise;
+      end;
+    end;
+  end;
+
 begin
   Result := TtiAMSAction.Create(FAL);
+  // Generate a unique name using the caption and optional numerical suffix
+  if AName <> '' then
+    _SetUniqueName(Result, FAL.Name + '_' + AName)
+  else
+    _SetUniqueName(Result, FAL.Name + '_' + tiToComponentName('a' + ACaption));
   Result.ActionList := FAL;
   Result.Caption := ACaption;
   Result.OnExecute := AOnExecute;
@@ -388,9 +423,10 @@ function TtiFormMgrForm.AddAction(
   const AHint: string;
   const AOnExecute: TNotifyEvent;
   const AShortCutKey: Word;
-  const AShortCutShiftState: TShiftState): TtiAMSAction;
+  const AShortCutShiftState: TShiftState;
+  const AName: string): TtiAMSAction;
 begin
-  Result := AddAction(ACaption, AOnExecute, AHint);
+  Result := AddAction(ACaption, AOnExecute, AHint, -1, -1, AName);
   Result.ShortCut := Shortcut(Word(AShortCutKey), AShortCutShiftState);
 end;
 

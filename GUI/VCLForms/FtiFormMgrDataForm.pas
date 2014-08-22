@@ -131,19 +131,19 @@ begin
   FFormData := CreateFormData;
   Assert(FFormData.TestValid(TtiDataFormData), CTIErrorInvalidObject);
   
-  FaCancelClose := AddAction(cCaptionCancelClose, 'Cancel your edits and close' + ClassName , aCancelCloseExecute, VK_ESCAPE, []);
+  FaCancelClose := AddAction(cCaptionCancelClose, 'Cancel your edits and close' + ClassName , aCancelCloseExecute, VK_ESCAPE, [], 'aCancelClose');
   FaCancelClose.ImageIndex := gTIImageListMgr.ImageIndex16(cResTI_CloseWindow);
 
-  FaUndo := AddAction(cCaptionUndo, 'Un-do changes' + ClassName , aUndoExecute, Ord('Z'), [ssCtrl]);
+  FaUndo := AddAction(cCaptionUndo, 'Un-do changes' + ClassName , aUndoExecute, Ord('Z'), [ssCtrl], 'aUndo');
   FaUndo.ImageIndex := gTIImageListMgr.ImageIndex16(cResTI_UnDo);
 
-  FaSave := AddAction(cCaptionSave, 'Save changes' + ClassName , aSaveExecute, Ord('S'), [ssCtrl]);
+  FaSave := AddAction(cCaptionSave, 'Save changes' + ClassName , aSaveExecute, Ord('S'), [ssCtrl], 'aSave');
   FaSave.ImageIndex := gTIImageListMgr.ImageIndex16(cResTI_Save);
 
   if SupportsSaveWithoutClose then
-    FaSaveClose := AddAction(cCaptionSaveCloseSupportsSave, 'Save changes and close' + ClassName , aSaveCloseExecute, 0, [])
+    FaSaveClose := AddAction(cCaptionSaveCloseSupportsSave, 'Save changes and close' + ClassName , aSaveCloseExecute, 0, [], 'aSaveClose')
   else
-    FaSaveClose := AddAction(cCaptionSaveClose, 'Save changes and close' + ClassName , aSaveCloseExecute, 0, []);
+    FaSaveClose := AddAction(cCaptionSaveClose, 'Save changes and close' + ClassName , aSaveCloseExecute, 0, [], 'aSaveClose');
   FaSaveClose.ImageIndex := gTIImageListMgr.ImageIndex16(cResTI_Save);
 
   FModelMediators := TtiModelMediatorList.Create(Self);
