@@ -350,11 +350,25 @@ type
 const
   CControlRetryWaitPeriod = 100;
 
+var
+  USyncCriticalSection: TCriticalSection;
+  USyncing: Boolean;
+
 { TGUISyncMessagesThread }
 
 class procedure TGUISyncMessagesThread.SyncMessages;
 begin
-  TGUISyncMessagesThread.Create(False {CreateSuspended});
+  // Cannot queue syncs
+  USyncCriticalSection.Enter;
+  try
+    if not USyncing then
+    begin
+      USyncing := true;
+      TGUISyncMessagesThread.Create(False {CreateSuspended});
+    end;
+  finally
+    USyncCriticalSection.Leave;
+  end;
 end;
 
 constructor TGUISyncMessagesThread.Create(CreateSuspended: Boolean);
@@ -369,6 +383,14 @@ begin
   Application.ProcessMessages;
   // Trigger any OnIdle processing (e.g. action OnUpdate)
   Application.DoApplicationIdle;
+
+  // Allow the next sync
+  USyncCriticalSection.Enter;
+  try
+    USyncing := false;
+  finally
+    USyncCriticalSection.Leave;
+  end;
 end;
 
 procedure TGUISyncMessagesThread.Execute;
@@ -992,6 +1014,7 @@ function TGUIAutomation.ControlExists(const AControlName: string): boolean;
 begin
   if Trim(AControlName) = '' then
     raise EGUIAutomation.Create('No control name') at CallerAddr;
+  //TODO: Support non-VCL controls (HWND)
   result := GUIUtils.FindControlInstance(Screen.ActiveForm, AControlName) <> nil;
 end;
 
@@ -1001,6 +1024,7 @@ var
 begin
   if Trim(AControlName) = '' then
     raise EGUIAutomation.Create('No control name') at CallerAddr;
+  //TODO: Support non-VCL controls (HWND)
   LControl := GUIUtils.FindControlInstance(Screen.ActiveForm, AControlName);
   result := Assigned(LControl) and LControl.Visible;
 end;
@@ -1011,6 +1035,7 @@ var
 begin
   if Trim(AControlName) = '' then
     raise EGUIAutomation.Create('No control name') at CallerAddr;
+  //TODO: Support non-VCL controls (HWND)
   LControl := GUIUtils.FindControlInstance(Screen.ActiveForm, AControlName);
   result := Assigned(LControl) and LControl.Visible and LControl.Enabled;
 end;
@@ -1033,6 +1058,7 @@ begin
     raise EGUIAutomation.Create('No control name') at CallerAddr;
 
   LWaitUntil := GetTickCount + AInterval;
+  //TODO: Support non-VCL controls (HWND)
   LControl := GUIUtils.FindControlInstance(Screen.ActiveForm, AControlName);
   while (not _CriteriaMet(LControl)) and
         ContinueExecution and (GetTickCount < LWaitUntil) do
@@ -1063,6 +1089,7 @@ begin
     raise EGUIAutomation.Create('No control name') at CallerAddr;
 
   LWaitUntil := GetTickCount + AInterval;
+  //TODO: Support non-VCL controls (HWND)
   LControl := GUIUtils.FindControlInstance(Screen.ActiveForm, AControlName);
   while (not _CriteriaMet(LControl)) and
         ContinueExecution and (GetTickCount < LWaitUntil) do
@@ -1094,6 +1121,7 @@ begin
     raise EGUIAutomation.Create('No control name') at CallerAddr;
 
   LWaitUntil := GetTickCount + AInterval;
+  //TODO: Support non-VCL controls (HWND)
   LControl := GUIUtils.FindControlInstance(Screen.ActiveForm, AControlName);
   while (not _CriteriaMet(LControl)) and
         ContinueExecution and (GetTickCount < LWaitUntil) do
@@ -1909,6 +1937,12 @@ begin
   SetFocus(FindControl(AControlName, CallerAddr), CallerAddr);
 {$ENDIF}
 end;
+
+initialization
+  USyncCriticalSection := TCriticalSection.Create;
+  USyncing := false;
+finalization
+  USyncCriticalSection.Free;
 
 end.
 

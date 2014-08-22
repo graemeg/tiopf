@@ -93,6 +93,7 @@ const
   function FindParentWinControl(const AControl: TControl): TWinControl;
   function GetWinControl(var AControl: TControl; var AX: Integer;
       var AY: Integer; const AIsTargetControl: Boolean): boolean;
+  function FindComponentNested(const AParent: TComponent; const AName: string): TComponent;
 {$IFDEF MSWINDOWS}
   function WindowClassName(const AHwnd: HWND): string;
   function WindowText(const AHwnd: HWND): string;
@@ -403,6 +404,21 @@ begin
   end
   else
     result := false;
+end;
+
+function FindComponentNested(const AParent: TComponent;
+  const AName: string): TComponent;
+var
+  i: Integer;
+begin
+  Result := AParent.FindComponent(AName);
+  if Result = nil then
+    for i := 0 to AParent.ComponentCount - 1 do
+    begin
+      Result := FindComponentNested(AParent.Components[i], AName);
+      if Result <> nil then
+        break;
+    end;
 end;
 
 {$IFDEF MSWINDOWS}

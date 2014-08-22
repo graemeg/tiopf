@@ -90,9 +90,9 @@ type
     procedure ScriptExecutionStarted(exec : TdwsProgramExecution);
     procedure ScriptExecutionEnded(exec : TdwsProgramExecution);
 
-    function ControlName(Info: TProgramInfo): string;
+    function ControlName(const AInfo: TProgramInfo): string;
     function Control(const AControlName: string): TControl; overload;
-    function Control(Info: TProgramInfo): TControl; overload;
+    function Control(const AInfo: TProgramInfo): TControl; overload;
     function FormatCheckFailMessage(Info: TProgramInfo; const AMessageSuffix: string): string;
     procedure Check(const ACheckResult: Boolean; const AFailMessage: string);
     procedure StringToFile(const AString: string; const AFileName: string);
@@ -101,12 +101,18 @@ type
     function ShouldContinueExecution: Boolean;
     function FormatScriptCheckCommand(const ACommandName: string;
         const AControlName: string; const AParam: string = ''): string;
+    function ActionName(const AInfo: TProgramInfo): string;
+    function ActionExists(const AActionName: string): Boolean;
+    function ActionVisible(const AActionName: string): Boolean;
+    function ActionEnabled(const AActionName: string): Boolean;
 
     procedure SyncSleepEval(Info: TProgramInfo);
     procedure StringToFileEval(Info: TProgramInfo);
     procedure FileToStringEval(Info: TProgramInfo);
     procedure GetClipboardTextEval(Info: TProgramInfo);
     procedure SetClipboardTextEval(Info: TProgramInfo);
+    procedure ReadINIFileStringEval(Info: TProgramInfo);
+    procedure WriteINIFileStringEval(Info: TProgramInfo);
     procedure SaveScreenshotEval(Info: TProgramInfo);
 
     procedure RunScriptEval(Info: TProgramInfo);
@@ -159,6 +165,9 @@ type
     procedure ChildControlCountEval(Info: TProgramInfo);
     procedure ControlTextEval(Info: TProgramInfo);
     procedure ControlSelectedTextEval(Info: TProgramInfo);
+    procedure ActionExistsEval(Info: TProgramInfo);
+    procedure ActionVisibleEval(Info: TProgramInfo);
+    procedure ActionEnabledEval(Info: TProgramInfo);
 
     procedure FailEval(Info: TProgramInfo);
     procedure CheckTrueEval(Info: TProgramInfo);
@@ -168,15 +177,21 @@ type
     procedure CheckFilesEqualEval(Info: TProgramInfo);
     procedure CheckFilesNotEqualEval(Info: TProgramInfo);
 
-    procedure CheckExistsEval(Info: TProgramInfo);
-    procedure CheckNotExistsEval(Info: TProgramInfo);
-    procedure CheckEnabledEval(Info: TProgramInfo);
-    procedure CheckNotEnabledEval(Info: TProgramInfo);
-    procedure CheckVisibleEval(Info: TProgramInfo);
-    procedure CheckNotVisibleEval(Info: TProgramInfo);
-    procedure CheckFocusedEval(Info: TProgramInfo);
+    procedure CheckControlExistsEval(Info: TProgramInfo);
+    procedure CheckControlNotExistsEval(Info: TProgramInfo);
+    procedure CheckControlEnabledEval(Info: TProgramInfo);
+    procedure CheckControlNotEnabledEval(Info: TProgramInfo);
+    procedure CheckControlVisibleEval(Info: TProgramInfo);
+    procedure CheckControlNotVisibleEval(Info: TProgramInfo);
+    procedure CheckControlFocusedEval(Info: TProgramInfo);
     procedure CheckControlTextEqualEval(Info: TProgramInfo);
     procedure CheckControlSelectedTextEqualEval(Info: TProgramInfo);
+    procedure CheckActionExistsEval(Info: TProgramInfo);
+    procedure CheckActionNotExistsEval(Info: TProgramInfo);
+    procedure CheckActionEnabledEval(Info: TProgramInfo);
+    procedure CheckActionNotEnabledEval(Info: TProgramInfo);
+    procedure CheckActionVisibleEval(Info: TProgramInfo);
+    procedure CheckActionNotVisibleEval(Info: TProgramInfo);
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -193,7 +208,7 @@ type
     // Get the name and type of all controls in the hierarchy
     function GetControlList(const AControl: TControl): string;
     // Generate a script to check the state of all controls in the hierarchy
-    function GetControlStates(const AControl: TControl): string;
+    function GetControlStatesScript(const AControl: TControl): string;
     // Generate a single script command to check the text of a control
     function GenerateCheckControlTextCommand(const AText: string;
         const AControlName: string; const ACheckAllText: Boolean): string; overload;
@@ -201,6 +216,10 @@ type
         const AControlName: string; const ACheckAllText: Boolean): string; overload;
     function GenerateCheckControlTextCommand(const AHwnd: HWND;
         const AControlName: string; const ACheckAllText: Boolean): string; overload;
+    // Get the name of all action lists and actions
+    function GetActionList: string;
+    // Generate a script to check the state of all actions
+    function GetActionStatesScript: string;
 
     property OnExecutionStarted: TOnExecutionStateEvent read FOnExecutionStarted write FOnExecutionStarted;
     property OnExecutionEnded: TOnExecutionStateEvent read FOnExecutionEnded write FOnExecutionEnded;
@@ -210,7 +229,7 @@ type
     property ScriptResult: string read FScriptResult;
     property Terminated: boolean read FTerminated;
     property DWScript: TDelphiWebScript read FDWScript;
-    // Indentation to use in GetControlList and GetControlStates
+    // Indentation to use in GetControlList and GetControlStatesScript
     property ControlInspectionIndent: string read FControlInspectionIndent write FControlInspectionIndent;
   end;
 
@@ -230,6 +249,8 @@ uses
   Buttons,
   CheckLst,
   Grids,
+  IniFiles,
+  ActnList,
 {$IFDEF MSWINDOWS}
   ComCtrls,
   Calendar,
@@ -489,6 +510,19 @@ begin
   LFunction := _AddFunction('GetClipboardText', GetClipboardTextEval);
   LFunction.ResultType := 'String';
 
+  LFunction := _AddFunction('ReadINIFileString', ReadINIFileStringEval);
+  LFunction.ResultType := 'String';
+  _AddParameter(LFunction, 'FileName', 'String');
+  _AddParameter(LFunction, 'Section', 'String');
+  _AddParameter(LFunction, 'Ident', 'String');
+  _AddParameter(LFunction, 'Default', 'String', '');
+
+  LFunction := _AddFunction('WriteINIFileString', WriteINIFileStringEval);
+  _AddParameter(LFunction, 'FileName', 'String');
+  _AddParameter(LFunction, 'Section', 'String');
+  _AddParameter(LFunction, 'Ident', 'String');
+  _AddParameter(LFunction, 'Value', 'String');
+
   LFunction := _AddFunction('SaveScreenshot', SaveScreenshotEval);
   _AddParameter(LFunction, 'FileName', 'String');
   _AddParameter(LFunction, 'ActiveWindowOnly', 'Boolean', false);
@@ -689,6 +723,18 @@ begin
   LFunction.ResultType := 'Boolean';
   _AddParameter(LFunction, 'ControlName', 'String');
 
+  LFunction := _AddFunction('ActionExists', ActionExistsEval);
+  LFunction.ResultType := 'Boolean';
+  _AddParameter(LFunction, 'ActionName', 'String');
+
+  LFunction := _AddFunction('ActionVisible', ActionVisibleEval);
+  LFunction.ResultType := 'Boolean';
+  _AddParameter(LFunction, 'ActionName', 'String');
+
+  LFunction := _AddFunction('ActionEnabled', ActionEnabledEval);
+  LFunction.ResultType := 'Boolean';
+  _AddParameter(LFunction, 'ActionName', 'String');
+
   LFunction := _AddFunction('ControlName', ControlNameEval);
   LFunction.ResultType := 'String';
   _AddParameter(LFunction, 'ControlName', 'String');
@@ -740,31 +786,31 @@ begin
 
   // GUI testing check methods
 
-  LFunction := _AddFunction('CheckEnabled', CheckEnabledEval);
+  LFunction := _AddFunction('CheckControlEnabled', CheckControlEnabledEval);
   _AddParameter(LFunction, 'ControlName', 'String');
   _AddParameter(LFunction, 'FailMessage', 'String', '');
 
-  LFunction := _AddFunction('CheckNotEnabled', CheckNotEnabledEval);
+  LFunction := _AddFunction('CheckControlNotEnabled', CheckControlNotEnabledEval);
   _AddParameter(LFunction, 'ControlName', 'String');
   _AddParameter(LFunction, 'FailMessage', 'String', '');
 
-  LFunction := _AddFunction('CheckVisible', CheckVisibleEval);
+  LFunction := _AddFunction('CheckControlVisible', CheckControlVisibleEval);
   _AddParameter(LFunction, 'ControlName', 'String');
   _AddParameter(LFunction, 'FailMessage', 'String', '');
 
-  LFunction := _AddFunction('CheckNotVisible', CheckNotVisibleEval);
+  LFunction := _AddFunction('CheckControlNotVisible', CheckControlNotVisibleEval);
   _AddParameter(LFunction, 'ControlName', 'String');
   _AddParameter(LFunction, 'FailMessage', 'String', '');
 
-  LFunction := _AddFunction('CheckExists', CheckExistsEval);
+  LFunction := _AddFunction('CheckControlExists', CheckControlExistsEval);
   _AddParameter(LFunction, 'ControlName', 'String');
   _AddParameter(LFunction, 'FailMessage', 'String', '');
 
-  LFunction := _AddFunction('CheckNotExists', CheckNotExistsEval);
+  LFunction := _AddFunction('CheckControlNotExists', CheckControlNotExistsEval);
   _AddParameter(LFunction, 'ControlName', 'String');
   _AddParameter(LFunction, 'FailMessage', 'String', '');
 
-  LFunction := _AddFunction('CheckFocused', CheckFocusedEval);
+  LFunction := _AddFunction('CheckControlFocused', CheckControlFocusedEval);
   _AddParameter(LFunction, 'ControlName', 'String');
   _AddParameter(LFunction, 'FailMessage', 'String', '');
 
@@ -776,6 +822,30 @@ begin
   LFunction := _AddFunction('CheckControlSelectedTextEqual', CheckControlSelectedTextEqualEval);
   _AddParameter(LFunction, 'ControlName', 'String');
   _AddParameter(LFunction, 'Text', 'String');
+  _AddParameter(LFunction, 'FailMessage', 'String', '');
+
+  LFunction := _AddFunction('CheckActionExists', CheckActionExistsEval);
+  _AddParameter(LFunction, 'ActionName', 'String');
+  _AddParameter(LFunction, 'FailMessage', 'String', '');
+
+  LFunction := _AddFunction('CheckActionNotExists', CheckActionNotExistsEval);
+  _AddParameter(LFunction, 'ActionName', 'String');
+  _AddParameter(LFunction, 'FailMessage', 'String', '');
+
+  LFunction := _AddFunction('CheckActionVisible', CheckActionVisibleEval);
+  _AddParameter(LFunction, 'ActionName', 'String');
+  _AddParameter(LFunction, 'FailMessage', 'String', '');
+
+  LFunction := _AddFunction('CheckActionNotVisible', CheckActionNotVisibleEval);
+  _AddParameter(LFunction, 'ActionName', 'String');
+  _AddParameter(LFunction, 'FailMessage', 'String', '');
+
+  LFunction := _AddFunction('CheckActionEnabled', CheckActionEnabledEval);
+  _AddParameter(LFunction, 'ActionName', 'String');
+  _AddParameter(LFunction, 'FailMessage', 'String', '');
+
+  LFunction := _AddFunction('CheckActionNotEnabled', CheckActionNotEnabledEval);
+  _AddParameter(LFunction, 'ActionName', 'String');
   _AddParameter(LFunction, 'FailMessage', 'String', '');
 end;
 
@@ -835,9 +905,9 @@ begin
   Result := FRunSuccessful;
 end;
 
-function TGUIScript.ControlName(Info: TProgramInfo): string;
+function TGUIScript.ControlName(const AInfo: TProgramInfo): string;
 begin
-  Result := Info.ValueAsString['ControlName'];
+  Result := AInfo.ValueAsString['ControlName'];
 end;
 
 function TGUIScript.Control(const AControlName: string): TControl;
@@ -857,9 +927,9 @@ begin
   AContinueExecution := ShouldContinueExecution;
 end;
 
-function TGUIScript.Control(Info: TProgramInfo): TControl;
+function TGUIScript.Control(const AInfo: TProgramInfo): TControl;
 begin
-  Result := Control(ControlName(Info));
+  Result := Control(ControlName(AInfo));
 end;
 
 function TGUIScript.GetRecordedScript: string;
@@ -955,6 +1025,32 @@ end;
 procedure TGUIScript.SetClipboardTextEval(Info: TProgramInfo);
 begin
   Clipboard.AsText := Info.ValueAsString['String'];
+end;
+
+procedure TGUIScript.ReadINIFileStringEval(Info: TProgramInfo);
+var
+  LINI: TINIFile;
+begin
+  LINI := TINIFile.Create(Info.ValueAsString['FileName']);
+  try
+    Info.ResultAsString := LINI.ReadString(Info.ValueAsString['Section'],
+        Info.ValueAsString['Ident'], Info.ValueAsString['Default']);
+  finally
+    LINI.Free;
+  end;
+end;
+
+procedure TGUIScript.WriteINIFileStringEval(Info: TProgramInfo);
+var
+  LINI: TINIFile;
+begin
+  LINI := TINIFile.Create(Info.ValueAsString['FileName']);
+  try
+    LINI.WriteString(Info.ValueAsString['Section'],
+        Info.ValueAsString['Ident'], Info.ValueAsString['Value']);
+  finally
+    LINI.Free;
+  end;
 end;
 
 procedure TGUIScript.SaveScreenshotEval(Info: TProgramInfo);
@@ -1662,7 +1758,7 @@ begin
   end;
 end;
 
-function TGUIScript.GetControlStates(const AControl: TControl): string;
+function TGUIScript.GetControlStatesScript(const AControl: TControl): string;
 var
   LControlStateScript: TStringList;
 
@@ -1680,18 +1776,17 @@ var
     LWinControl: TWinControl;
     LCheckAllText: Boolean;
     LCommand: string;
-
   begin
     if AControl.Name <> '' then
     begin
       if AScript.Count > 0 then
         AScript.Add('');
 
-      AScript.Add(FormatScriptCheckCommand('CheckExists', AControl.Name));
-      AScript.Add(FormatScriptCheckCommand('Check' + _CheckState(AControl.Visible) + 'Visible', AControl.Name));
-      AScript.Add(FormatScriptCheckCommand('Check' + _CheckState(AControl.Enabled) + 'Enabled', AControl.Name));
+      AScript.Add(FormatScriptCheckCommand('CheckControlExists', AControl.Name));
+      AScript.Add(FormatScriptCheckCommand('CheckControl' + _CheckState(AControl.Visible) + 'Visible', AControl.Name));
+      AScript.Add(FormatScriptCheckCommand('CheckControl' + _CheckState(AControl.Enabled) + 'Enabled', AControl.Name));
       if (AControl is TWinControl) and (AControl as TWinControl).Focused then
-        AScript.Add(FormatScriptCheckCommand('CheckFocused', AControl.Name));
+        AScript.Add(FormatScriptCheckCommand('CheckControlFocused', AControl.Name));
       // Control text (all or selected)
       // Generally better to check entire text but the text from some controls
       // like grids, treeviews and list views can be huge so we only get the
@@ -1719,6 +1814,85 @@ begin
     Result := LControlStateScript.Text;
   finally
     LControlStateScript.Free;
+  end;
+end;
+
+function TGUIScript.GetActionList: string;
+var
+  LActionList: TStringList;
+
+  procedure _GetActionList(const AComponent: TComponent;
+    AActionList: TStringList);
+  var
+    i: Integer;
+  begin
+    // Include named action lists and named actions in named action lists
+    if (AComponent is TCustomActionList) and (AComponent.Name <> '') then
+      AActionList.Add(AComponent.Name)
+    else if (AComponent is TCustomAction) and (AComponent.Name <> '') and
+        Assigned(TCustomAction(AComponent).ActionList) and
+        (TCustomAction(AComponent).ActionList.Name <> '') then
+      AActionList.Add(FControlInspectionIndent + AComponent.Name);
+
+    // Recurse to find all action lists and actions
+    for i := 0 to AComponent.ComponentCount - 1 do
+      _GetActionList(AComponent.Components[i], AActionList);
+  end;
+
+begin
+  LActionList := TStringList.Create;
+  try
+    _GetActionList(Screen.ActiveForm, LActionList);
+    Result := LActionList.Text;
+  finally
+    LActionList.Free;
+  end;
+end;
+
+function TGUIScript.GetActionStatesScript: string;
+var
+  LActionStateScript: TStringList;
+
+  function _CheckState(const AState: boolean): string;
+  begin
+    if AState then
+      Result := ''
+    else
+      Result := 'Not';
+  end;
+
+  procedure _GetActionStates(const AComponent: TComponent; AScript: TStringList);
+  var
+    i: Integer;
+  begin
+    // Include named actions in named action lists
+    if (AComponent is TCustomAction) and (AComponent.Name <> '') and
+        Assigned(TCustomAction(AComponent).ActionList) and
+        (TCustomAction(AComponent).ActionList.Name <> '') then
+    begin
+      if AScript.Count > 0 then
+        AScript.Add('');
+      AScript.Add(FormatScriptCheckCommand('CheckActionExists', AComponent.Name));
+      AScript.Add(FormatScriptCheckCommand(
+          'CheckAction' + _CheckState(TCustomAction(AComponent).Visible) + 'Visible',
+          AComponent.Name));
+      AScript.Add(FormatScriptCheckCommand(
+          'CheckAction' + _CheckState(TCustomAction(AComponent).Enabled) + 'Enabled',
+          AComponent.Name));
+    end;
+
+    // Recurse to find all actions
+    for i := 0 to AComponent.ComponentCount - 1 do
+      _GetActionStates(AComponent.Components[i], AScript);
+  end;
+
+begin
+  LActionStateScript := TStringList.Create;
+  try
+    _GetActionStates(Screen.ActiveForm, LActionStateScript);
+    Result := LActionStateScript.Text;
+  finally
+    LActionStateScript.Free;
   end;
 end;
 
@@ -1761,6 +1935,52 @@ end;
 procedure TGUIScript.ControlSelectedTextEval(Info: TProgramInfo);
 begin
   Info.ResultAsString := GetControlSelectedText(Control(Info));
+end;
+
+function TGUIScript.ActionName(const AInfo: TProgramInfo): string;
+begin
+  result := AInfo.ValueAsString['ActionName'];
+end;
+
+function TGUIScript.ActionExists(const AActionName: string): Boolean;
+var
+  LComponent: TComponent;
+begin
+  LComponent := FindComponentNested(Screen.ActiveForm, AActionName);
+  Result := Assigned(LComponent) and (LComponent is TCustomAction);
+end;
+
+function TGUIScript.ActionVisible(const AActionName: string): Boolean;
+var
+  LComponent: TComponent;
+begin
+  LComponent := FindComponentNested(Screen.ActiveForm, AActionName);
+  Result := Assigned(LComponent) and (LComponent is TCustomAction) and
+      TCustomAction(LComponent).Visible;
+end;
+
+function TGUIScript.ActionEnabled(const AActionName: string): Boolean;
+var
+  LComponent: TComponent;
+begin
+  LComponent := FindComponentNested(Screen.ActiveForm, AActionName);
+  Result := Assigned(LComponent) and (LComponent is TCustomAction) and
+      TCustomAction(LComponent).Enabled;
+end;
+
+procedure TGUIScript.ActionExistsEval(Info: TProgramInfo);
+begin
+  Info.ResultAsBoolean := ActionExists(ActionName(Info));
+end;
+
+procedure TGUIScript.ActionVisibleEval(Info: TProgramInfo);
+begin
+  Info.ResultAsBoolean := ActionVisible(ActionName(Info));
+end;
+
+procedure TGUIScript.ActionEnabledEval(Info: TProgramInfo);
+begin
+  Info.ResultAsBoolean := ActionEnabled(ActionName(Info));
 end;
 
 function TGUIScript.FormatCheckFailMessage(Info: TProgramInfo;
@@ -1848,37 +2068,42 @@ begin
           [LFileName1, LFileName2])));
 end;
 
-procedure TGUIScript.CheckEnabledEval(Info: TProgramInfo);
+procedure TGUIScript.CheckControlEnabledEval(Info: TProgramInfo);
 begin
+  //TODO: Support non-VCL controls (HWND)
   Check(Control(Info).Enabled,
       FormatCheckFailMessage(Info, Format('Control ''%s'' enabled',
           [ControlName(Info)])));
 end;
 
-procedure TGUIScript.CheckNotEnabledEval(Info: TProgramInfo);
+procedure TGUIScript.CheckControlNotEnabledEval(Info: TProgramInfo);
 begin
+  //TODO: Support non-VCL controls (HWND)
   Check(not Control(Info).Enabled,
       FormatCheckFailMessage(Info, Format('Control ''%s'' not enabled',
           [ControlName(Info)])));
 end;
 
-procedure TGUIScript.CheckVisibleEval(Info: TProgramInfo);
+procedure TGUIScript.CheckControlVisibleEval(Info: TProgramInfo);
 begin
+  //TODO: Support non-VCL controls (HWND)
   Check(Control(Info).Visible,
       FormatCheckFailMessage(Info, Format('Control ''%s'' visible',
           [ControlName(Info)])));
 end;
 
-procedure TGUIScript.CheckNotVisibleEval(Info: TProgramInfo);
+procedure TGUIScript.CheckControlNotVisibleEval(Info: TProgramInfo);
 begin
+  //TODO: Support non-VCL controls (HWND)
   Check(not Control(Info).Visible,
       FormatCheckFailMessage(Info, Format('Control ''%s'' not visible',
           [ControlName(Info)])));
 end;
 
-procedure TGUIScript.CheckExistsEval(Info: TProgramInfo);
+procedure TGUIScript.CheckControlExistsEval(Info: TProgramInfo);
 begin
   try
+    //TODO: Support non-VCL controls (HWND)
     Control(Info);
   except
     on e: EGUIAutomationControlNotFound do
@@ -1888,9 +2113,10 @@ begin
   end;
 end;
 
-procedure TGUIScript.CheckNotExistsEval(Info: TProgramInfo);
+procedure TGUIScript.CheckControlNotExistsEval(Info: TProgramInfo);
 begin
   try
+    //TODO: Support non-VCL controls (HWND)
     Control(Info);
     Check(false,
         FormatCheckFailMessage(Info, Format('Control ''%s'' not exists',
@@ -1900,10 +2126,11 @@ begin
   end;
 end;
 
-procedure TGUIScript.CheckFocusedEval(Info: TProgramInfo);
+procedure TGUIScript.CheckControlFocusedEval(Info: TProgramInfo);
 var
   LControl: TWinControl;
 begin
+  //TODO: Support non-VCL controls (HWND)
   LControl := Control(Info) as TWinControl;
   Check(Assigned(LControl) and LControl.Focused,
       FormatCheckFailMessage(Info, Format('Control ''%s'' focused',
@@ -1916,6 +2143,7 @@ var
   LActual: string;
 begin
   LExpected := Info.ValueAsString['Text'];
+  //TODO: Support non-VCL controls (HWND)
   LActual := GetControlText(Control(Info));
   Check(LExpected = LActual,
       FormatCheckFailMessage(Info, Format('Control ''%s'' text expected <%s> actual <%s>',
@@ -1928,10 +2156,53 @@ var
   LActual: string;
 begin
   LExpected := Info.ValueAsString['Text'];
+  //TODO: Support non-VCL controls (HWND)
   LActual := GetControlSelectedText(Control(Info));
   Check(LExpected = LActual,
       FormatCheckFailMessage(Info, Format('Control ''%s'' selected text expected <%s> actual <%s>',
           [ControlName(Info), LExpected, LActual])));
+end;
+
+procedure TGUIScript.CheckActionExistsEval(Info: TProgramInfo);
+begin
+  Check(ActionExists(ActionName(Info)),
+      FormatCheckFailMessage(Info, Format('Action ''%s'' exists',
+          [ActionName(Info)])));
+end;
+
+procedure TGUIScript.CheckActionNotExistsEval(Info: TProgramInfo);
+begin
+  Check(not ActionExists(ActionName(Info)),
+      FormatCheckFailMessage(Info, Format('Action ''%s'' not exists',
+          [ActionName(Info)])));
+end;
+
+procedure TGUIScript.CheckActionVisibleEval(Info: TProgramInfo);
+begin
+  Check(ActionVisible(ActionName(Info)),
+      FormatCheckFailMessage(Info, Format('Action ''%s'' visible',
+          [ActionName(Info)])));
+end;
+
+procedure TGUIScript.CheckActionNotVisibleEval(Info: TProgramInfo);
+begin
+  Check(not ActionVisible(ActionName(Info)),
+      FormatCheckFailMessage(Info, Format('Action ''%s'' not visible',
+          [ActionName(Info)])));
+end;
+
+procedure TGUIScript.CheckActionEnabledEval(Info: TProgramInfo);
+begin
+  Check(ActionEnabled(ActionName(Info)),
+      FormatCheckFailMessage(Info, Format('Action ''%s'' enabled',
+          [ActionName(Info)])));
+end;
+
+procedure TGUIScript.CheckActionNotEnabledEval(Info: TProgramInfo);
+begin
+  Check(not ActionEnabled(ActionName(Info)),
+      FormatCheckFailMessage(Info, Format('Action ''%s'' not enabled',
+          [ActionName(Info)])));
 end;
 
 end.
