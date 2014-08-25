@@ -74,6 +74,7 @@ uses
 const
   rcs_id: string = '#(@)$Id: GUIActionRecorder.pas,v 1.35 2010/05/04 09:55:00 jarrodh Exp $';
 
+  CWindowChangeCommandName = 'WaitForWindowChange';
   CEnterTextIntoCommandName = 'EnterTextInto';
   CEnterKeyIntoCommandName = 'EnterKeyInto';
   CEnterTextCommandName = 'EnterText';
@@ -148,6 +149,7 @@ type
     FEnteredText: string;
     FControl: TControl;
     FHwnd: HWND;
+    FTopmostHwnd: HWND;
     FControlName: string;
     FHighlightHwnd: HWND;
     FMouseButtonAction: TGUIActionMouseButtonAbs;
@@ -172,6 +174,7 @@ type
     procedure SetControl(const AHwnd: HWND; const AControl: TControl; var AContinue: Boolean); overload;
     procedure SetControl(const AHwnd: HWND; var AContinue: Boolean); overload;
     procedure SetControl(const AHwnd: HWND; var APoint: TPoint; var AContinue: Boolean); overload;
+    function ControlName(const AHwnd: HWND; const AControl: TControl): string;
     // Does the control itself have a name?
     function ControlHasName(const AControl: TControl): boolean;
     // Does the control or any parent have a name? We can address using
@@ -212,6 +215,12 @@ type
     property OnRecordingStarted: TGUIActionRecorderEvent read FOnRecordingStarted write FOnRecordingStarted;
     property OnRecordingStopped: TGUIActionRecorderEvent read FOnRecordingStopped write FOnRecordingStopped;
     property OnAction: TGUIActionRecorderActionEvent read FOnAction write FOnAction;
+  end;
+
+  TGUIActionWindowChange = class(TGUIActionAbs)
+  protected
+    function GetCommandName: string; override;
+    function GetCommandParameters(const ACommandFormat: TGUIActionCommandFormat): string; override;
   end;
 
   TGUIActionEnterTextInto = class(TGUIActionAbs)
@@ -553,6 +562,7 @@ begin
   FEnteredText := '';
   FControl := nil;
   FHwnd := 0;
+  FTopmostHwnd := 0;
   FHighlightHwnd := 0;
   FMouseButtonAction := nil;
 
@@ -887,12 +897,26 @@ end;
 
 procedure TGUIActionRecorder.SetControl(const AHwnd: HWND;
   const AControl: TControl; var AContinue: Boolean);
+{$IFDEF MSWINDOWS}
 var
-  LControl: TControl;
+  LTopmostHwnd: HWND;
+  LTopmostControl: TControl;
+{$ENDIF}
 begin
   // Record the window handle
   if AHwnd <> FHwnd then
   begin
+    // If the topmost window changed then record a window change action
+{$IFDEF MSWINDOWS}
+    LTopmostHwnd := GetTopmostWindow;
+    if (FTopmostHwnd <> 0) and (LTopmostHwnd <> FTopmostHwnd) then
+    begin
+      LTopmostControl := FindControl(LTopmostHwnd);
+      AddAction(TGUIActionWindowChange.Create(LTopmostHwnd, LTopmostControl,
+          ControlName(LTopmostHwnd, LTopmostControl)), AContinue);
+    end;
+    FTopmostHwnd := LTopmostHwnd;
+{$ENDIF}
     FlushTextEntry(AContinue);
     FHwnd := AHwnd;
   end;
@@ -901,19 +925,7 @@ begin
   FControl := AControl;
 
   // Record the control name (if we can get one)
-  if ControlHasName(AControl) then
-    // Yes, we have a direct name
-    FControlName := AControl.Name
-  else if Assigned(AControl) and ControlCanBeAddressedByName(AControl) then
-    // Try to name from the parent control using child control index
-    ControlNameHierarchy(AControl, LControl, FControlName)
-  else
-{$IFDEF MSWINDOWS}
-    // Try to name from the parent window using child window index
-    ControlNameHierarchy(AHwnd, LControl, FControlName);
-{$ELSE}
-    FControlName := '';
-{$ENDIF}
+  FControlName := ControlName(AHwnd, AControl);
 end;
 
 procedure TGUIActionRecorder.SetControl(const AHwnd: HWND;
@@ -947,6 +959,27 @@ begin
     LHitControl := nil;
 
   SetControl(AHWnd, LHitControl, AContinue);
+end;
+
+function TGUIActionRecorder.ControlName(const AHwnd: HWND;
+  const AControl: TControl): string;
+var
+  LControl: TControl;
+begin
+  // Record the control name (if we can get one)
+  if ControlHasName(AControl) then
+    // Yes, we have a direct name
+    Result := AControl.Name
+  else if Assigned(AControl) and ControlCanBeAddressedByName(AControl) then
+    // Try to name from the parent control using child control index
+    ControlNameHierarchy(AControl, LControl, Result)
+  else
+{$IFDEF MSWINDOWS}
+    // Try to name from the parent window using child window index
+    ControlNameHierarchy(AHwnd, LControl, Result);
+{$ELSE}
+    Result := '';
+{$ENDIF}
 end;
 
 procedure TGUIActionRecorder.SetHighlightControl(const AValue: Boolean);
@@ -1397,6 +1430,7 @@ begin
       if AHwnd = Menus.PopupList.Window then
 {$ENDIF}
       begin
+        SetControl(AHwnd, AContinue);
         if HiWord(AWParam) = 0 {menu} then
           AddAction(TGUIActionSelectMenuItem.Create(AHwnd, FControl,
               FControlName, LoWord(AWParam) {ID_xxxx}), AContinue);
@@ -1458,6 +1492,20 @@ begin
       ToggleHighlight(FHwnd);
     FHighlightHwnd := FHwnd;
   end;
+end;
+
+{ TGUIActionWindowChange }
+
+function TGUIActionWindowChange.GetCommandName: string;
+begin
+  Result := CWindowChangeCommandName;
+end;
+
+function TGUIActionWindowChange.GetCommandParameters(
+  const ACommandFormat: TGUIActionCommandFormat): string;
+begin
+  //TODO: No params? No control name?
+  result := '';
 end;
 
 { TGUIActionEnterTextInto }
