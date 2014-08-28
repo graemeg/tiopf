@@ -433,11 +433,9 @@ end;
 
 {$IFDEF MSWINDOWS}
 function WindowText(const AHwnd: HWND): string;
-const
-  CMaxTextLength = 1000000;
 begin
-  SetLength(Result, CMaxTextLength);
-  SetLength(Result, GetWindowText(AHwnd, PChar(Result), CMaxTextLength));
+  SetLength(Result, GetWindowTextLength(AHwnd));
+  SetLength(Result, GetWindowText(AHwnd, PChar(Result), Length(Result) + 1 {null}));
 end;
 {$ENDIF}
 

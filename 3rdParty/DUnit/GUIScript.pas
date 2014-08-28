@@ -131,6 +131,8 @@ type
     procedure WaitForControlExistsEval(Info: TProgramInfo);
     procedure WaitForControlVisibleEval(Info: TProgramInfo);
     procedure WaitForControlEnabledEval(Info: TProgramInfo);
+    procedure WaitForWindowChangeEval(Info: TProgramInfo);
+    procedure WaitForAnyWindowChangeEval(Info: TProgramInfo);
 
     procedure MoveMouseToEval(Info: TProgramInfo);
     procedure EnterTextIntoEval(Info: TProgramInfo);
@@ -583,6 +585,15 @@ begin
   _AddParameter(LFunction, 'ControlName', 'String');
   _AddParameter(LFunction, 'EnabledOrNot', 'Boolean', true);
   _AddParameter(LFunction, 'Milliseconds', 'Integer', CDefaultControlWaitInterval);
+
+  LFunction := _AddFunction('WaitForWindowChange', WaitForWindowChangeEval);
+  LFunction.ResultType := 'Boolean';
+  _AddParameter(LFunction, 'Caption', 'String');
+  _AddParameter(LFunction, 'Milliseconds', 'Integer', CDefaultWindowChangeWaitInterval);
+
+  LFunction := _AddFunction('WaitForAnyWindowChange', WaitForAnyWindowChangeEval);
+  LFunction.ResultType := 'Boolean';
+  _AddParameter(LFunction, 'Milliseconds', 'Integer', CDefaultWindowChangeWaitInterval);
 
   LFunction := _AddFunction('MoveMouseTo', MoveMouseToEval);
   _AddParameter(LFunction, 'ControlName', 'String');
@@ -1144,7 +1155,7 @@ end;
 
 procedure TGUIScript.WaitForControlExistsEval(Info: TProgramInfo);
 begin
-  FGUIAutomation.WaitForControlExists(
+  Info.ResultAsBoolean := FGUIAutomation.WaitForControlExists(
       ControlName(Info),
       Info.ValueAsBoolean['ExistsOrNot'],
       Info.ValueAsInteger['Milliseconds']);
@@ -1152,7 +1163,7 @@ end;
 
 procedure TGUIScript.WaitForControlVisibleEval(Info: TProgramInfo);
 begin
-  FGUIAutomation.WaitForControlVisible(
+  Info.ResultAsBoolean := FGUIAutomation.WaitForControlVisible(
       ControlName(Info),
       Info.ValueAsBoolean['VisibleOrNot'],
       Info.ValueAsInteger['Milliseconds']);
@@ -1160,9 +1171,22 @@ end;
 
 procedure TGUIScript.WaitForControlEnabledEval(Info: TProgramInfo);
 begin
-  FGUIAutomation.WaitForControlEnabled(
+  Info.ResultAsBoolean := FGUIAutomation.WaitForControlEnabled(
       ControlName(Info),
       Info.ValueAsBoolean['EnabledOrNot'],
+      Info.ValueAsInteger['Milliseconds']);
+end;
+
+procedure TGUIScript.WaitForWindowChangeEval(Info: TProgramInfo);
+begin
+  Info.ResultAsBoolean := FGUIAutomation.WaitForWindowChange(
+      Info.ValueAsString['Caption'],
+      Info.ValueAsInteger['Milliseconds']);
+end;
+
+procedure TGUIScript.WaitForAnyWindowChangeEval(Info: TProgramInfo);
+begin
+  Info.ResultAsBoolean := FGUIAutomation.WaitForWindowChange(
       Info.ValueAsInteger['Milliseconds']);
 end;
 

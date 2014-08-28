@@ -154,7 +154,6 @@ type
     FHighlightHwnd: HWND;
     FMouseButtonAction: TGUIActionMouseButtonAbs;
 
-    FGUI: TWinControl;
     FActive: boolean;
     FActionMode: TGUIActionMode;
     FRecordMouseMove: Boolean;
@@ -164,6 +163,8 @@ type
     FOnRecordingStarted: TGUIActionRecorderEvent;
     FOnRecordingStopped: TGUIActionRecorderEvent;
 
+    procedure Initialize;
+    procedure Finalize;
     procedure AddAction(AAction: TGUIActionAbs; var AContinue: Boolean);
     procedure FlushTextEntry(var AContinue: Boolean);
     function CharFromVirtualKey(const AKey: Word): string;
@@ -194,8 +195,6 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    procedure Initialize;
-    procedure Finalize;
     procedure ProcessMessage(const AMessage: UINT; const AHwnd: HWND;
         const AWParam: WPARAM; const ALParam: LPARAM; var AContinue: boolean;
         const AX: Integer = -1; const AY: Integer = -1);
@@ -205,7 +204,6 @@ type
 
     property Actions: TGUIActionList read FActions;
 
-    property GUI: TWinControl read FGUI write FGUI;
     property Active: boolean read FActive write SetActive;
     property ActionMode: TGUIActionMode read FActionMode write FActionMode;
     property RecordMouseMove: Boolean read FRecordMouseMove write FRecordMouseMove;
@@ -218,9 +216,15 @@ type
   end;
 
   TGUIActionWindowChange = class(TGUIActionAbs)
+  private
+    FCaption: string;
   protected
     function GetCommandName: string; override;
     function GetCommandParameters(const ACommandFormat: TGUIActionCommandFormat): string; override;
+  public
+    constructor Create(
+        const AHwnd: HWND; const AControl: TControl;
+        const AControlName: string; const ACaption: string);
   end;
 
   TGUIActionEnterTextInto = class(TGUIActionAbs)
@@ -558,15 +562,9 @@ begin
 
   FActions := TGUIActionList.Create;
   FControlsToIgnore := TList.Create;
-  // Explicit initialization
-  FEnteredText := '';
-  FControl := nil;
-  FHwnd := 0;
-  FTopmostHwnd := 0;
-  FHighlightHwnd := 0;
-  FMouseButtonAction := nil;
 
-  FGUI := nil;
+  Initialize;
+
   FActive := false;
   FActionMode := amRecord;
   FRecordMouseMove := false;
@@ -587,6 +585,13 @@ end;
 procedure TGUIActionRecorder.Initialize;
 begin
   FActions.Clear;
+  FEnteredText := '';
+  FControl := nil;
+  FHwnd := 0;
+  FTopmostHwnd := 0;
+  FControlName := '';
+  FHighlightHwnd := 0;
+  FMouseButtonAction := nil;
 end;
 
 procedure TGUIActionRecorder.Finalize;
@@ -595,9 +600,6 @@ var
 begin
   LContinue := false;
   FlushTextEntry(LContinue);
-  FControl := nil;
-  FHwnd := 0;
-  FMouseButtonAction := nil;
 end;
 
 function TGUIActionRecorder.ControlHasName(const AControl: TControl):
@@ -805,6 +807,8 @@ begin
   begin
     if AValue then
     begin
+      Initialize;
+
       // Mouse, keyboard, menu actions
       if UProcessGetMessageHook = 0 then
         UProcessGetMessageHook := SetWindowsHookEx(WH_GETMESSAGE,
@@ -906,14 +910,20 @@ begin
   // Record the window handle
   if AHwnd <> FHwnd then
   begin
-    // If the topmost window changed then record a window change action
+    // If the topmost window changed then record a window change action to
+    // avoid the need to sleep/wait before proceeding during playback.
+    // This is usually helpful when waiting for a new window (menu, dialog,
+    // etc) but not usually required when closing the window so we ignore the
+    // case where the main window is now active
 {$IFDEF MSWINDOWS}
     LTopmostHwnd := GetTopmostWindow;
-    if (FTopmostHwnd <> 0) and (LTopmostHwnd <> FTopmostHwnd) then
+    if (FTopmostHwnd <> 0) and (LTopmostHwnd <> FTopmostHwnd) and
+       (LTopmostHwnd <> Application.MainFormHandle) then
     begin
       LTopmostControl := FindControl(LTopmostHwnd);
       AddAction(TGUIActionWindowChange.Create(LTopmostHwnd, LTopmostControl,
-          ControlName(LTopmostHwnd, LTopmostControl)), AContinue);
+          ControlName(LTopmostHwnd, LTopmostControl),
+          WindowText(LTopmostHwnd)), AContinue);
     end;
     FTopmostHwnd := LTopmostHwnd;
 {$ENDIF}
@@ -1496,6 +1506,13 @@ end;
 
 { TGUIActionWindowChange }
 
+constructor TGUIActionWindowChange.Create(const AHwnd: HWND;
+  const AControl: TControl; const AControlName: string; const ACaption: string);
+begin
+  inherited Create(AHwnd, AControl, AControlName);
+  FCaption := ACaption;
+end;
+
 function TGUIActionWindowChange.GetCommandName: string;
 begin
   Result := CWindowChangeCommandName;
@@ -1504,8 +1521,7 @@ end;
 function TGUIActionWindowChange.GetCommandParameters(
   const ACommandFormat: TGUIActionCommandFormat): string;
 begin
-  //TODO: No params? No control name?
-  result := '';
+  Result := Format('''%s''', [FCaption]); // No control name
 end;
 
 { TGUIActionEnterTextInto }

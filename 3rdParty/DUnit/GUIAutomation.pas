@@ -66,6 +66,7 @@ const
 
 const
   CDefaultControlWaitInterval = 5000; // Milliseconds
+  CDefaultWindowChangeWaitInterval = 10000; // Milliseconds
   CDefaultMouseMovePixelsPerSecond = 1000;
 
 type
@@ -112,6 +113,7 @@ type
     FControlWaitPeriod: Cardinal;
     FMoveMouseCursor: boolean;
     FOnGetContinueExecution: TOnGetContinueExecutionEvent;
+    FActiveWindowHwnd: HWND;
 
     function ContinueExecution: boolean;
     procedure SleepAndCheckContinue(const AInterval: Cardinal);
@@ -119,6 +121,7 @@ type
         const AInterval: Cardinal): TControl; overload;
     function FindControlInstance(const AParentHwnd: HWND; const AControlName: string;
         var AX: Integer; var AY: Integer; const AInterval: Cardinal): HWND; overload;
+    procedure CheckActiveWindow;
     // Low-level message sending
     procedure MoveMouse(const AHwnd: HWND; const AX: Integer; const AY: Integer);
     procedure MouseButtonDownOn(const AHwnd: HWND; const AMouseDownMsg: UINT;
@@ -185,6 +188,9 @@ type
     // As above but return the TWinControl instance (if the destination is a VCL
     // control)
     function FindWinControl(const AControlName: string; var AX: Integer; var AY: Integer; const AAddrs: Pointer = nil): TWinControl;
+
+    function WaitForWindowChange(const AInterval: Cardinal = CDefaultWindowChangeWaitInterval): boolean; overload;
+    function WaitForWindowChange(const AWindowCaption: string; const AInterval: Cardinal = CDefaultWindowChangeWaitInterval): boolean; overload;
 
     function ControlExists(const AControlName: string): boolean;
     function ControlVisible(const AControlName: string): boolean;
@@ -348,7 +354,8 @@ type
 {$STACKFRAMES ON}
 
 const
-  CControlRetryWaitPeriod = 100;
+  CControlRetryWaitPeriod = 100; // ms
+  CWindowChangedWaitPeriod = 100; // ms
 
 var
   USyncCriticalSection: TCriticalSection;
@@ -634,6 +641,89 @@ begin
 end;
 {$ENDIF}
 
+procedure TGUIAutomation.CheckActiveWindow;
+begin
+  // Remember the currently active window so that we can detect a change after
+  // performing an automation command
+{$IFDEF MSWINDOWS}
+  FActiveWindowHwnd := GetTopmostWindow;
+{$ELSE}
+  FActiveWindowHwnd := Screen.ActiveForm.Handle;
+{$ENDIF}
+end;
+
+function TGUIAutomation.WaitForWindowChange(const AInterval: Cardinal): boolean;
+var
+  LHwnd: HWND;
+  LWaitUntil: DWORD;
+begin
+  Result := false;
+
+  LWaitUntil := GetTickCount + FControlWaitPeriod;
+  while ContinueExecution and (GetTickCount < LWaitUntil) do
+  begin
+{$IFDEF MSWINDOWS}
+    LHwnd := GetTopmostWindow;
+{$ELSE}
+    LHwnd := Screen.ActiveForm.Handle;
+{$ENDIF}
+    if LHwnd <> FActiveWindowHwnd then
+    begin
+      FActiveWindowHwnd := LHwnd;
+      Result := true;
+      Break;
+    end;
+
+    SleepAndCheckContinue(CWindowChangedWaitPeriod);
+    SyncMessages;
+  end;
+  // Fixed delay to let the dust settle
+  if ContinueExecution then
+  begin
+    SleepAndCheckContinue(CWindowChangedWaitPeriod div 2);
+    SyncMessages;
+  end;
+end;
+
+function TGUIAutomation.WaitForWindowChange(const AWindowCaption: string;
+  const AInterval: Cardinal): boolean;
+var
+  LHwnd: HWND;
+  LWaitUntil: DWORD;
+  LCaption: string;
+begin
+  Result := false;
+
+  LWaitUntil := GetTickCount + FControlWaitPeriod;
+  while ContinueExecution and (GetTickCount < LWaitUntil) do
+  begin
+{$IFDEF MSWINDOWS}
+    LHwnd := GetTopmostWindow;
+{$ELSE}
+    LHwnd := Screen.ActiveForm.Handle;
+{$ENDIF}
+    if LHwnd <> FActiveWindowHwnd then
+    begin
+      LCaption := WindowText(LHwnd);
+      if LCaption = AWindowCaption then
+      begin
+        FActiveWindowHwnd := LHwnd;
+        Result := true;
+        Break;
+      end;
+    end;
+
+    SleepAndCheckContinue(CWindowChangedWaitPeriod);
+    SyncMessages;
+  end;
+  // Fixed delay to let the dust settle
+  if ContinueExecution then
+  begin
+    SleepAndCheckContinue(CWindowChangedWaitPeriod div 2);
+    SyncMessages;
+  end;
+end;
+
 function TGUIAutomation.WaitForWindowEnabled(const AHwnd: HWND): boolean;
 var
   LWaitUntil: DWORD;
@@ -822,6 +912,8 @@ begin
   if not ContinueExecution then
     Exit; //==>
 
+  CheckActiveWindow;
+
   // Move mouse cursor in screen co-ords. X, Y are specified as client co-ords
   if FMoveMouseCursor then
   begin
@@ -855,6 +947,8 @@ begin
   if not ContinueExecution then
     Exit; //==>
 
+  CheckActiveWindow;
+
   // Move mouse cursor
   MoveMouse(AHwnd, AX, AY);
   SyncSleep(MouseMoveDelay);
@@ -884,6 +978,8 @@ var
 begin
   if not ContinueExecution then
     Exit; //==>
+
+  CheckActiveWindow;
 
   // Move mouse cursor
   MoveMouse(AHwnd, AX, AY);
@@ -1527,6 +1623,8 @@ begin
   if AControlHwnd = 0 then
     raise EGUIAutomation.Create('Control window not specified') at CallerAddr;
 
+  CheckActiveWindow;
+
   WaitForWindowEnabled(AControlHwnd);
 {$IFDEF DUNIT_CLX}
   if AKey <= 255 then
@@ -1670,6 +1768,7 @@ begin
   if AControlHwnd = 0 then
     raise EGUIAutomation.Create('Control window not specified') at CallerAddr;
 
+  CheckActiveWindow;
   WaitForWindowEnabled(AControlHwnd);
 
   for i := 1 to Length(AText) do
@@ -1704,6 +1803,14 @@ var
   LHwnd: HWND;
   LwParam: WPARAM;
 begin
+  if not ContinueExecution then
+    Exit; //==>
+
+  // Don't check the active window. Typically the select menu item follows
+  // a click or key press and on playback the timing is different and the
+  // active window transition changes.
+  //CheckActiveWindow;
+
 {$IFDEF MSWINDOWS}
   LHwnd := Menus.PopupList.Window;
 {$ELSE}
@@ -1721,6 +1828,8 @@ procedure TGUIAutomation.SelectTreeViewItem(const AHwnd: HWND; const AX: Integer
 var
   LHitTestInfo: TTVHitTestInfo;
 begin
+  CheckActiveWindow;
+
   // Find the tree view item at the given location and select it
   LHitTestInfo.pt.X := AX;
   LHitTestInfo.pt.Y := AY;
@@ -1741,6 +1850,11 @@ var
   i: Integer;
 {$ENDIF}
 begin
+  if not ContinueExecution then
+    Exit; //==>
+
+  CheckActiveWindow;
+
 {$IFDEF MSWINDOWS}
   LwParam := MakeWParam(ACommand {SB_*}, APosition { For SB_THUMB* });
   for i := 1 to ACount do
