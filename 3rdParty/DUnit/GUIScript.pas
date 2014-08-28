@@ -2093,42 +2093,59 @@ begin
 end;
 
 procedure TGUIScript.CheckControlEnabledEval(Info: TProgramInfo);
+var
+  LControl: TControl;
 begin
   //TODO: Support non-VCL controls (HWND)
-  Check(Control(Info).Enabled,
+  LControl := Control(Info);
+  Check(Assigned(LControl) and Control(Info).Enabled,
       FormatCheckFailMessage(Info, Format('Control ''%s'' enabled',
           [ControlName(Info)])));
 end;
 
 procedure TGUIScript.CheckControlNotEnabledEval(Info: TProgramInfo);
+var
+  LControl: TControl;
 begin
   //TODO: Support non-VCL controls (HWND)
-  Check(not Control(Info).Enabled,
+  LControl := Control(Info);
+  Check((not Assigned(LControl)) or (not LControl.Enabled),
       FormatCheckFailMessage(Info, Format('Control ''%s'' not enabled',
           [ControlName(Info)])));
 end;
 
 procedure TGUIScript.CheckControlVisibleEval(Info: TProgramInfo);
+var
+  LControl: TControl;
 begin
   //TODO: Support non-VCL controls (HWND)
-  Check(Control(Info).Visible,
+  LControl := Control(Info);
+  Check(Assigned(LControl) and Control(Info).Visible,
       FormatCheckFailMessage(Info, Format('Control ''%s'' visible',
           [ControlName(Info)])));
 end;
 
 procedure TGUIScript.CheckControlNotVisibleEval(Info: TProgramInfo);
+var
+  LControl: TControl;
 begin
   //TODO: Support non-VCL controls (HWND)
-  Check(not Control(Info).Visible,
+  LControl := Control(Info);
+  Check((not Assigned(LControl)) or (not LControl.Visible),
       FormatCheckFailMessage(Info, Format('Control ''%s'' not visible',
           [ControlName(Info)])));
 end;
 
 procedure TGUIScript.CheckControlExistsEval(Info: TProgramInfo);
+var
+  LControl: TControl;
 begin
   try
     //TODO: Support non-VCL controls (HWND)
-    Control(Info);
+    LControl := Control(Info);
+    Check(Assigned(LControl),
+        FormatCheckFailMessage(Info, Format('Control ''%s'' exists',
+            [ControlName(Info)])));
   except
     on e: EGUIAutomationControlNotFound do
       Check(false,
@@ -2138,11 +2155,13 @@ begin
 end;
 
 procedure TGUIScript.CheckControlNotExistsEval(Info: TProgramInfo);
+var
+  LControl: TControl;
 begin
   try
     //TODO: Support non-VCL controls (HWND)
-    Control(Info);
-    Check(false,
+    LControl := Control(Info);
+    Check(not Assigned(LControl),
         FormatCheckFailMessage(Info, Format('Control ''%s'' not exists',
             [ControlName(Info)])));
   except
@@ -2152,11 +2171,12 @@ end;
 
 procedure TGUIScript.CheckControlFocusedEval(Info: TProgramInfo);
 var
-  LControl: TWinControl;
+  LControl: TControl;
 begin
   //TODO: Support non-VCL controls (HWND)
-  LControl := Control(Info) as TWinControl;
-  Check(Assigned(LControl) and LControl.Focused,
+  LControl := Control(Info);
+  Check(Assigned(LControl) and (LControl is TWinControl) and
+      TWinControl(LControl).Focused,
       FormatCheckFailMessage(Info, Format('Control ''%s'' focused',
           [ControlName(Info)])));
 end;
