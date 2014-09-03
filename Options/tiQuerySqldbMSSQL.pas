@@ -101,7 +101,6 @@ end;
 class function TtiDatabaseSQLDBMSSQL.CreateSQLConnection: TSQLConnection;
 begin
   Result := TMSSQLConnection.Create(nil);
-//  TMSSQLConnection(Result).Dialect := 3;
 end;
 
 function TtiDatabaseSQLDBMSSQL.FieldMetaDataToSQLCreate(const AFieldMetaData: TtiDBMetaDataField): string;
@@ -110,31 +109,31 @@ var
 begin
   lFieldName := AFieldMetaData.Name;
   case AFieldMetaData.Kind of
-    qfkString: Result := 'VarChar(' + IntToStr(AFieldMetaData.Width) + ')';
-    qfkInteger: Result    := 'Integer';
+    qfkString:
+        Result := 'VarChar(' + IntToStr(AFieldMetaData.Width) + ')';
+    qfkInteger:
+        Result := 'Integer';
 //    qfkLargeInt: Result := 'BigInt';  // aka Numeric(18,0) a 8 byte type - only available in dialect 3 databases
-    qfkFloat: Result      := 'DOUBLE PRECISION';    // 'or Decimal(10, 5)';
+    qfkFloat:
+        Result := 'DOUBLE PRECISION';    // 'or Decimal(10, 5)';
     qfkDateTime:
-        // Take into account dialect
-//TODO: Fix this!!!!!!!!!!!!!!!!!!!!!!!        
-//        if TMSSQLConnection(SQLConnection).Dialect <> 1 then
-          Result := 'TIMESTAMP';
-//        else
-//          Result := 'Date';
+        Result := 'DATETIME';
     {$IFDEF BOOLEAN_CHAR_1}
-    qfkLogical: Result    := 'Char(1) default ''F'' check(' +
-        lFieldName + ' in (''T'', ''F''))';
+    qfkLogical:
+        Result := 'Char(1) default ''F'' check(' + lFieldName + ' in (''T'', ''F''))';
     {$ELSE}
       {$IFDEF BOOLEAN_NUM_1}
-    qfkLogical: Result    := 'SmallInt default 0 check(' +
-        lFieldName + ' in (1, 0)) ';
+    qfkLogical:
+        Result := 'SmallInt default 0 check(' + lFieldName + ' in (1, 0)) ';
       {$ELSE}
-    qfkLogical: Result    := 'VarChar(5) default ''FALSE'' check(' +
-        lFieldName + ' in (''TRUE'', ''FALSE'')) ';
+    qfkLogical:
+        Result := 'VarChar(5) default ''FALSE'' check(' + lFieldName + ' in (''TRUE'', ''FALSE'')) ';
       {$ENDIF}
     {$ENDIF}
-    qfkBinary: Result     := 'Blob sub_type 0';
-    qfkLongString: Result := 'Blob sub_type 1';
+    qfkBinary:
+        Result := 'Blob sub_type 0';
+    qfkLongString:
+        Result := 'Blob sub_type 1';
     else
       raise EtiOPFInternalException.Create('Invalid FieldKind');
   end;
