@@ -2575,7 +2575,6 @@ var
 begin
   if RunSelectedTestAction.Enabled then
   begin
-    GGUIActionRecorder.Initialize;
     GGUIActionRecorder.Active := true;
     try
       RunSelectedTestAction.Execute;
