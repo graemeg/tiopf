@@ -239,9 +239,9 @@ begin
 
   FAL := TActionList.Create(Self);
   if Self.Name <> '' then
-    FAL.Name := 'al' + Self.Name
+    FAL.Name := tiGetUniqueComponentName('al' + Self.Name)
   else
-    FAL.Name := 'al' + Self.ClassName;
+    FAL.Name := tiGetUniqueComponentName('al' + Self.ClassName);
   FAL.OnUpdate := DoALUpdate;
 
   FaClose := AddAction(cCaptionClose, 'Close this page ' + ClassName, aCloseExecute, VK_ESCAPE, [], 'aClose');
@@ -380,36 +380,13 @@ function TtiFormMgrForm.AddAction(
   const AImageIndex: Integer = -1;
   const AHelpContext: Integer = -1;
   const AName: string = ''): TtiAMSAction;
-
-  procedure _SetUniqueName(AAction: TtiAMSAction; const AName: string);
-  var
-    i: Integer;
-  const
-    CMaxUniqueNameAttempts = 100;
-  begin
-    for i := 1 to CMaxUniqueNameAttempts do
-    begin
-      try
-        if i = 1 then
-          Result.Name := AName
-        else
-          Result.Name := AName + IntToStr(i);
-        break;
-      except
-        on e: EComponentError do
-          if i = CMaxUniqueNameAttempts then
-            raise;
-      end;
-    end;
-  end;
-
 begin
   Result := TtiAMSAction.Create(FAL);
   // Generate a unique name using the caption and optional numerical suffix
   if AName <> '' then
-    _SetUniqueName(Result, FAL.Name + '_' + AName)
+    Result.Name := tiGetUniqueComponentName(FAL.Name + '_' + AName)
   else
-    _SetUniqueName(Result, FAL.Name + '_' + tiToComponentName('a' + ACaption));
+    Result.Name := tiGetUniqueComponentName(FAL.Name + '_' + tiToComponentName('a' + ACaption));
   Result.ActionList := FAL;
   Result.Caption := ACaption;
   Result.OnExecute := AOnExecute;
@@ -670,7 +647,7 @@ begin
   {$ENDIF}
 
   if AName <> '' then
-    AForm.Name := AName;
+    AForm.Name := tiGetUniqueComponentName(AName);
 
   AForm.OnFormMessage := FOnFormMessageEvent;
   if AForm is TtiFormMgrDataForm then

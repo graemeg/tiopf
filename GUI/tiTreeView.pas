@@ -1813,7 +1813,7 @@ end;
 procedure TtiTreeView.SetName(const AValue: TComponentName);
 begin
   inherited SetName(AValue);
-  TV.Name := Name + '_TV';
+  TV.Name := tiGetUniqueComponentName(Name + '_TV');
 end;
 
 function TtiTVDataMapping.ClassNameToCollectionItemName(const AValue: string): string;

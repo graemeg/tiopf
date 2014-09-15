@@ -147,7 +147,7 @@ begin
   FaSaveClose.ImageIndex := gTIImageListMgr.ImageIndex16(cResTI_Save);
 
   FModelMediators := TtiModelMediatorList.Create(Self);
-  FModelMediators.Name := Self.ClassName + 'ModelMediators';
+  FModelMediators.Name := tiGetUniqueComponentName(Self.ClassName + 'ModelMediators');
   if ModelMediatorName <> '' then
     FModelMediators.Add(ModelMediatorName);
   tiMediators.RegisterFallBackMediators;

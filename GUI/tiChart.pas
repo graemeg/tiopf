@@ -1287,7 +1287,7 @@ begin
     clTree:
       FChartLegendForm := TtiChartLegendTreeViewForm.CreateNew(FParenttiChart);
   end;
-  FChartLegendForm.Name := 'FChartLegendForm';
+  FChartLegendForm.Name := tiGetUniqueComponentName('FChartLegendForm');
   FChartLegendForm.Caption := 'Legend';
   FChartLegendForm.Parent := FLegendTabSheet;
   FChartLegendForm.Align:= alClient;
