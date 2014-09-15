@@ -183,6 +183,7 @@ begin
         if LQuery.EOF then
         begin
           ADate := 0 ;
+          ASerial := '';
           raise EtiCGIException.Create(cTICGIExitCodeNoDataReturnedFromGetLatestDateQuery);
         end;
         ADate := LQuery.FieldAsDateTime[cDBFileDateFieldName];
