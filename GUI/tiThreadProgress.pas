@@ -278,12 +278,15 @@ type
     {$ENDIF}
   end;
 
+  TCustomPanelHack = class(TCustomPanel);
+
 // The FormThreadProgress is a Singleton
 function gFormThreadProgress : TFormThreadProgress;
 
 implementation
 uses
   tiUtils
+  ,tiGUIUtils
   ,tiLog
   ,tiDialogs
   ,tiResources
@@ -329,6 +332,8 @@ end;
 constructor TProgInd.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner)   ;
+  Self.Name := tiGetUniqueComponentNameFromParent(AOwner, 'pnlProgress');
+  TCustomPanelHack(Self).Caption := ''; // Stop name being visible
   Parent      := (AOwner as TFormThreadProgress);
   BevelInner  := (AOwner as TFormThreadProgress).PanelBevelInner;
   BevelOuter  := (AOwner as TFormThreadProgress).PanelBevelOuter;
@@ -342,8 +347,11 @@ begin
 
   {$IFDEF USEHTMLVIEW}
   FLabel                 := THtmlviewer.Create(self);
+  FLabel.Name := tiGetUniqueComponentNameFromParent(Self, 'htmlProgress');
   {$ELSE}
   FLabel                 := TLabel.Create(self);
+  FLabel.Name := tiGetUniqueComponentNameFromParent(Self, 'lblProgress');
+  FLabel.Caption := '';
   {$ENDIF}
   FLabel.Parent          := self;
   FLabel.Left            := 6;
@@ -362,6 +370,7 @@ begin
   {$ENDIF}
 
   FProgressBar           := TtiProgressBar.Create(self);
+  FProgressBar.Name := tiGetUniqueComponentNameFromParent(Self, 'pbProgress');
   FProgressBar.Parent    := self;
   FProgressBar.Left      := 4;//cuiLabelWidth + 20;
   FProgressBar.Top       := 18;
@@ -376,6 +385,7 @@ begin
   FProgressBar.Color     := (Owner as TFormThreadProgress).ProgressBarColor;
 
   FSpeedButton         := TSpeedButton.Create(self);
+  FSpeedButton.Name := tiGetUniqueComponentNameFromParent(Self, 'sbCancel');
   FSpeedButton.Parent  := self;
   FSpeedButton.Left    := Self.ClientWidth - cuCancelButtonSize - 4;
   FSpeedButton.Top     :=   4;
@@ -488,6 +498,7 @@ begin
   if not AnimationShowing then
   begin
     FAnimation := TtiAnimatedGIF.Create(self);
+    FAnimation.Name := tiGetUniqueComponentNameFromParent(Self, 'agifProgress');
     FAnimation.ResourceName := cResTI_NetworkTraffic;
     FAnimation.AutoSize := true;
     // Right aligned to progress area.
@@ -589,7 +600,7 @@ begin
   else
     FormStyle   := fsStayOnTop;
 
-  Name := 'ThreadProgress';
+  Name := tiGetUniqueComponentName('FormThreadProgress');
   FProgInds := TList.Create;
   BorderIcons := [biSystemMenu,biMinimize];
   BorderStyle := bsSizeable  ;
