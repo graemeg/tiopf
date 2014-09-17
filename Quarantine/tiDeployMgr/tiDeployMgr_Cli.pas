@@ -465,7 +465,10 @@ begin
   lData := TtiDeployFile( Visited ) ;
   try
     tiReadFileDateSize(pFileName, lDT, liSize ) ;
-    result := ( lData.FileDate <> lDT ) or ( lData.FileSize <> liSize ) ;
+    result :=
+        // Work around file system differences
+        (tiDateTimeToFileDateTime(lData.FileDate) <> tiDateTimeToFileDateTime(lDT)) or
+        (lData.FileSize <> liSize);
   except
     result := true ;
   end ;

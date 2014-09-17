@@ -212,6 +212,9 @@ type
                                 var   AFileSize : integer);
   // Set a files date and time
   procedure tiSetFileDate(const AFileName : string; const ADateTime : TDateTime);
+  // Convert the given date time to the value that would be used in the filesystem
+  // There is usually a difference in precision (e.g. Windows rounds up to 2 sec)
+  function tiDateTimeToFileDateTime(const ADateTime: TDateTime): TDateTime;
   // Get the full path and filename of the exe or dll, Win32 and .NET
   function tiGetModuleFileName: string;
   // What is the path of the current EXE?
@@ -2356,6 +2359,12 @@ procedure tiReadFileDateSize(const AFileName: string; var ADateTime: TDateTime;
 begin
   ADateTime  := tiReadFileDate(AFileName);
   AFileSize := tiReadFileSize(AFileName);
+end;
+
+
+function tiDateTimeToFileDateTime(const ADateTime: TDateTime): TDateTime;
+begin
+  result := FileDateToDateTime(DateTimeToFileDate(ADateTime));
 end;
 
 

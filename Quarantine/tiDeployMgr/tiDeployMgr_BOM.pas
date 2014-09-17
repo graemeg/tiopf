@@ -247,7 +247,10 @@ uses
 //begin
 //  try
 //    tiReadFileDateSize(psFileName, lDT, liSize ) ;
-//    result := ( FileDate <> lDT ) or ( FileSize <> liSize ) ;
+//    result :=
+//        // Work around file system differences
+//        (tiDateTimeToFileDateTime(FileDate) <> tiDateTimeToFileDateTime(lDT)) or
+//        (FileSize <> liSize);
 //{    Log([
 //          psFileName,
 //          result,
