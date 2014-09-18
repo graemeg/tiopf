@@ -868,7 +868,7 @@ begin
     FHTTP.SendTimeout:= StrToIntDef(Params.Values[CHTTPSendTimeout], 0);
     FHTTP.ReceiveTimeout:= StrToIntDef(Params.Values[CHTTPReceiveTimeout], 0);
     FHTTP.SSLLibraryPath:= Params.Values[CHTTPSSLLibraryPath];
-
+    FHTTP.ExpectResponseBlockHeader := True;
 
     if not SameText(cHTTPMSXML, FHTTP.MappingName) then
     begin

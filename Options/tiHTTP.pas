@@ -24,6 +24,7 @@ const
     'Exception message: %s ' + cLineEnding +
     'Request type: %s ' + cLineEnding +
     'URL: %s ';
+  CErrorHTTPBlockHeaderMissing = 'Block header missing';
 
   ctiOPFHTTPBlockHeader= 'tiOPFBlockID';
   ctiOPFHTTPBlockDelim = '/';
@@ -34,6 +35,7 @@ const
   ctiOPFHTTPIsPassThroughContent = 'true';
 
   CErrorHTTPRetryLimitExceeded = '%s (After %d attempts)';
+  cErrorHTTPServer = 'HTTP/1.1 %d Internal Server Error';
 
   ctiOPFHTTPDefaultRetryLimit = 1;
   ctiOPFHTTPDefaultRetryWaitMS = 5000;
@@ -57,6 +59,7 @@ type
     FHeaders: TStringList;
     FRequestTIOPFBlockHeader: string;
     FDeriveRequestTIOPFBlockHeader: Boolean;
+    FExpectResponseBlockHeader: Boolean;
     FOnProgress: TtiHTTPProgressEvent;
     FOnCheckTerminated: TtiHTTPCheckTerminatedEvent;
     FRetryLimit: Byte;
@@ -67,6 +70,7 @@ type
     FSendTimeout: Longword;
     FReceiveTimeout: Longword;
     FSSLLibraryPath: string;
+    FAutoFlushCache: boolean;
     function    GetResponseHeader(const AName: string): string;
     procedure   SetResponseHeader(const AName, AValue: string);
     function    GetResponseTIOPFBlockHeader: string;
@@ -105,7 +109,6 @@ type
     function    GetResponseCode: Integer; virtual; abstract;
     function    GetResponseText: string; virtual; abstract;
     function    GetResponseHeaders: TStringList; virtual;
-
   public
     class function MappingName: string; virtual; abstract;
 
@@ -136,6 +139,7 @@ type
     property    SendTimeout: Longword read FSendTimeout write FSendTimeout;
     property    ReceiveTimeout: Longword read FReceiveTimeout write FReceiveTimeout;
     property    SSLLibraryPath: string read FSSLLibraryPath write FSSLLibraryPath;
+    property    AutoFlushCache: boolean read FAutoFlushCache write FAutoFlushCache;
 
     property    ResponseHeaders: TStringList Read GetResponseHeaders;
     property    ResponseHeader[const AName: string]: string Read GetResponseHeader Write SetResponseHeader;
@@ -143,12 +147,12 @@ type
     {: True by default. Can set to False for testing passing of custom headers between client & server}
     property    DeriveRequestTIOPFBlockHeader: Boolean Read FDeriveRequestTIOPFBlockHeader Write FDeriveRequestTIOPFBlockHeader;
     property    RequestTIOPFBlockHeader: string Read FRequestTIOPFBlockHeader Write FRequestTIOPFBlockHeader;
+    property    ExpectResponseBlockHeader: Boolean read FExpectResponseBlockHeader write FExpectResponseBlockHeader;
     property    ResponseTIOPFBlockHeader: string Read GetResponseTIOPFBlockHeader;
     property    ResponseTIOPFErrorCode: Byte read GetResponseTIOPFErrorCode;
 
     property    OnProgress: TtiHTTPProgressEvent Read FOnProgress Write FOnProgress;
     property    OnCheckTerminated: TtiHTTPCheckTerminatedEvent Read FOnCheckTerminated Write FOnCheckTerminated;
-
   end;
 
   TtiHTTPClass = class of TtiHTTPAbs;
@@ -292,13 +296,15 @@ end;
 constructor TtiHTTPAbs.Create;
 begin
   Inherited;
-  FInput           := TStringStream.Create('');
-  FOutput          := TStringStream.Create('');
+  FInput := TStringStream.Create('');
+  FOutput := TStringStream.Create('');
   FFormatExceptions := True;
-  FDeriveRequestTIOPFBlockHeader:= True;
-  FRetryLimit:= ctiOPFHTTPDefaultRetryLimit;
-  FRetryWaitMS:= ctiOPFHTTPDefaultRetryWaitMS;
-  FBlockSize:= 0;
+  FDeriveRequestTIOPFBlockHeader := True;
+  FExpectResponseBlockHeader := False;
+  FRetryLimit := ctiOPFHTTPDefaultRetryLimit;
+  FRetryWaitMS := ctiOPFHTTPDefaultRetryWaitMS;
+  FBlockSize := 0;
+  AutoFlushCache := False;
 end;
 
 function TtiHTTPAbs.CreateTransID: string;
@@ -529,6 +535,7 @@ procedure TtiHTTPAbs.DoGetOrPostBlock(
   out   ABlockCRC: LongWord;
   out   ABlockCount: LongWord);
 var
+  LResponseBlockHeader: string;
   LReturnBlockIndex: LongWord;
   LReturnBlockSize: LongWord;
   LTransID: string;
@@ -537,7 +544,10 @@ begin
   if FDeriveRequestTIOPFBlockHeader then
     RequestTIOPFBlockHeader:= tiMakeTIOPFHTTPBlockHeader(ABlockIndex, ABlockCount, FBlockSize, ATransID, 0);
   AGetOrPostMethod(AURL, AInput, AOutput);
-  tiParseTIOPFHTTPBlockHeader(ResponseTIOPFBlockHeader, LReturnBlockIndex, ABlockCount,
+  LResponseBlockHeader := ResponseTIOPFBlockHeader;
+  if FExpectResponseBlockHeader and (LResponseBlockHeader = '') then
+    raise EtiOPFHTTPException.Create(CErrorHTTPBlockHeaderMissing);
+  tiParseTIOPFHTTPBlockHeader(LResponseBlockHeader, LReturnBlockIndex, ABlockCount,
     LReturnBlockSize, LTransID, ABlockCRC);
   DoProgressEvent(ABlockIndex, ABlockCount, FBlockSize);
 end;

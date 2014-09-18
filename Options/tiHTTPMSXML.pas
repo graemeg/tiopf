@@ -11,7 +11,6 @@ uses
  ;
 
 const
-  cErrorHTTPServer = 'HTTP/1.1 %d Internal Server Error';
   cSleepPeriod = 10;
 
 type
@@ -20,7 +19,6 @@ type
   TtiHTTPMSXML = class(TtiHTTPAbs)
   private
     FHTTP : IServerXMLHTTPRequest;
-    FAutoFlushCache: boolean;
     FLastCallTime: DWord;
     procedure CreateHTTP;
   protected
@@ -38,7 +36,6 @@ type
     Constructor Create; override;
     Destructor  Destroy; override;
     class function MappingName: string; override;
-    property    AutoFlushCache: boolean read FAutoFlushCache write FAutoFlushCache;
   end;
 
 implementation
@@ -47,6 +44,7 @@ uses
   ,tiWin32
   ,tiExcept
   ,tiLog
+  ,tiWebServerConstants
   ,SysUtils
   ,Math
   ,ComObj
@@ -59,7 +57,7 @@ var
 constructor TtiHTTPMSXML.Create;
 begin
   inherited;
-  FAutoFlushCache:= True;
+  AutoFlushCache:= True;
 end;
 
 procedure TtiHTTPMSXML.CreateHTTP;
@@ -106,7 +104,7 @@ begin
 
   // Hack around the MSXML 'feature' of caching pages, which may not be what
   // we want
-  if FAutoFlushCache then
+  if AutoFlushCache then
   begin
     LURL := AddURLParams(LURL, 'CacheFlushParam=' + IntToStr(FCacheFlushParam));
     Inc(FCacheFlushParam);
@@ -120,8 +118,8 @@ begin
       FHTTP.setRequestHeader(ctiOPFHTTPBlockHeader, RequestTIOPFBlockHeader);
     Log('Request MSXML: GET SEND', lsDebug);
     FHTTP.Send(EmptyParam);
-    Log('Response MSXML: GET [%s]', [FHTTP.responseText], lsDebug);
-    if FHTTP.Get_Status <> 200 then
+    Log('Request MSXML: GET response: %d [%s]', [FHTTP.Get_Status, FHTTP.responseText], lsDebug);
+    if FHTTP.Get_Status <> cHTTPResponseCodeOK then
       raise Exception.CreateFmt(cErrorHTTPServer, [FHTTP.Get_Status]);
     AOutput.Size := 0;
     AOutput.WriteString(FHTTP.responseText);
@@ -140,7 +138,7 @@ begin
   lURL := CorrectURL(AURL);
   // Hack around the MSXML 'feature' of caching pages, which may not be what
   // we want
-  if FAutoFlushCache then
+  if AutoFlushCache then
   begin
     LURL:= LURL + '?CacheFlushParam=' + IntToStr(FCacheFlushParam);
     Inc(FCacheFlushParam);
@@ -161,12 +159,11 @@ begin
 //    Log('Request MSXML: POST SEND: %s', [AInput.DataString], lsDebug);
     Log('Request MSXML: POST SEND', lsDebug);
     FHTTP.Send(AInput.DataString);
-    Log('Response MSXML: POST RESPONSE: %d [%s]', [FHTTP.Get_Status, FHTTP.responseText], lsDebug);
-    if FHTTP.Get_Status <> 200 then
+    Log('Request MSXML: POST response: %d [%s]', [FHTTP.Get_Status, FHTTP.responseText], lsDebug);
+    if FHTTP.Get_Status <> cHTTPResponseCodeOK then
       raise Exception.CreateFmt(cErrorHTTPServer, [FHTTP.Get_Status]);
     AOutput.Size := 0;
     AOutput.WriteString(FHTTP.responseText);
-
   except
     on e:exception do
       raise EtiOPFHTTPException.Create(e.message);
@@ -201,8 +198,8 @@ var
   lResponseCode: Integer;
 begin
   lResponseCode := ResponseCode;
-  if lResponseCode = 200 then
-    Result := 'HTTP/1.1 200 OK'
+  if lResponseCode = cHTTPResponseCodeOK then
+    Result := Format('HTTP/1.1 %d OK', [cHTTPResponseCodeOK])
   else
     Result := Format(cErrorHTTPServer, [lResponseCode])
 end;

@@ -44,6 +44,7 @@ type
 implementation
 uses
   tiConstants
+  ,tiWebServerConstants
   ,tiLog
   ,SysUtils
 {$IFDEF MSWINDOWS}
@@ -107,7 +108,11 @@ begin
     Log('Request INDY %d: GET START [%s]', [LRequestID, LURL], lsDebug);
     try
       FHTTP.Get(LURL, AOutput);
-      Log('Response INDY %d: GET [%s]', [LRequestID, FHTTP.Response.ResponseText], lsDebug);
+      Log('Request INDY %d: GET response: %d [%s]', [LRequestID,
+          FHTTP.ResponseCode, FHTTP.Response.ResponseText], lsDebug);
+      if FHTTP.ResponseCode <> cHTTPResponseCodeOK then
+        {Indy typically raises an exception anyway}
+        raise Exception.CreateFmt(CErrorHTTPServer, [FHTTP.ResponseCode]);
     finally
       Log('Request INDY %d: GET END', [LRequestID], lsDebug);
     end;
@@ -142,9 +147,12 @@ begin
     try
 // Only for debugging: contains sensitive info like SQL
 //      Log('Response INDY %d: POST: %s', [LRequestID, AInput.DataString], lsDebug);
-      Log('Response INDY %d: POST', [LRequestID], lsDebug);
       FHTTP.Post(AURL, AInput, AOutput);
-      Log('Response INDY %d: POST response: [%s]', [LRequestID, FHTTP.Response.ResponseText], lsDebug);
+      Log('Request INDY %d: POST response: %d [%s]', [LRequestID,
+          FHTTP.ResponseCode, FHTTP.Response.ResponseText], lsDebug);
+      if FHTTP.ResponseCode <> cHTTPResponseCodeOK then
+        {Indy typically raises an exception anyway}
+        raise Exception.CreateFmt(CErrorHTTPServer, [FHTTP.ResponseCode]);
     finally
       Log('Request INDY %d: POST END', [LRequestID], lsDebug);
     end;

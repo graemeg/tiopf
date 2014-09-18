@@ -21,7 +21,6 @@ type
 implementation
 uses
    tiHTTP
-  ,tiHTTPMSXML // Remove this when the FlushParams problem is fixed. 
   ,SysUtils
   ,tiQueryRemote
   ,tiConstants
@@ -61,8 +60,7 @@ begin
     lHTTP.FormatExceptions := False ;
     lHTTP.Input.WriteString(pParams);
     try
-      if lHTTP is TtiHTTPMSXML then
-        (lHTTP as TtiHTTPMSXML).AutoFlushCache:= False;
+      lHTTP.AutoFlushCache := False;
       lHTTP.Post(pURL + '/' + pCGIExeName);
       Result := Trim(lHTTP.Output.DataString);
     except
