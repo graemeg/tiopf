@@ -83,7 +83,6 @@ type
     FTextControls: TControlClasses;
     FControlInspectionIndent: string;
 
-    function GetRecordedScript: string;
     procedure RunScript;
     procedure TerminateScript(Info: TProgramInfo);
     procedure AutomationContinueExecution(var AContinueExecution: boolean);
@@ -198,7 +197,7 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
     // Retrieve script for recorded GUI actions
-    property RecordedScript: string read GetRecordedScript;
+    function GetRecordedScript(const AActionRecorder: TGUIActionRecorder): string;
     // Play back script and get result
     function Execute(const AScript: string): Boolean;
     procedure StopExecution;
@@ -943,14 +942,15 @@ begin
   Result := Control(ControlName(AInfo));
 end;
 
-function TGUIScript.GetRecordedScript: string;
+function TGUIScript.GetRecordedScript(const AActionRecorder: TGUIActionRecorder): string;
 var
   LCommands: TStringList;
   I: Integer;
 begin
+  Assert(AActionRecorder <> nil, 'ActionRecorder must be assigned');
   LCommands := TStringList.Create;
   try
-    LCommands.Text := GGUIActionRecorder.Actions.AsString(acfScript);
+    LCommands.Text := AActionRecorder.Actions.AsString(acfScript);
     // Indent and separate for script execution
     for I := 0 to LCommands.Count - 1 do
       LCommands.Strings[I] := '  ' + LCommands.Strings[I] + ';';
@@ -1728,7 +1728,7 @@ var
   LText: string;
 begin
   if AControlName = '' then
-    raise Exception.Create('Error Message');
+    raise Exception.Create('Control name must be provided');
 
   LText := AText;
   // Escape single quotes
