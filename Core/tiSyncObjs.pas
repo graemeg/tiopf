@@ -94,7 +94,7 @@ begin
   if WaitForSingleObject(lMutex.MutexHandle, ASecondsToWait*1000) = Wait_Object_0 then
   begin
     Result := True;
-    uMutexes.Add(lMutex);
+    uMutexes.Add(lMutex); // Locks the list
   end
   else begin
     Result := False;
@@ -126,6 +126,7 @@ begin
       LMutex := TObject(LList.Items[i]) as TtiMutex;
       LMutex.Free;
       LList.Delete(i);
+      Break;
     end;
   finally
     uMutexes.UnlockList;

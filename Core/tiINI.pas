@@ -137,6 +137,9 @@ function TtiINIFile.MutexName: string;
 begin
   // Use the full and direct path to the ini file as the name but strip
   // backslashes as they have special meaning in mutxes
+  //TODO: Better to generate the complete absolute path without any relative
+  // portions. For Windows see:
+  // http://stackoverflow.com/questions/5329472/conversion-between-absolute-and-relative-paths-in-delphi
   result := tiStrTran(ExpandFileName(FileName), '\', '');
 end;
 
@@ -150,12 +153,16 @@ end;
 
 function TtiINIFile.Lock: boolean;
 begin
-  result := tiWaitForMutex(MutexName);
+  //TODO: Resolve deadlock/long held mutex
+  //result := tiWaitForMutex(MutexName);
+  result := true;
 end;
 
 procedure TtiINIFile.Unlock;
 begin
-  tiReleaseMutex(MutexName);
+  //TODO: Resolve deadlock/long held mutex
+  MutexName; // Stop compiler warning
+  //tiReleaseMutex(MutexName);
 end;
 
 procedure TtiINIFile.DeleteKey(const ASection, AIdent: String);
