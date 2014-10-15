@@ -405,10 +405,17 @@ type
   {: Round a date time to the nearest millisecond. This helps to overcome precision
      problems when adding or comparing date-times. }
   function tiRoundDateTimeToNearestMilliSecond(const ADateTime: TDateTime): TDateTime;
+  {: Round a date time to the nearest interval given in TDateTime format. }
+  function tiRoundDateTimeToNearestInterval(const ADateTime: TDateTime;
+    const AInterval: TDateTime): TDateTime;
   {: Compare date-time with millisecond rounding to avoid floating point
      comparison issues. }
   function tiCompareDateTimeToMilliSecond(const AFirstDateTime: TDateTime;
     const ASecondDateTime: TDateTime): TValueRelationship;
+  {: Compare date-time with rounding to the nearest interval given in TDateTime
+     format to avoid floating point comparison issues. }
+  function tiCompareDateTimeToInterval(const AFirstDateTime: TDateTime;
+    const ASecondDateTime: TDateTime; const AInterval: TDateTime): TValueRelationship;
   {: Is the given time within the given time range. Millisecond precision. }
   function tiIncludesTime(const ADateTime: TDateTime;
     const AStartDateTime: TDateTime; const AEndDateTime: TDateTime): boolean;
@@ -541,7 +548,8 @@ type
   {: Compare two float values for equality, using a given number of decimal places. }
   function tiIsNearEnoughDecimalPlaces(const AValue1, AValue2: Double; ADecimalPlaces: Integer = 2): Boolean; overload;
   {: Compare two TDateTimes. Returns True if they are within 0.5 sec}
-  function tiIsDateTimeNearEnough(AVal1, AVal2: TDateTime): Boolean;
+  function tiIsDateTimeNearEnough(const AVal1: TDateTime; const AVal2: TDateTime;
+      const AProximity: TDateTime = cdtOneSecond / 2): Boolean;
   {: If ACondition is true, return AResultTrue, otherwise, return AResultFalse.
      @param ACondition Result of a boolean evaluation.
      @param AResultTrue AValue to return if ACondition is true.
@@ -1215,6 +1223,15 @@ begin
         LMSecs) / MSecsPerDay); // Allow for values out of range
 end;
 
+function tiRoundDateTimeToNearestInterval(const ADateTime: TDateTime;
+  const AInterval: TDateTime): TDateTime;
+begin
+  if AInterval <> 0 then
+    Result := Round(ADateTime/AInterval) * AInterval
+  else
+    Result := ADateTime;
+end;
+
 function tiCompareDateTimeToMilliSecond(const AFirstDateTime: TDateTime;
   const ASecondDateTime: TDateTime): TValueRelationship;
 var
@@ -1224,6 +1241,25 @@ begin
   // Calculate the two date times to the nearest millisecond.
   LFirstDateTime := tiRoundDateTimeToNearestMilliSecond(AFirstDateTime);
   LSecondDateTime := tiRoundDateTimeToNearestMilliSecond(ASecondDateTime);
+  // Values are rounded and encoded identically so just compare values.
+  // Do not use CompareDateTime as it can return the wrong result.
+  if LFirstDateTime < LSecondDateTime then
+    result := LessThanValue
+  else if LFirstDateTime > LSecondDateTime then
+    result := GreaterThanValue
+  else
+    result := EqualsValue;
+end;
+
+function tiCompareDateTimeToInterval(const AFirstDateTime: TDateTime;
+  const ASecondDateTime: TDateTime; const AInterval: TDateTime): TValueRelationship;
+var
+  LFirstDateTime: TDateTime;
+  LSecondDateTime: TDateTime;
+begin
+  // Calculate the two date times to the nearest interval.
+  LFirstDateTime := tiRoundDateTimeToNearestInterval(AFirstDateTime, AInterval);
+  LSecondDateTime := tiRoundDateTimeToNearestInterval(ASecondDateTime, AInterval);
   // Values are rounded and encoded identically so just compare values.
   // Do not use CompareDateTime as it can return the wrong result.
   if LFirstDateTime < LSecondDateTime then
@@ -1573,9 +1609,10 @@ begin
 end;
 
 
-function tiIsDateTimeNearEnough(AVal1, AVal2: TDateTime): Boolean;
+function tiIsDateTimeNearEnough(const AVal1: TDateTime; const AVal2: TDateTime;
+  const AProximity: TDateTime): Boolean;
 begin
-  result:= Abs(AVal1-AVal2) <= cdtOneSecond / 2;
+  result:= Abs(AVal1-AVal2) <= AProximity;
 end;
 
 function tiIf(ACondition: Boolean; AResultTrue, AResultFalse: Extended): Extended;
