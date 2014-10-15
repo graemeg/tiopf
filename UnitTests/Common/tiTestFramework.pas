@@ -116,6 +116,7 @@ type
     procedure CheckNearEnough(const AExpected, AActual: TtiFieldFloat); overload;
     procedure CheckNearestMillisecond(const AExpected: TDateTime; const AActual: TDateTime; const AMessage: string; AArgs: array of const); overload;
     procedure CheckNearestMillisecond(const AExpected: TDateTime; const AActual: TDateTime; const AMessage: string = ''); overload;
+    procedure CheckDateTimeNearEnough(const ADateTime1: TDateTime; const ADateTime2: TDateTime; const AProximity: TDateTime; const AMessage: string = '');
     procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const APropName: String); overload;
     procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldString); overload;
     procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldInteger); overload;
@@ -235,6 +236,7 @@ uses
   ,tiRTTI
   ,tiLog
   ,StrUtils
+  ,DateUtils
   ,TypInfo
   ,Types
   {$IFDEF MSWINDOWS}
@@ -920,6 +922,30 @@ procedure TtiTestCase.CheckNearestMillisecond(const AExpected: TDateTime;
   const AActual: TDateTime; const AMessage: string; AArgs: array of const);
 begin
   CheckNearestMillisecond(AExpected, AActual, Format(AMessage, AArgs));
+end;
+
+procedure TtiTestCase.CheckDateTimeNearEnough(const ADateTime1: TDateTime;
+  const ADateTime2: TDateTime; const AProximity: TDateTime;
+  const AMessage: string);
+var
+  LMessage: string;
+
+  function _FormatDateTime(const ADateTime: TDateTime): string;
+  begin
+    if DateOf(ADateTime) <> 0 then
+      Result := FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', ADateTime)
+    else
+      Result := FormatDateTime('hh:nn:ss.zzz', ADateTime);
+  end;
+
+begin
+  LMessage := 'Date times are not near enough: ' +
+      _FormatDateTime(ADateTime1) + ' <> ' +
+      _FormatDateTime(ADateTime2) + ', ' +
+      'Proximity = ' + _FormatDateTime(AProximity);
+  if AMessage <> '' then
+    LMessage := LMessage + #13#10 + AMessage;
+  Check(tiIsDateTimeNearEnough(ADateTime1, ADateTime2, AProximity), LMessage);
 end;
 
 procedure TtiTestCase.TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldString);

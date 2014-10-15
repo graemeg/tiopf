@@ -178,7 +178,9 @@ type
     procedure tiNextInterval;
     procedure tiDecodeDateTimeToNearestMilliSecond;
     procedure tiRoundDateTimeToNearestMilliSecond;
+    procedure tiRoundDateTimeToNearestInterval;
     procedure tiCompareDateTimeToMillisecond;
+    procedure tiCompareDateTimeToInterval;
     procedure tiIncludesTime;
     procedure tiOverlapsTime;
     procedure tiSafeDiv;
@@ -1936,6 +1938,10 @@ begin
   CheckEquals(False, tiUtils.tiIsDateTimeNearEnough(LNow, LNow + cdtOneSecond));
   CheckEquals(False, tiUtils.tiIsDateTimeNearEnough(LNow + + cdtOneSecond, LNow));
 
+  // Specified interval
+  CheckEquals(True, tiUtils.tiIsDateTimeNearEnough(LNow + cdtOneSecond, LNow, cdtOneSecond + cdtOneMiliSecond));
+  CheckEquals(True, tiUtils.tiIsDateTimeNearEnough(LNow + cdtOneSecond, LNow, cdtOneSecond * 2));
+  CheckEquals(False, tiUtils.tiIsDateTimeNearEnough(LNow + cdtOneSecond, LNow, cdtOneSecond - cdtOneMiliSecond));
 end;
 
 procedure TTestTIUtils.tiIntToCommaStr;
@@ -3451,25 +3457,83 @@ begin
 end;
 
 
+function _CompareDateTimeToMSec(const AExpected: TDateTime; const AActual: TDateTime): boolean;
+var
+  EH, EM, ESec, EMS: Word;
+  AH, AM, ASec, AMS: Word;
+begin
+  DecodeTime(AExpected, EH, EM, ESec, EMS);
+  DecodeTime(AActual, AH, AM, ASec, AMS);
+  result :=
+      (DateOf(AExpected) = DateOf(AActual)) and
+      (AH = EH) and (AM = EM) and (ASec = ESec) and (AMS = EMS);
+end;
+
+
 procedure TTestTIUtils.tiRoundDateTimeToNearestMilliSecond;
 var
   LDateTime: TDateTime;
 const
+  CMSec: Extended = 1/24/60/60/1000;
   CQuarterMSec: Extended = 1/24/60/60/1000/4;
   COverHalfMSec: Extended = 1/24/60/60/1000/1.99;
   CThreeQuarterMSec: Extended = 1/24/60/60/1000/4*3;
 begin
   LDateTime := EncodeDateTime(2007, 12, 20, 16, 45, 50, 767);
-  CheckNearEnough(EncodeDateTime(2007, 12, 20, 16, 45, 50, 767),
-      tiUtils.tiRoundDateTimeToNearestMilliSecond(LDateTime), 'Same value');
-  CheckNearEnough(EncodeDateTime(2007, 12, 20, 16, 45, 50, 767),
-      tiUtils.tiRoundDateTimeToNearestMilliSecond(LDateTime + CQuarterMSec), 'Quarter msec');
-  CheckNearEnough(EncodeDateTime(2007, 12, 20, 16, 45, 50, 767),
-      tiUtils.tiRoundDateTimeToNearestMilliSecond(LDateTime + COverHalfMSec), 'Over half msec');
-  CheckNearEnough(EncodeDateTime(2007, 12, 20, 16, 45, 50, 768),
-      tiUtils.tiRoundDateTimeToNearestMilliSecond(LDateTime), 'Three-quarter msec');
-  CheckNearEnough(EncodeDateTime(2007, 12, 20, 16, 45, 50, 768),
-      tiUtils.tiRoundDateTimeToNearestMilliSecond(LDateTime + CThreeQuarterMSec), 'Quarter msec');
+  CheckTrue(_CompareDateTimeToMSec(LDateTime,
+      tiUtils.tiRoundDateTimeToNearestMilliSecond(LDateTime)), 'Same value');
+  CheckTrue(_CompareDateTimeToMSec(LDateTime,
+      tiUtils.tiRoundDateTimeToNearestMilliSecond(LDateTime + CQuarterMSec)), 'Quarter msec');
+  CheckTrue(_CompareDateTimeToMSec(LDateTime + CMSec,
+      tiUtils.tiRoundDateTimeToNearestMilliSecond(LDateTime + COverHalfMSec)), 'Over half msec');
+  CheckTrue(_CompareDateTimeToMSec(LDateTime + CMSec,
+      tiUtils.tiRoundDateTimeToNearestMilliSecond(LDateTime + CThreeQuarterMSec)), 'Three quarter msec');
+end;
+
+
+procedure TTestTIUtils.tiRoundDateTimeToNearestInterval;
+var
+  LDateTime: TDateTime;
+const
+  CMSec: Extended = 1/24/60/60/1000;
+  CQuarterMSec: Extended = 1/24/60/60/1000/4;
+  CThreeQuarterMSec: Extended = 1/24/60/60/1000/4*3;
+  CSec: Extended = 1/24/60/60;
+  CMin: Extended = 1/24/60;
+  CHour: Extended = 1/24;
+begin
+  // Millisecond
+  LDateTime := EncodeDateTime(2007, 12, 20, 16, 45, 50, 0);
+  CheckTrue(_CompareDateTimeToMSec(LDateTime,
+      tiUtils.tiRoundDateTimeToNearestInterval(LDateTime, CMSec)), 'Msec exact');
+  CheckTrue(_CompareDateTimeToMSec(LDateTime,
+      tiUtils.tiRoundDateTimeToNearestInterval(LDateTime + CQuarterMSec, CMSec)), 'Msec down');
+  CheckTrue(_CompareDateTimeToMSec(LDateTime + CMSec,
+      tiUtils.tiRoundDateTimeToNearestInterval(LDateTime + CThreeQuarterMSec, CMSec)), 'Msec up');
+
+  // Second
+  LDateTime := EncodeDateTime(2007, 12, 20, 16, 45, 50, 467);
+  CheckTrue(_CompareDateTimeToMSec(EncodeDateTime(2007, 12, 20, 16, 45, 50, 0),
+      tiUtils.tiRoundDateTimeToNearestInterval(LDateTime, CSec)), 'Second down');
+  LDateTime := EncodeDateTime(2007, 12, 20, 16, 45, 50, 767);
+  CheckTrue(_CompareDateTimeToMSec(EncodeDateTime(2007, 12, 20, 16, 45, 51, 0),
+      tiUtils.tiRoundDateTimeToNearestInterval(LDateTime, CSec)), 'Second up');
+
+  // Minute
+  LDateTime := EncodeDateTime(2007, 12, 20, 16, 45, 29, 467);
+  CheckTrue(_CompareDateTimeToMSec(EncodeDateTime(2007, 12, 20, 16, 45, 0, 0),
+      tiUtils.tiRoundDateTimeToNearestInterval(LDateTime, CMin)), 'Minute down');
+  LDateTime := EncodeDateTime(2007, 12, 20, 16, 45, 30, 467);
+  CheckTrue(_CompareDateTimeToMSec(EncodeDateTime(2007, 12, 20, 16, 46, 0, 0),
+      tiUtils.tiRoundDateTimeToNearestInterval(LDateTime, CMin)), 'Minute up');
+
+  // Hour
+  LDateTime := EncodeDateTime(2007, 12, 20, 16, 29, 50, 467);
+  CheckTrue(_CompareDateTimeToMSec(EncodeDateTime(2007, 12, 20, 16, 0, 0, 0),
+      tiUtils.tiRoundDateTimeToNearestInterval(LDateTime, CHour)), 'Hour down');
+  LDateTime := EncodeDateTime(2007, 12, 20, 16, 30, 50, 767);
+  CheckTrue(_CompareDateTimeToMSec(EncodeDateTime(2007, 12, 20, 17, 0, 0, 0),
+      tiUtils.tiRoundDateTimeToNearestInterval(LDateTime, CHour)), 'Hour up');
 end;
 
 
@@ -3497,6 +3561,47 @@ begin
     LIncDateTime := IncMillisecond(LIncDateTime, 1);
     Inc(i);
   until LIncDateTime >= LEndDateTime;
+end;
+
+
+procedure TTestTIUtils.tiCompareDateTimeToInterval;
+var
+  LBaseDateTime: TDateTime;
+  LCompareDateTime: TDateTime;
+  LEndDateTime: TDateTime;
+  LIncDateTime: TDateTime;
+  LStatusStr: string;
+  i: integer;
+const
+  CMSec: Extended = 1/24/60/60/1000;
+  CSec: Extended = 1/24/60/60;
+  CMin: Extended = 1/24/60;
+  CHour: Extended = 1/24;
+begin
+  LBaseDateTime := DateOf(Now); // Round to whole day.
+  // EndDateTime is sufficient to cause rounding problems but not more than 1/2 msec.
+  LEndDateTime := IncSecond(LBaseDateTime, 2);
+  LIncDateTime := LBaseDateTime;
+  i := 0;
+  repeat
+    LCompareDateTime := IncMillisecond(LBaseDateTime, i);
+    LStatusStr := Format('Iteration: %d', [i]) + ', Time: ' + FormatDateTime('hh:mm:ss.zzz', LCompareDateTime) +
+        ', Values: ' + FloatToStrF(LCompareDateTime, ffFixed, 15, 10) + ',' + FloatToStrF(LIncDateTime, ffFixed, 15, 10);
+    Check(tiUtils.tiCompareDateTimeToInterval(LIncDateTime, LCompareDateTime, CMSec) = 0, 'Equals: ' + LStatusStr);
+    Check(tiUtils.tiCompareDateTimeToInterval(IncMillisecond(LIncDateTime, -1), LCompareDateTime, CMSec) < 0, 'LessThan: ' + LStatusStr);
+    Check(tiUtils.tiCompareDateTimeToInterval(IncMillisecond(LIncDateTime, 1), LCompareDateTime, CMSec) > 0, 'GreaterThan: ' + LStatusStr);
+    LIncDateTime := IncMillisecond(LIncDateTime, 1);
+    Inc(i);
+  until LIncDateTime >= LEndDateTime;
+
+  LBaseDateTime := EncodeDateTime(2014, 10, 15, 12, 34, 56, 789);
+  LCompareDateTime := EncodeDateTime(2014, 10, 15, 12, 34, 57, 123);
+  Check(tiUtils.tiCompareDateTimeToInterval(LBaseDateTime, LBaseDateTime, CMSec) = 0, 'Proximity msec equals');
+  Check(tiUtils.tiCompareDateTimeToInterval(LBaseDateTime, LCompareDateTime, CMSec) = -1, 'Proximity msec diff');
+  Check(tiUtils.tiCompareDateTimeToInterval(LBaseDateTime, LBaseDateTime, CSec) = 0, 'Proximity sec equals');
+  Check(tiUtils.tiCompareDateTimeToInterval(LBaseDateTime, LCompareDateTime, CSec) = 0, 'Proximity sec diff');
+  Check(tiUtils.tiCompareDateTimeToInterval(LBaseDateTime, LCompareDateTime, CMin) = 0, 'Proximity min');
+  Check(tiUtils.tiCompareDateTimeToInterval(LBaseDateTime, LCompareDateTime, CHour) = 0, 'Proximity hour');
 end;
 
 
