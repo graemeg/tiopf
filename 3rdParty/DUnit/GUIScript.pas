@@ -69,7 +69,7 @@ type
     FGUIAutomation: TGUIAutomation;
     FDWScript: TDelphiWebScript;
     FDWExec: IdwsProgramExecution;
-    FUnit: TdwsUnit;
+    FUITestUtilsUnit: TdwsUnit;
     FScriptSource: string;
     FScriptResult: string;
     FTerminated: Boolean;
@@ -118,7 +118,6 @@ type
     procedure TerminateScriptEval(Info: TProgramInfo);
     procedure ContinueExecutionEval(Info: TProgramInfo);
     procedure CallApplicationEval(Info: TProgramInfo);
-    procedure ValueOfConditionalEval(Info: TProgramInfo);
 
     procedure SetActionDelayEval(Info: TProgramInfo);
     procedure SetMouseMoveDelayEval(Info: TProgramInfo);
@@ -230,6 +229,7 @@ type
     property ScriptResult: string read FScriptResult;
     property Terminated: boolean read FTerminated;
     property DWScript: TDelphiWebScript read FDWScript;
+    property UITestUtilsUnit: TdwsUnit read FUITestUtilsUnit;
     // Indentation to use in GetControlList and GetControlStatesScript
     property ControlInspectionIndent: string read FControlInspectionIndent write FControlInspectionIndent;
   end;
@@ -388,7 +388,7 @@ var
   var
     LConstant: TdwsConstant;
   begin
-    LConstant := FUnit.Constants.Add;
+    LConstant := FUITestUtilsUnit.Constants.Add;
     LConstant.Name := AName;
     LConstant.DataType := AType;
     LConstant.Value := AValue;
@@ -396,7 +396,7 @@ var
 
   function _AddFunction(const AName: string; const AOnEval: TFuncEvalEvent): TdwsFunction;
   begin
-    Result := FUnit.Functions.Add;
+    Result := FUITestUtilsUnit.Functions.Add;
     Result.Name := AName;
     Result.OnEval := AOnEval;
   end;
@@ -425,10 +425,10 @@ begin
   FDWScript := TDelphiWebScript.Create(nil);
   FDWScript.OnExecutionStarted := ScriptExecutionStarted;
   FDWScript.OnExecutionEnded := ScriptExecutionEnded;
-  FUnit := TdwsUnit.Create(nil);
-  FUnit.UnitName := 'UITestUtils';
-  FUnit.StaticSymbols := False;
-  FUnit.Script := FDWScript;
+  FUITestUtilsUnit := TdwsUnit.Create(nil);
+  FUITestUtilsUnit.UnitName := 'UITestUtils';
+  FUITestUtilsUnit.StaticSymbols := False;
+  FUITestUtilsUnit.Script := FDWScript;
 
   RegisterTextControl(TCustomEdit);
 
@@ -542,10 +542,6 @@ begin
   LFunction.ResultType := 'String';
   _AddParameter(LFunction, 'ActionName', 'String', '');
   _AddParameter(LFunction, 'Value', 'String', '');
-
-  LFunction := _AddFunction('ValueOfConditional', ValueOfConditionalEval);
-  LFunction.ResultType := 'String';
-  _AddParameter(LFunction, 'ConditionalName', 'String');
 
   // GUI automation methods
 
@@ -861,7 +857,7 @@ end;
 
 destructor TGUIScript.Destroy;
 begin
-  FUnit.Free;
+  FUITestUtilsUnit.Free;
   FDWScript.Free;
   FGUIAutomation.Free;
   inherited;
@@ -1115,12 +1111,6 @@ begin
   if Assigned(FOnCallApplication) then
     FOnCallApplication(Info.ValueAsString['ActionName'], LValue);
   Info.ResultAsString := LValue;
-end;
-
-procedure TGUIScript.ValueOfConditionalEval(Info: TProgramInfo);
-begin
-  Info.ResultAsString := FDWScript.Config.Conditionals.Values[
-      Info.ValueAsString['ConditionalName']];
 end;
 
 procedure TGUIScript.SetActionDelayEval(Info: TProgramInfo);
