@@ -69,7 +69,7 @@ const
   cCompilerName = 'Delphi XE6';
 {$ENDIF}
 
-{$IFDEF DELPHIXE4}
+{$IFDEF DELPHIXE5}
   cPackageSuffix = '260';
   cCompilerName = 'Delphi XE5';
 {$ENDIF}
