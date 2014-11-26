@@ -183,8 +183,6 @@ end;
 procedure TGUITestCase.SetGUI(const AValue: TControl);
 begin
   FGUI := AValue;
-  if FGUI is TWinControl then
-  GGUIActionRecorder.GUI := FGUI as TWinControl;
 end;
 
 function TGUITestCase.GetRecording: Boolean;
