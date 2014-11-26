@@ -338,8 +338,8 @@ begin
   if not AcceptVisitor then
     Exit;
 
+  lParams := TtiQueryParams.Create;
   try
-    lParams := TtiQueryParams.Create;
     lParams.SetValueAsInteger('OID', integer(TNextOIDData(Visited).NextOID + 1));
 
     for i := 0 to cMaxRetries do
