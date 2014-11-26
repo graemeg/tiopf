@@ -178,7 +178,6 @@ function  tiMakeTIOPFHTTPBlockHeader(
 procedure tiParseTIOPFHTTPBlockHeader(
   const AValue: string;
   out ABlockIndex, ABlockCount, ABlockSize: LongWord; out ATransID: string; out ABlockCRC: LongWord);
-  var ABlockIndex, ABlockCount, ABlockSize, ATransID, ABlockCRC: LongWord);
 function  tiGetTIOPFHTTPBlockIndex(const AValue: string): LongWord;
 {$IFDEF DELPHIXEORABOVE}
 function  tiPortFromURL(const AURL: string; const ADef: Word): Word;
