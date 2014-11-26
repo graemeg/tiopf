@@ -1,5 +1,7 @@
 unit tiMime;
 
+{$I tiDefines.inc}
+
 interface
 uses
   Classes
