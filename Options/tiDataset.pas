@@ -485,7 +485,7 @@ begin
       else Result := Pointer(ActiveBuffer);
   {$ELSE}
       else Result := ActiveBuffer;
-  {$ENDIF}
+  {$IFEND}
 {$ENDIF}
     end;
 
@@ -508,7 +508,7 @@ begin
     dsEdit,
     dsInsert,
     dsNewValue : Result := ActiveBuffer;
-  {$ENDIF}
+  {$IFEND}
 {$ENDIF}
     else Result := nil;
   end;
@@ -1469,7 +1469,7 @@ begin
   Buffer := Pointer(TempBuffer);
   {$ELSE}
   Buffer := TempBuffer;
-  {$ENDIF}
+  {$IFEND}
 {$ENDIF}
 
   Result := false;
@@ -2013,7 +2013,7 @@ begin
       Buffer := Pointer(TempBuffer);
   {$ELSE}
       Buffer := TempBuffer;
-  {$ENDIF}
+  {$IFEND}
 {$ENDIF}
       OldObject := FObjectIndex;
       FFilterBuffer := Buffer;
