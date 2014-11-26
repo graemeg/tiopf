@@ -17,9 +17,11 @@ uses
   ,Grids
   ,tiBaseMediator
   ,tiObject
+{$IFDEF VIRTUAL_TREEVIEW}
   ,tiVTListView
   ,VirtualTrees
   ,tiVirtualTreesNEW
+{$ENDIF}
   ;
 
 type
@@ -46,6 +48,7 @@ type
   end;
 
 
+{$IFDEF VIRTUAL_TREEVIEW}
   { Composite mediator for TtiVTListView }
   TtiVTListViewMediatorView = class(TtiCustomListMediatorView)
   private
@@ -70,6 +73,7 @@ type
     procedure HandleSelectionChanged; override;
     procedure ItemDeleted(const ASubject: TtiObject); override;
   end;
+{$ENDIF}
 
 
   { Composite mediator for TStringGrid }
@@ -107,6 +111,7 @@ type
   end;
 
 
+{$IFDEF VIRTUAL_TREEVIEW}
   { Used internally for sub-mediators in tiVTListView mediator. Moved to interface
     section so it can be overridden. }
   TtiVTListViewListItemMediator = class(TtiListItemMediator)
@@ -118,6 +123,7 @@ type
   published
     property View: TtiVTListView read FView;
   end;
+{$ENDIF}
 
 
   { Used internally for sub-mediators in StringGrid mediator. Moved to interface
@@ -152,7 +158,9 @@ type
 procedure RegisterFallBackListMediators;
 begin
   gMediatorManager.RegisterMediator(TtiListViewMediatorView, TtiObjectList);
+{$IFDEF VIRTUAL_TREEVIEW}
   gMediatorManager.RegisterMediator(TtiVTListViewMediatorView, TtiObjectList);
+{$ENDIF}
   gMediatorManager.RegisterMediator(TtiStringGridMediatorView, TtiObjectList);
 end;
 
@@ -412,12 +420,15 @@ end;
 
 { TtiVTListViewMediatorView }
 
+{$IFDEF VIRTUAL_TREEVIEW}
 constructor TtiVTListViewMediatorView.Create;
 begin
   inherited Create;
   FSelectedObject := nil;
 end;
+{$ENDIF}
 
+{$IFDEF VIRTUAL_TREEVIEW}
 constructor TtiVTListViewMediatorView.CreateCustom(AModel: TtiObjectList;
   AView: TtiVTListView; ADisplayNames: string; AIsObserving: Boolean);
 begin
@@ -428,29 +439,39 @@ begin
   CreateSubMediators;
   Active := AIsObserving;         // Will attach/Detach
 end;
+{$ENDIF}
 
+{$IFDEF VIRTUAL_TREEVIEW}
 destructor TtiVTListViewMediatorView.Destroy;
 begin
   IsObserving := False;
   inherited;
 end;
+{$ENDIF}
 
+{$IFDEF VIRTUAL_TREEVIEW}
 procedure TtiVTListViewMediatorView.ClearList;
 begin
   if Assigned(MediatorList) then
     MediatorList.Clear;
 end;
+{$ENDIF}
 
+{$IFDEF VIRTUAL_TREEVIEW}
 class function TtiVTListViewMediatorView.ComponentClass: TClass;
 begin
   result := TtiVTListView;
 end;
+{$ENDIF}
 
+{$IFDEF VIRTUAL_TREEVIEW}
 class function TtiVTListViewMediatorView.CompositeMediator: Boolean;
 begin
   result := true;
 end;
+{$ENDIF}
 
+{$IFDEF VIRTUAL_TREEVIEW}
 procedure TtiVTListViewMediatorView.CreateColumns;
 var
   c: integer;
@@ -469,7 +490,9 @@ begin
     end;
   end;
 end;
+{$ENDIF}
 
+{$IFDEF VIRTUAL_TREEVIEW}
 function TtiVTListViewMediatorView.DoCreateItemMediator(AData: TtiObject;
   ARowIdx: integer): TtiListItemMediator;
 begin
@@ -486,7 +509,9 @@ begin
     View.EndUpdate;
   end;
 end;
+{$ENDIF}
 
+{$IFDEF VIRTUAL_TREEVIEW}
 procedure TtiVTListViewMediatorView.ItemDeleted(const ASubject: TtiObject);
 var
   LIndex: integer;
@@ -499,17 +524,23 @@ begin
     View.SelectedIndex := LIndex; // Next or last item
   end;
 end;
+{$ENDIF}
 
+{$IFDEF VIRTUAL_TREEVIEW}
 function TtiVTListViewMediatorView.View: TtiVTListView;
 begin
   result := TtiVTListView(inherited View);
 end;
+{$ENDIF}
 
+{$IFDEF VIRTUAL_TREEVIEW}
 function TtiVTListViewMediatorView.GetSelectedObject: TtiObject;
 begin
   result := View.SelectedData;
 end;
+{$ENDIF}
 
+{$IFDEF VIRTUAL_TREEVIEW}
 procedure TtiVTListViewMediatorView.HandleSelectionChanged;
 var
   i: integer;
@@ -553,7 +584,9 @@ begin
     end;
   end;
 end;
+{$ENDIF}
 
+{$IFDEF VIRTUAL_TREEVIEW}
 procedure TtiVTListViewMediatorView.RebuildList;
 begin
   { This rebuilds the whole list. Not very efficient. You can always override
@@ -566,7 +599,9 @@ begin
     View.EndUpdate;
   end;
 end;
+{$ENDIF}
 
+{$IFDEF VIRTUAL_TREEVIEW}
 procedure TtiVTListViewMediatorView.SetActive(const AValue: Boolean);
 begin
   if AValue = Active then
@@ -583,7 +618,9 @@ begin
 
   inherited SetActive(AValue);
 end;
+{$ENDIF}
 
+{$IFDEF VIRTUAL_TREEVIEW}
 procedure TtiVTListViewMediatorView.SetView(const AValue: TComponent);
 begin
   if AValue = View then
@@ -597,22 +634,27 @@ begin
   if (View <> nil) and Active then
     View.Data := Model
 end;
+{$ENDIF}
 
+{$IFDEF VIRTUAL_TREEVIEW}
 procedure TtiVTListViewMediatorView.SetSelectedObject(const AValue: TtiObject);
 begin
   View.SelectedData := AValue;
 end;
+{$ENDIF}
 
+{$IFDEF VIRTUAL_TREEVIEW}
 procedure TtiVTListViewMediatorView.SetupGUIandObject;
 begin
   { Setup TtiVTListView defaults }
   View.Header.Columns.Clear;
   View.RowSelect := true;
 end;
-
+{$ENDIF}
 
 { TtiVTListViewListItemMediator }
 
+{$IFDEF VIRTUAL_TREEVIEW}
 constructor TtiVTListViewListItemMediator.CreateCustom(AModel: TtiObject;
   AView: TtiVTListView; const AFieldsInfo: TtiMediatorFieldInfoList;
   AIsObserving: Boolean);
@@ -623,7 +665,9 @@ begin
   FFieldsInfo := AFieldsInfo;
   Active := AIsObserving; // Will attach
 end;
+{$ENDIF}
 
+{$IFDEF VIRTUAL_TREEVIEW}
 procedure TtiVTListViewListItemMediator.Update(ASubject: TtiObject);
 begin
   Assert(Model = ASubject);
@@ -631,7 +675,7 @@ begin
   if (not ASubject.Deleted) or (ListMediator.ShowDeleted) then
     View.RefreshObject(Model);
 end;
-
+{$ENDIF}
 
 { TtiStringGridMediatorView }
 

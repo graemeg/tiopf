@@ -118,7 +118,6 @@
 			<DCCReference Include="vclimg.dcp"/>
 			<DCCReference Include="Tee.dcp"/>
 			<DCCReference Include="..\..\GUI\tiDialogs.pas"/>
-			<DCCReference Include="..\..\GUI\tiVirtualTrees.pas"/>
 			<DCCReference Include="..\..\GUI\tiButtons.pas"/>
 			<DCCReference Include="..\..\GUI\tiCtrlButtonPanel.pas"/>
 			<DCCReference Include="..\..\GUI\tiFocusPanel.pas"/>
@@ -144,29 +143,21 @@
 			<DCCReference Include="..\..\GUI\tiSplitter.pas"/>
 			<DCCReference Include="..\..\GUI\tiTreeView.pas"/>
 			<DCCReference Include="..\..\GUI\tiTreeViewChildForm.pas"/>
-			<DCCReference Include="..\..\GUI\tiVTListView.pas"/>
-			<DCCReference Include="..\..\GUI\tiVTTreeView.pas"/>
 			<DCCReference Include="..\..\GUI\tiGUIUtils.pas"/>
 			<DCCReference Include="..\..\GUI\tiTreeBuildVisitor.pas"/>
 			<DCCReference Include="..\..\GUI\tiGenericTreeViewMediator.pas"/>
 			<DCCReference Include="..\..\GUI\tiSpin.pas"/>
 			<DCCReference Include="..\..\GUI\tiHyperlinkWithImage.pas"/>
 			<DCCReference Include="..\..\GUI\tiHotImage.pas"/>
-			<DCCReference Include="..\..\GUI\tiVTExportCSV.pas"/>
-			<DCCReference Include="..\..\GUI\tiVTExportHTML.pas"/>
 			<DCCReference Include="..\..\GUI\tiLogToGUI.pas"/>
 			<DCCReference Include="..\..\GUI\tiLogReg.pas"/>
 			<DCCReference Include="..\..\GUI\tiLogToErrorDialog.pas"/>
 			<DCCReference Include="..\..\GUI\tiGUIConstants.pas"/>
-			<DCCReference Include="..\..\GUI\tiVTFilter.pas"/>
 			<DCCReference Include="..\..\GUI\tiGUIINI.pas"/>
-			<DCCReference Include="..\..\GUI\tiVTAbstract.pas"/>
 			<DCCReference Include="..\..\GUI\tiAnimatedGIF.pas"/>
 			<DCCReference Include="..\..\GUI\VCL\tiMediators.pas"/>
 			<DCCReference Include="..\..\GUI\VCL\tiListMediators.pas"/>
 			<DCCReference Include="..\..\GUI\tiVTSearch.pas"/>
-			<DCCReference Include="..\..\GUI\tiVTAccessibilityFactory.pas"/>
-			<DCCReference Include="..\..\GUI\tiChart.pas"/>
 			<BuildConfiguration Include="Debug">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

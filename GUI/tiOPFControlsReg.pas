@@ -43,8 +43,10 @@ uses
   ,tiTreeViewChildForm
   {$IFNDEF FPC}
   ,tiPerAwareDirectoryCombos
+  {$IFDEF VIRTUAL_TREEVIEW}
   ,tiVTListView
   ,tiVTTreeView
+  {$ENDIF}
   {$ENDIF}
   ,tiTreeviewEditor
   ,tiHyperlinkWithImage
@@ -102,8 +104,10 @@ begin
                          ,TtiButtonPanel
                          ,TtiMicroButton
                          {$IFNDEF FPC}
+                         {$IFDEF VIRTUAL_TREEVIEW}
                          ,TtiVTListView
                          ,TtiVTTreeView
+                         {$ENDIF}
                          {$ENDIF}
                          ,TtiModelMediator
                          ,TtiModelMediatorList

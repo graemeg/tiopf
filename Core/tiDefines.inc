@@ -109,6 +109,10 @@
 // the tiSQLManager and tiSQLEditor, SynEdit is available from synedit.sourceforge.net
 {.$DEFINE SYNEDIT}
 
+// Turn this on if you have VirtualTrees installed and want virtual treeview support
+// in TtiVT... controls and mediators
+{.$DEFINE VIRTUAL_TREEVIEW}
+
 // For old tiOPF applications where TOID was an Int64, not an object
 {.$DEFINE OID_AS_INT64}
 

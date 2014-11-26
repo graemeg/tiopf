@@ -45,7 +45,6 @@ requires
 
 contains
   tiDialogs in '..\..\GUI\tiDialogs.pas',
-  tiVirtualTrees in '..\..\GUI\tiVirtualTrees.pas',
   tiButtons in '..\..\GUI\tiButtons.pas',
   tiCtrlButtonPanel in '..\..\GUI\tiCtrlButtonPanel.pas',
   tiFocusPanel in '..\..\GUI\tiFocusPanel.pas',
@@ -71,29 +70,21 @@ contains
   tiSplitter in '..\..\GUI\tiSplitter.pas',
   tiTreeView in '..\..\GUI\tiTreeView.pas',
   tiTreeViewChildForm in '..\..\GUI\tiTreeViewChildForm.pas',
-  tiVTListView in '..\..\GUI\tiVTListView.pas',
-  tiVTTreeView in '..\..\GUI\tiVTTreeView.pas',
   tiGUIUtils in '..\..\GUI\tiGUIUtils.pas',
   tiTreeBuildVisitor in '..\..\GUI\tiTreeBuildVisitor.pas',
   tiGenericTreeViewMediator in '..\..\GUI\tiGenericTreeViewMediator.pas',
   tiSpin in '..\..\GUI\tiSpin.pas',
   tiHyperlinkWithImage in '..\..\GUI\tiHyperlinkWithImage.pas',
   tiHotImage in '..\..\GUI\tiHotImage.pas',
-  tiVTExportCSV in '..\..\GUI\tiVTExportCSV.pas',
-  tiVTExportHTML in '..\..\GUI\tiVTExportHTML.pas',
   tiLogToGUI in '..\..\GUI\tiLogToGUI.pas',
   tiLogReg in '..\..\GUI\tiLogReg.pas',
   tiLogToErrorDialog in '..\..\GUI\tiLogToErrorDialog.pas',
   tiGUIConstants in '..\..\GUI\tiGUIConstants.pas',
-  tiVTFilter in '..\..\GUI\tiVTFilter.pas',
   tiGUIINI in '..\..\GUI\tiGUIINI.pas',
-  tiVTAbstract in '..\..\GUI\tiVTAbstract.pas',
   tiAnimatedGIF in '..\..\GUI\tiAnimatedGIF.pas',
   tiMediators in '..\..\GUI\VCL\tiMediators.pas',
   tiListMediators in '..\..\GUI\VCL\tiListMediators.pas',
-  tiVTSearch in '..\..\GUI\tiVTSearch.pas',
-  tiVTAccessibilityFactory in '..\..\GUI\tiVTAccessibilityFactory.pas',
-  tiChart in '..\..\GUI\tiChart.pas';
+  tiVTSearch in '..\..\GUI\tiVTSearch.pas';
 
 {$I tiDefines.inc}
 
