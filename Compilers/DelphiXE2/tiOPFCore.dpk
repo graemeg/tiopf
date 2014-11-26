@@ -71,7 +71,8 @@ contains
   tiSmartPointer in '..\..\Core\tiSmartPointer.pas',
   tiGenericBase in '..\..\Core\tiGenericBase.pas',
   tiGenericList in '..\..\Core\tiGenericList.pas',
-  tiSemaphore in '..\..\Core\tiSemaphore.pas';
+  tiSemaphore in '..\..\Core\tiSemaphore.pas',
+  tiMime in '..\..\Core\tiMime.pas';
 
 {$I tiDefines.inc}
 
