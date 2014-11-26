@@ -55,7 +55,7 @@
 			<DCC_EXPLICIT_STRING_CAST_LOSS>true</DCC_EXPLICIT_STRING_CAST_LOSS>
 			<DCC_MapFile>3</DCC_MapFile>
 			<DCC_Define>DUNIT2;USE_JEDI_JCL;LINK_XMLLIGHT;LINK_XML;LINK_CSV;LINK_TAB;LINK_BDEPARADOX;LINK_ADOACCESS;LINK_IBX;LINK_ADOSQLSERVERx;LINK_REMOTE;LINK_DOAx;$(DCC_Define)</DCC_Define>
-			<DCC_UnitSearchPath>..\..\UnitTests\Common;..\..\UnitTests\Tests;..\..\Core;..\..\Options;..\..\GUI;..\..\GUI\VCL;..\..\GUI\VCLForms;..\..\ApplicationServer;..\..\ApplicationServer\tiDBProxyServerExtension;$(tiOPF3_3rd_Party)\JCL\common;$(tiOPF3_3rd_Party)\JCL\include;$(tiOPF3_3rd_Party)\JCL\include\jedi;$(tiOPF3_3rd_Party)\JCL\windows;$(tiOPF3_3rd_Party)\DUnit;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_UnitSearchPath>..\..\UnitTests\Common;..\..\UnitTests\Tests;..\..\Core;..\..\Options;..\..\GUI;..\..\GUI\VCL;..\..\GUI\VCLForms;..\..\ApplicationServer;..\..\ApplicationServer\tiDBProxyServerExtension;$(tiOPF3_3rdParty)\JCL\common;$(tiOPF3_3rdParty)\JCL\include;$(tiOPF3_3rdParty)\JCL\include\jedi;$(tiOPF3_3rdParty)\JCL\windows;$(tiOPF3_3rdParty)\DUnit;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_DependencyCheckOutputName>..\..\_bin\tiOPFUnitTestsGUI.exe</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_Platform>x86</DCC_Platform>
