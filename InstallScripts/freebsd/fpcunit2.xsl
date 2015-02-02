@@ -38,11 +38,11 @@
 
   <a name="Summary"/>
   <h2>FPTest Results</h2>
-  <xsl:apply-templates/>
+  <xsl:call-template name="summary"></xsl:call-template>
 
 
   <address>
-    <a href="http://opensoft.homeip.net">FPTest Report</a> 0.4.1 &#169; 2006-2013 by 
+    <a href="http://opensoft.homeip.net">FPTest Report</a> 0.4.1 &#169; 2006-2015 by 
     <a href="mailto:graemeg@gmail.com?subject=Comments about FPTest Report">Graeme Geldenhuys</a>.<br/>
     Licensed under the <a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a>.<br/>
   </address>
@@ -63,6 +63,7 @@
   <xsl:variable name="errorCount" select="NumberOfErrors"/>
   <xsl:variable name="elapsedTime" select="TotalElapsedTime"/>
   <xsl:variable name="dateRan" select="DateTimeRan"/>
+  <xsl:variable name="title" select="Title"/>
 
   <h3>Summary</h3>
   <!--  Summary Table -->
