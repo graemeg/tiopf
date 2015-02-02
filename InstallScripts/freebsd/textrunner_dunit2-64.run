@@ -6,7 +6,7 @@ TARGET="x86_64-freebsd"
 TIOPF="$BASEDIR/tiopf_dailybuilds/tiopf"
 FBLIB="$TIOPF/3rdParty/FBLib/lib/$TARGET"
 ZEOS="$BASEDIR/opensource/zeos_svn/packages/lazarus/lib/$TARGET"
-FPC="$BASEDIR/fpc-2.6.2/$TARGET/bin/ppcx64"
+FPC="$BASEDIR/fpc-2.6.4/$TARGET/bin/ppcx64"
 DUNIT2="$BASEDIR/fptest/lib/$TARGET/"
 
 #  -Fu$BASEDIR/fpc-2.6.0/src/packages/fcl-registry/src/ \

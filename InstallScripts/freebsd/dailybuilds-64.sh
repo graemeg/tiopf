@@ -7,7 +7,7 @@
 BASEDIR="/data/devel"
 TIOPF="$BASEDIR/tiopf_dailybuilds/tiopf"              # tiOPF root directory
 SCRIPTS="$TIOPF/InstallScripts/freebsd"       # scripts directory
-FPC="$BASEDIR/fpc-2.6.2/x86_64-freebsd/bin/ppcx64"
+FPC="$BASEDIR/fpc-2.6.4/x86_64-freebsd/bin/fpc"
 #REV=`svnversion -n $TIOPF/`
 
 cd $TIOPF
@@ -28,7 +28,7 @@ cd $SCRIPTS
 ./cleanup.sh
 rm /tmp/DUnitReportShort${FPCVER}.txt
 
-# compile tiOPF library
+# compile tiOPF and related libraries
 cd $TIOPF/Compilers/FPC
 $SCRIPTS/opf_package-64.run
 
