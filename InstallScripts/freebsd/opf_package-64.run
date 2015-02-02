@@ -1,41 +1,42 @@
 #!/bin/sh
 # Build script for tiOPF using 64bit Free Pascal Compiler
 BASEDIR="/data/devel"
-FPC="$BASEDIR/fpc-2.6.2/x86_64-freebsd/bin/ppcx64"
+FPC="$BASEDIR/fpc-2.6.4/x86_64-freebsd/bin/fpc"
 FPCVER=`$FPC -iV`
 FPCCPU=`$FPC -iTP`
 FPCHOST=`$FPC -iTO`
 TIOPF="$BASEDIR/tiopf_dailybuilds/tiopf"
-FBLIB="$TIOPF/3rdParty/FBLib/lib/$FPCCPU-$FPCHOST"
+FBLIB="$TIOPF/3rdParty/FBLib"
 ZEOS="$BASEDIR/opensource/zeos_svn"
 
-# Compile the FBLib library
-$FPC -Mobjfpc -S2cai -O1 -gl -ve \
-   -Fu. \
-   -FU$FBLIB \
-   $TIOPF/3rdParty/FBLib/fblib_nongui.pas
+# set variables as they would have been in fpc.cfg
+fpcversion="2.6.4"
+fpctarget="x86_64-freebsd"
 
-# Compile the Zeos-Firebird library
-$FPC -MDelphi -S2cai -O1 -g -ve \
+# Work-around to suppress all unwanted messages
+#$FPC -MObjFPC -S2cai -O1 -gl -vh- -vw- -v0 -n -B \
+#  -Fu/data/devel/fpc-$fpcversion/$fpctarget/lib/fpc/$fpcversion/units/$fpctarget/* \
+#  -Fl/lib:/usr/lib:/usr/local/lib \
+#  -Fl/data/devel/fpc-$fpcversion/lib/fpc/$fpcversion/lib/$fpctarget \
+#  -FD/data/devel/fpc-$fpcversion/$fpctarget/bin/ \
+
+$FPC -MObjFPC -S2cai -O1 -gl -vh- -vw- -ve -vm5023,5057,5058,5060,5024,5028,4055 -B \
+   -Fu$FBLIB \
+   -Fi$FBLIB \
     -Fu$ZEOS/src/core \
     -Fu$ZEOS/src/component \
     -Fu$ZEOS/src/dbc \
     -Fu$ZEOS/src/parsesql \
     -Fu$ZEOS/src/plain \
     -Fu$ZEOS/packages/lazarus/ \
-    -FU$ZEOS/packages/lazarus/lib/$FPCCPU-$FPCHOST/ \
-    $ZEOS/packages/lazarus/zcore.pas
-
-# Compile tiOPF
-$FPC -MObjFPC -S2cai -O1 -gl -ve \
   -Fi$TIOPF/Core/ \
   -Fu$TIOPF/Core/ \
   -Fu$TIOPF/Options/ \
   -Fu$TIOPF/GUI/ \
-  -Fu$FBLIB \
-  -Fu$ZEOS/packages/lazarus/lib/$FPCCPU-$FPCHOST/ \
-  -Fu. -FE$TIOPF/Compilers/FPC/lib/$FPCCPU-$FPCHOST/ \
-  -dLINK_CSV -dLINK_TAB -dLINK_XMLLIGHT -dLINK_SQLDB_IB -dLINK_FBLx -dLINK_ZEOS_FB -dLINK_ZEOS_MYSQL50 \
+  -FU$TIOPF/Compilers/FPC/lib/$FPCCPU-$FPCHOST/ \
+  -dLINK_CSV -dLINK_TAB -dLINK_XMLLIGHT -dLINK_SQLDB_IB \
+  -dLINK_FBLx -dLINK_ZEOS_FB -dLINK_ZEOS_MYSQL50 \
   -dUseCThreads \
   $TIOPF/Compilers/FPC/tiOPF.pas
+
 
