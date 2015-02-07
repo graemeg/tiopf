@@ -6,6 +6,7 @@
 #export USERNAME=graemeg
 BASEDIR="/data/devel"
 TIOPF="$BASEDIR/tiopf_dailybuilds/tiopf"              # tiOPF root directory
+FBLIB="$BASEDIR/tiopf_dailybuilds/fblib"
 SCRIPTS="$TIOPF/InstallScripts/freebsd"       # scripts directory
 FPC="$BASEDIR/fpc-2.6.4/x86_64-freebsd/bin/fpc"
 #REV=`svnversion -n $TIOPF/`
@@ -28,11 +29,7 @@ cd $SCRIPTS
 ./cleanup.sh
 rm /tmp/DUnitReportShort${FPCVER}.txt
 
-# compile tiOPF and related libraries
-cd $TIOPF/Compilers/FPC
-$SCRIPTS/opf_package-64.run
-
-# compile Console Test Runner application
+# compile frameworks and Console Test Runner application
 /bin/rm -f $TIOPF/Compilers/FPC/tiOPFUnitTestsConsole
 $SCRIPTS/textrunner_dunit2-64.run
 
@@ -48,9 +45,6 @@ $SCRIPTS/textrunner_dunit2-64.run
 #/bin/chown graemeg:firebird /opt/data/tiopf/fblib_dunit2.fdb
 
 # run the tests
-#./fpcUnitTIOPFText.exe -a > results.xml
-#./fpcUnitTIOPFText.exe -a --file=results.xml
-#rm ./results.xml
 cd $TIOPF/Compilers/FPC
 ./tiOPFUnitTestsConsole -xml
 
