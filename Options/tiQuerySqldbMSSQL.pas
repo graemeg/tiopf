@@ -1,21 +1,28 @@
 {
-  This persistence layer uses standard Free Pascal SqlDB (Firebird) components.
+  This persistence layer uses standard Free Pascal SqlDB (MS-SQL Server) components.
 
-  The connection string format is the same as the standard Interbase/Firebird
-  persistence layers.
+  The connection string format is the same standard format as used by the rest
+  of the tiOPF's persistence layers.
 
   eg:
 
-    GTIOPFManager.ConnectDatabase('192.168.0.20:E:\Databases\Test.fdb',
-        'sysdba', 'masterkey', '');
+    GTIOPFManager.ConnectDatabase('192.168.0.20:QTS3D', 'sa', 'password', '');
+
+    ...or with a server instance...
+
+    GTIOPFManager.ConnectDatabase('servername\instancename:QTS3D', 'sa', 'password', '');
 
     ...or with extra connection parameters...
 
-    GTIOPFManager.ConnectDatabase('192.168.0.20:E:\Databases\Test.fdb',
-        'sysdba', 'masterkey', 'charset=UTF8,role=admin');
+    GTIOPFManager.ConnectDatabase('servername:databasename',
+        'sa', 'password', 'TextSize=16777216,ApplicationName=YourAppName');
 
   If you specify extra connection parameters (which are optional), they
   are in name=value pairs and separated by a comma - as shown above.
+
+
+  TODO:
+    - Metadata extraction still needs to be implemented
 
 }
 unit tiQuerySqldbMSSQL;
