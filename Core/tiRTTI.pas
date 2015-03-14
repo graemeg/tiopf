@@ -100,7 +100,8 @@ type
   procedure tiGetEnumNames(TypeInfo: PTypeInfo; Names: TStrings; PrefixLen: Integer = 0);
   function  tiPropertyInheritsFrom(AClass: TClass; PropPath: string; AParentClass: TClass): boolean;
   function  tiGetPropertyClass(AClass: TClass; PropPath: string): TClass;
-  function  tiIsPublishedProp(Instance: TObject; PropPath: string): boolean;
+  function  tiIsPublishedProp(Instance: TObject; PropPath: string): boolean; overload;
+  function  tiIsPublishedProp(AClass: TClass; PropPath: string): boolean; overload;
 
 
 implementation
@@ -389,6 +390,7 @@ var
   PropName: string;
   PropInfo: PPropInfo;
   TypeData: PTypeData;
+  SubObject: TObject;
 begin
   if Assigned(Instance) then
   begin
@@ -402,13 +404,20 @@ begin
       PropInfo := GetPropInfo(Instance.ClassType, PropName);
       if Assigned(PropInfo) and (PropInfo^.PropType^.Kind = tkClass) then
       begin
-        TypeData := GetTypeData(tiGetTypeInfo(PropInfo));
-        if Assigned(TypeData) then
-          begin
-            result := IsPublishedProp(TypeData.ClassType, PropPath);
-          end
+        //Recurse the PropPath
+        SubObject := GetObjectProp(Instance, PropInfo);
+
+        if Assigned(SubObject) then
+          result := tiIsPublishedProp(SubObject, PropPath)
         else
-          Result := false;
+        begin
+          TypeData := GetTypeData(tiGetTypeInfo(PropInfo));
+
+          if Assigned(TypeData) then
+            result := tiIsPublishedProp(TypeData.ClassType, PropPath)
+          else
+            Result := false;
+        end;
       end
       else
         Result := false;
@@ -416,7 +425,42 @@ begin
   end
   else
     Result := false;
+end;
 
+function tiIsPublishedProp(AClass: TClass; PropPath: string): boolean; overload;
+var
+  FirstDot: Integer;
+  PropName: string;
+  PropInfo: PPropInfo;
+  TypeData: PTypeData;
+begin
+  if Assigned(AClass) then
+  begin
+    FirstDot := Pos('.', PropPath);
+    if FirstDot = 0 then
+      Result := IsPublishedProp(AClass, PropPath)
+    else
+    begin
+      PropName := Copy(PropPath, 1, FirstDot - 1);
+      System.Delete(PropPath, 1, FirstDot);
+      PropInfo := GetPropInfo(AClass, PropName);
+
+      if Assigned(PropInfo) and (PropInfo^.PropType^.Kind = tkClass) then
+      begin
+        //Recurse the PropPath
+        TypeData := GetTypeData(tiGetTypeInfo(PropInfo));
+
+        if Assigned(TypeData) then
+          result := tiIsPublishedProp(TypeData.ClassType, PropPath)
+        else
+          result := false;
+      end
+      else
+        Result := false;
+    end;  { if }
+  end
+  else
+    Result := false;
 end;
 
 procedure tiGetPropertyNames(AObject : TtiBaseObject; AStringList : TStringList;
