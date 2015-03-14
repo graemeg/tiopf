@@ -35,7 +35,7 @@ type
     procedure PropertyInheritsFrom;
     procedure GetSetPropertyEnum;
   end;
-  
+
 
   TtiRTTITestClass = class(TtiObject)
   private
@@ -46,8 +46,8 @@ type
   published
     property TestItem: TtiOPFTestItem read FTestItem write FTestItem;
   end;
-  
-  
+
+
   TtiRTTITestClassB = class(TtiObject)
   private
     FTestItemB: TtiRTTITestClass;
@@ -57,7 +57,7 @@ type
   published
     property TestItemB: TtiRTTITestClass read FTestItemB write FTestItemB;
   end;
-  
+
 
 procedure RegisterTests;
 
@@ -491,6 +491,7 @@ end;
 procedure TTesttiRTTI.tiIsPublishedProp_PropertyPath;
 var
   c: TtiRTTITestClass;
+  s1: TtiOPFTestItemWithClassProp;
 begin
   c := TtiRTTITestClass.Create;
   try
@@ -502,6 +503,34 @@ begin
   finally
     c.Free;
   end;
+
+  // Test deeper levels
+  s1 := TtiOPFTestItemWithClassProp.Create;
+  try
+    CheckTrue(tiIsPublishedProp(s1, 'ClassField'), 'Failed on 6');
+    CheckTrue(tiIsPublishedProp(s1, 'ClassField.StrField'), 'Failed on 7');
+    CheckTrue(tiIsPublishedProp(s1, 'ClassField.IntField'), 'Failed on 8');
+    CheckTrue(tiIsPublishedProp(s1, 'ClassField.FloatField'), 'Failed on 9');
+    CheckTrue(tiIsPublishedProp(s1, 'ClassField.DateField'), 'Failed on 10');
+    CheckTrue(tiIsPublishedProp(s1, 'ClassField.BoolField'), 'Failed on 11');
+
+    // with instances
+    s1.ClassField := TtiOPFTestItemWithClassProp.Create;
+    CheckTrue(tiIsPublishedProp(s1, 'ClassField.ClassField.IntField'), 'Failed on 12');
+    s1.ClassField.ClassField := TtiOPFTestItemWithClassProp.Create;
+    CheckTrue(tiIsPublishedProp(s1, 'ClassField.ClassField.ClassField.FloatField'), 'Failed on 13');
+    s1.ClassField.ClassField.ClassField := TtiOPFTestItemWithClassProp.Create;
+    CheckTrue(tiIsPublishedProp(s1, 'ClassField.ClassField.ClassField.ClassField.DateField'), 'Failed on 14');
+
+    // nil instances
+    s1.ClassField := TtiOPFTestItemWithClassProp.Create;
+    CheckTrue(tiIsPublishedProp(s1, 'ClassField.ClassField.IntField'), 'Failed on 15');
+    CheckTrue(tiIsPublishedProp(s1, 'ClassField.ClassField.ClassField.FloatField'), 'Failed on 16');
+    CheckTrue(tiIsPublishedProp(s1, 'ClassField.ClassField.ClassField.ClassField.DateField'), 'Failed on 17');
+  finally
+    s1.Free;
+  end;
+
 end;
 
 procedure TTesttiRTTI.tiIsReadWritePropObject;
@@ -576,7 +605,7 @@ begin
   finally
     c.Free;
   end;
-  
+
   c1 := TtiRTTITestClassB.Create;
   try
     tiSetProperty(c1, 'TestItemB.TestItem.StrField', 'Graeme');
@@ -650,7 +679,7 @@ begin
   finally
     c.Free;
   end;
-  
+
   c1 := TtiRTTITestClassB.Create;
   try
     c1.TestItemB.TestItem.StrField    := 'Graeme';
@@ -697,7 +726,6 @@ end;
 procedure TTesttiRTTI.GetSetPropertyEnum;
 var
   obj: TTestGetPropNames;
-  lEnum: TTestEnumType;
   s: String;
 begin
   obj := TTestGetPropNames.Create;

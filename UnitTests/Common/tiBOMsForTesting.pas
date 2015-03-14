@@ -5,10 +5,11 @@ unit tiBOMsForTesting;
 interface
 
 uses
-  tiObject,
-  Classes,
-  tiOid,
-  tiFilteredObjectList;
+  tiObject
+  ,Classes
+  ,tiOID
+  ,tiFilteredObjectList
+  ;
 
 type
 
@@ -171,6 +172,17 @@ type
     property DateField: TDateTime read FDateField write FDateField;
     property BoolField: boolean read FBoolField write FBoolField;
     property NotesField: string read FNotesField write FNotesField;
+  end;
+
+  TtiOPFTestItemWithClassProp = class; // forward declaration
+
+  TtiOPFTestItemWithClassProp = class(TtiOPFTestItem)
+  private
+    FClassField: TtiOPFTestItemWithClassProp;
+  public
+    destructor Destroy; override;
+  published
+    property ClassField: TtiOPFTestItemWithClassProp read FClassField write FClassField;
   end;
 
 
@@ -340,12 +352,13 @@ procedure RegisterMappings;
 implementation
 
 uses
-  tiAutoMap,
-  tiOPFManager,
-  SysUtils,
-  tiUtils,
-  tiOPFTestCase,
-  tiConstants;
+  tiAutoMap
+  ,tiOPFManager
+  ,SysUtils
+  ,tiUtils
+  ,tiOPFTestCase
+  ,tiConstants
+  ;
 
 procedure RegisterMappings;
 begin
@@ -441,7 +454,6 @@ begin
   GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiObjectParentForTestingGroup, TtiOPFTestChildGrouped_B);
 end;
 
-
 { TTestClasses }
 
 procedure TtiObjectListForTesting.Add(AObject: TtiObjectListNestedForTesting);
@@ -520,6 +532,15 @@ end;
 procedure TtiOPFTestItem.SetOwner(const AValue: TtiObjectListNestedForTesting);
 begin
   inherited SetOwner(AValue);
+end;
+
+{ TtiOPFTestItemWithClassProp }
+
+destructor TtiOPFTestItemWithClassProp.Destroy;
+begin
+  if Assigned(FClassField) then
+    FClassField.Free;
+  inherited Destroy;
 end;
 
 
