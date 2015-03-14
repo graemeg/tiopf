@@ -51,6 +51,7 @@ uses
   ,tiUtils
   ,SyncObjs
   ,tiThread
+  ,tiExcept
   ;
 
 const
@@ -81,12 +82,18 @@ const
   );
 
 procedure TtiLogToFileTestCase.tiLog_Log;
+var
+  f: string;
 begin
   CheckEquals(False,
     (GLog.FindByLogClass(TtiLogToFile) as TtiLogToFile).EnableCaching,
       'EnableCaching must be off for unit testing');
   GLog.Log('test');
-  Check(True);
+  f := (GLog.FindByLogClass(TtiLogToFile) as TtiLogToFile).Filename;
+  CheckEquals(True, FileExists(f), 'Failed on 1');
+  // now clean up
+  if not SysUtils.DeleteFile(f) then
+    raise EtiOPFFileSystemException.CreateFmt(cErrorCanNotDeleteFile, [f]);
   // ToDo: Should check output in file
 end;
 
@@ -270,7 +277,10 @@ begin
       LLoggers[i].Free;
   end;
 
-  Check(True); // To suppress DUnit2's warnings
+  CheckEquals(True, FileExists(LLogFilename), 'Failed on 1');
+  // now clean up
+  if not SysUtils.DeleteFile(LLogFilename) then
+    raise EtiOPFFileSystemException.CreateFmt(cErrorCanNotDeleteFile, [LLogFilename]);
 end;
 
 procedure TtiLogToFileTestCase.tiLog_Free;
