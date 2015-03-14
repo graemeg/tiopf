@@ -39,7 +39,7 @@ type
     procedure   SetThreadName(const AName: string);
     procedure   WakeUp;
     procedure   Execute; override;
-    {$IFDEF FPC}
+    {$IFDEF FPCx}
     procedure   WaitFor; reintroduce;
     {$ENDIF}
     property    ThreadInstanceID: Integer read FThreadInstanceID;
@@ -649,7 +649,7 @@ begin
   { FFinished will automatically be set to True once it goes out of scope }
 end;
 
-{$IFDEF FPC}
+{$IFDEF FPCx}
 procedure TtiSleepThread.WaitFor;
 begin
   { graemeg: 2009-05-04
