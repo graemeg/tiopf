@@ -29,9 +29,9 @@ type
     FUpdateEvent: TEvent;
     FThreadInstanceID: Integer;
   protected
-    procedure Execute; override;
-    function SleepAndCheckTerminated(ASleepFor: Cardinal): boolean;
-    property UpdateEvent: TEvent read FUpdateEvent;
+    procedure   Execute; override;
+    function    SleepAndCheckTerminated(ASleepFor: Cardinal): boolean;
+    property    UpdateEvent: TEvent read FUpdateEvent;
   public
     constructor Create(ASuspended: boolean); virtual;
     destructor  Destroy; override;

@@ -165,7 +165,7 @@ begin
     SetString(lFileName, path, GetModuleFileName(HInstance, path, SizeOf(path)))
   else
   {$ENDIF}
-    lFileName := paramStr(0);
+  lFileName := paramStr(0);
   lFilePath := tiAddTrailingSlash(ExtractFilePath(lFileName)) + 'Log';
   lFileName := ExtractFileName(lFileName);
   lFileName := ChangeFileExt(lFileName, '.Log');
