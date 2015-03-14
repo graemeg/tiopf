@@ -8,9 +8,9 @@ unit tiRTTI;
 interface
 
 uses
-  tiBaseObject,
-  TypInfo,
-  Classes
+  tiBaseObject
+  ,TypInfo
+  ,Classes
   ;
 
 
@@ -106,11 +106,12 @@ type
 implementation
 
 uses
-  tiUtils,
-  tiExcept,
-  tiConstants,
-  SysUtils,
-  Variants;
+  tiUtils
+  ,tiExcept
+  ,tiConstants
+  ,SysUtils
+  ,Variants
+  ;
 
 procedure tiSetBooleanPropValue(
   const AObject: TObject;
