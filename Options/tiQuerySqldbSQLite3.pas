@@ -62,7 +62,7 @@ procedure TtiPersistenceLayerSqldSQLite3.AssignPersistenceLayerDefaults(
   const APersistenceLayerDefaults: TtiPersistenceLayerDefaults);
 begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
-  APersistenceLayerDefaults.PersistenceLayerName:= cTIPersistSqldbSQLLite3;
+  APersistenceLayerDefaults.PersistenceLayerName:= cTIPersistSqldbSQLite3;
   APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseName + '.db';
   APersistenceLayerDefaults.IsDatabaseNameFilePath:= True;
   APersistenceLayerDefaults.CanCreateDatabase:= True;
@@ -77,7 +77,7 @@ end;
 
 function TtiPersistenceLayerSqldSQLite3.GetPersistenceLayerName: string;
 begin
-  result:= cTIPersistSqldbSQLLite3;
+  result:= cTIPersistSqldbSQLite3;
 end;
 
 
@@ -101,6 +101,6 @@ initialization
 
 finalization
   if not tiOPFManager.ShuttingDown then
-    GTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistSqldbSQLLite3);
+    GTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistSqldbSQLite3);
 
 end.
