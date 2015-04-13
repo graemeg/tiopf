@@ -1,5 +1,7 @@
 unit DemoDBUtils;
 
+{$I tiDefines.inc}
+
 interface
 
 procedure ShowConnectedDatabases;
