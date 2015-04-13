@@ -245,20 +245,6 @@ const
 
 
 implementation
-{$IFDEF FPC}
-uses
-LResources;
-
-initialization
-{$I tiImages.lrs}
-
-
-{$I tiListView.lrs}
-{$I tiListViewDiff.lrs}
-{$I tiPerAwareCtrls.lrs}
-
-
-{$ELSE}
 
 {$R tiImages.res}
 
@@ -268,7 +254,6 @@ initialization
 {$R tiPerAwareCtrls.res}
 
 
-{$ENDIF}
 
 end.
 
