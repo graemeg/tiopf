@@ -1,21 +1,23 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
-  <Package Version="3">
+  <Package Version="4">
     <Name Value="tiOPFGUIDsgn"/>
+    <Type Value="DesignTime"/>
+    <AddToProjectUsesSection Value="True"/>
     <Author Value="Graeme Geldenhuys"/>
     <CompilerOptions>
-      <Version Value="5"/>
+      <Version Value="11"/>
       <SearchPaths>
-        <IncludeFiles Value="../../Core/"/>
-        <OtherUnitFiles Value="../../Core/;../../Options/;../../GUI/;../../GUI/LCL/"/>
+        <IncludeFiles Value="../../Core"/>
+        <OtherUnitFiles Value="../../GUI"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
-        <SrcPath Value="../../Core/;../../Options/;../../GUI/;../../GUI/LCL/"/>
       </SearchPaths>
-      <CodeGeneration>
-        <Generate Value="Faster"/>
-      </CodeGeneration>
+      <Parsing>
+        <SyntaxOptions>
+          <UseAnsiStrings Value="False"/>
+        </SyntaxOptions>
+      </Parsing>
       <Other>
-        <CompilerPath Value="$(CompPath)"/>
         <ExecuteAfter>
           <ShowAllMessages Value="True"/>
         </ExecuteAfter>
@@ -33,7 +35,6 @@
         <UnitName Value="tiOPFControlsReg"/>
       </Item1>
     </Files>
-    <Type Value="DesignTime"/>
     <RequiredPkgs Count="3">
       <Item1>
         <PackageName Value="tiOPFGUI"/>
@@ -47,7 +48,7 @@
       </Item3>
     </RequiredPkgs>
     <UsageOptions>
-      <UnitPath Value="$(PkgOutDir)/"/>
+      <UnitPath Value="$(PkgOutDir)"/>
     </UsageOptions>
     <PublishOptions>
       <Version Value="2"/>

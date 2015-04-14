@@ -7,9 +7,8 @@ unit tiopfLCL;
 interface
 
 uses
-  tiMediators, tiListMediators, tiGUIINI, tiDialogs, tiGUIConstants, 
-  tiGUIUtils, tiLogToGUI, tiTreeBuildVisitor, tiGenericTreeViewMediator, 
-  tiDataset, tiImageMgr;
+  tiMediators, tiListMediators, tiGUIINI, tiDialogs, tiGUIConstants, tiGUIUtils, tiLogToGUI, 
+  tiTreeBuildVisitor, tiGenericTreeViewMediator, tiDataset, tiImageMgr, tiListView;
 
 implementation
 

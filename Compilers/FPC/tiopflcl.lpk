@@ -38,7 +38,7 @@
     <License Value="Mozilla Public License 1.1 or Modified LGPL
 "/>
     <Version Major="2" Release="5"/>
-    <Files Count="11">
+    <Files Count="12">
       <Item1>
         <Filename Value="../../GUI/LCL/tiMediators.pas"/>
         <UnitName Value="tiMediators"/>
@@ -83,6 +83,10 @@
         <Filename Value="../../GUI/tiImageMgr.pas"/>
         <UnitName Value="tiImageMgr"/>
       </Item11>
+      <Item12>
+        <Filename Value="../../GUI/tiListView.pas"/>
+        <UnitName Value="tiListView"/>
+      </Item12>
     </Files>
     <LazDoc Paths="../../../Docs/xml/core;../../../Docs/xml/options;../../../Docs/xml/gui"/>
     <RequiredPkgs Count="2">

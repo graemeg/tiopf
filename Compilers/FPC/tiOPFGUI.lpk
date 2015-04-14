@@ -1,24 +1,23 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
-  <Package Version="3">
+  <Package Version="4">
     <Name Value="tiOPFGUI"/>
+    <AddToProjectUsesSection Value="True"/>
     <Author Value="Graeme Geldenhuys"/>
     <CompilerOptions>
-      <Version Value="8"/>
+      <Version Value="11"/>
       <SearchPaths>
-        <IncludeFiles Value="../../Core/"/>
-        <OtherUnitFiles Value="../../Core/;../../Options/;../../GUI/;../../GUI/LCL/"/>
+        <IncludeFiles Value="../../Core"/>
+        <OtherUnitFiles Value="../../GUI;../../GUI/LCL"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
         <SyntaxOptions>
           <IncludeAssertionCode Value="True"/>
           <AllowLabel Value="False"/>
+          <UseAnsiStrings Value="False"/>
         </SyntaxOptions>
       </Parsing>
-      <CodeGeneration>
-        <Generate Value="Faster"/>
-      </CodeGeneration>
       <Other>
         <CustomOptions Value="-dLINK_CSV 
 -dLINK_TAB 
@@ -33,9 +32,7 @@
 -dLINK_SQLDB_ODBCx
 -dLINK_XMLLIGHT
 -dLINK_ZEOS_FB15x
--dUseCThreads
-"/>
-        <CompilerPath Value="$(CompPath)"/>
+-dUseCThreads"/>
       </Other>
     </CompilerOptions>
     <Description Value="TechInsite Object Persistent Framework - visual units
@@ -177,7 +174,7 @@
         <UnitName Value="tiGUIINI"/>
       </Item33>
     </Files>
-    <LazDoc Paths="../../../Docs/xml/gui/"/>
+    <LazDoc Paths="../../../Docs/xml/gui"/>
     <RequiredPkgs Count="3">
       <Item1>
         <PackageName Value="tiOPF"/>
@@ -192,7 +189,7 @@
       </Item3>
     </RequiredPkgs>
     <UsageOptions>
-      <UnitPath Value="$(PkgOutDir)/"/>
+      <UnitPath Value="$(PkgOutDir)"/>
     </UsageOptions>
     <PublishOptions>
       <Version Value="2"/>
