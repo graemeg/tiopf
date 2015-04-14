@@ -274,13 +274,13 @@ begin
     left    := 40;
     height  := 22;
     width   := 130;
-    OnChange := DoOnChangeDateFrom;
     //MinDate := StrToDate('01/01/0001');
     //MaxDate := StrToDate('31/12/9999');
     MinDate := ctiDateRangeMinDate;
     MaxDate := ctiDateRangeMaxDate;
     Date    := SysUtils.Date;
     {$IFNDEF FPC}Time    := 0.0;{$ENDIF}
+    OnChange := DoOnChangeDateFrom;
   end;
 
   FdtpTo  := TDateTimePicker.Create(self);
@@ -290,11 +290,11 @@ begin
     left    := 40;
     height  := 22;
     width   := 130;
-    OnChange := DoOnChangeDateTo;
     MinDate := ctiDateRangeMinDate;
     MaxDate := ctiDateRangeMaxDate;
     Date    := SysUtils.Date;
     {$IFNDEF FPC}Time    := 0.0;{$ENDIF}
+    OnChange := DoOnChangeDateTo;
   end;
 
   FlblFrom := TLabel.Create(self);
@@ -967,6 +967,8 @@ var
   lComponent : TComponent;
 begin
   lComponent := TComponent(Owner);
+  if not Assigned(lComponent) then
+    Exit;
   while not (lComponent is TForm) do begin
     lComponent := lComponent.Owner;
   end;
