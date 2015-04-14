@@ -168,11 +168,7 @@ begin
   FsbPrevDif.Flat := True;
   FsbPrevDif.ParentShowHint := False;
   FsbPrevDif.ShowHint := True;
-  {$IFNDEF FPC}
   FsbPrevDif.Glyph.LoadFromResourceName(HInstance, 'TILVDIFARROWUP');
-  {$ELSE}
-  FsbPrevDif.Glyph.LoadFromLazarusResource('TILVDIFARROWUP');
-  {$ENDIF}
   FsbPrevDif.OnClick := DoSBPrevDifClick;
 
   FsbNextDif := TSpeedButton.Create(self);
@@ -185,11 +181,7 @@ begin
   FsbNextDif.Flat := True;
   FsbNextDif.ParentShowHint := False;
   FsbNextDif.ShowHint := True;
-  {$IFNDEF FPC}
   FsbNextDif.Glyph.LoadFromResourceName(HInstance, 'TILVDIFARROWDOWN');
-  {$ELSE}
-  FsbNextDif.Glyph.LoadFromLazarusResource('TILVDIFARROWDOWN');
-  {$ENDIF}
   FsbNextDif.OnClick := DoSBNextDifClick;
 
   FsbEditDifRules := TSpeedButton.Create(self);
@@ -202,11 +194,7 @@ begin
   FsbEditDifRules.Flat := True;
   FsbEditDifRules.ParentShowHint := False;
   FsbEditDifRules.ShowHint := True;
-  {$IFNDEF FPC}
   FsbEditDifRules.Glyph.LoadFromResourceName(HInstance, 'TILVDIFEDITDIFRULES');
-  {$ELSE}
-  FsbEditDifRules.Glyph.LoadFromLazarusResource('TILVDIFEDITDIFRULES');
-  {$ENDIF}
   FsbEditDifRules.OnClick := DoSBEditDifRulesClick;
 
   FsbCols := TSpeedButton.Create(self);
@@ -219,11 +207,7 @@ begin
   FsbCols.Flat := True;
   FsbCols.ParentShowHint := False;
   FsbCols.ShowHint := True;
-  {$IFNDEF FPC}
   FsbCols.Glyph.LoadFromResourceName(HInstance, 'TILVDIFCOLS');
-  {$ELSE}
-  FsbCols.Glyph.LoadFromLazarusResource('TILVDIFCOLS');
-  {$ENDIF}
   FsbCols.OnClick := DoSBColsClick;
 
   FsbFind := TSpeedButton.Create(self);
@@ -236,11 +220,7 @@ begin
   FsbFind.Flat := True;
   FsbFind.ParentShowHint := False;
   FsbFind.ShowHint := True;
-  {$IFNDEF FPC}
   FsbFind.Glyph.LoadFromResourceName(HInstance, 'TILVDIFFIND');
-  {$ELSE}
-  FsbFind.Glyph.LoadFromLazarusResource('TILVDIFFIND');
-  {$ENDIF}
   FsbFind.OnClick := DoSBFindClick;
 
   FspViewDif := TtiSplitterPanel.Create(self);

@@ -2324,11 +2324,7 @@ begin
     Hint  := 'Load from file';
     ShowHint := true;
     OnClick := DoLoadFromFile;
-    {$IFNDEF FPC}
     Glyph.LoadFromResourceName(HInstance, 'PAILOADFROMFILE');
-    {$ELSE}
-    Glyph.LoadFromLazarusResource('PAILOADFROMFILE');
-    {$ENDIF}
   end;
   lLastControl := FbtnLoadFromFile;
 
@@ -2344,11 +2340,7 @@ begin
     Hint    := 'Save to file';
     ShowHint := true;
     OnClick := DoSaveToFile;
-    {$IFNDEF FPC}
     Glyph.LoadFromResourceName(HInstance, 'paiSaveToFile');
-    {$ELSE}
-    Glyph.LoadFromLazarusResource('paiSaveToFile');
-    {$ENDIF}
   end;
   lLastControl := FbtnSaveToFile;
 
@@ -2364,11 +2356,7 @@ begin
     Hint    := 'Copy to clipboard';
     ShowHint := true;
     OnClick := DoCopyToClip;
-    {$IFNDEF FPC}
     Glyph.LoadFromResourceName(HInstance, 'paiCopyToClipBoard');
-    {$ELSE}
-    Glyph.LoadFromLazarusResource('paiCopyToClipBoard');
-    {$ENDIF}
   end;
   lLastControl := FbtnCopyToClip;
 
@@ -2384,11 +2372,7 @@ begin
     Hint  := 'Paste from clipboard';
     ShowHint := true;
     OnClick := DoPasteFromClip;
-    {$IFNDEF FPC}
     Glyph.LoadFromResourceName(HInstance, 'paiPasteFromClipboard');
-    {$ELSE}
-    Glyph.LoadFromLazarusResource('paiPasteFromClipboard');
-    {$ENDIF}
   end;
   lLastControl := FbtnPasteFromClip;
 
@@ -2421,11 +2405,7 @@ begin
     Hint  := 'Edit';
     ShowHint := true;
     OnClick := DoEdit;
-    {$IFNDEF FPC}
     Glyph.LoadFromResourceName(HInstance, 'paiEdit');
-    {$ELSE}
-    Glyph.LoadFromLazarusResource('paiEdit');
-    {$ENDIF}
   end;
   lLastControl := FbtnEdit;
 
@@ -2441,11 +2421,7 @@ begin
     Hint  := 'Clear';
     ShowHint := true;
     OnClick := DoClear;
-    {$IFNDEF FPC}
     Glyph.LoadFromResourceName(HInstance, 'paiClear');
-    {$ELSE}
-    Glyph.LoadFromLazarusResource('paiClear');
-    {$ENDIF}
   end;
   lLastControl := FbtnClear;
 
@@ -2461,11 +2437,7 @@ begin
     Hint  := 'Stretch';
     ShowHint := true;
     OnClick := DoStretch;
-    {$IFNDEF FPC}
     Glyph.LoadFromResourceName(HInstance, 'paiStretch');
-    {$ELSE}
-    Glyph.LoadFromLazarusResource('paiStretch');
-    {$ENDIF}
   end;
 
   if not(csDesigning in ComponentState) then

@@ -112,7 +112,6 @@ uses
   ,Buttons
   ,LCLIntf
   ,tiResources
-  ,LResources
 {$ELSE}
   ,Windows
 {$ENDIF}
@@ -141,17 +140,13 @@ begin
   FSpeedButton.ParentFont := true;
   {$IFNDEF FPC}
   Ctl3D := false;
+  {$ELSE}
+  FSpeedButton.Layout := blGlyphRight;
+  {$ENDIF}
   FSpeedButton.glyph.LoadFromResourceName(HInstance, 'PAITHREEDOTS');
   FSpeedButton.glyphHot.LoadFromResourceName(HInstance, 'PAITHREEDOTS');
   FSpeedButton.GlyphDisabled.LoadFromResourceName(HInstance, 'PAITHREEDOTS_D');
-  {$ELSE}
-  FSpeedButton.Layout := blGlyphRight;
-  FSpeedButton.glyph.LoadFromLazarusResource('PAITHREEDOTS');
-  FSpeedButton.glyphHot.LoadFromLazarusResource('PAITHREEDOTS');
-  FSpeedButton.GlyphDisabled.LoadFromLazarusResource('PAITHREEDOTS_D');
-  {$ENDIF}
   FSpeedButton.onClick := DoButtonClick;
-
 
   FEdit := TEdit.Create(self);
   FEdit.left := 0;
@@ -181,7 +176,6 @@ begin
 
   height     := cuiDefaultHeight ;
   width      := cuiDefaultWidth  ;
-
 end;
 
 procedure TtiPickerAbs.DoButtonClick(sender : TObject);

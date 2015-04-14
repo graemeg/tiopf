@@ -247,16 +247,10 @@ begin
     height :=  25;
     hint  := 'Select marked';
     showHint := true;
-    {$IFNDEF FPC}
     Glyph.LoadFromResourceName(        HInstance, cResTI_Copy1Right + cResTI_16N);
     GlyphHot.LoadFromResourceName(     HInstance, cResTI_Copy1Right + cResTI_16H);
     GlyphDisabled.LoadFromResourceName(HInstance, cResTI_Copy1Right + cResTI_16D);
-    {$ELSE}
-    Glyph.LoadFromLazarusResource(cResTI_Copy1Right + cResTI_16N);
-    GlyphHot.LoadFromLazarusResource(cResTI_Copy1Right + cResTI_16H);
-    GlyphDisabled.LoadFromLazarusResource(cResTI_Copy1Right + cResTI_16D);
-    {$ENDIF}
-    onClick := DosbSelectMarkedClick;
+    OnClick := DosbSelectMarkedClick;
     flat := true;
   end;
 
@@ -268,16 +262,10 @@ begin
     height :=  25;
     hint  := 'Deselect marked';
     showHint := true;
-    {$IFNDEF FPC}
     Glyph.LoadFromResourceName(        HInstance, cResTI_Copy1Left + cResTI_16N);
     GlyphHot.LoadFromResourceName(     HInstance, cResTI_Copy1Left + cResTI_16H);
     GlyphDisabled.LoadFromResourceName(HInstance, cResTI_Copy1Left + cResTI_16D);
-    {$ELSE}
-    Glyph.LoadFromLazarusResource(cResTI_Copy1Left + cResTI_16N);
-    GlyphHot.LoadFromLazarusResource(cResTI_Copy1Left + cResTI_16H);
-    GlyphDisabled.LoadFromLazarusResource(cResTI_Copy1Left + cResTI_16D);
-    {$ENDIF}
-    onClick := DosbDeSelectMarkedClick;
+    OnClick := DosbDeSelectMarkedClick;
     flat := true;
   end;
 
@@ -288,16 +276,10 @@ begin
     width :=  25;
     height :=  25;
     hint  := 'Select all';
-    {$IFNDEF FPC}
     Glyph.LoadFromResourceName(        HInstance, cResTI_CopyAllRight + cResTI_16N);
     GlyphHot.LoadFromResourceName(     HInstance, cResTI_CopyAllRight + cResTI_16H);
     GlyphDisabled.LoadFromResourceName(HInstance, cResTI_CopyAllRight + cResTI_16D);
-    {$ELSE}
-    Glyph.LoadFromLazarusResource(cResTI_CopyAllRight + cResTI_16N);
-    GlyphHot.LoadFromLazarusResource(cResTI_CopyAllRight + cResTI_16H);
-    GlyphDisabled.LoadFromLazarusResource(cResTI_CopyAllRight + cResTI_16D);
-    {$ENDIF}
-    onClick := DosbSelectAllClick;
+    OnClick := DosbSelectAllClick;
     flat := true;
   end;
 
@@ -308,16 +290,10 @@ begin
     width :=  25;
     height :=  25;
     hint  := 'Deselect all';
-    {$IFNDEF FPC}
     Glyph.LoadFromResourceName(        HInstance, cResTI_CopyAllLeft + cResTI_16N);
     GlyphHot.LoadFromResourceName(     HInstance, cResTI_CopyAllLeft + cResTI_16H);
     GlyphDisabled.LoadFromResourceName(HInstance, cResTI_CopyAllLeft + cResTI_16D);
-    {$ELSE}
-    Glyph.LoadFromLazarusResource(cResTI_CopyAllLeft + cResTI_16N);
-    GlyphHot.LoadFromLazarusResource(cResTI_CopyAllLeft + cResTI_16H);
-    GlyphDisabled.LoadFromLazarusResource(cResTI_CopyAllLeft + cResTI_16D);
-    {$ENDIF}
-    onClick := DosbDeSelectAllClick;
+    OnClick := DosbDeSelectAllClick;
     flat := true;
   end;
 
