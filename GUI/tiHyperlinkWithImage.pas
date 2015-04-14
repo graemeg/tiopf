@@ -44,7 +44,7 @@ type
     function  GetCaption: string;
     procedure SetCaption(const AValue: string);
     function  GetAction: TAction; reintroduce;
-    procedure SetAction(const AValue: TAction);
+    procedure SetAction(const AValue: TAction); reintroduce;
     procedure SetGlyphDisabled(const AValue: TBitmap);
     procedure SetGlyphHot(const AValue: TBitmap);
     procedure SetGlyphNormal(const AValue: TBitmap);
