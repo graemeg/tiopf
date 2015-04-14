@@ -808,7 +808,6 @@ var
 constructor TtiPerAwareAbs.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-
   FChangeTimer := nil;
   FOnChangeDelayInterval := 0;
   FOnChange     := nil;
@@ -891,7 +890,8 @@ end;
 
 procedure TtiPerAwareAbs.PositionLabel;
 begin
-
+  if not Assigned(FLabel) then
+    Exit;
   // A little redundant, but here goes anyway...
   case LabelStyle of
   lsNone    : begin
@@ -2555,7 +2555,8 @@ end;
 procedure TtiPerAwareImageEdit.PositionWinControl;
 begin
   inherited;
-
+  if not Assigned(FLabel) then
+    Exit;
   if FLabel.Visible or (VisibleButtons <> []) then
   begin
     //FScrollBox.Align := alNone;
