@@ -26,12 +26,13 @@ const
 type
 
  {$IFDEF FPC}
-  TDateTimePicker = TDateEdit;
+  TDateTimePicker = class(TDateEdit);
  {$ENDIF}
 
   TRangeType  = (rtSingleDate, rtDateRange{, rtBoth});
   TAllowRangeType = (artSingleDate, artDateRange, artBoth);
 
+  // forward declaration
   TtiDateRange = class;
 
   // An abstract range setter - Used to set the date range to values like:
@@ -545,13 +546,17 @@ end;
 
 {$IFNDEF FPC}
 procedure TtiDateRange.WMSize(var Message: TWMSize);
-{$ELSE}
-procedure TtiDateRange.WMSize(var Message: TLMSize);
-{$ENDIF}
 begin
   Height := cuiHeight;
   Width := cuiWidth ;
 end;
+{$ELSE}
+procedure TtiDateRange.WMSize(var Message: TLMSize);
+begin
+  Height := cuiHeight + 20;
+  Width := cuiWidth + 10;
+end;
+{$ENDIF}
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
