@@ -28,7 +28,7 @@ $Param(object_name) = class(TtiObject)
 private
 protected
   function    GetOwner: $Param(object_name,Sync=1)List; reintroduce;
-  procedure   SetOwner(const Value: $Param(object_name,Sync=1)List); reintroduce;
+  procedure   SetOwner(const AValue: $Param(object_name,Sync=1)List); reintroduce;
 public
   property    Owner: $Param(object_name,Sync=1)List read GetOwner write SetOwner;
 published
@@ -42,7 +42,7 @@ RemoveChar=true
 $(AttributesEnd)
 result := inherited GetItems(i) as $Param(InheritedClass,default);|
 [isi | tiOPF - Inherited SetItems ]
-inherited SetItems(i, Value);
+inherited SetItems(i, AValue);
 [igo | tiOPF - Inherited GetOwner ]
 $(AttributesStart)
 AutoOnSpace=true
@@ -51,7 +51,7 @@ RemoveChar=true
 $(AttributesEnd)
 result := (inherited GetOwner) as $Param(InheritedClass,default);|
 [iso | tiOPF - Inherited SetOwner ]
-inherited SetOwner(Value);
+inherited SetOwner(AValue);
 [ia | tiOPF - Inherited Add ]
 result := inherited Add(AObject);
 [vr | tiOPF - Visitor Read ]
