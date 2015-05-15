@@ -38,24 +38,22 @@ type
     FClientID: string;
     FClientName: string;
     FPhoneNumbers: TPhoneNumbers;
+    procedure SetClientID(AValue: string);
     procedure   SetClientName(const AValue: string);
   protected
     function    GetOwner: TClients; reintroduce;
     procedure   SetOwner(const Value: TClients); reintroduce;
     procedure   SetObjectState(const AValue: TPerObjectState); override;
   public
-
     constructor Create; override;
     destructor  Destroy; override;
-    property    Owner      : TClients             read GetOwner      write SetOwner;
+    property    Owner: TClients read GetOwner write SetOwner;
     function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
-
     // Explain this...
     procedure   AssignClassProps(pSource: TtiObject); override;
-
   published
     property    ClientName: string read FClientName write SetClientName;
-    property    ClientID  : string   read FClientID   write FClientID;
+    property    ClientID: string read FClientID write SetClientID;
     property    PhoneNumbers: TPhoneNumbers read FPhoneNumbers;
   end;
 
@@ -160,6 +158,14 @@ procedure TClient.SetClientName(const AValue: string);
 begin
   if FClientName = AValue then exit;
   FClientName := AValue;
+  NotifyObservers;
+end;
+
+procedure TClient.SetClientID(AValue: string);
+begin
+  if FClientID = AValue then Exit;
+  FClientID := AValue;
+  NotifyObservers;
 end;
 
 function TClient.GetOwner: TClients;
@@ -185,7 +191,7 @@ procedure TClient.SetObjectState(const AValue: TPerObjectState);
 begin
   inherited;
   Assert(PhoneNumbers.TestValid, CTIErrorInvalidObject);
-  // ToDo. This call should not be requred. There should be a flat on TPhoneNumbers
+  // ToDo. This call should not be required. There should be a flag on TPhoneNumbers
   //       indicating it's not persisted.
   if (AValue = posDeleted) and (PhoneNumbers.ObjectState = posDelete) then
     PhoneNumbers.ObjectState:= posDeleted;
