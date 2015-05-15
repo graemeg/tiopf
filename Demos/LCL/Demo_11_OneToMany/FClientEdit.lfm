@@ -1,20 +1,20 @@
 object FormClientEdit: TFormClientEdit
-  Left = 183
+  Left = 190
   Height = 208
-  Top = 276
+  Top = 278
   Width = 371
-  ActiveControl = paeOID
-  Caption = 'FormClientEdit'
+  Caption = 'Client Maintenance'
   ClientHeight = 208
   ClientWidth = 371
   Position = poScreenCenter
-  LCLVersion = '0.9.27'
+  LCLVersion = '1.5'
   object paeOID: TEdit
     Left = 10
     Height = 23
     Top = 12
     Width = 357
     Constraints.MinHeight = 23
+    Enabled = False
     MaxLength = 36
     ReadOnly = True
     TabOrder = 0
@@ -42,6 +42,7 @@ object FormClientEdit: TFormClientEdit
     Height = 69
     Top = 100
     Width = 357
+    BorderStyle = bsNone
     Font.Color = clRed
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
@@ -49,7 +50,26 @@ object FormClientEdit: TFormClientEdit
       'memoErrors'
     )
     ParentFont = False
+    ReadOnly = True
     TabOrder = 3
     TabStop = False
+  end
+  object btnOK: TButton
+    Left = 208
+    Height = 25
+    Top = 176
+    Width = 75
+    Caption = 'OK'
+    ModalResult = 1
+    TabOrder = 4
+  end
+  object btnCancel: TButton
+    Left = 288
+    Height = 25
+    Top = 176
+    Width = 75
+    Caption = 'Cancel'
+    ModalResult = 2
+    TabOrder = 5
   end
 end

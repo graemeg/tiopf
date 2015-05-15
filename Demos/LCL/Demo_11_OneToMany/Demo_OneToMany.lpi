@@ -1,7 +1,7 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="7"/>
+    <Version Value="9"/>
     <General>
       <Flags>
         <SaveOnlyProjectUnits Value="True"/>
@@ -9,12 +9,14 @@
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
       <AutoCreateForms Value="False"/>
-      <TargetFileExt Value=""/>
       <UseAppBundle Value="False"/>
     </General>
     <VersionInfo>
-      <ProjectVersion Value=""/>
+      <StringTable ProductVersion=""/>
     </VersionInfo>
+    <BuildModes Count="1">
+      <Item1 Name="default" Default="True"/>
+    </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
       <IgnoreBinaries Value="False"/>
@@ -39,46 +41,42 @@
       <Unit0>
         <Filename Value="Demo_OneToMany.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Demo_OneToMany"/>
       </Unit0>
       <Unit1>
         <Filename Value="FMainOneToMany.pas"/>
+        <IsPartOfProject Value="True"/>
         <ComponentName Value="FormMainOneToMany"/>
         <HasResources Value="True"/>
-        <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="FMainOneToMany"/>
       </Unit1>
       <Unit2>
         <Filename Value="FClientEdit.pas"/>
+        <IsPartOfProject Value="True"/>
         <ComponentName Value="FormClientEdit"/>
         <HasResources Value="True"/>
-        <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="FClientEdit"/>
       </Unit2>
       <Unit3>
         <Filename Value="FPhoneNumberEdit.pas"/>
+        <IsPartOfProject Value="True"/>
         <ComponentName Value="FormPhoneNumberEdit"/>
         <HasResources Value="True"/>
-        <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="FPhoneNumberEdit"/>
       </Unit3>
       <Unit4>
         <Filename Value="Client_AutoMap_Svr.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Client_AutoMap_Svr"/>
       </Unit4>
       <Unit5>
         <Filename Value="Client_DBIndependentVisitors_Svr.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Client_DBIndependentVisitors_Svr"/>
       </Unit5>
       <Unit6>
         <Filename Value="Client_HardCodedVisitors_Svr.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Client_HardCodedVisitors_Svr"/>
       </Unit6>
       <Unit7>
         <Filename Value="Client_BOM.pas"/>
@@ -88,16 +86,15 @@
     </Units>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="8"/>
+    <Version Value="11"/>
     <SearchPaths>
-      <IncludeFiles Value="../../../Core/;$(ProjOutDir)/"/>
+      <IncludeFiles Value="../../../Core;$(ProjOutDir)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
         <CStyleOperator Value="False"/>
         <AllowLabel Value="False"/>
         <CPPInline Value="False"/>
-        <UseAnsiStrings Value="True"/>
       </SyntaxOptions>
     </Parsing>
     <Linking>
@@ -121,7 +118,6 @@
 -dLINK_ZEOS_FB15x
 -dUseCThreads
 -FUunits"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
 </CONFIG>

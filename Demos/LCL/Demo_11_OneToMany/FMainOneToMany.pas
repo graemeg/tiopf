@@ -5,9 +5,9 @@ unit FMainOneToMany;
 interface
 
 uses
-  SysUtils, Classes, Graphics, Controls, Forms, LResources,
+  SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, ActnList, Grids,
-  Client_BOM, ComCtrls, tiObject, tiModelMediator;
+  Client_BOM, tiObject, tiModelMediator;
 
 const
   // Database file name
@@ -63,6 +63,9 @@ var
   FormMainOneToMany: TFormMainOneToMany;
 
 implementation
+
+{$R *.lfm}
+
 uses
    tiQuery
   ,tiOPFManager
@@ -306,7 +309,6 @@ begin
 end;
 
 initialization
-  {$I FMainOneToMany.lrs}
   RegisterFallBackListmediators;
 
 end.

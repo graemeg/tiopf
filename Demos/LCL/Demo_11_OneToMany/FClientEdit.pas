@@ -5,8 +5,8 @@ unit FClientEdit;
 interface
 
 uses
-  SysUtils, Classes, Graphics, Controls, Forms, LResources,
-  Dialogs, StdCtrls, Buttons, ExtCtrls, tiObject;
+  SysUtils, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Buttons, ExtCtrls, tiObject, tiModelMediator;
 
 type
   TFormClientEdit = class(TForm)
@@ -23,6 +23,7 @@ type
 
 implementation
 
+{$R *.lfm}
 
 { TFormClientEdit }
 
@@ -39,8 +40,6 @@ begin
   //paeClientID.LinkToData(DataBuffer,'ClientID');
 end;
 
-initialization
-  {$I FClientEdit.lrs}
 
 end.
  

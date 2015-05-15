@@ -1,14 +1,14 @@
 object FormPhoneNumberEdit: TFormPhoneNumberEdit
-  Left = 215
+  Left = 224
   Height = 208
-  Top = 309
+  Top = 313
   Width = 371
   ActiveControl = paeOID
   Caption = 'FormPhoneNumberEdit'
   ClientHeight = 208
   ClientWidth = 371
   Position = poScreenCenter
-  LCLVersion = '0.9.27'
+  LCLVersion = '1.5'
   object paeOID: TEdit
     Left = 10
     Height = 23

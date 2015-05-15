@@ -5,7 +5,7 @@ unit FPhoneNumberEdit;
 interface
 
 uses
-  SysUtils, Classes, Graphics, Controls, Forms, LResources,
+  SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Buttons, ExtCtrls, tiObject;
 
 type
@@ -23,6 +23,8 @@ type
 
 implementation
 
+{$R *.lfm}
+
 { TFormClientEdit }
 
 function TFormPhoneNumberEdit.FormIsValid: boolean;
@@ -38,8 +40,6 @@ begin
   //paeNumberText.LinkToData(DataBuffer,'NumberText');
 end;
 
-initialization
-  {$I FPhoneNumberEdit.lrs}
 
 end.
  

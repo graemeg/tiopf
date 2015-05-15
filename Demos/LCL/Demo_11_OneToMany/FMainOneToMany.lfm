@@ -1,7 +1,7 @@
 object FormMainOneToMany: TFormMainOneToMany
-  Left = 249
+  Left = 256
   Height = 397
-  Top = 186
+  Top = 189
   Width = 523
   ActiveControl = paeClientCount
   Caption = 'FormMainOneToMany'
@@ -12,20 +12,20 @@ object FormMainOneToMany: TFormMainOneToMany
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   ShowHint = True
-  LCLVersion = '0.9.27'
+  LCLVersion = '1.5'
   object Label1: TLabel
     Left = 4
-    Height = 14
+    Height = 13
     Top = 8
-    Width = 40
+    Width = 39
     Caption = 'Clients'
     ParentColor = False
   end
   object Label2: TLabel
     Left = 8
-    Height = 14
+    Height = 13
     Top = 224
-    Width = 91
+    Width = 90
     Caption = 'Phone numbers'
     ParentColor = False
   end
@@ -58,7 +58,7 @@ object FormMainOneToMany: TFormMainOneToMany
   end
   object paeClientCount: TEdit
     Left = 408
-    Height = 41
+    Height = 23
     Hint = 'Client count'
     Top = 24
     Width = 110
@@ -67,7 +67,7 @@ object FormMainOneToMany: TFormMainOneToMany
   end
   object paePhoneNumberCount: TEdit
     Left = 408
-    Height = 41
+    Height = 23
     Hint = 'Phone number count'
     Top = 72
     Width = 110
@@ -89,9 +89,11 @@ object FormMainOneToMany: TFormMainOneToMany
     Width = 373
     FixedCols = 0
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRowSelect, goThumbTracking, goSmoothScroll]
+    ScrollBars = ssBoth
     TabOrder = 6
     TitleFont.Height = -11
     TitleFont.Name = 'MS Sans Serif'
+    OnDblClick = lvClientsDblClick
     OnSelection = lvClientsSelection
   end
   object lvPhoneNumbers: TStringGrid
