@@ -35,6 +35,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure ActionList1Update(AAction: TBasicAction; var Handled: Boolean);
     procedure aReadExecute(Sender: TObject);
+    procedure lvClientsDblClick(Sender: TObject);
     procedure lvClientsFilterData(pData: TtiObject; var pInclude: Boolean);
     //procedure lvClientsItemArrive(pVT: TtiCustomVirtualTree; pData: TtiObject; pItem: PVirtualNode);
     //procedure lvClientsItemLeave(pVT: TtiCustomVirtualTree; pData: TtiObject; pItem: PVirtualNode);
@@ -75,6 +76,7 @@ uses
   ,FPhoneNumberEdit
   ,tiDialogs
   ,tiGUIUtils
+  ,tiMediators
   ,tiListMediators
  ;
 
@@ -125,7 +127,7 @@ begin
   if not Assigned(FClientMediator) then
   begin
     FClientMediator := TtiModelMediator.Create(self);
-    FClientMediator.AddComposite('ClientID(80);ClientName(200)', lvClients);
+    FClientMediator.AddComposite('ClientID(80);ClientName(180)', lvClients);
   end;
   FClientMediator.Subject := FClients;
   FClientMediator.Active := True;
@@ -133,7 +135,7 @@ begin
   if not Assigned(FPhoneMediator) then
   begin
     FPhoneMediator := TtiModelMediator.Create(self);
-    FPhoneMediator.AddProperty('NumberType(80);NumberText(200)', lvPhoneNumbers);
+    FPhoneMediator.AddProperty('NumberType(80);NumberText(180)', lvPhoneNumbers);
   end;
   if FClients.Count > 0 then
   begin
@@ -187,24 +189,11 @@ begin
   pInclude:= not pData.Deleted;
 end;
 
-//procedure TFormMainOneToMany.lvClientsItemArrive(pVT: TtiCustomVirtualTree;
-  //pData: TtiObject; pItem: PVirtualNode);
-//begin
-  //lvPhoneNumbers.Data:= (pData as TClient).PhoneNumbers;
-//end;
-
 //procedure TFormMainOneToMany.lvClientsItemDelete(pVT: TtiCustomVirtualTree;
   //pData: TtiObject; pItem: PVirtualNode);
 //begin
   //if tiPerObjAbsConfirmAndDelete(pData) then
     //lvClients.Refresh;
-//end;
-
-//procedure TFormMainOneToMany.lvClientsItemEdit(pVT: TtiCustomVirtualTree;
-  //pData: TtiObject; pItem: PVirtualNode);
-//begin
-  //Assert(pData.TestValid, CTIErrorInvalidObject);
-  //TFormClientEdit.Execute(pData);
 //end;
 
 //procedure TFormMainOneToMany.lvClientsItemInsert(pVT: TtiCustomVirtualTree;
@@ -220,18 +209,6 @@ end;
   //end
   //else
     //LClient.Free;
-//end;
-
-//procedure TFormMainOneToMany.lvClientsItemLeave(pVT: TtiCustomVirtualTree;
-  //pData: TtiObject; pItem: PVirtualNode);
-//begin
-  //lvPhoneNumbers.Data:= nil;
-//end;
-
-//procedure TFormMainOneToMany.lvPhoneNumbersCanInsert(pVT: TtiCustomVirtualTree;
-  //pData: TtiObject; pItem: PVirtualNode; var pCanPerformAction: Boolean);
-//begin
-  //pCanPerformAction:= lvClients.SelectedData <> nil;
 //end;
 
 //procedure TFormMainOneToMany.lvPhoneNumbersItemDelete(pVT: TtiCustomVirtualTree;
@@ -291,7 +268,6 @@ begin
     end;
   end;
   FClients.Save;
-  lvClients.Refresh;
 end;
 
 procedure TFormMainOneToMany.lvClientsSelection(Sender: TObject; aCol,
@@ -308,7 +284,17 @@ begin
   FClients.Read;
 end;
 
+procedure TFormMainOneToMany.lvClientsDblClick(Sender: TObject);
+var
+  pData: TClient;
+begin
+  pData := FClientMediator.SelectedObject[lvClients] as TClient;
+  Assert(pData.TestValid, CTIErrorInvalidObject);
+  TFormClientEdit.Execute(pData);
+end;
+
 initialization
+  RegisterFallBackMediators;
   RegisterFallBackListmediators;
 
 end.
