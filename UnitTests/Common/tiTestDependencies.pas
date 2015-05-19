@@ -97,6 +97,7 @@ uses
   ,tiOPFSQLDB_PQ_TST
 //  ,tiOPFSQLDB_MY50_TST
 //  ,tiOPFSQLDB_MY51_TST
+  ,tiOPFSQLDB_SQLITE3_TST
   ,tiOPFSQLDB_MY55_TST
   ,tiOPFTAB_TST
   ,tiOPFXML_TST
@@ -189,6 +190,7 @@ begin
 //  tiOPFSQLDB_MY50_TST.RegisterTests;
 //  tiOPFSQLDB_MY51_TST.RegisterTests;
   tiOPFSQLDB_MY55_TST.RegisterTests;
+  tiOPFSQLDB_SQLITE3_TST.RegisterTests;
   tiOPFTAB_TST.RegisterTests;
   tiOPFXML_TST.RegisterTests;
   tiOPFXMLLight_TST.RegisterTests;

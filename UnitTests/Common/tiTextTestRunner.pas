@@ -280,7 +280,8 @@ begin
     FFileNameINI := gCommandLineParams.GetParam(CCommandLineSummaryINIFile);
     if ExtractFilePath(FFileNameINI) = '' then
       FFileNameINI := LReportDir + FFileNameINI;
-  end else
+  end
+  else
     FFileNameINI  := LReportDir + 'DUnitReportSummary.ini';
   FFileNameINI:= ExpandFileName(FFileNameINI);
 

@@ -35,6 +35,7 @@ $FPC -S2cgi -O1 -gl -ve -l \
   -o$TIOPF/Compilers/FPC/tiOPFUnitTestsConsole \
   -dDUNIT2 -dXMLLISTENER \
   -dLINK_CSV -dLINK_TAB -dLINK_XMLLIGHT -dLINK_SQLDB_IB -dLINK_FBL -dLINK_ZEOS_FB -dLINK_ZEOS_MYSQL50 \
+  -dLINK_SQLDB_SQLITE3 \
   -dUseCThreads \
   $TIOPF/Compilers/FPC/tiOPFUnitTestsConsole.lpr
 
