@@ -157,8 +157,7 @@ begin
   end;
 end;
 
-procedure TtiDatabaseZeosMySQL.ReadMetaDataFields(
-  pData: TtiDBMetaDataTable);
+procedure TtiDatabaseZeosMySQL.ReadMetaDataFields(pData: TtiDBMetaDataTable);
 var
   lTableName : string ;
   lTable: TtiDBMetaDataTable;
@@ -205,6 +204,7 @@ begin
          cIBField_TIME       : lField.Kind := qfkDateTime;
          cIBField_QUAD,
          cIBField_VARYING,
+         cIBField_SHORT,
          cIBField_TEXT       : begin
                                  lField.Kind := qfkString ;
                                  lField.Width := lFieldLength ;
