@@ -931,7 +931,7 @@ var
 begin
   lField := pDBMetaDataTable.FindByFieldName(AFieldName);
   Check(lField <> nil,   'Field <' + AFieldName + '> not found');
-// ToDo: The meta data system wont read in field kind or size yet. Requires work.
+// ToDo: The meta data system won't read in field kind or size yet. Requires work.
 //      Check(lField.Kind = pKind, 'Field <' + AFieldName + '> field kind of wrong type');
 //      if pWidth <> 0 then
 //        Check(lField.Width = pWidth, 'Field <' + AFieldName + '> field width of wrong size');
