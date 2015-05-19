@@ -43,6 +43,9 @@ type
     class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
     function    HasNativeLogicalType: boolean; override;
     function    FieldMetaDataToSQLCreate(const AFieldMetaData: TtiDBMetaDataField): string; override;
+  public
+    procedure   ReadMetaDataTables(AData: TtiDBMetaData); override;
+    procedure   ReadMetaDataFields(AData: TtiDBMetaDataTable); override;
   end;
 
 
@@ -58,6 +61,7 @@ uses
   ,tiConstants
   ,tiUtils
   ,tiExcept
+  ,tiObject
   ;
 
 
@@ -138,6 +142,58 @@ begin
   else
     raise EtiOPFInternalException.Create('Invalid FieldKind');
   end; { case }
+end;
+
+procedure TtiDatabaseSQLDBSQLite3.ReadMetaDataTables(AData: TtiDBMetaData);
+var
+  lMetaData : TtiDBMetaData;
+  lTable : TtiDBMetaDataTable;
+  lsl : TStringList;
+  i : integer;
+begin
+  lMetaData := AData;
+  lsl := TStringList.Create;
+  try
+    FDatabase.GetTableNames(lsl, False);
+    for i := 0 to lsl.Count - 1 do
+    begin
+      lTable := TtiDBMetaDataTable.Create;
+      lTable.Name := tiExtractFileNameOnly(lsl.Strings[i]);
+      lTable.ObjectState := posPK;
+      lMetaData.Add(lTable);
+      lMetaData.ObjectState := posClean;
+    end;
+  finally
+    lsl.Free;
+  end;
+end;
+
+procedure TtiDatabaseSQLDBSQLite3.ReadMetaDataFields(AData: TtiDBMetaDataTable);
+var
+  lTable: TtiDBMetaDataTable;
+  lField: TtiDBMetaDataField;
+  i: integer;
+  lQuery: TSQLQuery;
+begin
+  lTable := AData;
+  lQuery := TSQLQuery.Create(nil);
+  try
+    lQuery.Transaction := FDatabase.Transaction;
+    lQuery.SQL.Text := 'Select * from ' + lTable.Name + ' where 1 = 0';
+    lQuery.Open;
+    lQuery.FieldDefs.Update;
+    for i := 0 to lQuery.FieldDefs.Count - 1 do
+    begin
+      lField := TtiDBMetaDataField.Create;
+      lField.Name := lQuery.FieldDefs[i].Name;
+      lField.ObjectState := posClean;
+      lTable.Add(lField);
+    end;
+    lTable.ObjectState := posClean;
+    lQuery.Close;
+  finally
+    lQuery.Free;
+  end;
 end;
 
 initialization
