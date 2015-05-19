@@ -33,9 +33,9 @@ type
 
   TtiDatabaseSQLDB = class(TtiDatabaseSQL)
   private
-    FDatabase: TSQLConnection;
     FTransaction: TSQLTransaction;
   protected
+    FDatabase: TSQLConnection;
     procedure SetConnected(AValue: Boolean); override;
     function GetConnected: Boolean; override;
     class function CreateSQLConnection: TSQLConnection; virtual; abstract;
