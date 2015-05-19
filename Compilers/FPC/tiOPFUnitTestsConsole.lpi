@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -45,32 +45,26 @@
       <Unit0>
         <Filename Value="tiOPFUnitTestsConsole.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="tiOPFUnitTestsConsole"/>
       </Unit0>
       <Unit1>
         <Filename Value="textprogressrunner.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="textprogressrunner"/>
       </Unit1>
       <Unit2>
         <Filename Value="../../UnitTests/Common/tiTextTestRunner.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="tiTextTestRunner"/>
       </Unit2>
       <Unit3>
         <Filename Value="../../UnitTests/Common/tiTestDependencies.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="tiTestDependencies"/>
       </Unit3>
       <Unit4>
         <Filename Value="../../UnitTests/Common/tiTestFramework.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="tiTestFramework"/>
       </Unit4>
       <Unit5>
         <Filename Value="../../UnitTests/Common/tiOPFTestCase.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="tiOPFTestCase"/>
       </Unit5>
     </Units>
   </ProjectOptions>
@@ -80,7 +74,7 @@
       <Filename Value="tiOPFUnitTestsConsole"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="../../Core"/>
+      <IncludeFiles Value="../../Core;$(ProjOutDir)"/>
       <OtherUnitFiles Value="../../UnitTests/Common;../../UnitTests/Tests"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
@@ -98,9 +92,6 @@
       </Optimizations>
     </CodeGeneration>
     <Other>
-      <CompilerMessages>
-        <UseMsgFile Value="True"/>
-      </CompilerMessages>
       <CustomOptions Value="-dDUNIT2
 -dXMLLISTENER
 -dLINK_CSV
@@ -109,7 +100,7 @@
 -dLINK_SQLDB_IB
 -dLINK_SQLDB_PQ
 -dLINK_SQLDB_Oraclex
--dLINK_SQLDB_SQLLite3x
+-dLINK_SQLDB_SQLLite3
 -dLINK_SQLDB_ODBCx
 -dLINK_SQLDB_MySQL40x
 -dLINK_SQLDB_MySQL41x
@@ -117,7 +108,6 @@
 -dLINK_XMLLIGHT
 -dLINK_ZEOS_FB15x
 -dUseCThreads"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
