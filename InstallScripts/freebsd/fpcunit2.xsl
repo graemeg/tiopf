@@ -38,7 +38,7 @@
 
   <a name="Summary"/>
   <h2>FPTest Results</h2>
-  <xsl:call-template name="summary"></xsl:call-template>
+  <xsl:apply-templates/>
 
 
   <address>
