@@ -42,7 +42,7 @@
 
 
   <address>
-    <a href="http://opensoft.homeip.net">FPTest Report</a> 0.4.1 &#169; 2006-2015 by 
+    <a href="http://geldenhuys.co.uk">FPTest Report</a> 0.4.1 &#169; 2006-2015 by 
     <a href="mailto:graemeg@gmail.com?subject=Comments about FPTest Report">Graeme Geldenhuys</a>.<br/>
     Licensed under the <a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a>.<br/>
   </address>

@@ -26,6 +26,7 @@ Persistence Layers Tested:
    XMLLight
    FBLIB
    SqlDB - Firebird 2.5
+   SqlDB - SQLite 3
    Zeos - Firebird 2.5
    Zeos - MySQL 5.x
 
@@ -33,7 +34,7 @@ Persistence Layers Tested:
 
 <xsl:text>&#10;</xsl:text>
 <xsl:text>Details:&#10;</xsl:text>
-<xsl:text>  http://opensoft.homeip.net/tiopf/unittests/freebsd64.html&#10;</xsl:text>
+<xsl:text>  http://geldenhuys.co.uk/tiopf/unittests/freebsd64.html&#10;</xsl:text>
 <xsl:text>&#10;</xsl:text>
 
 </xsl:template>

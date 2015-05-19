@@ -31,7 +31,7 @@ Persistence Layers Tested:
 
 <xsl:text>&#10;</xsl:text>
 <xsl:text>Details:&#10;</xsl:text>
-<xsl:text>  http://opensoft.homeip.net/tiopf/fpcunit/index32.html&#10;</xsl:text>
+<xsl:text>  http://geldenhuys.co.uk/tiopf/unittests/index32.html&#10;</xsl:text>
 <xsl:text>&#10;</xsl:text>
 
 </xsl:template>

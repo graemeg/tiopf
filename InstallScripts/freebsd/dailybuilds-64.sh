@@ -68,5 +68,5 @@ cat msg3.txt divider.txt /tmp/DUnitReportShort${FPCVER}.txt > msg4.txt
 # post text result to tiopf.dailybuilds newsgroup
 /usr/local/bin/rpost opensoft.homeip.net < msg4.txt
 # copy html results to web server
-scp -q -i /home/graemeg/.ssh/id_rsa index.html graemeg@192.168.0.5:/usr/local/www/opensoft.homeip.net/tiopf/unittests/freebsd64.html
+scp -q -i /home/graemeg/.ssh/id_rsa index.html graemeg@192.168.0.5:/usr/local/www/geldenhuys.co.uk/tiopf/unittests/freebsd64.html
 
