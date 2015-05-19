@@ -497,7 +497,7 @@ var
   lsl : TStringList;
   i : integer;
 begin
-  lMetaData := (AData as TtiDBMetaData);
+  lMetaData := AData;
   lsl := TStringList.Create;
   try
     FDatabase.GetTableNames(lsl);
