@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Build script for tiOPF's Console Test Runner using 64-bit Free Pascal Compiler
 
 BASEDIR="/data/devel"
@@ -9,9 +9,19 @@ ZEOS="$BASEDIR/opensource/zeos_svn"
 FPTEST="$BASEDIR/fptest"
 FPC="$BASEDIR/fpc-2.6.4/$TARGET/bin/ppcx64"
 
-#  -Fu$BASEDIR/fpc-2.6.0/src/packages/fcl-registry/src/ \
-#  -Fu$BASEDIR/fpc-2.6.0/src/packages/fcl-xml/src/ \
+# NOTE: Must use /bin/bash for this to work
 
+# Which persistence layers to link in.
+LINK="-dLINK_CSV"
+LINK+=" -dLINK_TAB"
+LINK+=" -dLINK_XMLLIGHT"
+LINK+=" -dLINK_SQLDB_IB"
+LINK+=" -dLINK_SQLDB_SQLITE3"
+#LINK+=" -dLINK_FBL"
+LINK+=" -dLINK_ZEOS_FB"
+LINK+=" -dLINK_ZEOS_MYSQL50"
+
+#echo $LINK
 
 $FPC -S2cgi -O1 -gl -ve -l \
   -FU$TIOPF/Compilers/FPC/lib/$TARGET/ \
@@ -33,9 +43,9 @@ $FPC -S2cgi -O1 -gl -ve -l \
   -Fu$FPTEST/3rdparty/epiktimer/ \
   -Fu. \
   -o$TIOPF/Compilers/FPC/tiOPFUnitTestsConsole \
-  -dDUNIT2 -dXMLLISTENER \
-  -dLINK_CSV -dLINK_TAB -dLINK_XMLLIGHT -dLINK_SQLDB_IB -dLINK_FBL -dLINK_ZEOS_FB -dLINK_ZEOS_MYSQL50 \
-  -dLINK_SQLDB_SQLITE3 \
+  -dDUNIT2 \
+  -dXMLLISTENER \
+  $LINK \
   -dUseCThreads \
   $TIOPF/Compilers/FPC/tiOPFUnitTestsConsole.lpr
 
