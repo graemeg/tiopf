@@ -196,6 +196,8 @@
 // Some databases do not have a native boolean type, so you must roll it yourself 
 // from a CHAR or VARCHAR. The tiOPF will use 'T' & 'F' or 'TRUE ' & 'FALSE'. This
 // can be controled with the compiler directive below:
+// If both BOOLEAN_NUM_1 and BOOLEAN_CHAR_1 are undefined, then 'TRUE ' & 'FALSE'
+// is used.
 {$DEFINE BOOLEAN_CHAR_1}
 {$IFDEF BOOLEAN_NUM_1}
   {$UNDEF BOOLEAN_CHAR_1}
