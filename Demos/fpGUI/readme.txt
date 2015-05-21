@@ -27,7 +27,7 @@ They are quite complex and there are multiple ways of implementing them.
 For more information on the MGM pattern visit:
 
   Articles by Graeme or Michael
-    http://opensoft.homeip.net:8080/articles/
+    http://geldenhuys.co.uk/articles/
 
   Andy Bulka's website.
     http://www.atug.com/andypatterns/mgm.htm
