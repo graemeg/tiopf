@@ -728,7 +728,6 @@ end;
 procedure TTestTIDatabase.ReadMetaData_Owner;
 var
   LDBMetaData : TtiDBMetaData;
-  LDBMetaDataTable : TtiDBMetaDataTable;
   LDatabase : TtiDatabase;
 begin
   CreateTestTables;
@@ -750,7 +749,6 @@ begin
   finally
     LDBMetaData.Free;
   end;
-
 end;
 
 
