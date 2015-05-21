@@ -622,12 +622,15 @@ begin
     CheckEquals(0,  FQuery.FieldSize(FQuery.FieldIndex('Group_Float_Field' )), 'Group_Float_Field');
     CheckEquals(0,  FQuery.FieldSize(FQuery.FieldIndex('Group_Date_Field'  )), 'Group_Date_Field' );
     CheckEquals(0,  FQuery.FieldSize(FQuery.FieldIndex('Group_Notes_Field' )), 'Group_Notes_Field');
-    // Nasty, but I can't think of a better solution right now...
-    if (PersistenceLayerName = 'DOA') or (PersistenceLayerName = 'Sqldb_IB')  or (PersistenceLayerName = 'Zeos_FB') then
-      CheckEquals(1,  FQuery.FieldSize(FQuery.FieldIndex('Group_Bool_Field'  )), 'Group_Bool_Field' )
-    else
-      CheckEquals(0,  FQuery.FieldSize(FQuery.FieldIndex('Group_Bool_Field'  )), 'Group_Bool_Field' );
-
+    {$IFDEF BOOLEAN_CHAR_1}
+      CheckEquals(1,  FQuery.FieldSize(FQuery.FieldIndex('Group_Bool_Field'  )), 'Group_Bool_Field' );
+    {$ELSE}
+      {$IFDEF BOOLEAN_NUM_1}
+        CheckEquals(0,  FQuery.FieldSize(FQuery.FieldIndex('Group_Bool_Field'  )), 'Group_Bool_Field' );
+      {$ELSE}
+        CheckEquals(5,  FQuery.FieldSize(FQuery.FieldIndex('Group_Bool_Field'  )), 'Group_Bool_Field' );
+      {$ENDIF}
+    {$ENDIF}
     FQuery.Close;
 // qfkBinary,
 // qfkMacro,
@@ -728,7 +731,6 @@ end;
 procedure TTestTIDatabase.ReadMetaData_Owner;
 var
   LDBMetaData : TtiDBMetaData;
-  LDBMetaDataTable : TtiDBMetaDataTable;
   LDatabase : TtiDatabase;
 begin
   CreateTestTables;
@@ -750,7 +752,6 @@ begin
   finally
     LDBMetaData.Free;
   end;
-
 end;
 
 

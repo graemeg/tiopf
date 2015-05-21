@@ -28,7 +28,6 @@ uses
   TestFramework
   ,SysUtils
 
-  ,tiConstants
   ,tiOPFManager
   ,tiOPFTestManager
   ,tiLog // Confirm which of these must be referenced here
@@ -52,12 +51,12 @@ uses
   ,tiOID_TST
   ,tiLogToFile_TST
   {$IFDEF MSWINDOWS}
-  ,tiWin32_TST
-  ,tiGUIUtils_TST
+    ,tiWin32_TST
+    ,tiGUIUtils_TST
     {$IFNDEF FPC}
-  ,tiDataSet_TST  // tiDataset not FPC ready yet
-    {$ENDIF FPC}
-  {$ENDIF MSWINDOWS}
+      ,tiDataSet_TST  // tiDataset not FPC ready yet
+    {$ENDIF}
+  {$ENDIF}
   ,tiOPFManager_TST
   ,tiDataBuffer_TST
   ,tiTextParser_TST
@@ -71,12 +70,12 @@ uses
   ,tiTokenLibrary_TST
   ,tiBaseMediator_TST
   {$IFNDEF FPC}   // Windows + Delphi specific units
-  ,tiXMLToTIDataSet_TST
-  ,tiHTTP_TST
-  ,tiWebServer_TST
-  {$IFDEF LINK_REMOTE}
-  ,tiApplicationServer_TST
-  {$ENDIF}
+    ,tiXMLToTIDataSet_TST
+    ,tiHTTP_TST
+    ,tiWebServer_TST
+    {$IFDEF LINK_REMOTE}
+      ,tiApplicationServer_TST
+    {$ENDIF}
   {$ENDIF}
 
   // Persistent test fixtures (in alpha order)
@@ -91,7 +90,7 @@ uses
   ,tiOPFIBO_TST
   ,tiOPFIBX_TST
   {$IFDEF LINK_REMOTE}
-  ,tiOPFRemote_TST
+    ,tiOPFRemote_TST
   {$ENDIF}
   ,tiOPFSQLDB_IB_TST
   ,tiOPFSQLDB_PQ_TST
@@ -142,11 +141,11 @@ begin
   tiQueue_Tst.RegisterTests;
   tiOID_TST.RegisterTests;
   {$IFDEF MSWINDOWS}
-  tiWin32_TST.RegisterTests;
-  tiGUIUtils_TST.RegisterTests;
-  {$IFNDEF FPC}
-  tiDataSet_TST.RegisterTests;
-  {$ENDIF}
+    tiWin32_TST.RegisterTests;
+    tiGUIUtils_TST.RegisterTests;
+    {$IFNDEF FPC}
+      tiDataSet_TST.RegisterTests;
+    {$ENDIF}
   {$ENDIF}
   tiOPFManager_TST.RegisterTests;
   tiDataBuffer_TST.RegisterTests;
@@ -161,15 +160,13 @@ begin
   tiLogToFile_TST.RegisterTests;
   tiBaseMediator_TST.RegisterTests;
   {$IFNDEF FPC}
-  tiXMLToTIDataSet_TST.RegisterTests;
-  tiHTTP_TST.RegisterTests;
-  tiWebServer_TST.RegisterTests;
-  {$IFDEF LINK_REMOTE}
-  tiApplicationServer_TST.RegisterTests;
+    tiXMLToTIDataSet_TST.RegisterTests;
+    tiHTTP_TST.RegisterTests;
+    tiWebServer_TST.RegisterTests;
+    {$IFDEF LINK_REMOTE}
+      tiApplicationServer_TST.RegisterTests;
+    {$ENDIF}
   {$ENDIF}
-  {$ENDIF}
-
-
 
   // Persistent test fixtures (in alpha order)
   tiOPFADOAccess_TST.RegisterTests;
@@ -183,7 +180,7 @@ begin
   tiOPFIBO_TST.RegisterTests;
   tiOPFIBX_TST.RegisterTests;
   {$IFDEF LINK_REMOTE}
-  tiOPFRemote_TST.RegisterTests;
+    tiOPFRemote_TST.RegisterTests;
   {$ENDIF}
   tiOPFSQLDB_IB_TST.RegisterTests;
   tiOPFSQLDB_PQ_TST.RegisterTests;

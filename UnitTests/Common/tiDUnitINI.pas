@@ -1,10 +1,13 @@
 unit tiDUnitINI;
 
+{$I tiDefines.inc}
+
 interface
+
 uses
    INIFiles
   ,tiBaseObject
- ;
+  ;
 
 const
   cErrorCanNotSetINIFileToReadWrite = 'INI file <%s> is read-only and can not be set to read-write.';

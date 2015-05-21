@@ -969,8 +969,8 @@ end;
 procedure TTestTIOIDPersistentGUID.Setup;
 begin
   inherited Setup;
+  FOIDGeneratorClass := TtiOIDGeneratorGUID;
   CreateNextOIDStrTable; // Required here for testing persistence of GUID OID
-  FOIDGeneratorClass    := TtiOIDGeneratorGUID;
 end;
 
 procedure TTestTIOIDPersistent.CreateNextOIDIntTable;

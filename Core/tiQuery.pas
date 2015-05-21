@@ -1211,13 +1211,13 @@ begin
   lSQL := '';
   for i := 0 to ATableMetaData.Count - 1 do
   begin
-    lSQL := tiAddTrailingValue(lSQL, ',' + CrLf);
+    lSQL := tiAddTrailingValue(lSQL, ',' + tiLineEnd);
     lSQL := lSQL +
             ATableMetaData.Items[i].Name + ' ' +
             FieldMetaDataToSQLCreate(ATableMetaData.Items[i]);
   end;
-  lSQL := 'create table ' + ATableMetaData.Name + CrLf + '(' + CrLf +
-          lSQL + CrLf +
+  lSQL := 'create table ' + ATableMetaData.Name + tiLineEnd + '(' + tiLineEnd +
+          lSQL + tiLineEnd +
           ')';
   ExecSQL(lSQL);
 end;

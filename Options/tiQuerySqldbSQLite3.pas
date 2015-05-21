@@ -124,17 +124,17 @@ var
 begin
   lFieldName := AFieldMetaData.Name;
   case AFieldMetaData.Kind of
-    qfkString:     result := 'TEXT';
+    qfkString:     result := 'VARCHAR(' + IntToStr(AFieldMetaData.Width) + ')';
     qfkInteger:    result := 'INTEGER';
     qfkFloat:      result := 'REAL';
     qfkDateTime:   result := 'DATETIME';
     {$IFDEF BOOLEAN_CHAR_1}
-    qfkLogical:    result := 'Char(1) default ''F'' check(' + lFieldName + ' in (''T'', ''F''))';
+    qfkLogical:    result := 'CHAR(1) default ''F'' check(' + lFieldName + ' in (''T'', ''F''))';
     {$ELSE}
       {$IFDEF BOOLEAN_NUM_1}
     qfkLogical:    result := 'SmallInt default 0 check(' + lFieldName + ' in (1, 0)) ';
       {$ELSE}
-    qfkLogical:    result := 'VarChar(5) default ''FALSE'' check(' + lFieldName + ' in (''TRUE'', ''FALSE'')) ';
+    qfkLogical:    result := 'VARCHAR(5) default ''FALSE'' check(' + lFieldName + ' in (''TRUE'', ''FALSE'')) ';
       {$ENDIF}
     {$ENDIF}
     qfkBinary:     result := 'BLOB';
