@@ -22,7 +22,7 @@ graphical desktop  applications. tiOPF has custom  components for
 VCL  and  LCL. It also  has a Model-GUI-Mediator (MGM — something
 like Model-View-Controller)  implementation that  allows standard
 GUI  components  to  become  “object aware” without  creating yet
-more descendant components. With MGM  we support the VCL, LCL and
+more  custom  components.  With MGM we support the VCL,  LCL  and
 fpGUI toolkits.
 
 
