@@ -195,7 +195,8 @@ end;
 
 procedure TtiListViewMediatorView.ClearList;
 begin
-  MediatorList.Clear;
+  if Assigned(MediatorList) then
+    MediatorList.Clear;
   If View <> nil then
     View.Items.Clear;
 end;
