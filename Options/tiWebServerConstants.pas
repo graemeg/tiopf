@@ -1,5 +1,7 @@
 unit tiWebServerConstants;
 
+{$I tiDefines.inc}
+
 interface
 uses
   tiConstants
@@ -20,7 +22,7 @@ const
   cStaticPageDir                 = 'StaticPages';
   cCGIBinDir                     = 'CGI-Bin';
 
-  cHTTPResponseCodeOK            = 200;                       
+  cHTTPResponseCodeOK            = 200;
   cHTTPResponseCodePageNotFound  = 404;
   cHTTPResponseCodeInternalError = 500;
 

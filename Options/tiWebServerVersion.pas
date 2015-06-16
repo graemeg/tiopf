@@ -13,6 +13,8 @@ unit tiWebServerVersion;
 // supported and using an earlier version number may cause existing (old)
 // applications to think that they are up-to-date.
 
+{$I tiDefines.inc}
+
 interface
 uses
   tiBaseObject

@@ -1,5 +1,7 @@
 unit tiWebServerConfig;
 
+{$I tiDefines.inc}
+
 interface
 uses
    tiBaseObject
