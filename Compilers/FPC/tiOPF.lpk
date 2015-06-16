@@ -19,10 +19,8 @@
       </Parsing>
       <Other>
         <Verbosity>
-          <ShowNotes Value="False"/>
           <ShowGenInfo Value="False"/>
         </Verbosity>
-        <WriteFPCLogo Value="False"/>
         <CompilerMessages>
           <IgnoredMessages idx5024="True"/>
         </CompilerMessages>
@@ -39,8 +37,7 @@
 -dLINK_SQLDB_MySQL50x
 -dLINK_XMLLIGHT
 -dLINK_ZEOS_FBx
--dUseCThreads
--Xd"/>
+-dUseCThreads"/>
       </Other>
     </CompilerOptions>
     <Description Value="TechInsite Object Persistent Framework

@@ -11,13 +11,13 @@
       </SearchPaths>
       <Parsing>
         <SyntaxOptions>
+          <IncludeAssertionCode Value="True"/>
           <AllowLabel Value="False"/>
-          <CPPInline Value="False"/>
+          <UseAnsiStrings Value="False"/>
         </SyntaxOptions>
       </Parsing>
       <Other>
-        <CustomOptions Value="-dUseCThreads
--Xd"/>
+        <CustomOptions Value="-dUseCThreads"/>
       </Other>
     </CompilerOptions>
     <Description Value="tiOPF GUI layer - visual units
