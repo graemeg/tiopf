@@ -160,7 +160,7 @@ begin
   if lField = nil then Exit; //==>
   if lField.Kind <> pFieldKind then Exit;
 // ToDo: CSV, Paradox and IBX persistence layers will not
-//       read column witdths yet...
+//       read column widths yet...
 //  if lField.Width <> pFieldWidth then Exit;
   result:= true;
 end;
