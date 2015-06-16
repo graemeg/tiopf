@@ -48,7 +48,7 @@ end;
 
 procedure TForm1.DoLog(ASender: TObject; const ALogEvent: TtiLogEvent);
 begin
-  MemoLog.Lines.Add(FormatDateTime('yyyy-mm-dd HH:mm:ss  ', Now) + ALogEvent.LogMessage);
+  MemoLog.Lines.Add(FormatDateTime('yyyy-mm-dd HH:nn:ss  ', Now) + ALogEvent.LogMessage);
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
