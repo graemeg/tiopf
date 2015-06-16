@@ -155,11 +155,11 @@ type
     procedure   CreateDatabase(const ADatabaseName: string;
                                const AUserName: string;
                                const pUserPassword: string;
-                               const APackageID: string = '');
+                               const APersistenceLayerName: string = '');
     procedure   DropDatabase(const ADatabaseName: string;
                              const AUserName: string;
                              const AUserPassword: string;
-                             const APackageID: string = '');
+                             const APersistenceLayerName: string = '');
     procedure   DropTable(const ATableName: TTableName;
                           const ADBConnectionName: string = '';
                           const APersistenceLayerName: string = ''); overload;
@@ -809,24 +809,24 @@ begin
 end;
 
 procedure TtiOPFManager.CreateDatabase(const ADatabaseName, AUserName,
-  pUserPassword, APackageID: string);
+  pUserPassword, APersistenceLayerName: string);
 var
   LPersistenceLayer: TtiPersistenceLayer;
 begin
-  LPersistenceLayer := PersistenceLayers.FindByPersistenceLayerName(APackageID);
+  LPersistenceLayer := PersistenceLayers.FindByPersistenceLayerName(APersistenceLayerName);
   if LPersistenceLayer = nil then
-    raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APackageID]);
+    raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APersistenceLayerName]);
   LPersistenceLayer.DatabaseClass.CreateDatabase(ADatabaseName, AUserName, pUserPassword);
 end;
 
 procedure TtiOPFManager.DropDatabase(const ADatabaseName, AUserName,
-  AUserPassword, APackageID: string);
+  AUserPassword, APersistenceLayerName: string);
 var
   LPersistenceLayer: TtiPersistenceLayer;
 begin
-  LPersistenceLayer := PersistenceLayers.FindByPersistenceLayerName(APackageID);
+  LPersistenceLayer := PersistenceLayers.FindByPersistenceLayerName(APersistenceLayerName);
   if LPersistenceLayer = nil then
-    raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer, [APackageID]);
+    raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer, [APersistenceLayerName]);
   LPersistenceLayer.DatabaseClass.DropDatabase(ADatabaseName, AUserName, AUserPassword);
 end;
 
