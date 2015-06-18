@@ -17,13 +17,14 @@ type
   TUIConsoleCommandListPL = class(TUIConsoleCommand)
   public
     function    CanExecute(const ACommand: string): boolean; override;
-    procedure   Execute(const AAppObject: TtiObject; const AParams: string); override;
+    procedure   Execute(const AAppObject: TtiBaseObject; const AParams: string); override;
   end;
+
 
   TUIConsoleCommandSelectPL = class(TUIConsoleCommand)
   public
     function    CanExecute(const ACommand: string): boolean; override;
-    procedure   Execute(const AAppObject: TtiObject; const AParams: string); override;
+    procedure   Execute(const AAppObject: TtiBaseObject; const AParams: string); override;
   end;
 
 procedure RegisterCustomCommands(const AConsoleApp: TtiBaseObject);
@@ -42,7 +43,7 @@ begin
   result:= SameText(ACommand, 'l');
 end;
 
-procedure TUIConsoleCommandListPL.Execute(const AAppObject: TtiObject; const AParams: string);
+procedure TUIConsoleCommandListPL.Execute(const AAppObject: TtiBaseObject; const AParams: string);
 var
   i: integer;
   LS: string;
@@ -72,7 +73,7 @@ begin
   result:= SameText(ACommand, 's');
 end;
 
-procedure TUIConsoleCommandSelectPL.Execute(const AAppObject: TtiObject; const AParams: string);
+procedure TUIConsoleCommandSelectPL.Execute(const AAppObject: TtiBaseObject; const AParams: string);
 begin
   TDemoUIConsole(AAppObject).PersistenceLayerName := AParams;
 end;

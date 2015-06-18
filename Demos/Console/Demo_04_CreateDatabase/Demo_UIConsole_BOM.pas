@@ -15,7 +15,7 @@ uses
 type
   TDemoUIConsole = class(TtiBaseObject)
   private
-    FAppObject: TtiObject;
+    FAppObject: TtiBaseObject;
     FCommandList: TObjectList;
     FPersistenceLayerName: string;
     procedure   ProcessCommand(const ACommand: string; out AExit: boolean);
@@ -25,27 +25,27 @@ type
     destructor  Destroy; override;
     procedure   Execute;
     procedure   RegisterCommand(const ACommand: TObject);
-    property    AppObject: TtiObject read FAppObject write FAppObject;
+    property    AppObject: TtiBaseObject read FAppObject write FAppObject;
     property    PersistenceLayerName: string read FPersistenceLayerName write FPersistenceLayerName;
   end;
 
   TUIConsoleCommand = class(TtiBaseObject)
   public
     function    CanExecute(const ACommand: string): boolean; virtual; abstract;
-    procedure   Execute(const AAppObject: TtiObject; const AParams: string); virtual; abstract;
+    procedure   Execute(const AAppObject: TtiBaseObject; const AParams: string); virtual; abstract;
   end;
 
 
   TUIConsoleCommandHelp = class(TUIConsoleCommand)
   public
     function    CanExecute(const ACommand: string): boolean; override;
-    procedure   Execute(const AAppObject: TtiObject; const AParams: string); override;
+    procedure   Execute(const AAppObject: TtiBaseObject; const AParams: string); override;
   end;
 
   TUIConsoleCommandCLS = class(TUIConsoleCommand)
   public
     function    CanExecute(const ACommand: string): boolean; override;
-    procedure   Execute(const AAppObject: TtiObject; const AParams: string); override;
+    procedure   Execute(const AAppObject: TtiBaseObject; const AParams: string); override;
   end;
 
 
@@ -64,34 +64,26 @@ var
   i: integer;
   LCommand: string;
   LParams: string;
-//  LAdrsBook: TAdrsBook;
 begin
   AExit:= SameText(ACommand, 'e') or SameText(ACommand, 'q');
   if AExit then
     Exit; //==>
 
   ParseCommand(ACommand, LCommand, LParams);
-
-//  LAdrsBook:= TAdrsBook.Create;
   try
-//    LAdrsBook.Read;
-    try
-      for i := 0 to FCommandList.Count - 1 do
-        if (FCommandList.Items[i] as TUIConsoleCommand).CanExecute(LCommand) then
-        begin
-          (FCommandList.Items[i] as TUIConsoleCommand).Execute(AppObject, LParams);
-          Exit; //==>
-        end;
-    except
-      on e:exception do
+    for i := 0 to FCommandList.Count - 1 do
+      if (FCommandList.Items[i] as TUIConsoleCommand).CanExecute(LCommand) then
       begin
-        WriteLn('');
-        WriteLn(e.message);
-        WriteLn('');
+        (FCommandList.Items[i] as TUIConsoleCommand).Execute(AppObject, LParams);
+        Exit; //==>
       end;
+  except
+    on e:exception do
+    begin
+      WriteLn('');
+      WriteLn(e.message);
+      WriteLn('');
     end;
-  finally
-//    LAdrsBook.Free;
   end;
 end;
 
@@ -104,7 +96,7 @@ end;
 constructor TDemoUIConsole.Create;
 begin
   inherited Create;
-  FAppObject := nil;
+  FAppObject := self;
 //  Adrs_SrvAutoMap.RegisterMappings;
 //  GTIOPFManager.ConnectDatabase('adrs.fdb', 'SYSDBA', 'masterkey');
 
@@ -152,7 +144,7 @@ begin
   result:= SameText(ACommand, 'h');
 end;
 
-procedure TUIConsoleCommandHelp.Execute(const AAppObject: TtiObject; const AParams: string);
+procedure TUIConsoleCommandHelp.Execute(const AAppObject: TtiBaseObject; const AParams: string);
 begin
   WriteLn('h                - Shows this help');
   WriteLn('l                - List all persistence layers');
@@ -170,7 +162,7 @@ begin
   result:= SameText(ACommand, 'c');
 end;
 
-procedure TUIConsoleCommandCLS.Execute(const AAppObject: TtiObject; const AParams: string);
+procedure TUIConsoleCommandCLS.Execute(const AAppObject: TtiBaseObject; const AParams: string);
 var
   i: integer;
 begin
