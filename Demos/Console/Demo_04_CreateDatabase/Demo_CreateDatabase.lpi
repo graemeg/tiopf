@@ -63,6 +63,7 @@
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
+        <IncludeAssertionCode Value="True"/>
         <AllowLabel Value="False"/>
       </SyntaxOptions>
     </Parsing>

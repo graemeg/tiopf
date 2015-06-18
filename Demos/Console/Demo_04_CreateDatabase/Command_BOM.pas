@@ -70,11 +70,12 @@ end;
 
 function TUIConsoleCommandSelectPL.CanExecute(const ACommand: string): boolean;
 begin
-  result:= SameText(ACommand, 's');
+  Result := SameText(ACommand, 's');
 end;
 
 procedure TUIConsoleCommandSelectPL.Execute(const AAppObject: TtiBaseObject; const AParams: string);
 begin
+  Assert(AAppObject<>nil, '"AAppObject" may not be unassigned');
   TDemoUIConsole(AAppObject).PersistenceLayerName := AParams;
 end;
 
