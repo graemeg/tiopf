@@ -20,6 +20,11 @@ type
     procedure   Execute(const AAppObject: TtiObject; const AParams: string); override;
   end;
 
+  TUIConsoleCommandSelectPL = class(TUIConsoleCommand)
+  public
+    function    CanExecute(const ACommand: string): boolean; override;
+    procedure   Execute(const AAppObject: TtiObject; const AParams: string); override;
+  end;
 
 procedure RegisterCustomCommands(const AConsoleApp: TtiBaseObject);
 
@@ -29,11 +34,6 @@ uses
   tiOPFManager
   ,tiConstants
   ;
-
-procedure RegisterCustomCommands(const AConsoleApp: TtiBaseObject);
-begin
-  TDemoUIConsole(AConsoleApp).RegisterCommand(TUIConsoleCommandListPL.Create);
-end;
 
 { TUIConsoleCommandListPL }
 
@@ -62,7 +62,25 @@ begin
   if LS <> '' then
     WriteLn(LS)
   else
-    WriteLn('No persistence layers loaded');end;
+    WriteLn('No persistence layers loaded');
+end;
+
+{ TUIConsoleCommandSelectPL }
+
+function TUIConsoleCommandSelectPL.CanExecute(const ACommand: string): boolean;
+begin
+  result:= SameText(ACommand, 's');
+end;
+
+procedure TUIConsoleCommandSelectPL.Execute(const AAppObject: TtiObject; const AParams: string);
+begin
+  TDemoUIConsole(AAppObject).PersistenceLayerName := AParams;
+end;
+
+procedure RegisterCustomCommands(const AConsoleApp: TtiBaseObject);
+begin
+  TDemoUIConsole(AConsoleApp).RegisterCommand(TUIConsoleCommandListPL.Create);
+end;
 
 end.
 

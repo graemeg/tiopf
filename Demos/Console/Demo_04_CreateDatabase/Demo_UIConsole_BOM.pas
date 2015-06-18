@@ -17,6 +17,7 @@ type
   private
     FAppObject: TtiObject;
     FCommandList: TObjectList;
+    FPersistenceLayerName: string;
     procedure   ProcessCommand(const ACommand: string; out AExit: boolean);
     procedure   ParseCommand(const AInput: string; out ACommand, AParams: string);
   public
@@ -25,6 +26,7 @@ type
     procedure   Execute;
     procedure   RegisterCommand(const ACommand: TObject);
     property    AppObject: TtiObject read FAppObject write FAppObject;
+    property    PersistenceLayerName: string read FPersistenceLayerName write FPersistenceLayerName;
   end;
 
   TUIConsoleCommand = class(TtiBaseObject)
@@ -152,12 +154,13 @@ end;
 
 procedure TUIConsoleCommandHelp.Execute(const AAppObject: TtiObject; const AParams: string);
 begin
-  WriteLn('h                                     - Describe the commands');
-  WriteLn('l                                     - List all entries');
-  WriteLn('a <Title>, <First Name>, <Last Name>  - Add a new entry');
-  WriteLn('d <Index number>                      - Delete an entry');
-  WriteLn('c                                     - Clear the screen');
-  WriteLn('e or q                                - Quit the application');
+  WriteLn('h                - Shows this help');
+  WriteLn('l                - List all persistence layers');
+  WriteLn('s <PerLayerName> - Select a persistence layer to use');
+  WriteLn('d                - Create database');
+  WriteLn('f                - Does database exist?');
+  WriteLn('c                - Clear the screen');
+  WriteLn('e or q           - Quit the application');
 end;
 
 { TUIConsoleCommandCLS }
@@ -173,7 +176,7 @@ var
 begin
   for i := 1 to 24 do
     WriteLn;
-//  WriteLn(ConnectionDetailsAsString);
+  WriteLn('Use the ''h'' command for help.');
 end;
 
 
