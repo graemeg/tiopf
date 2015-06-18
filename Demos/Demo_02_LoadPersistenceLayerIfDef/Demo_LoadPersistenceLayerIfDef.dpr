@@ -8,8 +8,8 @@ program Demo_LoadPersistenceLayerIfDef;
 // the loaded persistence layers. (Note, the dialog will
 // say the database is not connected - wich is correct.)
 
-// Take a look at tiOPFManager about line 215 you will see how
-// this the defines are implemented.
+// Take a look at tiOPFManager about line 243 and you will see
+// how these defines are implemented.
 
 {$R *.res}
 

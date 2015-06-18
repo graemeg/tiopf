@@ -5,7 +5,7 @@ program demo_02;
 (*
   Adding a {$DEFINE LINK_???} to your project, either in the LPR
   or the Project | Options | Compiler Options | Other dialog
-  or in the tiOPFfpGUI.lpk package's Compiler Options | Other dialog,
+  or in the tiOPF.lpk package's Compiler Options | Other dialog,
   the specified persistence layers will be linked and loaded.
 
   By default when tiOPF is used with FPC, the following persistence
@@ -19,8 +19,8 @@ program demo_02;
   the loaded persistence layers. (Note, the dialog will
   say the database is not connected - wich is correct.)
 
-  Take a look at tiOPFManager about line 215 you will see how
-  this the defines are implemented.
+  Take a look at tiOPFManager about line 243 and you will see
+  how these defines are implemented.
 *)
 
 uses
