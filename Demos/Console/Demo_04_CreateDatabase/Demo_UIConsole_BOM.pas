@@ -23,6 +23,7 @@ type
     constructor Create;
     destructor  Destroy; override;
     procedure   Execute;
+    procedure   RegisterCommand(const ACommand: TObject);
     property    AppObject: TtiObject read FAppObject write FAppObject;
   end;
 
@@ -135,6 +136,11 @@ begin
     ReadLn(LCommand);
     ProcessCommand(LCommand, LExit);
   until LExit;
+end;
+
+procedure TDemoUIConsole.RegisterCommand(const ACommand: TObject);
+begin
+  FCommandList.Add(ACommand);
 end;
 
 { TUIConsoleCommandHelp }

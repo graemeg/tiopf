@@ -36,7 +36,7 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <Units Count="2">
+    <Units Count="3">
       <Unit0>
         <Filename Value="Demo_CreateDatabase.dpr"/>
         <IsPartOfProject Value="True"/>
@@ -45,6 +45,10 @@
         <Filename Value="Demo_UIConsole_BOM.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="Command_BOM.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit2>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

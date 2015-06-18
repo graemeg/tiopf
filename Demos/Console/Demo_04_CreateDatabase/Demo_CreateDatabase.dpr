@@ -38,6 +38,7 @@ uses
   ,tiQueryCSV
   ,tiQueryTAB
   ,Demo_UIConsole_BOM
+  ,Command_BOM
   ;
 
 var
@@ -46,6 +47,7 @@ begin
   try
     LO:= TDemoUIConsole.Create;
     try
+      RegisterCustomCommands(LO);
       LO.Execute;
     finally
       LO.Free;
