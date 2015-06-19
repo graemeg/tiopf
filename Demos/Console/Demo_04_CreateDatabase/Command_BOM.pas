@@ -27,6 +27,14 @@ type
     procedure   Execute(const AAppObject: TtiBaseObject; const AParams: string); override;
   end;
 
+
+  TUIConsoleCommandCreateDB = class(TUIConsoleCommand)
+  public
+    function    CanExecute(const ACommand: string): boolean; override;
+    procedure   Execute(const AAppObject: TtiBaseObject; const AParams: string); override;
+  end;
+
+
 procedure RegisterCustomCommands(const AConsoleApp: TtiBaseObject);
 
 implementation
@@ -34,6 +42,8 @@ implementation
 uses
   tiOPFManager
   ,tiConstants
+  ,tiPersistenceLayers
+  ,tiUtils
   ;
 
 { TUIConsoleCommandListPL }
@@ -82,6 +92,34 @@ end;
 procedure RegisterCustomCommands(const AConsoleApp: TtiBaseObject);
 begin
   TDemoUIConsole(AConsoleApp).RegisterCommand(TUIConsoleCommandListPL.Create);
+  TDemoUIConsole(AConsoleApp).RegisterCommand(TUIConsoleCommandSelectPL.Create);
+  TDemoUIConsole(AConsoleApp).RegisterCommand(TUIConsoleCommandCreateDB.Create);
+end;
+
+{ TUIConsoleCommandCreateDB }
+
+function TUIConsoleCommandCreateDB.CanExecute(const ACommand: string): boolean;
+begin
+  Result := SameText(ACommand, 'd');
+end;
+
+procedure TUIConsoleCommandCreateDB.Execute(const AAppObject: TtiBaseObject; const AParams: string);
+var
+  LPerLayer: TtiPersistenceLayer;
+  lPerLayerName: string;
+  LDefaults: TtiPersistenceLayerDefaults;
+begin
+  lPerLayerName := TDemoUIConsole(AAppObject).PersistenceLayerName;
+  LDefaults := TtiPersistenceLayerDefaults.Create;
+  try
+    LPerLayer := GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(lPerLayerName);
+    Assert(LPerLayer<>nil, '"' + lPerLayerName + '" not registered');
+    LPerLayer.AssignPersistenceLayerDefaults(LDefaults);
+    LPerLayer.CreateDatabase(ExpandFileName(LDefaults.DatabaseName), LDefaults.UserName, LDefaults.Password);
+    WriteLn('Database "' + ExpandFileName(LDefaults.DatabaseName) + '" has been created.');
+  finally
+    LDefaults.Free;
+  end;
 end;
 
 end.
