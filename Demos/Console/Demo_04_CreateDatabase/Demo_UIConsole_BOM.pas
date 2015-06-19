@@ -126,7 +126,7 @@ begin
   LExit:= True;
   repeat
     WriteLn('');
-    Write('Enter command >');
+    Write('Enter command > ');
     ReadLn(LCommand);
     ProcessCommand(LCommand, LExit);
   until LExit;

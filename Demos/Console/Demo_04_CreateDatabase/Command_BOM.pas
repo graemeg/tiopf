@@ -35,6 +35,13 @@ type
   end;
 
 
+  TUIConsoleCommandExistsDB = class(TUIConsoleCommand)
+  public
+    function    CanExecute(const ACommand: string): boolean; override;
+    procedure   Execute(const AAppObject: TtiBaseObject; const AParams: string); override;
+  end;
+
+
 procedure RegisterCustomCommands(const AConsoleApp: TtiBaseObject);
 
 implementation
@@ -94,6 +101,7 @@ begin
   TDemoUIConsole(AConsoleApp).RegisterCommand(TUIConsoleCommandListPL.Create);
   TDemoUIConsole(AConsoleApp).RegisterCommand(TUIConsoleCommandSelectPL.Create);
   TDemoUIConsole(AConsoleApp).RegisterCommand(TUIConsoleCommandCreateDB.Create);
+  TDemoUIConsole(AConsoleApp).RegisterCommand(TUIConsoleCommandExistsDB.Create);
 end;
 
 { TUIConsoleCommandCreateDB }
@@ -108,6 +116,7 @@ var
   LPerLayer: TtiPersistenceLayer;
   lPerLayerName: string;
   LDefaults: TtiPersistenceLayerDefaults;
+  lDatabaseName: string;
 begin
   lPerLayerName := TDemoUIConsole(AAppObject).PersistenceLayerName;
   LDefaults := TtiPersistenceLayerDefaults.Create;
@@ -115,8 +124,40 @@ begin
     LPerLayer := GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(lPerLayerName);
     Assert(LPerLayer<>nil, '"' + lPerLayerName + '" not registered');
     LPerLayer.AssignPersistenceLayerDefaults(LDefaults);
-    LPerLayer.CreateDatabase(ExpandFileName(LDefaults.DatabaseName), LDefaults.UserName, LDefaults.Password);
-    WriteLn('Database "' + ExpandFileName(LDefaults.DatabaseName) + '" has been created.');
+    lDatabaseName := ExpandFileName(LDefaults.DatabaseName);
+    LPerLayer.CreateDatabase(lDatabaseName, LDefaults.UserName, LDefaults.Password);
+    WriteLn('Database "' + lDatabaseName + '" has been created.');
+  finally
+    LDefaults.Free;
+  end;
+end;
+
+{ TUIConsoleCommandExistsDB }
+
+function TUIConsoleCommandExistsDB.CanExecute(const ACommand: string): boolean;
+begin
+  Result := SameText(ACommand, 'f');
+end;
+
+procedure TUIConsoleCommandExistsDB.Execute(const AAppObject: TtiBaseObject; const AParams: string);
+var
+  LPerLayer: TtiPersistenceLayer;
+  lPerLayerName: string;
+  LDefaults: TtiPersistenceLayerDefaults;
+  lDatabaseName: string;
+begin
+  lPerLayerName := TDemoUIConsole(AAppObject).PersistenceLayerName;
+  LDefaults := TtiPersistenceLayerDefaults.Create;
+  try
+    LPerLayer := GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(lPerLayerName);
+    Assert(LPerLayer<>nil, '"' + lPerLayerName + '" not registered');
+    LPerLayer.AssignPersistenceLayerDefaults(LDefaults);
+    lDatabaseName := ExpandFileName(LDefaults.DatabaseName);
+    if LPerLayer.DatabaseExists(lDatabaseName, LDefaults.UserName, LDefaults.Password)
+    then
+      WriteLn('Database <' + lDatabaseName + '> exists.')
+    else
+      WriteLn('Database <' + lDatabaseName + '> does not exist.');
   finally
     LDefaults.Free;
   end;
