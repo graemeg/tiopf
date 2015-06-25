@@ -11,10 +11,9 @@ uses
   tiBaseMediator;
 
 type
-  TtiModelMediator = class;
 
+  TtiModelMediator = class; // forward declaration
 
-  { TtiPropertyLinkDef }
 
   TtiPropertyLinkDef = class(TCollectionItem)
   private
@@ -29,6 +28,7 @@ type
     FOnBeforeGUIToObject: TtiBeforeGUIToObjectEvent;
     FOnAfterGUIToObject: TtiAfterGUIToObjectEvent;
     FOnObjectToGUI: TtiObjectToGUIEvent;
+	FOnBeforeSetupMediator: TtiMediatorEvent;
     FOnSetupMediator: TtiMediatorEvent;
     FValueList: TtiObjectList;
     procedure SetComponent(const AValue: TComponent);
@@ -65,11 +65,10 @@ type
     property OnBeforeGUIToObject: TtiBeforeGUIToObjectEvent read FOnBeforeGUIToObject write SetOnBeforeGUIToObject;
     property OnAfterGUIToObject: TtiAfterGUIToObjectEvent read FOnAfterGUIToObject write SetOnAfterGUIToObject;
     property OnObjectToGUI: TtiObjectToGUIEvent read FOnObjectToGUI write SetOnObjectToGUI;
-    Property OnSetupMediator: TtiMediatorEvent Read FOnSetupMediator Write FOnSetupMediator;
+    property OnSetupMediator: TtiMediatorEvent Read FOnSetupMediator Write FOnSetupMediator;
+    property OnBeforeSetupMediator: TtiMediatorEvent Read FOnBeforeSetupMediator Write FOnBeforeSetupMediator;
   end;
 
-
-  { TtiPropertyLinkDefs }
 
   TtiPropertyLinkDefs = class(TCollection)
   private
@@ -89,8 +88,6 @@ type
     property Defs[Index: integer]: TtiPropertyLinkDef read GetD write SetD; default;
   end;
 
-
-  { TtiModelMediator }
 
   TtiModelMediator = class(TComponent)
   private
@@ -152,7 +149,6 @@ type
   TtiModelMediatorCollection = class;
   TtiModelMediatorList = class;
 
-  { TtiModelMediatorItem }
 
   {: Design-time model mediator using TCollection property editor }
   TtiModelMediatorItem = class(TCollectionItem)
@@ -181,8 +177,6 @@ type
   end;
 
 
-  { TtiModelMediatorCollection }
-
   {: Design-time list of model mediators using TCollection property editor }
   TtiModelMediatorCollection = class(TCollection)
   private
@@ -200,8 +194,6 @@ type
     property Items[Index: integer]: TtiModelMediatorItem read GetItem write SetItem; default;
   end;
 
-
-  { TtiModelMediatorList }
 
   {: A list of model mediators. One model mediator is required per subject.
      This component, which can be used at design-time or run-time, groups the
@@ -392,13 +384,6 @@ begin
     Mediator.OnBeforeGUIToObject := AValue;
 end;
 
-procedure TtiPropertyLinkDef.SetOnAfterGUIToObject(const AValue: TtiAfterGUIToObjectEvent);
-begin
-  FOnAfterGUIToObject := AValue;
-  if Assigned(Mediator) then
-    Mediator.OnAfterGUIToObject := AValue;
-end;
-
 procedure TtiPropertyLinkDef.SetOnObjectToGUI(const AValue: TtiObjectToGUIEvent);
 begin
   FOnObjectToGUI := AValue;
@@ -415,6 +400,13 @@ begin
     FMediator.ValueList := FValueList;
 end;
 
+procedure TtiPropertyLinkDef.SetOnAfterGUIToObject(const AValue: TtiAfterGUIToObjectEvent);
+begin
+  FOnAfterGUIToObject := AValue;
+  if Assigned(Mediator) then
+    Mediator.OnAfterGUIToObject := AValue;
+end;
+
 procedure TtiPropertyLinkDef.CreateMediator;
 begin
   if Assigned(FMediator) then
@@ -427,7 +419,9 @@ begin
     FMediator.FieldName := FieldName;
     FMediator.DisplayFieldName := DisplayFieldName;
     FMediator.RootFieldName := '';
-  end else begin
+  end
+  else
+  begin
     FMediator.FieldName := tiValueFieldName(FieldName);
     FMediator.DisplayFieldName := DisplayFieldName;
     if GUIFieldName <> '' then
@@ -441,6 +435,8 @@ begin
   FMediator.ValueList := Self.ValueList;
   FMediator.Subject := ModelMediator.Subject;
   FMediator.ObjectUpdateMoment := Self.ObjectUpdateMoment;
+  if Assigned(FOnBeforeSetupMediator) then
+    FOnBeforeSetupMediator(FMediator);
   FMediator.Active := True;
   if Assigned(FOnSetupMediator) then
     FOnSetupMediator(FMediator);
