@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -19,13 +19,19 @@
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <MacroValues Count="4">
-      <Macro1 Name="fpgui" Value="/data/devel/fpgui/"/>
-      <Macro2 Name="tiopf" Value="/data/devel/tiopf/"/>
-      <Macro3 Name="fblib" Value="/data/devel/opensource/FBLib/"/>
+      <Macro1 Name="tiopf" Value="/data/devel/tiopf/"/>
+      <Macro2 Name="fblib" Value="/data/devel/opensource/fblib/"/>
+      <Macro3 Name="fpgui" Value="/data/devel/fpgui/"/>
       <Macro4 Name="fptest" Value="/data/devel/fptest/"/>
     </MacroValues>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
+      <SharedMatrixOptions Count="4">
+        <Item1 ID="965016803321" Modes="Default" Type="IDEMacro" MacroName="tiopf" Value="/data/devel/tiopf/"/>
+        <Item2 ID="581333748905" Modes="Default" Type="IDEMacro" MacroName="fblib" Value="/data/devel/opensource/fblib/"/>
+        <Item3 ID="166768990783" Modes="Default" Type="IDEMacro" MacroName="fpgui" Value="/data/devel/fpgui/"/>
+        <Item4 ID="667507988352" Modes="Default" Type="IDEMacro" MacroName="fptest" Value="/data/devel/fptest/"/>
+      </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -42,17 +48,14 @@
       <Unit0>
         <Filename Value="tiOPFUnitTestsFPGui.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="tiOPFUnitTestsFPGui"/>
       </Unit0>
       <Unit1>
         <Filename Value="../../UnitTests/Common/tiTestDependencies.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="tiTestDependencies"/>
       </Unit1>
       <Unit2>
         <Filename Value="../../UnitTests/Common/tiDUnitINI.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="tiDUnitINI"/>
       </Unit2>
     </Units>
   </ProjectOptions>
@@ -87,9 +90,6 @@
       </Optimizations>
     </CodeGeneration>
     <Other>
-      <CompilerMessages>
-        <UseMsgFile Value="True"/>
-      </CompilerMessages>
       <CustomOptions Value="-dDUNIT2
 -dLINK_CSV
 -dLINK_TAB
@@ -105,7 +105,6 @@
 -dLINK_ZEOS_FBx
 -dLINK_FBLx
 -dUseCThreads"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
