@@ -18,9 +18,9 @@ uses
 
 begin
   { Unit tests are hard-coded to Australian locale }
-  DateSeparator := '/';
-//  DecimalSeparator := '.';
-//  CurrencyString := '$';
+  FormatSettings.DateSeparator := '/';
+//  FormatSettings.DecimalSeparator := '.';
+//  FormatSettings.CurrencyString := '$';
 
 //  if not TtiPromptWhichPersistenceLayersToTest.Execute then
 //    Halt;
