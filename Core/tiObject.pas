@@ -539,7 +539,7 @@ type
     procedure   Update(ASubject: TtiObject); overload; virtual;
     {: Only needed if performing a observing role where other events than changed need to be observed }
     procedure   Update(ASubject: TtiObject; AOperation: TNotifyOperation); overload; virtual;
-    procedure   Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject = nil); overload; virtual;
+    procedure   Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject); overload; virtual;
     {: Notify all the attached observers about a change }
     procedure   NotifyObservers; overload; virtual;
     {: Notify all the attached observers about a change for a specific topic }
