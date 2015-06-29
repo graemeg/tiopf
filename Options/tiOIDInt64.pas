@@ -85,6 +85,7 @@ uses
   tiQuery,
   tiOPFManager,
   tiConstants,
+  tiLog,
   SysUtils;
 
 { TOIDInt64 }
@@ -204,7 +205,6 @@ begin
   finally
     FCritSection.Leave;
   end;
-
 end;
 
 class function TtiOIDGeneratorInt64.OIDClass: TtiOIDClass;
@@ -246,6 +246,7 @@ end;
 function TVisDBNextOIDAmblerRead.AcceptVisitor: boolean;
 begin
   Result := (Visited is TNextOIDData);
+  Log([ClassName, Visited.ClassName, Visited.ObjectStateAsString, Result], lsAcceptVisitor);
 end;
 
 procedure TVisDBNextOIDAmblerRead.Execute(const AData: TtiVisited);
@@ -272,6 +273,7 @@ end;
 function TVisDBNextOIDAmblerUpdate.AcceptVisitor: boolean;
 begin
   Result := (Visited is TNextOIDData);
+  Log([ClassName, Visited.ClassName, Visited.ObjectStateAsString, Result], lsAcceptVisitor);
 end;
 
 procedure TVisDBNextOIDAmblerUpdate.Execute(const AData: TtiVisited);
@@ -289,7 +291,6 @@ begin
   lParams := TtiQueryParams.Create;
   try
     lParams.SetValueAsInteger('OID', int64(TNextOIDData(Visited).NextOID + 1));
-    //    lParams.ParamAsVariant[ 'OID' ]:= Int64(TNextOIDData(Visited).NextOID + 1);
     Query.UpdateRow('Next_OID', lParams, nil);
   finally
     lParams.Free;
