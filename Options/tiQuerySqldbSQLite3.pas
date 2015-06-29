@@ -75,7 +75,7 @@ begin
   APersistenceLayerDefaults.DatabaseName := CDefaultDatabaseName + '.db';
   APersistenceLayerDefaults.IsDatabaseNameFilePath := True;
   APersistenceLayerDefaults.CanCreateDatabase := True;
-  APersistenceLayerDefaults.CanSupportMultiUser := False;
+  APersistenceLayerDefaults.CanSupportMultiUser := True;  // it does, but limited usage
   APersistenceLayerDefaults.CanSupportSQL := True;
 end;
 
