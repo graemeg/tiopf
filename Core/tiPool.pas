@@ -227,7 +227,7 @@ begin
       Result:= LItem;
       Result.Locked := true;
       Result.Index := I;
-      Log('PooledItem #' + intToStr(I) + ' Locked.', lsConnectionPool);
+      Log('Found an available item (#' + intToStr(I) + ') in pool and locked it.', lsConnectionPool);
       Exit; //==>
     end;
   end;
