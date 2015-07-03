@@ -3056,11 +3056,10 @@ end;
 
 function TtiObject.GetParent: TtiObject;
 begin
-  if (Owner is TtiObjectList) and
-     Assigned(Owner.Owner) then
-    result:= Owner.Owner
+  if (Owner is TtiObjectList) and Assigned(Owner.Owner) then
+    Result := Owner.Owner
   else
-    result:= Owner;
+    Result := Owner;
 end;
 
 function TtiObject.GetPropValue(const APropName: string): Variant;
