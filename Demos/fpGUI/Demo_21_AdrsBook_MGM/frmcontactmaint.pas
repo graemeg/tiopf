@@ -181,6 +181,7 @@ begin
   SetPosition(513, 423, 537, 414);
   WindowTitle := 'Contact Edit Form';
   Hint := '';
+  ShowHint := True;
 
   lblName1 := TfpgLabel.Create(self);
   with lblName1 do
@@ -387,7 +388,7 @@ begin
     Anchors := [anLeft,anBottom];
     Text := 'Debug (Show)';
     FontDesc := '#Label1';
-    Hint := '';
+    Hint := 'Show some debug information of the current Contact';
     ImageName := '';
     TabOrder := 17;
     OnClick := @btnDebugClicked;

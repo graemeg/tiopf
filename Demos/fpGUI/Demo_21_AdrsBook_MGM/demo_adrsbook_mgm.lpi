@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -37,22 +37,18 @@
       <Unit0>
         <Filename Value="demo_adrsbook_mgm.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="demo_adrsbook_mgm"/>
       </Unit0>
       <Unit1>
         <Filename Value="contactmanager.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="contactmanager"/>
       </Unit1>
       <Unit2>
         <Filename Value="model.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="model"/>
       </Unit2>
       <Unit3>
         <Filename Value="frmmain.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="frmmain"/>
       </Unit3>
       <Unit4>
         <Filename Value="frmcontactmaint.pas"/>
@@ -82,12 +78,11 @@
       <Unit9>
         <Filename Value="contact_views.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="contact_views"/>
       </Unit9>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <Target>
       <Filename Value="demo_addressbook"/>
     </Target>
@@ -101,11 +96,5 @@
         <CPPInline Value="False"/>
       </SyntaxOptions>
     </Parsing>
-    <Other>
-      <CompilerMessages>
-        <UseMsgFile Value="True"/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
 </CONFIG>

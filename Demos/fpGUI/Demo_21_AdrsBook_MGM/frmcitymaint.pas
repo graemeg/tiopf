@@ -92,6 +92,7 @@ begin
   Name := 'CityEditForm';
   SetPosition(673, 204, 350, 186);
   WindowTitle := 'City Maintenance';
+  ShowHint := True;
 
   lblName1 := TfpgLabel.Create(self);
   with lblName1 do

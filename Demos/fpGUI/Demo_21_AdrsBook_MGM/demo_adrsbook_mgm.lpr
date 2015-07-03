@@ -16,6 +16,8 @@ var
   frm: TMainForm;
 begin
   fpgApplication.Initialize;
+  fpgApplication.ShowHint := True;
+
   frm := TMainForm.Create(nil);
   try
     frm.Show;

@@ -99,6 +99,7 @@ begin
   Name := 'CityListForm';
   SetPosition(412, 278, 421, 315);
   WindowTitle := 'City Listing';
+  ShowHint := True;
 
   bvlName1 := TfpgBevel.Create(self);
   with bvlName1 do

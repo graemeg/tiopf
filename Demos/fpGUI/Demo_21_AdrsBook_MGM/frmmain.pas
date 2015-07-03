@@ -154,6 +154,7 @@ begin
   Name := 'MainForm';
   SetPosition(373, 273, 540, 404);
   WindowTitle := 'Demo 21: Address Book Demo using MGM';
+  ShowHint := True;
 
   grdContacts := TfpgStringGrid.Create(self);
   with grdContacts do
