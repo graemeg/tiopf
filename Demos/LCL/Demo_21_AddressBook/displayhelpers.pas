@@ -1,7 +1,8 @@
 {
   Instead of adding GUI formatting and sorting to our BOM classes, we have
   helper classes defined here that does the fancy display formatting for
-  us. These display objects are the Subject in TtiModelMediator.
+  us. These display objects can then be used as the Subject in mediators like
+  the TtiModelMediator.
 }
 
 unit DisplayHelpers;
