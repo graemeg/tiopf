@@ -10,7 +10,8 @@ object ContactEditForm: TContactEditForm
   ClientHeight = 330
   ClientWidth = 539
   Position = poMainFormCenter
-  LCLVersion = '1.3'
+  ShowHint = True
+  LCLVersion = '1.5'
   object LEFirstName: TLabel
     Left = 10
     Height = 15

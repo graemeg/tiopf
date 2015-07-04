@@ -6,7 +6,8 @@ object CountryListForm: TCountryListForm
   Caption = 'Country list'
   ClientHeight = 300
   ClientWidth = 400
-  LCLVersion = '1.3'
+  ShowHint = True
+  LCLVersion = '1.5'
   object BAdd: TButton
     Left = 13
     Height = 25

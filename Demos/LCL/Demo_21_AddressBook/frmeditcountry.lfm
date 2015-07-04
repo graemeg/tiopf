@@ -7,7 +7,8 @@ object EditCountryForm: TEditCountryForm
   ClientHeight = 132
   ClientWidth = 313
   Position = poMainFormCenter
-  LCLVersion = '1.3'
+  ShowHint = True
+  LCLVersion = '1.5'
   object Label1: TLabel
     Left = 8
     Height = 15

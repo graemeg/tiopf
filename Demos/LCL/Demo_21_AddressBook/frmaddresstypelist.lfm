@@ -6,7 +6,8 @@ object AddressTypeListForm: TAddressTypeListForm
   Caption = 'Address types list'
   ClientHeight = 229
   ClientWidth = 384
-  LCLVersion = '1.3'
+  ShowHint = True
+  LCLVersion = '1.5'
   object BAdd: TButton
     Left = 8
     Height = 25
