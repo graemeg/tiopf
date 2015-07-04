@@ -8,7 +8,7 @@ interface
 
 uses
   tiMediators, tiListMediators, tiGUIINI, tiDialogs, tiGUIConstants, tiGUIUtils, tiLogToGUI, 
-  tiTreeBuildVisitor, tiGenericTreeViewMediator, tiDataset, tiImageMgr, tiListView;
+  tiTreeBuildVisitor, tiGenericTreeViewMediator, tiImageMgr, tiListView;
 
 implementation
 

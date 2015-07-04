@@ -7,7 +7,7 @@
       <Version Value="11"/>
       <SearchPaths>
         <IncludeFiles Value="../../Core"/>
-        <OtherUnitFiles Value="../../Options;../../GUI;../../GUI/LCL"/>
+        <OtherUnitFiles Value="../../GUI;../../GUI/LCL"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)/lcl"/>
       </SearchPaths>
       <Parsing>
@@ -26,7 +26,7 @@
     <License Value="Mozilla Public License 1.1 or Modified LGPL
 "/>
     <Version Major="2" Release="5"/>
-    <Files Count="12">
+    <Files Count="11">
       <Item1>
         <Filename Value="../../GUI/LCL/tiMediators.pas"/>
         <UnitName Value="tiMediators"/>
@@ -64,17 +64,13 @@
         <UnitName Value="tiGenericTreeViewMediator"/>
       </Item9>
       <Item10>
-        <Filename Value="../../Options/tiDataset.pas"/>
-        <UnitName Value="tiDataset"/>
-      </Item10>
-      <Item11>
         <Filename Value="../../GUI/tiImageMgr.pas"/>
         <UnitName Value="tiImageMgr"/>
-      </Item11>
-      <Item12>
+      </Item10>
+      <Item11>
         <Filename Value="../../GUI/tiListView.pas"/>
         <UnitName Value="tiListView"/>
-      </Item12>
+      </Item11>
     </Files>
     <LazDoc Paths="../../../Docs/xml/core;../../../Docs/xml/options;../../../Docs/xml/gui"/>
     <RequiredPkgs Count="2">
@@ -92,6 +88,5 @@
       <Version Value="2"/>
       <IgnoreBinaries Value="False"/>
     </PublishOptions>
-    <Provides Count="1"/>
   </Package>
 </CONFIG>
