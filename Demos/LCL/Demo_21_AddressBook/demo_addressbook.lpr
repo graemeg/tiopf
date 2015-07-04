@@ -13,7 +13,7 @@ uses
 
 begin
   { Lets default to the ISO international date format }
-  ShortDateFormat := 'yyyy-mm-dd';
+  DefaultFormatSettings.ShortDateFormat := 'yyyy-mm-dd';
 
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
