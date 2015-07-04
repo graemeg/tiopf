@@ -15,7 +15,8 @@ uses
   tiVisitorCriteria, tiXMLToTIDataset, tiQueryXMLLight, tiRTTI, tiTokenLibrary, tiINI, tiQueue, tiAutoMap, 
   tiVisitorDBAutoGen, tiStructuredCSVReader, tiStructuredCSVWriter, tiFilteredObjectList, tiBaseMediator, 
   tiModelMediator, tiQueryDataset, tiOPFSqlScript, tiOIDInt64, tiLogToDebugSvr, tiPersistenceLayers, 
-  tiWebServerClientConnectionDetails, tiCRC32, tiHTTP, tiQuerySqldb, tiQuerySqldbIB, tiQuerySqldbSQLite3;
+  tiWebServerClientConnectionDetails, tiCRC32, tiHTTP, tiQuerySqldb, tiQuerySqldbIB, tiQuerySqldbSQLite3, 
+  tiDisplayHelpers;
 
 implementation
 

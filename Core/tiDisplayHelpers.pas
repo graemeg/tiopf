@@ -5,7 +5,9 @@
   the TtiModelMediator.
 }
 
-unit DisplayHelpers;
+unit tiDisplayHelpers;
+
+{$I tiDefines.inc}
 
 interface
 
@@ -32,7 +34,7 @@ type
   public
     constructor CreateCustom(ASubject: TtiObjectList);
     destructor  Destroy; override;
-    procedure   Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject=nil); override;
+    procedure   Update(ASubject: TtiObject; AOperation: TNotifyOperation; AData: TtiObject = nil); override;
     property    Subject: TtiObjectList read FSubject;
   end;
 

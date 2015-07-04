@@ -38,7 +38,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="13">
+    <Units Count="12">
       <Unit0>
         <Filename Value="demo_addressbook.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -118,16 +118,18 @@
       <Unit11>
         <Filename Value="contactdisplay.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="ContactDisplay"/>
       </Unit11>
-      <Unit12>
-        <Filename Value="displayhelpers.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="DisplayHelpers"/>
-      </Unit12>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
+    <Target>
+      <Filename Value="demo_addressbook"/>
+    </Target>
+    <SearchPaths>
+      <UnitOutputDirectory Value="units/"/>
+    </SearchPaths>
     <Parsing>
       <SyntaxOptions>
         <CStyleOperator Value="False"/>

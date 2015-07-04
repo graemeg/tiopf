@@ -9,7 +9,7 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms, SysUtils, frmmain, model, contactmanager,
   frmEditContact, frmEditAddress, frmCityList, frmEditCity, frmCountryList,
-  frmEditCountry, frmAddressTypeList, ContactDisplay, DisplayHelpers;
+  frmEditCountry, frmAddressTypeList, ContactDisplay;
 
 begin
   { Lets default to the ISO international date format }

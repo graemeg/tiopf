@@ -2,7 +2,7 @@ unit ContactDisplay;
 
 interface
 
-Uses model, displayhelpers, tiObject;
+Uses model, tiDisplayHelpers, tiObject;
 
 Type
   TContactDisplay = class(TBaseDisplayObject)
