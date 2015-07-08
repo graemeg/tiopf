@@ -163,7 +163,7 @@ type
         objects that are accessable by RTTI as published.
         Note: Do not override Iterate to change the behaviour of your object.
         Override IterateAssignTouched Instead. Iterate is not called by the
-        VisitorManager so you overriden method will not execute. Alternatively,
+        VisitorManager so your overriden method will not execute. Alternatively,
         you can set the IterationStyle property on the Visitor to change
         iteration behaviour.
         @param AVisitor: An instance of the TtiVisitor to be passed over the
