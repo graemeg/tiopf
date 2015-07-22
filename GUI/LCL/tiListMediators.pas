@@ -94,6 +94,42 @@ type
   end;
 
 
+  { Composite mediator for TListBox }
+  TtiListBoxListMediatorView = class(TtiCustomListMediatorView)
+  protected
+    function    DoCreateItemMediator(AData: TtiObject; ARowIdx: integer): TtiListItemMediator; override;
+    procedure   DoDeleteItemMediator(AIndex: Integer; AMediator: TtiListItemMediator); override;
+    function    GetSelectedObject: TtiObject; override;
+    procedure   SetSelectedObject(const AValue: TtiObject); override;
+    procedure   CreateColumns; override;
+    procedure   ClearList; override;
+    procedure   RebuildList; override;
+    procedure   SetupGUIandObject; override;
+  public
+    constructor CreateCustom(AModel: TtiObjectList; AListBox: TListBox; ADisplayNames: string; AIsObserving: Boolean = True); reintroduce; overload;
+    destructor  Destroy; override;
+    class function ComponentClass: TClass; override;
+    function    GetObjectFromRow(ARow: Integer): TtiObject;
+    function    View: TListBox; reintroduce;
+  end;
+
+
+  { Used internally for sub-mediators in ListBox mediator. Moved to interface
+    section so it can be overridden. }
+  TtiListBoxItemMediator = class(TtiListItemMediator)
+  private
+    FView: TListBox;
+    FRowIndex: integer;
+  public
+    constructor CreateCustom(AModel: TtiObject; AListBox: TListBox; const AFieldsInfo: TtiMediatorFieldInfoList; ARowIndex: integer; IsObserving: Boolean = True);
+    procedure   Update(ASubject: TtiObject); override;
+  published
+    property    View: TListBox read FView;
+    property    RowIndex: integer read FRowIndex;
+  end;
+
+
+
 procedure RegisterFallBackListMediators;
 
 implementation
@@ -107,6 +143,7 @@ procedure RegisterFallBackListMediators;
 begin
   gMediatorManager.RegisterMediator(TtiListViewMediatorView, TtiObjectList);
   gMediatorManager.RegisterMediator(TtiStringGridMediatorView, TtiObjectList);
+  gMediatorManager.RegisterMediator(TtiListBoxListMediatorView, TtiObjectList);
 end;
 
 
@@ -581,6 +618,178 @@ begin
     FView.Cells[i, FRowIndex] := lValue;
   end;
 end;
+
+{ TtiListBoxListMediatorView }
+
+function TtiListBoxListMediatorView.DoCreateItemMediator(AData: TtiObject; ARowIdx: integer): TtiListItemMediator;
+var
+  lFieldName: string;
+begin
+  View.Items.BeginUpdate;
+  try
+    if FieldsInfo.Count > 0 then    // only take the first field it if exists
+    begin
+      lFieldName := FieldsInfo[0].PropName;
+      View.Items.Add(tiGetProperty(AData, lFieldName));  // set Cell text
+    end
+    else
+      View.Items.Add(AData.Caption); // the default fallback
+
+    Result := TtiListBoxItemMediator.CreateCustom(AData, View, FieldsInfo, ARowIdx, Active);
+    View.Items.Objects[ARowIdx] := Result;   // set Object reference inside grid. It used to be AData.
+    MediatorList.Add(Result);
+  finally
+    View.Items.EndUpdate;
+  end;
+end;
+
+procedure TtiListBoxListMediatorView.DoDeleteItemMediator(AIndex: Integer; AMediator: TtiListItemMediator);
+begin
+  View.Items.Delete(AIndex);
+  inherited DoDeleteItemMediator(AIndex, AMediator);
+end;
+
+function TtiListBoxListMediatorView.GetSelectedObject: TtiObject;
+begin
+  Result := GetObjectFromRow(View.ItemIndex);
+end;
+
+procedure TtiListBoxListMediatorView.SetSelectedObject(const AValue: TtiObject);
+var
+  i: integer;
+  o: TObject;
+begin
+  for i := 0 to View.Count - 1 do
+  begin
+    o := View.Items.Objects[i];
+    if Assigned(o) and (TtiListItemMediator(o).Model = AValue) then
+    begin
+      View.ItemIndex := i;
+      Exit; //==>
+    end;
+  end;  { for }
+//  inherited SetSelectedObject(AValue);
+end;
+
+procedure TtiListBoxListMediatorView.CreateColumns;
+begin
+  // do nothing - we don't support columns yet
+end;
+
+procedure TtiListBoxListMediatorView.ClearList;
+begin
+  if Assigned(MediatorList) then
+    MediatorList.Clear;
+  if View <> nil then
+    View.Clear;
+end;
+
+procedure TtiListBoxListMediatorView.RebuildList;
+begin
+  View.Items.BeginUpdate;
+  try
+    SetupGUIandObject;
+    if Assigned(MediatorList) then
+      MediatorList.Clear;
+//    CreateColumns;
+    CreateSubMediators;
+  finally
+    View.Items.EndUpdate;
+  end;
+end;
+
+procedure TtiListBoxListMediatorView.SetupGUIandObject;
+begin
+  inherited SetupGUIandObject;
+  if Assigned(View) then
+    View.Clear;
+end;
+
+constructor TtiListBoxListMediatorView.CreateCustom(AModel: TtiObjectList; AListBox: TListBox; ADisplayNames: string;
+  AIsObserving: Boolean);
+begin
+  inherited Create;
+  DisplayNames := ADisplayNames;
+  Subject := AModel;
+  SetView(AListBox);
+  CreateSubMediators;
+  IsObserving := AIsObserving;
+end;
+
+destructor TtiListBoxListMediatorView.Destroy;
+begin
+  IsObserving := False;
+  inherited Destroy;
+end;
+
+class function TtiListBoxListMediatorView.ComponentClass: TClass;
+begin
+  Result := TListBox;
+end;
+
+function TtiListBoxListMediatorView.GetObjectFromRow(ARow: Integer): TtiObject;
+var
+  O: TObject;
+begin
+  if View.Count = 0 then
+  begin
+    Result := nil;
+    Exit;
+  end;
+
+  if ARow = -1 then
+    Result := nil
+  else
+  begin
+    O := View.Items.Objects[ARow];
+    if O <> nil then
+      Result := TtiListItemMediator(O).Model
+    else
+      Result := nil;
+  end;
+end;
+
+function TtiListBoxListMediatorView.View: TListBox;
+begin
+  Result := TListBox(inherited View);
+end;
+
+{ TtiListBoxItemMediator }
+
+constructor TtiListBoxItemMediator.CreateCustom(AModel: TtiObject; AListBox: TListBox;
+  const AFieldsInfo: TtiMediatorFieldInfoList; ARowIndex: integer; IsObserving: Boolean);
+begin
+  inherited Create;
+  Model       := AModel;
+  FView       := AListBox;
+  FFieldsInfo := AFieldsInfo;
+  FRowIndex   := ARowIndex;
+  Active      := IsObserving; // Will attach
+end;
+
+procedure TtiListBoxItemMediator.Update(ASubject: TtiObject);
+var
+  i: integer;
+  lFieldName: string;
+  lValue: string;
+  s: string;
+begin
+  Assert(Model = ASubject);
+  s := '';
+  for i := 0 to FFieldsInfo.Count - 1 do
+  begin
+    lFieldName := FFieldsInfo[I].PropName;
+    lValue := tiGetProperty(Model, lFieldName);
+    if Assigned(OnBeforeSetupField) then
+      OnBeforeSetupField(Model, lFieldName, lValue);
+    if S <> '' then
+      S := S + ', ';
+    s := s + lValue;
+  end;
+  FView.Items[FRowIndex] := s;
+//  inherited Update(ASubject);
+end;
+
 
 
 end.
