@@ -129,7 +129,7 @@ type
     property    ActiveThreadNames: string read GetActiveThreadNames;
     // ToDo: WaitForAll is buggy. It depends on TtiThread's Destroy method
     //       executing when the thread terminates (Destroy is where each
-    //       thread removes it self from the list.) Destroy will only be called
+    //       thread removes itself from the list.) Destroy will only be called
     //       after Application.ProcessMessages when there is a GUI, and never
     //       for console apps. This needs investigation. So, for the meantime,
     //       don't use WaitForAll.
