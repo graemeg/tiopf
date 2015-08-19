@@ -212,11 +212,11 @@ type
   procedure tiSetFileReadOnly(AFileName: string; AReadOnly: boolean);
   // Is a file's readonly attribute set?
   function  tiIsFileReadOnly(AValue: string): boolean;
-  // Copy all the directories, starting at pStrStartDir to the StringList slTree
+  // Copy all the directories, starting at AStartDir to the StringList ADirList
   procedure tiDirectoryTreeToStringList(const AStartDir: string; const ADirList: TStringList; ARecurse: boolean);
-  // Copy all the files, from the directory pStrStartDir, matching the wildcard pStrWildCard
-  // to the stringList slResult
-  procedure tiFilesToStringList(const AStartDir, AWildCard: string; const AResults : TStringList; const ARecurse : boolean);
+  { Copy all the files, from the directory AStartDir, matching the wildcard AWildCard
+    to the stringList AResult }
+  procedure tiFilesToStringList(const AStartDir, AWildCard: string; const AResults: TStringList; const ARecurse : boolean);
   // Copy one directory tree to another
   procedure tiXCopy(const ASource, ATarget: string);
   {: Delete all the files that match AWildCard found in ADirectory}
