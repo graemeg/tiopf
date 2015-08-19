@@ -191,21 +191,21 @@ type
   // Add the EXE path to a file name
   function  tiAddEXEPath(const AFileName: string): string;
   // Extract the file name part of a file name (ie, remove the path and extension)
-  function  tiExtractFileNameOnly(     AValue : string): string;
+  function  tiExtractFileNameOnly(AValue: string): string;
   // Remove the extension from a filename. Similar to Delphi's ChangeFileExt() except the '.' is managed.
   function  tiRemoveExtension(AValue: string): string;
   // Change a file's extenstion. Similar to Delphi's ChangeFileExt() except the '.' is managed.
-  function  tiSwapExt(                 const AFileName, AExt : string): string;
+  function  tiSwapExt(const AFileName, AExt : string): string;
   // Extract a file's extension. Similar to Delphi's ExtractFileExt except the '.' is not extracted.
   function  tiExtractExtension(AValue: string): string;
   // Copy a file from AFileFrom to AFileTo
-  procedure tiCopyFile(          const AFrom, ATo : string);
+  procedure tiCopyFile(const AFrom, ATo: string);
   // Move a file from AFromFileName to AToFileName
-  function  tiMoveFile(          const AFrom, ATo: string): Boolean;
+  function  tiMoveFile(const AFrom, ATo: string): Boolean;
   // Read a file's size in bytes
-  function  tiGetFileSize(             AValue : string): longInt;
+  function  tiGetFileSize(AValue: string): longInt;
   // Remove the drive letter from a file name
-  function  tiRemoveDrive(             AValue : string): string;
+  function  tiRemoveDrive(AValue: string): string;
   // Removed part of a directory
   function  tiRemoveDirectory(const AFileName: string; const AToRemove: string): string;
   // Set a file's readonly attribute
@@ -219,38 +219,38 @@ type
   procedure tiFilesToStringList(const AStartDir, AWildCard: string; const AResults: TStringList; const ARecurse : boolean);
   // Copy one directory tree to another
   procedure tiXCopy(const ASource, ATarget: string);
-  {: Delete all the files that match AWildCard found in ADirectory}
+  { Delete all the files that match AWildCard found in ADirectory }
   procedure tiDeleteFiles(const ADirectory, AWildCard: string);
-  {: Delete all the files that match AWildCard found in ADirectory where file date modified is < CurrentDate - ADaysOld}
+  { Delete all the files that match AWildCard found in ADirectory where file date modified is < CurrentDate - ADaysOld }
   procedure tiDeleteOldFiles(const ADirectory, AWildCard: string;
                              const ADaysOld: Integer; const ARecurseDirectories: Boolean;
                              const ADeleteEmptyDirectories: Boolean);
-  {: Delete a file, but without BDS2006 function inlining warning}
+  { Delete a file, but without BDS2006 function inlining warning }
   function tiDeleteFile(const AFileName: string): boolean;
   // Does a directory have any subdirectories?
-  function  tiHasSubDirectory(AStartDir : string): boolean;
+  function  tiHasSubDirectory(AStartDir: string): boolean;
   // Write the string in AText to a file named AFileName
-  procedure tiStringToFile(const AText : string; const AFileName: string);
+  procedure tiStringToFile(const AText: string; const AFileName: string);
   // Append the string in AText to a file named AFileName
-  procedure tiAppendStringToFile(const AText : string; const AFileName: string);
+  procedure tiAppendStringToFile(const AText: string; const AFileName: string);
   // Read a text file into a string
-  function  tiFileToString(const AFileName : TFileName): string;
+  function  tiFileToString(const AFileName: TFileName): string;
   // Get the current directory
   // Extract a directory name to a certain level.
   // eg tiExtractDirToLevel('c:\temp\dir', 0) gives 'c:'
   //    tiExtractDirToLevel('c:\temp\dir', 1) gives 'c:\temp'
   //    tiExtractDirToLevel('c:\temp\dir', 2) gives 'c:\temp\dir'
-  function tiExtractDirToLevel(const AFileName : TFileName; ALevel : byte): TFileName;
+  function tiExtractDirToLevel(const AFileName: TFileName; ALevel: byte): TFileName;
   {: Same as Delphi's ForceDirectory, but will raise an exception if create fails
      If there is a period in AValue, then AValue is assumed to be a file name and
      ExtractFilePath() will be called and the result of this call will be used as
      the directory to create. This will cause unexpected results if there is a
      period in the directory name.}
-  procedure tiForceDirectories(const AValue : TFileName);
+  procedure tiForceDirectories(const AValue: TFileName);
   {: Same as Delphi's ForceDirectory, but will raise an exception if create fails.}
-  procedure tiForceDirectories1(const AValue : TFileName);
+  procedure tiForceDirectories1(const AValue: TFileName);
   // Remove a directory, and all it's owned directories and files
-  function tiForceRemoveDir(const AValue : TFileName): boolean;
+  function tiForceRemoveDir(const AValue: TFileName): boolean;
   // Join two path elements. Elements can have trailing delimiters or not. Result will not have trailing delimiter.
   function tiJoinPath(const ALeftSide, ARightSide: string): string; overload;
   // Join multiple path elements. Elements can have trailing delimiters or not. Result will not have trailing delimiter.
