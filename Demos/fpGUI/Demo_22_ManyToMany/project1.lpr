@@ -19,6 +19,7 @@ uses
   ,tiLogToFile
   ,tiLogToDebugSvr
   ,tiQuerySqldbIB
+  ,regvisitors
   ;
 
 const
@@ -68,11 +69,16 @@ begin
       '',                       { extra db parameters }
       cPersistenceLayerName);   { persistence layer name }
 
+
+  RegisterVisitors;
+
   fpgApplication.CreateForm(TMainForm, frm);
   try
     frm.Show;
     fpgApplication.Run;
   finally
+    GTIOPFManager.DisconnectDatabase;
+    GTIOPFManager.Terminate;
     frm.Free;
   end;
 end;
