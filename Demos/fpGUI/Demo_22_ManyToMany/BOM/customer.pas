@@ -43,6 +43,7 @@ type
   public
     property    Items[i:integer]: TCustomer read GetItems write SetItems;
     function    Add(const AObject: TCustomer): integer; reintroduce;
+    procedure   Read; overload; override;
   end;
 
 
@@ -89,7 +90,6 @@ end;
 
 procedure TCustomer.Read;
 begin
-//  gTIOPFManager.VisitorManager.Execute('ReadCustomer', self);  { TVisCustomer_Read }
   GTIOPFManager.VisitorManager.Execute('customer_read', self);
 end;
 
@@ -118,6 +118,11 @@ end;
 function TCustomerList.Add(const AObject: TCustomer): integer;
 begin
   result := inherited Add(AObject);
+end;
+
+procedure TCustomerList.Read;
+begin
+  GTIOPFManager.VisitorManager.Execute('customer_readlist', self);
 end;
 
 end.

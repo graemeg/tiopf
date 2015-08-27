@@ -13,7 +13,6 @@ type
   protected
     function    AcceptVisitor: boolean; override;
     procedure   Init; override;
-    procedure   SetupParams; override;
     procedure   MapRowToObject; override;
   end;
 
@@ -41,6 +40,7 @@ type
   end;
 
 
+
 implementation
 
 uses
@@ -48,6 +48,7 @@ uses
   ,tiObject
   ,customer
   ;
+
 
 { TVisCustomer_ReadList }
 
@@ -60,16 +61,20 @@ end;
 procedure TVisCustomer_ReadList.Init;
 begin
   inherited Init;
-end;
-
-procedure TVisCustomer_ReadList.SetupParams;
-begin
-  inherited SetupParams;
+  Query.SQLText := 'select * from customers';
 end;
 
 procedure TVisCustomer_ReadList.MapRowToObject;
+var
+  lData: TCustomer;
 begin
-  inherited MapRowToObject;
+  lData := TCustomer.Create;
+  lData.OID.AssignFromTIQuery(Query);
+  lData.Firstname  := Query.FieldAsString[   'CU_FIRSTNAME' ];
+  lData.Lastname   := Query.FieldAsString[   'CU_LASTNAME'  ];
+  lData.Phone      := Query.FieldAsString[   'CU_PHONE'     ];
+  lData.ObjectState := posClean;
+  (Visited as TtiObjectList).Add(lData);
 end;
 
 { TVisCustomer_Create }
