@@ -1,4 +1,4 @@
-unit frm_main;
+unit frm_orders;
 
 {$mode objfpc}{$H+}
 
@@ -7,101 +7,121 @@ interface
 uses
   SysUtils, Classes,
   fpg_base, fpg_main, fpg_form, fpg_grid, fpg_button,
-  tiMediators, tiListMediators, tiModelMediator,
-  customer;
+  tiModelMediator,
+  customer, order;
 
 type
 
-  TMainForm = class(TfpgForm)
+  TOrderListForm = class(TfpgForm)
   private
-    {@VFD_HEAD_BEGIN: MainForm}
+    {@VFD_HEAD_BEGIN: OrderListForm}
     btnAdd: TfpgButton;
     btnEdit: TfpgButton;
     btnDelete: TfpgButton;
     btnHelp: TfpgButton;
-    grdCustomers: TfpgStringGrid;
-    btnOrders: TfpgButton;
-    {@VFD_HEAD_END: MainForm}
+    grdOrders: TfpgStringGrid;
+    btnClose: TfpgButton;
+    {@VFD_HEAD_END: OrderListForm}
     FMediator: TtiModelMediator;
-    FCustomers: TCustomerList;
-    procedure SetupMediators;
-    procedure FormShow(Sender: TObject);
-    procedure btnAddClicked(Sender: TObject);
-    procedure btnEditClicked(Sender: TObject);
-    procedure btnDeleteClicked(Sender: TObject);
-    procedure btnHelpClicked(Sender: TObject);
-    procedure btnShowOrdersClicked(Sender: TObject);
+    FData: TOrderList;
+    procedure   SetupMediators;
+    procedure   FormShow(Sender: TObject);
+    procedure   btnAddClicked(Sender: TObject);
+    procedure   btnEditClicked(Sender: TObject);
+    procedure   btnDeleteClicked(Sender: TObject);
+    procedure   btnHelpClicked(Sender: TObject);
+    procedure   btnCloseClicked(Sender: TObject);
   public
-    destructor Destroy; override;
-    procedure AfterCreate; override;
+    constructor Create(AOwner: TComponent); override;
+    destructor  Destroy; override;
+    procedure   AfterCreate; override;
   end;
 
 {@VFD_NEWFORM_DECL}
 
+procedure ShowOrders(const ACustomer: TCustomer);
+
 implementation
 
 uses
-  tiLog,
-  frm_orders;
+  tiLog
+  ;
+
+procedure ShowOrders(const ACustomer: TCustomer);
+var
+  frm: TOrderListForm;
+begin
+  frm := TOrderListForm.Create(nil);
+  try
+    frm.FData.Customer := ACustomer;
+    frm.ShowModal;
+  finally
+    frm.Free;
+  end;
+end;
 
 {@VFD_NEWFORM_IMPL}
 
-procedure TMainForm.btnAddClicked(Sender: TObject);
+procedure TOrderListForm.btnAddClicked(Sender: TObject);
 begin
 
 end;
 
-procedure TMainForm.btnEditClicked(Sender: TObject);
+procedure TOrderListForm.btnEditClicked(Sender: TObject);
 begin
 
 end;
 
-procedure TMainForm.btnDeleteClicked(Sender: TObject);
+procedure TOrderListForm.btnDeleteClicked(Sender: TObject);
 begin
 
 end;
 
-procedure TMainForm.btnHelpClicked(Sender: TObject);
+procedure TOrderListForm.btnHelpClicked(Sender: TObject);
 begin
 
 end;
 
-procedure TMainForm.btnShowOrdersClicked(Sender: TObject);
+procedure TOrderListForm.btnCloseClicked(Sender: TObject);
 begin
-  ShowOrders(FMediator.SelectedObject[grdCustomers] as TCustomer);
+  Close;
 end;
 
-procedure TMainForm.SetupMediators;
+constructor TOrderListForm.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FData := TOrderList.Create;
+end;
+
+procedure TOrderListForm.SetupMediators;
 begin
   FMediator := TtiModelMediator.Create(self);
-  FMediator.AddComposite('FirstName(120);LastName(200);Phone(85,'',>)', grdCustomers);
-  FMediator.Subject := FCustomers;
+  FMediator.AddComposite('OrderID(80,"No.");OrderDateAsString(120,"Order Date");SoldBy(85)', grdOrders);
+  FMediator.Subject := FData;
   FMediator.Active := True;
-
 end;
 
-procedure TMainForm.FormShow(Sender: TObject);
+procedure TOrderListForm.FormShow(Sender: TObject);
 begin
-  FCustomers := TCustomerList.Create;
-  FCustomers.Read;
+  FData.Read;
   SetupMediators;
-  Log('Customer count = ' + IntToStr(FCustomers.Count));
+  Log('Order count = ' + IntToStr(FData.Count));
 end;
 
-destructor TMainForm.Destroy;
+destructor TOrderListForm.Destroy;
 begin
   FMediator.Active := False;
-  FCustomers.Free;
+  FData.Free;
   inherited Destroy;
 end;
 
-procedure TMainForm.AfterCreate;
+procedure TOrderListForm.AfterCreate;
 begin
   {%region 'Auto-generated GUI code' -fold}
-  {@VFD_BODY_BEGIN: MainForm}
-  Name := 'MainForm';
+  {@VFD_BODY_BEGIN: OrderListForm}
+  Name := 'OrderListForm';
   SetPosition(521, 216, 511, 260);
-  WindowTitle := 'Demo 22: Many-to-Many';
+  WindowTitle := 'Orders';
   Hint := '';
   IconName := '';
   ShowHint := True;
@@ -151,7 +171,7 @@ begin
   with btnHelp do
   begin
     Name := 'btnHelp';
-    SetPosition(12, 229, 24, 24);
+    SetPosition(12, 230, 24, 24);
     Anchors := [anLeft,anBottom];
     Text := '';
     FontDesc := '#Label1';
@@ -162,10 +182,10 @@ begin
     OnClick := @btnHelpClicked;
   end;
 
-  grdCustomers := TfpgStringGrid.Create(self);
-  with grdCustomers do
+  grdOrders := TfpgStringGrid.Create(self);
+  with grdOrders do
   begin
-    Name := 'grdCustomers';
+    Name := 'grdOrders';
     SetPosition(10, 35, 491, 187);
     Anchors := [anLeft,anRight,anTop,anBottom];
     BackgroundColor := TfpgColor($80000002);
@@ -177,27 +197,22 @@ begin
     TabOrder := 1;
   end;
 
-  btnOrders := TfpgButton.Create(self);
-  with btnOrders do
+  btnClose := TfpgButton.Create(self);
+  with btnClose do
   begin
-    Name := 'btnOrders';
-    SetPosition(440, 10, 60, 23);
-    Anchors := [anRight,anTop];
-    Text := 'Orders';
+    Name := 'btnClose';
+    SetPosition(420, 230, 80, 23);
+    Text := 'Close';
     FontDesc := '#Label1';
     Hint := '';
     ImageName := '';
     TabOrder := 6;
-    OnClick := @btnShowOrdersClicked;
+    OnClick := @btnCloseClicked;
   end;
 
-  {@VFD_BODY_END: MainForm}
+  {@VFD_BODY_END: OrderListForm}
   {%endregion}
 end;
 
-
-initialization
-  RegisterFallBackMediators;
-  RegisterFallBackListMediators;
 
 end.
