@@ -4,8 +4,6 @@ unit regvisitors;
 
 interface
 
-uses
-  customer_vis;
 
 procedure RegisterVisitors;
 
@@ -14,6 +12,8 @@ implementation
 
 uses
   tiOPFManager
+  ,customer_vis
+  ,order_vis
   ;
 
 procedure RegisterVisitors;
@@ -25,6 +25,11 @@ begin
   gTIOPFManager.RegisterVisitor('customer_save', TVisCustomer_Delete);
   gTIOPFManager.RegisterVisitor('customer_save', TVisCustomer_Update);
   gTIOPFManager.RegisterVisitor('customer_save', TVisCustomer_Create);
+
+  gTIOPFManager.RegisterVisitor('order_readlist', TVisOrder_ReadList);
+//  gTIOPFManager.RegisterVisitor('customer_save', TVisOrder_Delete);
+//  gTIOPFManager.RegisterVisitor('customer_save', TVisOrder_Update);
+//  gTIOPFManager.RegisterVisitor('customer_save', TVisOrder_Create);
 
 end;
 
