@@ -7,7 +7,7 @@ interface
 uses
   SysUtils, Classes,
   fpg_base, fpg_main, fpg_form, fpg_grid, fpg_button,
-  tiMediators, tiListMediators, tiModelMediator,
+  tiModelMediator,
   customer;
 
 type
@@ -215,9 +215,5 @@ begin
   {%endregion}
 end;
 
-
-initialization
-  RegisterFallBackMediators;
-  RegisterFallBackListMediators;
 
 end.

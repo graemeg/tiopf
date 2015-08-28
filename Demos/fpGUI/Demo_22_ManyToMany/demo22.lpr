@@ -19,6 +19,8 @@ uses
   ,tiLogToFile
   ,tiLogToDebugSvr
   ,tiQuerySqldbIB
+  ,tiMediators
+  ,tiListMediators
   ,regvisitors
   ;
 
@@ -71,6 +73,8 @@ begin
 
 
   RegisterVisitors;
+  RegisterFallBackMediators;
+  RegisterFallBackListMediators;
 
   fpgApplication.CreateForm(TMainForm, frm);
   try
