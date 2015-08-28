@@ -14,6 +14,7 @@ uses
   tiOPFManager
   ,customer_vis
   ,order_vis
+  ,orderline_vis
   ;
 
 procedure RegisterVisitors;
@@ -27,6 +28,11 @@ begin
   gTIOPFManager.RegisterVisitor('customer_save', TVisCustomer_Create);
 
   gTIOPFManager.RegisterVisitor('order_readlist', TVisOrder_ReadList);
+//  gTIOPFManager.RegisterVisitor('customer_save', TVisOrder_Delete);
+//  gTIOPFManager.RegisterVisitor('customer_save', TVisOrder_Update);
+//  gTIOPFManager.RegisterVisitor('customer_save', TVisOrder_Create);
+
+  gTIOPFManager.RegisterVisitor('orderline_readlist', TVisOrderLine_ReadList);
 //  gTIOPFManager.RegisterVisitor('customer_save', TVisOrder_Delete);
 //  gTIOPFManager.RegisterVisitor('customer_save', TVisOrder_Update);
 //  gTIOPFManager.RegisterVisitor('customer_save', TVisOrder_Create);

@@ -29,6 +29,7 @@ type
   published
     property    OrderDate: TDateTime read FOrderDate write SetOrderDate;
     property    SoldBy: string read FSoldBy write SetSoldBy;
+//    property    Dispatech: boolean read FDispatched write SetDispatched;
     property    OrderID: string read GetOrderID;
     property    OrderDateAsString: string read GetOrderDateAsString;
   end;
