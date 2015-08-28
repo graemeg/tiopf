@@ -22,8 +22,9 @@ implementation
 
 uses
   tiObject,
-  tiLog, tiUtils,
-  orderline, demoUtils;
+  tiLog,
+  orderline,
+  demoUtils;
 
 { TVisOrderLine_ReadList }
 
