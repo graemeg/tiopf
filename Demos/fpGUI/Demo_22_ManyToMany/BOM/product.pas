@@ -25,6 +25,7 @@ type
   protected
     function    GetOwner: TProductList; reintroduce;
     procedure   SetOwner(const Value: TProductList); reintroduce;
+    function    GetCaption: string; override;
   public
     property    Owner: TProductList read GetOwner write SetOwner;
   published
@@ -97,6 +98,11 @@ end;
 procedure TProduct.SetOwner(const Value: TProductList);
 begin
   inherited SetOwner(Value);
+end;
+
+function TProduct.GetCaption: string;
+begin
+  Result := ProdName;
 end;
 
 { TProductList }
