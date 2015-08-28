@@ -24,7 +24,9 @@ uses
   tiObject,
   tiLog,
   orderline,
-  demoUtils;
+  demoUtils,
+  app_bom,
+  product;
 
 { TVisOrderLine_ReadList }
 
@@ -51,13 +53,23 @@ end;
 procedure TVisOrderLine_ReadList.MapRowToObject;
 var
   lData: TOrderLine;
+  lProduct: TProduct;
 begin
+  lProduct := nil;
   lData := TOrderLine.Create;
   lData.OID.AssignFromTIQuery(Query);
-//  lData.OlOidOrders      := Query.FieldAsString[   'OL_OID_ORDERS'    ];
-//  lData.Products    := Query.FieldAsString[   'OL_OID_PRODUCTS'  ];
   lData.Quantity       := Query.FieldAsInteger['OL_QUANTITY'];
   lData.UnitSalePrice  := IntToCurr(Query.FieldAsInteger['OL_UNITSALEPRICE']);
+
+  // Lookup our product and set the reference
+
+  if gDemoApp.ProductList.Count = 0 then
+    raise Exception.Create('ProductList count = 0 when in should not be!');
+  lProduct := gDemoapp.ProductList.Find(Query.FieldAsString['OL_OID_PRODUCTS']);
+  if lProduct = nil then
+    raise Exception.CreateFmt('Unable to find Product with OID <%s>', [Query.FieldAsString['OL_OID_PRODUCTS']]);
+  lData.Product := lProduct;
+
   lData.ObjectState := posClean;
   (Visited as TtiObjectList).Add(lData);
 

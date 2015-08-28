@@ -46,6 +46,7 @@ type
     property    Items[i:integer]: TProduct read GetItems write SetItems;
     function    Add(const AObject: TProduct): integer; reintroduce;
     procedure   Read; overload; override;
+    function    Find(AOIDToFindAsString: string): TProduct; reintroduce;
   end;
 
 implementation
@@ -125,6 +126,11 @@ end;
 procedure TProductList.Read;
 begin
   GTIOPFManager.VisitorManager.Execute('product_readlist', self);
+end;
+
+function TProductList.Find(AOIDToFindAsString: string): TProduct;
+begin
+  Result := TProduct(inherited Find(AOIDToFindAsString));
 end;
 
 end.
