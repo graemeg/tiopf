@@ -34,7 +34,7 @@
         <PackageName Value="fpgui_toolkit"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="13">
+    <Units Count="16">
       <Unit0>
         <Filename Value="demo22.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -48,7 +48,7 @@
         <IsPartOfProject Value="True"/>
       </Unit2>
       <Unit3>
-        <Filename Value="BOM/products.pas"/>
+        <Filename Value="BOM/product.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit3>
       <Unit4>
@@ -88,6 +88,18 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="demoUtils"/>
       </Unit12>
+      <Unit13>
+        <Filename Value="BOM/product_vis.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="UI/frm_products.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="BOM/app_bom.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit15>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
