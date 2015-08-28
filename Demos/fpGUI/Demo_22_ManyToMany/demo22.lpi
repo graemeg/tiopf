@@ -5,7 +5,7 @@
     <General>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <Title Value="project1"/>
+      <Title Value="demo22"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
     </General>
@@ -36,7 +36,7 @@
     </RequiredPackages>
     <Units Count="13">
       <Unit0>
-        <Filename Value="project1.lpr"/>
+        <Filename Value="demo22.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
@@ -100,6 +100,11 @@
       <OtherUnitFiles Value="UI;BOM"/>
       <UnitOutputDirectory Value="units"/>
     </SearchPaths>
+    <Linking>
+      <Debugging>
+        <UseHeaptrc Value="True"/>
+      </Debugging>
+    </Linking>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

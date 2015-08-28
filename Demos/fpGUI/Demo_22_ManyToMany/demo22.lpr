@@ -1,4 +1,4 @@
-program project1;
+program demo22;
 
 {$mode objfpc}{$H+}
 
