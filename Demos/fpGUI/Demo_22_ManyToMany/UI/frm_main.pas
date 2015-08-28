@@ -25,19 +25,19 @@ type
     btnProducts: TfpgButton;
     {@VFD_HEAD_END: MainForm}
     FMediator: TtiModelMediator;
-    FCustomers: TCustomerList;
-    procedure SetupMediators;
-    procedure FormShow(Sender: TObject);
-    procedure btnAddClicked(Sender: TObject);
-    procedure btnEditClicked(Sender: TObject);
-    procedure btnDeleteClicked(Sender: TObject);
-    procedure btnHelpClicked(Sender: TObject);
-    procedure btnShowOrdersClicked(Sender: TObject);
-    procedure btnQuitClicked(Sender: TObject);
+    FData: TCustomerList;
+    procedure   SetupMediators;
+    procedure   FormShow(Sender: TObject);
+    procedure   btnAddClicked(Sender: TObject);
+    procedure   btnEditClicked(Sender: TObject);
+    procedure   btnDeleteClicked(Sender: TObject);
+    procedure   btnHelpClicked(Sender: TObject);
+    procedure   btnShowOrdersClicked(Sender: TObject);
+    procedure   btnQuitClicked(Sender: TObject);
     procedure   btnProductClicked(Sender: TObject);
   public
-    destructor Destroy; override;
-    procedure AfterCreate; override;
+    destructor  Destroy; override;
+    procedure   AfterCreate; override;
   end;
 
 {@VFD_NEWFORM_DECL}
@@ -46,7 +46,9 @@ implementation
 
 uses
   tiLog,
-  frm_orders;
+  frm_orders,
+  frm_products,
+  app_bom;
 
 {@VFD_NEWFORM_IMPL}
 
@@ -91,22 +93,22 @@ procedure TMainForm.SetupMediators;
 begin
   FMediator := TtiModelMediator.Create(self);
   FMediator.AddComposite('FirstName(120);LastName(200);Phone(85,'',>)', grdCustomers);
-  FMediator.Subject := FCustomers;
+  FMediator.Subject := FData;
   FMediator.Active := True;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
-  FCustomers := TCustomerList.Create;
-  FCustomers.Read;
+  gDemoApp.CustomerList.Read;
+  gDemoApp.ProductList.Read;
+  FData := gDemoApp.CustomerList;
   SetupMediators;
-  Log('Customer count = ' + IntToStr(FCustomers.Count));
+  Log('Customer count = ' + IntToStr(FData.Count));
 end;
 
 destructor TMainForm.Destroy;
 begin
   FMediator.Active := False;
-  FCustomers.Free;
   inherited Destroy;
 end;
 
