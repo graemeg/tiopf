@@ -21,6 +21,7 @@ type
     btnHelp: TfpgButton;
     grdCustomers: TfpgStringGrid;
     btnOrders: TfpgButton;
+    btnQuit: TfpgButton;
     {@VFD_HEAD_END: MainForm}
     FMediator: TtiModelMediator;
     FCustomers: TCustomerList;
@@ -31,6 +32,7 @@ type
     procedure btnDeleteClicked(Sender: TObject);
     procedure btnHelpClicked(Sender: TObject);
     procedure btnShowOrdersClicked(Sender: TObject);
+    procedure btnQuitClicked(Sender: TObject);
   public
     destructor Destroy; override;
     procedure AfterCreate; override;
@@ -69,6 +71,12 @@ end;
 procedure TMainForm.btnShowOrdersClicked(Sender: TObject);
 begin
   ShowOrders(FMediator.SelectedObject[grdCustomers] as TCustomer);
+  grdCustomers.SetFocus;
+end;
+
+procedure TMainForm.btnQuitClicked(Sender: TObject);
+begin
+  Close;
 end;
 
 procedure TMainForm.SetupMediators;
@@ -77,7 +85,6 @@ begin
   FMediator.AddComposite('FirstName(120);LastName(200);Phone(85,'',>)', grdCustomers);
   FMediator.Subject := FCustomers;
   FMediator.Active := True;
-
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -189,6 +196,19 @@ begin
     ImageName := '';
     TabOrder := 6;
     OnClick := @btnShowOrdersClicked;
+  end;
+
+  btnQuit := TfpgButton.Create(self);
+  with btnQuit do
+  begin
+    Name := 'btnQuit';
+    SetPosition(420, 230, 80, 23);
+    Text := 'Quit';
+    FontDesc := '#Label1';
+    Hint := '';
+    ImageName := '';
+    TabOrder := 6;
+    OnClick := @btnQuitClicked;
   end;
 
   {@VFD_BODY_END: MainForm}
