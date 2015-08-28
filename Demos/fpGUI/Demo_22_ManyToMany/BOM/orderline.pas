@@ -23,6 +23,7 @@ type
     FUnitSalePrice: Currency;
     function    GetDisplayProduct: string;
     function    GetDisplayQuantity: string;
+    function    GetDisplayTotalPrice: string;
     function    GetDisplayUnitPrice: string;
   protected
     function    GetOwner: TOrderLineList; reintroduce;
@@ -36,6 +37,7 @@ type
     property    DisplayQuantity: string read GetDisplayQuantity;
     property    DisplayUnitPrice: string read GetDisplayUnitPrice;
     property    DisplayProduct: string read GetDisplayProduct;
+    property    DisplayTotalPrice: string read GetDisplayTotalPrice;
   end;
 
 
@@ -65,6 +67,11 @@ uses
 function TOrderLine.GetDisplayQuantity: string;
 begin
   Result := IntToStr(Quantity);
+end;
+
+function TOrderLine.GetDisplayTotalPrice: string;
+begin
+  Result := DisplayCurrency(Quantity * UnitSalePrice);
 end;
 
 function TOrderLine.GetDisplayProduct: string;

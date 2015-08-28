@@ -103,7 +103,7 @@ end;
 procedure TOrderDetailsForm.SetupMediators;
 begin
   FMediator := TtiModelMediator.Create(self);
-  FMediator.AddComposite('DisplayProduct(200,"");DisplayUnitPrice(85,"Unit Price",>);DisplayQuantity(120,"Quantity",>)', grdOrderDetails);
+  FMediator.AddComposite('DisplayProduct(200,"Description");DisplayUnitPrice(85,"Unit Price",>);DisplayQuantity(80,"Quantity",>);DisplayTotalPrice(85,"Total",>)', grdOrderDetails);
   FMediator.Subject := FData;
   FMediator.Active := True;
 end;
