@@ -7,7 +7,8 @@ interface
 uses
   Classes, SysUtils,
   tiObject,
-  order;
+  order,
+  product;
 
 
 type
@@ -17,8 +18,10 @@ type
 
   TOrderLine = class(TtiObject)
   private
+    FProduct: TProduct;
     FQuantity: Integer;
     FUnitSalePrice: Currency;
+    function    GetDisplayProduct: string;
     function    GetDisplayQuantity: string;
     function    GetDisplayUnitPrice: string;
   protected
@@ -26,12 +29,13 @@ type
     procedure   SetOwner(const Value: TOrderLineList); reintroduce;
   public
     property    Owner: TOrderLineList read GetOwner write SetOwner;
-//    property    Product: TProduct read FProduct write FProduct;
+    property    Product: TProduct read FProduct write FProduct;
   published
     property    Quantity: Integer read FQuantity write FQuantity;
     property    UnitSalePrice: Currency read FUnitSalePrice  write FUnitSalePrice;
     property    DisplayQuantity: string read GetDisplayQuantity;
     property    DisplayUnitPrice: string read GetDisplayUnitPrice;
+    property    DisplayProduct: string read GetDisplayProduct;
   end;
 
 
@@ -61,6 +65,11 @@ uses
 function TOrderLine.GetDisplayQuantity: string;
 begin
   Result := IntToStr(Quantity);
+end;
+
+function TOrderLine.GetDisplayProduct: string;
+begin
+  Result := Product.Caption;
 end;
 
 function TOrderLine.GetDisplayUnitPrice: string;
