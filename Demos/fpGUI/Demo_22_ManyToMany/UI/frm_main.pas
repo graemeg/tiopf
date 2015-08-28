@@ -23,6 +23,7 @@ type
     btnOrders: TfpgButton;
     btnQuit: TfpgButton;
     btnProducts: TfpgButton;
+    btnNewOrder: TfpgButton;
     {@VFD_HEAD_END: MainForm}
     FMediator: TtiModelMediator;
     FData: TCustomerList;
@@ -35,6 +36,7 @@ type
     procedure   btnShowOrdersClicked(Sender: TObject);
     procedure   btnQuitClicked(Sender: TObject);
     procedure   btnProductClicked(Sender: TObject);
+    procedure   btnNewOrderClicked(Sender: TObject);
   public
     destructor  Destroy; override;
     procedure   AfterCreate; override;
@@ -48,6 +50,7 @@ uses
   tiLog,
   frm_orders,
   frm_products,
+  frm_neworder,
   app_bom;
 
 {@VFD_NEWFORM_IMPL}
@@ -86,6 +89,12 @@ end;
 procedure TMainForm.btnProductClicked(Sender: TObject);
 begin
   ShowProducts;
+  grdCustomers.SetFocus;
+end;
+
+procedure TMainForm.btnNewOrderClicked(Sender: TObject);
+begin
+  ShowNewOrder;
   grdCustomers.SetFocus;
 end;
 
@@ -232,6 +241,19 @@ begin
     ImageName := '';
     TabOrder := 8;
     OnClick := @btnProductClicked;
+  end;
+
+  btnNewOrder := TfpgButton.Create(self);
+  with btnNewOrder do
+  begin
+    Name := 'btnNewOrder';
+    SetPosition(60, 230, 80, 23);
+    Text := 'New Order';
+    FontDesc := '#Label1';
+    Hint := '';
+    ImageName := '';
+    TabOrder := 9;
+    OnClick := @btnNewOrderClicked;
   end;
 
   {@VFD_BODY_END: MainForm}
