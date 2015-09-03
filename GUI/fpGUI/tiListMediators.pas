@@ -779,7 +779,9 @@ begin
       S:=S+', ';
     s := s + lValue;
   end;
+  FView.BeginUpdate;
   FView.Items[FRowIndex] := s;
+  FView.EndUpdate;
 //  inherited Update(ASubject);
 end;
 
