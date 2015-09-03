@@ -60,7 +60,6 @@ type
 
   { TPersonList }
   TPersonList = class(TtiObjectList)
-  private
   protected
     function    GetItems(i: integer): TPerson; reintroduce;
     procedure   SetItems(i: integer; const Value: TPerson); reintroduce;
