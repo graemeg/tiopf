@@ -13,17 +13,6 @@ type
 
   TMainForm = class(TfpgForm)
   private
-    { The object we will be working with. }
-    FPersonList: TPersonList;
-    FMediator: TtiModelMediator;
-    medCombo: TtiComboBoxMediatorView;
-    procedure btnViaCodeChangeClick(Sender: TObject);
-    procedure btnQuitClicked(Sender: TObject);
-    procedure btnViaCodeAddClick(Sender: TObject);
-    procedure btnShowModelClick(Sender: TObject);
-    procedure btnShowDeletedClick(Sender: TObject);
-    procedure SetupMediators;
-  public
     {@VFD_HEAD_BEGIN: MainForm}
     lvName1: TfpgListView;
     grdName1: TfpgStringGrid;
@@ -37,10 +26,20 @@ type
     lstName1: TfpgListBox;
     cbName2: TfpgComboBox;
     {@VFD_HEAD_END: MainForm}
+    FPersonList: TPersonList;       // The object we will be working with.
+    FMediator: TtiModelMediator;
+    medCombo: TtiComboBoxMediatorView;
+    procedure btnViaCodeChangeClick(Sender: TObject);
+    procedure btnQuitClicked(Sender: TObject);
+    procedure btnViaCodeAddClick(Sender: TObject);
+    procedure btnShowModelClick(Sender: TObject);
+    procedure btnShowDeletedClick(Sender: TObject);
+    procedure SetupMediators;
+    procedure FormShow(Sender: TObject);
+  public
     constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-    procedure AfterConstruction; override;
-    procedure AfterCreate; override;
+    destructor  Destroy; override;
+    procedure   AfterCreate; override;
   end;
 
 {@VFD_NEWFORM_DECL}
@@ -48,7 +47,7 @@ type
 implementation
 
 uses
-  tiBaseMediator, tiListMediators, tiObject, tiDialogs;
+  tiBaseMediator, tiListMediators, tiDialogs;
 
 {@VFD_NEWFORM_IMPL}
 
@@ -62,8 +61,6 @@ begin
   FPersonList.Items[1].Name := 'I have changed via code';
   FPersonList.Items[1].Age  := 99;
   FPersonList.Items[1].EndUpdate;
-  { This notifies observers of the List, that something has changed. }
-  FPersonList.NotifyObservers;
 end;
 
 procedure TMainForm.btnQuitClicked(Sender: TObject);
@@ -101,13 +98,13 @@ begin
     FMediator := TtiModelMediator.Create(self);
     FMediator.Name := 'DemoFormMediator';
     FMediator.AddComposite('Name(150,"Name",<);Age(50,"Age",>);GenderGUI(80,"Gender",|)', grdName1);
-//    FMediator.AddComposite('Name(150,"Name",<);Age(75,"Age",>);GenderGUI(50,"Gender",|)', lvName1);
-    FMediator.AddProperty('Name', lstName1);
+    FMediator.AddComposite('Name(150,"Name",<);Age(55,"Age",>);GenderGUI(65,"Gender",|)', lvName1);
+    FMediator.AddComposite('Name', lstName1);
   end;
   FMediator.Subject := FPersonList;
   FMediator.Active := True;
 
-//  medCombo := TMediatorComboBoxView.CreateCustom(cbName1, FPerson);
+//  medCombo := TtiComboBoxMediatorView.CreateCustom(cbName1, FPerson);
 end;
 
 constructor TMainForm.Create(AOwner: TComponent);
@@ -123,9 +120,8 @@ begin
   inherited Destroy;
 end;
 
-procedure TMainForm.AfterConstruction;
+procedure TMainForm.FormShow(Sender: TObject);
 begin
-  inherited AfterConstruction;
   SetupMediators;
   FPersonList.NotifyObservers;
 end;
@@ -137,6 +133,7 @@ begin
   SetPosition(298, 184, 617, 358);
   WindowTitle := 'Demo 20: ListMediators';
   Sizeable := False;
+  OnShow := @FormShow;
 
   lvName1 := TfpgListView.Create(self);
   with lvName1 do
@@ -270,8 +267,6 @@ end;
 
 
 initialization
-  gMediatorManager.RegisterMediator(TtiStringGridMediatorView, TtiObjectList);
-//  gMediatorManager.RegisterMediator(TListBoxMediator, TPersonList);
-//  gMediatorManager.RegisterMediator(TListViewMediator, TtiObjectList);
+  RegisterFallbackListMediators;
 
 end.
