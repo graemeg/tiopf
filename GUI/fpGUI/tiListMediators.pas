@@ -717,7 +717,7 @@ end;
 
 class function TtiListBoxListMediatorView.ComponentClass: TClass;
 begin
-  Result := TfpgListView;
+  Result := TfpgListBox;
 end;
 
 function TtiListBoxListMediatorView.GetObjectFromRow(ARow: Integer): TtiObject;
