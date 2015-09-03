@@ -17,12 +17,12 @@ type
     lvName1: TfpgListView;
     grdName1: TfpgStringGrid;
     pnlName1: TfpgPanel;
-    btnName1: TfpgButton;
-    btnName2: TfpgButton;
-    btnName3: TfpgButton;
-    btnName4: TfpgButton;
+    btnAddViaCode: TfpgButton;
+    btnChange: TfpgButton;
+    btnShowModel: TfpgButton;
+    btnDelete: TfpgButton;
     btnQuit: TfpgButton;
-    cbName1: TfpgCheckBox;
+    chkShowDeleted: TfpgCheckBox;
     lstName1: TfpgListBox;
     Label1: TfpgLabel;
     Label2: TfpgLabel;
@@ -34,7 +34,8 @@ type
     procedure   btnQuitClicked(Sender: TObject);
     procedure   btnViaCodeAddClick(Sender: TObject);
     procedure   btnShowModelClick(Sender: TObject);
-    procedure   btnShowDeletedClick(Sender: TObject);
+    procedure   cbShowDeletedClick(Sender: TObject);
+    procedure   btnDeletedClicked(Sender: TObject);
     procedure   SetupMediators;
     procedure   FormShow(Sender: TObject);
   public
@@ -84,12 +85,27 @@ begin
   tiShowString(FPersonList.AsDebugString);
 end;
 
-procedure TMainForm.btnShowDeletedClick(Sender: TObject);
+procedure TMainForm.cbShowDeletedClick(Sender: TObject);
 var
   med: TtiMediatorView;
 begin
   med := FMediator.FindByComponent(grdName1).Mediator;
-  tiShowString(TtiStringGridMediatorView(med).SelectedObject.AsDebugString);
+  TtiCustomListMediatorView(med).ShowDeleted := chkShowDeleted.Checked;
+
+  med := FMediator.FindByComponent(lvName1).Mediator;
+  TtiCustomListMediatorView(med).ShowDeleted := chkShowDeleted.Checked;
+
+  med := FMediator.FindByComponent(lstName1).Mediator;
+  TtiCustomListMediatorView(med).ShowDeleted := chkShowDeleted.Checked;
+end;
+
+procedure TMainForm.btnDeletedClicked(Sender: TObject);
+var
+  med: TtiMediatorView;
+begin
+  med := FMediator.FindByComponent(grdName1).Mediator;
+  TtiStringGridMediatorView(med).SelectedObject.Deleted := True;
+  FPersonList.NotifyObservers;
 end;
 
 procedure TMainForm.SetupMediators;
@@ -98,8 +114,8 @@ begin
   begin
     FMediator := TtiModelMediator.Create(self);
     FMediator.Name := 'DemoFormMediator';
-    FMediator.AddComposite('Name(150,"Name",<);Age(50,"Age",>);GenderGUI(80,"Gender",|)', grdName1);
-    FMediator.AddComposite('Name(150,"Name",<);Age(55,"Age",>);GenderGUI(65,"Gender",|)', lvName1);
+    FMediator.AddComposite('Caption(150,"Name",<);Age(50,"Age",>);GenderGUI(80,"Gender",|)', grdName1);
+    FMediator.AddComposite('Caption(150,"Name",<);Age(55,"Age",>);GenderGUI(65,"Gender",|)', lvName1);
     { In the following line of code 'Name' refers to the TPerson.Name property.
       We could also have left the ADisplayNames property empty, which meant it
       would then default to TPerson.Caption }
@@ -179,10 +195,10 @@ begin
     TextColor := TfpgColor($FFFFFBF0);
   end;
 
-  btnName1 := TfpgButton.Create(self);
-  with btnName1 do
+  btnAddViaCode := TfpgButton.Create(self);
+  with btnAddViaCode do
   begin
-    Name := 'btnName1';
+    Name := 'btnAddViaCode';
     SetPosition(8, 361, 120, 24);
     Text := 'Add via Code';
     FontDesc := '#Label1';
@@ -192,10 +208,10 @@ begin
     OnClick := @btnViaCodeAddClick;
   end;
 
-  btnName2 := TfpgButton.Create(self);
-  with btnName2 do
+  btnChange := TfpgButton.Create(self);
+  with btnChange do
   begin
-    Name := 'btnName2';
+    Name := 'btnChange';
     SetPosition(8, 389, 120, 24);
     Text := 'Change via Code';
     FontDesc := '#Label1';
@@ -205,10 +221,10 @@ begin
     OnClick := @btnViaCodeChangeClick;
   end;
 
-  btnName3 := TfpgButton.Create(self);
-  with btnName3 do
+  btnShowModel := TfpgButton.Create(self);
+  with btnShowModel do
   begin
-    Name := 'btnName3';
+    Name := 'btnShowModel';
     SetPosition(132, 389, 96, 24);
     Text := 'Show Model';
     FontDesc := '#Label1';
@@ -218,17 +234,17 @@ begin
     OnClick := @btnShowModelClick;
   end;
 
-  btnName4 := TfpgButton.Create(self);
-  with btnName4 do
+  btnDelete := TfpgButton.Create(self);
+  with btnDelete do
   begin
-    Name := 'btnName4';
+    Name := 'btnDelete';
     SetPosition(232, 389, 80, 24);
     Text := 'Delete';
     FontDesc := '#Label1';
     Hint := '';
     ImageName := '';
     TabOrder := 6;
-    OnClick := @btnShowDeletedClick;
+    OnClick := @btnDeletedClicked;
   end;
 
   btnQuit := TfpgButton.Create(self);
@@ -244,17 +260,16 @@ begin
     OnClick := @btnQuitClicked;
   end;
 
-  cbName1 := TfpgCheckBox.Create(self);
-  with cbName1 do
+  chkShowDeleted := TfpgCheckBox.Create(self);
+  with chkShowDeleted do
   begin
-    Name := 'cbName1';
+    Name := 'cbShowDeleted';
     SetPosition(148, 361, 120, 20);
-    Enabled := False;
     FontDesc := '#Label1';
     Hint := '';
     TabOrder := 8;
     Text := 'Show Deleted';
-    OnClick := @btnShowDeletedClick;
+    OnChange := @cbShowDeletedClick;
   end;
 
   lstName1 := TfpgListBox.Create(self);
