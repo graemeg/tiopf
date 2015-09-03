@@ -17,7 +17,7 @@ type
   private
     FOrderDate: TDateTime;
     FSoldBy: string;
-    function GetOrderDateAsString: string;
+    function    GetOrderDateAsString: string;
     function    GetOrderID: string;
     procedure   SetOrderDate(AValue: TDateTime);
     procedure   SetSoldBy(AValue: string);

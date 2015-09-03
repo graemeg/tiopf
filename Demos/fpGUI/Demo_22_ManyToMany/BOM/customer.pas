@@ -23,6 +23,7 @@ type
   protected
     function    GetOwner: TCustomerList; reintroduce;
     procedure   SetOwner(const Value: TCustomerList); reintroduce;
+    function    GetCaption: string; override;
   public
     property    Owner: TCustomerList read GetOwner write SetOwner;
     procedure   Read; override;
@@ -86,6 +87,11 @@ end;
 procedure TCustomer.SetOwner(const Value: TCustomerList);
 begin
   inherited SetOwner(Value);
+end;
+
+function TCustomer.GetCaption: string;
+begin
+  Result := Firstname + ' ' + Lastname;
 end;
 
 procedure TCustomer.Read;
