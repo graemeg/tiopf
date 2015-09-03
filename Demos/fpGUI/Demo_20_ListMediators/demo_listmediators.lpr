@@ -3,9 +3,9 @@ program demo_listmediators;
 {$mode objfpc}{$H+}
 
 uses
-  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  {$IFDEF UNIX}
   cthreads,
-  {$ENDIF}{$ENDIF}
+  {$ENDIF}
   Classes, fpg_main, frmMain, Model, Constants, Model_View;
 
 
