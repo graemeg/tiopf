@@ -242,7 +242,6 @@ type
     FOnBeforeSetupField: TtiOnBeforeSetupField;
     FShowDeleted: Boolean;
     FMediatorList: TObjectList;
-    FListChanged : Boolean;
     function GetDisplayNames: string;
     function GetIsObserving: Boolean;
     function GetModel: TtiObjectList;
@@ -252,6 +251,7 @@ type
     procedure SetShowDeleted(const AValue: Boolean);
     procedure SetOnBeforeSetupField(const Value: TtiOnBeforeSetupField);
   protected
+    FListChanged : Boolean;
     FFieldsInfo: TtiMediatorFieldInfoList;
     procedure FieldInfoChanged(Item: TtiMediatorFieldInfo;Action: TCollectionNotification); virtual;
     procedure CreateColumns; virtual; abstract;
