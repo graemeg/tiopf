@@ -223,6 +223,14 @@
   {$DEFINE ThirdPartyExceptionHandling}
 {$ENDIF}
 
+// Do we have a 3rd party Regex (regular expressions) unit available. If so,
+// then enable this feature. Currently used in tiIteratorIntf unit.
+{$IFDEF FPC}
+  {$DEFINE ThirdPartyRegex}   // FPC comes standard with a regex unit
+{$ELSE}
+  {.$DEFINE ThirdPartyRegex}
+{$ENDIF}
+
 // Use these defines, along with tiCompileTimeLinkPerLayers.pas to force static linking
 // at compile time of a persistence layer. These defines must be kept in
 // sync with tiCompileTimeLinkPerLayers.pas
