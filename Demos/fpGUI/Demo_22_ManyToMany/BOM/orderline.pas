@@ -44,6 +44,7 @@ type
   TOrderLineList = class(TtiObjectList)
   private
     FOrder: TOrder;
+    function    GetOrderTotal: Currency;
   protected
     function    GetItems(i: integer): TOrderLine; reintroduce;
     procedure   SetItems(i: integer; const Value: TOrderLine); reintroduce;
@@ -52,6 +53,7 @@ type
     function    Add(const AObject: TOrderLine): integer; reintroduce;
     procedure   Read; overload; override;
     property    Order: TOrder read FOrder write FOrder;
+    property    OrderTotal: Currency read GetOrderTotal;
   end;
 
 
@@ -60,6 +62,7 @@ implementation
 uses
   tiOPFManager
   ,demoUtils
+  ,tiIteratorIntf
   ;
 
 { TOrderLine }
@@ -114,6 +117,22 @@ end;
 procedure TOrderLineList.Read;
 begin
   GTIOPFManager.VisitorManager.Execute('orderline_readlist', self);
+end;
+
+{ Just for goot measure, here is an example of using iterator interfaces
+  to loop through our list object. }
+function TOrderLineList.GetOrderTotal: Currency;
+var
+  itr: ItiOPFListIterator;
+  o: TOrderLine;
+begin
+  Result := 0.0;
+  itr := gIteratorFactory.tiListIterator(self);
+  while itr.HasNext do
+  begin
+    o := TOrderLine(itr.Next);
+    Result := Result + (o.Quantity * o.UnitSalePrice);
+  end;
 end;
 
 end.
