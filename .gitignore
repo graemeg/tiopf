@@ -4,3 +4,14 @@
 *.lps
 *.compiled
 *.bak*
+*.rst
+*.lrs
+units/
+lib/
+.svn/
+*.backup
+*.res
+*.patch
+*.diff
+*.zip
+*.tar.gz
