@@ -1,7 +1,7 @@
 {
   Log to a window above the application's main form, but only if
   the -lv parameter is passed on the command line
-  
+
   This in normally controlled by the tiLogReg unit.
 
   *** NOTE ***
@@ -171,7 +171,7 @@ begin
     lToolButton.Focusable := False;
     Inc(x, 51);
   end;
-  
+
  Result := FForm;
 end;
 
@@ -184,7 +184,7 @@ procedure TtiLogToGUI.Log(const ADateTime, AThreadID, AMessage: string; ASeverit
 begin
   if Terminated then
     Exit; //==>
-  if not FForm.HasHandle then
+  if not FForm.WindowAllocated then
     FForm.Show;
   inherited Log(ADateTime, AThreadID, AMessage, ASeverity);
 end;
@@ -194,7 +194,7 @@ begin
   {$Note This is untested!!! }
   FForm.Parent      := AValue;
   FForm.Align       := alClient;
-  FForm.WindowAttributes := FForm.WindowAttributes + [waBorderless];
+//  FForm.WindowAttributes := FForm.WindowAttributes + [waBorderless];
 //  FForm.BorderStyle := bsNone;
 end;
 
