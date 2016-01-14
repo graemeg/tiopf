@@ -10,7 +10,7 @@
 
     Description:
       A visitor that will build a TreeView based on the Mappings given.
-      
+
       Usage:
         var
           lVisitor: TtiVisObjToTree;
@@ -20,13 +20,13 @@
           lVisitor.IncludeDeleted := False;
           Data.Iterate( lVisitor );
         end;
-      
+
       ToDo:
         * Minimise the refresh of the treeview when deleting a TTreeNode
         * Unit tests
         * Make the treeview a Observer. Somehow?
 }
-unit tiTreeBuildVisitor; 
+unit tiTreeBuildVisitor;
 
 {$I tiDefines.inc}
 
@@ -117,29 +117,13 @@ type
     FbCanInsert: boolean;
     FbCanEdit: boolean;
     FbCanDelete: boolean;
-    FbCanInsertModule: boolean;
-    FbCanProcessModule: boolean;
-    FbCanDeleteModule: boolean;
-    FbCanCompileModule: boolean;
-    FbCanSignOffModule: boolean;
     // events
     FOnInsert: TTVNodeEvent;
     FOnEdit: TTVNodeEvent;
     FOnDelete: TTVNodeEvent;
-    FOnInsertModule: TTVNodeEvent;
-    FOnProcessModule: TTVNodeEvent;
-    FDeleteModule: TTVNodeEvent;
-    FOnCompileModule: TTVNodeEvent;
-    FOnSignOffModule: TTVNodeEvent;
     FOnCanInsert: TTVNodeConfirmEvent;
     FOnCanEdit: TTVNodeConfirmEvent;
     FOnCanDelete: TTVNodeConfirmEvent;
-    FOnCanInsertModule: TTVNodeConfirmEvent;
-    FOnCanProcessModule: TTVNodeConfirmEvent;
-    FOnCanDeleteModule: TTVNodeConfirmEvent;
-    FOnCanCompileModule: TTVNodeConfirmEvent;
-    FOnCanSignOffModule: TTVNodeConfirmEvent;
-
     procedure   SetDataClassName(const Value: string);
     function    ClassNameToCollectionItemName(const pValue: string): string;
   protected
@@ -152,11 +136,6 @@ type
     property    CanInsert: boolean read FbCanInsert write FbCanInsert default false;
     property    CanEdit: boolean read FbCanEdit write FbCanEdit default false;
     property    CanDelete: boolean read FbCanDelete write FbCanDelete default false;
-    property    CanInsertModule: boolean read FbCanInsertModule write FbCanInsertModule;
-    property    CanProcessModule: boolean read FbCanProcessModule write FbCanProcessModule;
-    property    CanDeleteModule: boolean read FbCanDeleteModule write FbCanDeleteModule;
-    property    CanCompileModule: boolean read FbCanCompileModule write FbCanCompileModule;
-    property    CanSignOffModule: boolean read FbCanSignOffModule write FbCanSignOffModule;
     property    DataClass: string read FsDataClassName write SetDataClassName;
     property    DisplayPropName: string read FsDisplayPropName write FsDisplayPropName;
     property    ImageIndex: integer read FiImageIndex write FiImageIndex default -1;
@@ -166,19 +145,9 @@ type
     property    OnInsert: TTVNodeEvent read FOnInsert write FOnInsert;
     property    OnEdit: TTVNodeEvent read FOnEdit write FOnEdit;
     property    OnDelete: TTVNodeEvent read FOnDelete write FOnDelete;
-    property    OnInsertModule: TTVNodeEvent read FOnInsertModule write FOnInsertModule;
-    property    OnProcessModule: TTVNodeEvent read FOnProcessModule write FOnProcessModule;
-    property    OnDeleteModule: TTVNodeEvent read FDeleteModule write FDeleteModule;
-    property    OnCompileModule: TTVNodeEvent read FOnCompileModule write FOnCompileModule;
-    property    OnSignOffModule: TTVNodeEvent read FOnSignOffModule write FOnSignOffModule;
     property    OnCanInsert: TTVNodeConfirmEvent read FOnCanInsert write FOnCanInsert;
     property    OnCanEdit: TTVNodeConfirmEvent read FOnCanEdit write FOnCanEdit;
     property    OnCanDelete: TTVNodeConfirmEvent read FOnCanDelete write FOnCanDelete;
-    property    OnCanInsertModule: TTVNodeConfirmEvent read FOnCanInsertModule write FOnCanInsertModule;
-    property    OnCanProcessModule: TTVNodeConfirmEvent read FOnCanProcessModule write FOnCanProcessModule;
-    property    OnCanDeleteModule: TTVNodeConfirmEvent read FOnCanDeleteModule write FOnCanDeleteModule;
-    property    OnCanCompileModule: TTVNodeConfirmEvent read FOnCanCompileModule write FOnCanCompileModule;
-    property    OnCanSignOffModule: TTVNodeConfirmEvent read FOnCanSignOffModule write FOnCanSignOffModule;
   end;
 
 
@@ -405,7 +374,7 @@ procedure TtiTVDataMapping.SetDataClassName(const Value: string);
 begin
   if FName = ClassNameToCollectionItemName(FsDataClassName) then
     FName := ClassNameToCollectionItemName(Value);
-    
+
   FsDataClassName := Value;
 end;
 

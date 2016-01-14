@@ -1,26 +1,31 @@
+{
+    This file is part of the tiOPF project.
 
-{* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    See the file license.txt, included in this distribution,
+    for details about redistributing tiOPF.
 
-Purpose:
-  A visitor that will build a TreeView based on the Mappings given.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-Usage:
-  var
-    lVisitor: TVisObjToTree;
-  begin
-    lVisitor := TVisObjToTree.Create(FTreeView);
-    lVisitor.DataMappings := DataMappings;
-    lVisitor.IncludeDeleted := False;
-    Data.Iterate( lVisitor );
-  end;
+    Description:
+      A visitor that will build a TreeView based on the Mappings given.
 
-ToDo:
-  * Minimise the refresh of the treeview when deleting a TTreeNode
-  * Unit tests
-  * Make the treeview a Observer. Somehow?
+      Usage:
+        var
+          lVisitor: TtiVisObjToTree;
+        begin
+          lVisitor := TtiVisObjToTree.Create(FTreeView);
+          lVisitor.DataMappings := DataMappings;
+          lVisitor.IncludeDeleted := False;
+          Data.Iterate( lVisitor );
+        end;
 
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
-
+      ToDo:
+        * Minimise the refresh of the treeview when deleting a TTreeNode
+        * Unit tests
+        * Make the treeview a Observer. Somehow?
+}
 unit tiTreeBuildVisitor;
 
 {$I tiDefines.inc}
@@ -59,9 +64,6 @@ type
 
 
   { Stream a TtiObject out as TreeView }
-
-  { TVisObjToTree }
-
   TVisObjToTree = class( TVisTree )
   private
     FbIncludeDeleted: boolean;
@@ -225,7 +227,7 @@ destructor TVisTree.Destroy;
 begin
   { Don't free the tree, as it was passed into this Class, and we only store
     a reference to it. }
-  inherited;
+  inherited Destroy;
 end;
 
 
@@ -462,7 +464,7 @@ var
   i: Integer;
 begin
   Result := -1;
-  
+
   for i := 0 to Count - 1 do
   begin
     if Items[i].DataClass = pClassName then
@@ -482,7 +484,7 @@ end;
 
 procedure TtiTVDataMappings.Update(Item: TCollectionItem);
 begin
-  inherited;
+  inherited Update(Item);
 end;
 
 end.
