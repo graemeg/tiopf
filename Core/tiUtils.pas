@@ -2139,7 +2139,7 @@ begin
         {$IFDEF UNIX}
         { FPC under Linux has some bug in <= v2.2.5 so faAnyFile is all we
           can use instead of the following:  faAnyFile-faSysFile-faDirectory, }
-        if SysUtils.FindFirst(lsStartDir + AWildCard, faAnyFile, SearchRec) = 0 then
+        if SysUtils.FindFirst(lsStartDir + AWildCard, faAnyFile-faDirectory, SearchRec) = 0 then
         {$ENDIF UNIX}
         begin
           repeat
