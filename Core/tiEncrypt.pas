@@ -15,7 +15,7 @@ const
 type
 
   // Base encryption component. Wrappers Scott's encryption algorithm and
-  // exposes the EncryptString & EncryptStream interface. Indroduces the
+  // exposes the EncryptString & EncryptStream interface. Introduces the
   // NewSeed method to increase security in comms apps
   TtiEncryptAbs = class(TObject)
   private
