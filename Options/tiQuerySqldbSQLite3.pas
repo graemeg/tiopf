@@ -13,6 +13,8 @@ unit tiQuerySqldbSQLite3;
 
 {$I tiDefines.inc}
 
+{.$define LOGSQLDB}
+
 interface
 
 uses
@@ -52,7 +54,6 @@ type
 
 implementation
 
-{ $define LOGSQLDB}
 uses
 {$ifdef LOGSQLDB}
   tiLog,
