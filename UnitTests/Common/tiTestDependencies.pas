@@ -4,12 +4,6 @@ unit tiTestDependencies;
 
 interface
 uses
-  {$IFDEF FPC}
-  testregistry,
-  tiFPCUnitUtils, // Helper functions to fake DUnit methods
-  {$ELSE}
-  TestExtensions,
-  {$ENDIF}
   tiTestFramework,
   tiOPFTestCase;
 
@@ -33,14 +27,14 @@ uses
 {$ENDIF}
   SysUtils
 
-  ,tiConstants
   ,tiOPFManager
   ,tiOPFTestManager
   ,tiLog // Confirm which of these must be referenced here
   ,tiLogToFile
-  ,tiUtils
   ,tiBOMsForTesting
   ,tiOIDForTesting
+  ,tiUtils
+  ,tiConstants
 
   ,tiBaseObject_TST
   ,tiUtils_TST

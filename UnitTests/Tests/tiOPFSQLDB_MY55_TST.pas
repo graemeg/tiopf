@@ -62,7 +62,6 @@ uses
   ,TestFramework
   ,tiOPFTestManager
   ,SysUtils
-  ,tiUtils
   ,tiTestDependencies
   ;
 
