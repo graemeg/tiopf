@@ -754,7 +754,20 @@ begin
   Result := Self.AddInstance;
   Result.Name := AFieldName;
   Result.Kind := AFieldKind;
-  Result.Width := AFieldWidth;
+  if AFieldKind = qfkLogical then
+  begin
+    {$IFDEF BOOLEAN_CHAR_1}
+      Result.Width := 1;
+    {$ELSE}
+      {$IFDEF BOOLEAN_NUM_1}
+        Result.Width := 0;
+      {$ELSE}
+        Result.Width := 5;
+      {$ENDIF}
+    {$ENDIF}
+  end
+  else
+    Result.Width := AFieldWidth;
   Result.ObjectState := posClean;
 end;
 
