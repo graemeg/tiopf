@@ -369,7 +369,7 @@ begin
   if lField = nil then
     Exit; //==>
   lIndex := lField.Index;
-  Assert(lIndex < Count, 'Columns and metat data out of sync.');
+  Assert(lIndex < Count, 'Columns and metadata out of sync.');
   result := Items[lIndex];
 end;
 

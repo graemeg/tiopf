@@ -844,7 +844,7 @@ begin
   begin
     lCell := FDataSetRow.AddInstance;
     lCell.ValueAsString := AValue;
-  end 
+  end
   else
     FDataSetRow.Items[AIndex-1].ValueAsString := AValue;
 end;
@@ -916,7 +916,7 @@ end;
 
 procedure TTXTToTIDataSetAbs.Save(pDataSet: TtiDataBuffer; AFileName: TFileName);
 var
-  i : integer;             
+  i : integer;
 begin
   Assert(pDataSet.TestValid, CTIErrorInvalidObject);
   FDataSet := pDataSet;
@@ -1073,7 +1073,7 @@ end;
 function TtiDatabaseTXTAbs.Test: boolean;
 begin
   result := false;
-  Assert(false, 'Under construction');  
+  Assert(false, 'Under construction');
 end;
 
 
