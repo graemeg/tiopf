@@ -1073,9 +1073,8 @@ end;
 
 procedure TTestTIPersistenceLayers.NonThreadedDBConnectionPool;
 var
-  i : integer;
-  LDatabase : TtiDatabase;
-  lDBConnectionName : string;
+  i: integer;
+  LDatabase: TtiDatabase;
 const
   CAlias = 'TestAliasName';
 begin
@@ -1086,7 +1085,6 @@ begin
     TestSetupData.Password,
     TestSetupData.Params);
   try
-    lDBConnectionName := TestSetupData.DBName;
     for i := 1 to 1 do
     begin
       LDatabase := PersistenceLayer.DBConnectionPools.Lock(CAlias);
@@ -1798,12 +1796,11 @@ end;
 
 procedure TTestTIQueryParams.AsStream;
 var
-  lParams : TtiQueryParams;
-  lParam  : TtiQueryParamAbs;
-  lStream1 : TStringStream;
-  lStream2 : TStream;
-  ls      : string;
-  s: string;
+  lParams: TtiQueryParams;
+  lParam: TtiQueryParamAbs;
+  lStream1: TStringStream;
+  lStream2: TStream;
+  ls: string;
 begin
   lStream1 := TStringStream.Create(LongString);
   try

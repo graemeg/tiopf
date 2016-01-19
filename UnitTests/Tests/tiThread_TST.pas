@@ -40,7 +40,6 @@ const
   CSleep = 100;
 
 var
-  URunOnce: Boolean = False;
   UVCLSynchronizer: TMultiReadExclusiveWriteSynchronizer;
 
 procedure RegisterTests;

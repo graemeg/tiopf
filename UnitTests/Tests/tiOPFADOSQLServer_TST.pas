@@ -91,11 +91,8 @@ end;
 
 procedure TTestTIDatabaseADOSQLServer.DatabaseExists;
 var
-  lDB:       string;
   lDBExists: boolean;
 begin
-  lDB       := TestSetupData.DBName;
-
   lDBExists :=
     PersistenceLayer.DatabaseClass.DatabaseExists(
     TestSetupData.DBName,

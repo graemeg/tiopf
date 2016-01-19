@@ -1728,7 +1728,6 @@ end;
 procedure TTestTICriteria.TestCriteriaAssign;
 var
   lCriteria1, lCriteria2: TtiCriteria;
-  lSQL: string;
 begin
   lCriteria1 := TtiCriteria.Create('test');
   try
