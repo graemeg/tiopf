@@ -35,7 +35,6 @@ type
     procedure TestPerSQLCriteria_SQL_IgnoreEmptyCritera;
     procedure TestPerSQLCriteria_SQL_Or;
     procedure TestFieldName;
-    procedure TestPerSelectionCriteriaList_SQL;
     procedure TestPerSelectionCriteriaList_via_AsSQLClause;
 
     // Testing order by sql generation
@@ -110,7 +109,7 @@ begin
     CheckSame(lColumns, lCol.Owner, 'Failed on 8');
     CheckEquals(False, lCol.Ascending, 'Failed on 9');
     CheckEquals('Field2', lCol.Name, 'Failed on 10');
-    
+
     lColumns.Clear;
     CheckEquals(0, lColumns.Count, 'Failed on 11');
   finally
@@ -255,7 +254,7 @@ begin
   finally
     lCriteria.Free;
   end;
-  
+
   lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddEqualTo('OID', 1);
@@ -264,7 +263,7 @@ begin
   finally
     lCriteria.Free;
   end;
-  
+
   // Negative criteria
   lCriteria := TtiCriteria.Create('test');
   try
@@ -319,7 +318,7 @@ begin
       lCriteria.Free;
     end;
     lParams.Clear;
-    
+
     lCriteria := TtiCriteria.Create('test');
     try
       CheckEquals(0, lParams.Count, 'Failed on 10');
@@ -401,7 +400,7 @@ begin
   finally
     lCriteria.Free;
   end;
-  
+
   // Negative criteria
   lCriteria := TtiCriteria.Create('test');
   try
@@ -437,7 +436,7 @@ begin
       lCriteria.AddNotExists('Select * from Order where Client_ID = 1');
       lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
       CheckEquals('( NOT EXISTS (Select * from Order where Client_ID = 1))', lSQL, 'Failed on 2');
-      CheckEquals(0, lParams.Count);      
+      CheckEquals(0, lParams.Count);
     finally
       lCriteria.Free;
     end;
@@ -1301,31 +1300,6 @@ begin
 
   finally
     lSelectionCriteria.Free;
-  end;
-end;
-
-procedure TTestTICriteria.TestPerSelectionCriteriaList_SQL;
-var
-  lList: TtiSelectionCriteriaList;
-  lItem: TtiEqualToCriteria;
-begin
-  lList := TtiSelectionCriteriaList.Create;
-  try
-    CheckEquals('', lList.AsSQL, 'Failed on 1');
-
-    lItem := TtiEqualToCriteria.Create('A', 'B');
-    lList.Add(lItem);
-    CheckEquals(' ( = ) ', lList.AsSQL, 'Failed on 2');
-
-    lItem := TtiEqualToCriteria.Create('C', 'D');
-    lList.Add(lItem);
-    CheckEquals(' ( =  AND  = ) ', lList.AsSQL, 'Failed on 3');
-
-    lList.Clear;
-    CheckEquals(0, lList.Count, 'Failed on 4');
-    CheckEquals('', lList.AsSQL, 'Failed on 5');
-  finally
-    lList.Free;
   end;
 end;
 
