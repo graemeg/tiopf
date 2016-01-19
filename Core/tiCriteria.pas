@@ -44,8 +44,8 @@ type
     property    Name: string read FName write FName;
     property    FieldName: string read GetFieldName write FFieldName;
   end;
-  
-  
+
+
   TtiColumns = class(TtiObjectList)
   private
     function    GetItems(i: Integer): TtiColumn; reintroduce;
@@ -178,7 +178,6 @@ type
     procedure   SetOwner(const Value: TtiCriteria); reintroduce; virtual;
   public
     function    Add(const AObject: TtiSelectionCriteriaAbs): integer; reintroduce;
-    function    AsSQL: string; deprecated;
     property    Items[Index: Integer]: TtiSelectionCriteriaAbs read GetItems write SetItems; default;
     property    Owner: TtiCriteria read GetOwner write SetOwner;
   end;
@@ -250,15 +249,15 @@ type
   public
     function    GetClause: string; override;
   end;
-  
-  
+
+
   TtiNullCriteria = class(TtiValueCriteriaAbs)
   public
     constructor Create(AAttribute: string; ANegative: boolean = false; AFieldName: string = ''); reintroduce; virtual;
     function    GetClause: string; override;
   end;
-  
-  
+
+
   TtiBetweenCriteria = class(TtiValueCriteriaAbs)
   private
     FValue_2: variant;
@@ -268,8 +267,8 @@ type
   published
     property    Value_2: variant read FValue_2;
   end;
-  
-  
+
+
   TtiSQLCriteria = class(TtiSelectionCriteriaAbs)
   public
     constructor Create(ASQLStm: string); reintroduce; virtual;
@@ -286,7 +285,7 @@ uses
   ,tiConstants
   ;
 
-  
+
 const
   cQuote = '''%s''';
 
@@ -863,22 +862,6 @@ end;
 function TtiSelectionCriteriaList.Add(const AObject: TtiSelectionCriteriaAbs): integer;
 begin
   result := inherited Add(AObject);
-end;
-
-function TtiSelectionCriteriaList.AsSQL: string;
-var
-  i: Integer;
-begin
-  if count = 0 then
-    Exit;
-  Result := ' (';
-  for i := 0 to Count - 1 do
-  begin
-    if i > 0 then
-      Result := Result + ' AND ';
-    Result := Result + TtiSelectionCriteriaAbs(Items[i]).GetClause
-  end;
-  Result := Result + ') ';
 end;
 
 function TtiSelectionCriteriaList.GetItems(i: Integer): TtiSelectionCriteriaAbs;
