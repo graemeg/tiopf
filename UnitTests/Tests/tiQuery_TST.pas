@@ -162,6 +162,7 @@ type
     procedure DBMetaDataFindByTableName;
     procedure MetaDataTableAdd;
     procedure MetaDataTableAddField;
+    procedure MetaDataTableAddFieldBoolean;
     procedure MetaDataTableFindByFieldName;
     procedure MetaDataTableMaxFieldNameWidth;
     procedure MetaDataFieldClone;
@@ -1399,6 +1400,44 @@ begin
     CheckEquals(0, lList.Count, 'Count');
   finally
     lList.Free;
+  end;
+end;
+
+{ Test behaviour that specifying field width for qfkLogical gets ignored. }
+procedure TTestTIMetaData.MetaDataTableAddFieldBoolean;
+var
+  lTable: TtiDBMetaDataTable;
+begin
+  lTable := TtiDBMetaDataTable.Create;
+  try
+    CheckEquals(0, lTable.Count, 'failed on 1');
+    lTable.AddInstance('test1', qfkLogical);
+    {$IFDEF BOOLEAN_CHAR_1}
+      CheckEquals(1, lTable.Items[0].Width, 'failed on 2.1');
+    {$ELSE}
+      {$IFDEF BOOLEAN_NUM_1}
+        CheckEquals(0, lTable.Items[0].Width, 'failed on 2.2');
+      {$ELSE}
+        CheckEquals(5, lTable.Items[0].Width, 'failed on 2.3');
+      {$ENDIF}
+    {$ENDIF}
+
+    lTable.AddInstance('test2', qfkLogical, 6);
+    {$IFDEF BOOLEAN_CHAR_1}
+      CheckEquals(1, lTable.Items[1].Width, 'failed on 3.1');
+    {$ELSE}
+      {$IFDEF BOOLEAN_NUM_1}
+        CheckEquals(0, lTable.Items[1].Width, 'failed on 3.2');
+      {$ELSE}
+        CheckEquals(5, lTable.Items[1].Width, 'failed on 3.3');
+      {$ENDIF}
+    {$ENDIF}
+
+    CheckEquals(2, lTable.Count, 'failed on 4');
+    lTable.Clear;
+    CheckEquals(0, lTable.Count, 'failed on 5');
+  finally
+    lTable.Free;
   end;
 end;
 
