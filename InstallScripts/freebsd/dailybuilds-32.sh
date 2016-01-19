@@ -66,7 +66,7 @@ sed "s/#FPCCPU/$FPCCPU-$FPCHOST/g" msg2.txt > msg3.txt
 cat msg3.txt divider.txt /tmp/DUnitReportShort${FPCVER}.txt > msg4.txt
 
 # post text result to tiopf.dailybuilds newsgroup
-/usr/bin/rpost 192.168.0.54 < msg4.txt
+/usr/bin/rpost geldenhuys.co.uk < msg4.txt
 # copy html results to web server
 scp -q -i /home/graemeg/.ssh/id_dsa_github_mirroring index.html graemeg@opensoft:/usr/local/www/opensoft.homeip.net/tiopf/fpcunit/index32.html
 
