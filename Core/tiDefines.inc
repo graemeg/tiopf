@@ -188,12 +188,12 @@
 // and should be replaced by a more suitable solution
 // (along with BOOLEAN_CHAR_1)
 // Note: If enabled, this value overrides BOOLEAN_CHAR_1
-// It is only used for setting parameters because when converting from string 
+// It is only used for setting parameters because when converting from string
 // back to boolean, a multi-test is generally performed (ie. if 'TRUE', 'T', '1')
 // cf: Support NG thread starting 15/08/2006
 {.$DEFINE BOOLEAN_NUM_1}
 
-// Some databases do not have a native boolean type, so you must roll it yourself 
+// Some databases do not have a native boolean type, so you must roll it yourself
 // from a CHAR or VARCHAR. The tiOPF will use 'T' & 'F' or 'TRUE ' & 'FALSE'. This
 // can be controled with the compiler directive below:
 // If both BOOLEAN_NUM_1 and BOOLEAN_CHAR_1 are undefined, then 'TRUE ' & 'FALSE'

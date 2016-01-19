@@ -4,7 +4,6 @@ unit tiTestDependencies;
 
 interface
 uses
-  TestExtensions,
   tiTestFramework,
   tiOPFTestCase;
 
@@ -35,6 +34,7 @@ uses
   ,tiBOMsForTesting
   ,tiOIDForTesting
   ,tiUtils
+  ,tiConstants
 
   ,tiBaseObject_TST
   ,tiUtils_TST
