@@ -2025,14 +2025,19 @@ end;
 
 
 function tiGetEXEPath : string;
+{$IFDEF MSWINDOWS}
 var
   path: array[0..MAX_PATH - 1] of char;
+{$ENDIF}
 begin
-  {$IFDEF MSWINDOWS}
   if IsLibrary then
+    {$IFDEF MSWINDOWS}
     SetString(Result, path, GetModuleFileName(HInstance, path, SizeOf(path)))
+    {$ENDIF}
+    {$IFDEF UNIX}
+    Result := Paramstr(0)
+    {$ENDIF UNIX}
   else
-  {$ENDIF}
     result := Paramstr(0);
   result := tiRemoveTrailingSlash(ExtractFilePath(Result));
 end;
