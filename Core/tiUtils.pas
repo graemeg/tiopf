@@ -63,7 +63,7 @@ type
   function  tiPad0(           AValue : string; ALen : integer): string;
   // Remove any leading zeros from a string
   function  tiRemoveLeading0( AValue : string): string;
-  // Convert a string into mized case using a simple algorithm
+  // Convert a string into mixed case using a simple algorithm
   // Note: There is a more complete version of this (that takes care of works like
   //       McCrae or King Charles IV
   //       It will also work with characters other than #32 to sep words
@@ -477,7 +477,7 @@ type
   function  tiGetComputerName : string;
 
   // Bit manipulation
-  // Is a particular bit set?
+  // Is a particular bit set? 0-based, so for a 32-bit value the range is 0-31.
   function tiIsBitSet(const AValue: longint; const ABit: byte): boolean;
   // Convert a particular bit to a string: '1' or '0'
   function tiBitToString(const AValue: longint; const ABit: byte): string;
