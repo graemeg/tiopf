@@ -17,7 +17,9 @@
         </SyntaxOptions>
       </Parsing>
       <Other>
-        <CustomOptions Value="-dUseCThreads"/>
+        <CustomOptions Value="-dUseCThreads
+-dFPGui14x
+-dFPGui15"/>
       </Other>
     </CompilerOptions>
     <Description Value="tiOPF GUI layer - visual units
