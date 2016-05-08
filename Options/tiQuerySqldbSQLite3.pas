@@ -45,6 +45,7 @@ type
     function    FieldMetaDataToSQLCreate(const AFieldMetaData: TtiDBMetaDataField): string; override;
   public
     class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
+    class function DatabaseExists(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''): Boolean; override;
     class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string; const AParams: string = ''); override;
     procedure   ReadMetaDataTables(AData: TtiDBMetaData); override;
     procedure   ReadMetaDataFields(AData: TtiDBMetaDataTable); override;
@@ -96,6 +97,15 @@ end;
 class function TtiDatabaseSQLDBSQLite3.CreateSQLConnection: TSQLConnection;
 begin
   Result := TSQLite3Connection.Create(Nil);
+end;
+
+class function TtiDatabaseSQLDBSQLite3.DatabaseExists(const ADatabaseName,
+    AUserName, APassword: string; const AParams: string): Boolean;
+begin
+  if FileExists(ADatabaseName) then
+    Result := inherited DatabaseExists(ADatabaseName, AUserName, APassword, AParams)
+  else
+    Result := false;
 end;
 
 class procedure TtiDatabaseSQLDBSQLite3.CreateDatabase(const ADatabaseName, AUserName,
