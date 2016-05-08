@@ -2002,14 +2002,11 @@ end;
 
 
 function tiGetModuleFileName: string;
-{$IFNDEF CLR}
+{$IFDEF MSWINDOWS}
 var
   Path: array[0..MAX_PATH - 1] of Char;
 {$ENDIF}
 begin
-  {$IFDEF CLR}
-  Result := Assembly.GetExecutingAssembly.Location;
-  {$ELSE}
   if IsLibrary then
   begin
     {$IFDEF MSWINDOWS}
@@ -2024,7 +2021,6 @@ begin
   end
   else
     Result := Paramstr(0);
-  {$ENDIF}
 end;
 
 
