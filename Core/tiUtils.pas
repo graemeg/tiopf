@@ -1928,10 +1928,14 @@ end;
 function tiInt32ToBinString(const AValue : longInt): string;
 var i : integer;
 begin
+  {$IFDEF FPC}
+  Result := IntToBin(AValue, 32);
+  {$ELSE}
   result := '';
   for i := 31 downto 0 do begin
     result := result + tiBitToString(AValue, i);
   end;
+  {$ENDIF}
 end;
 
 
