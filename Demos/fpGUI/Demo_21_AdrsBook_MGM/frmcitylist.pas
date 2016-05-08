@@ -21,7 +21,7 @@ type
     btnEdit: TfpgButton;
     btnDelete: TfpgButton;
     grdName1: TfpgStringGrid;
-    btnCancel: TfpgButton;
+    btnClose: TfpgButton;
     {@VFD_HEAD_END: CityListForm}
     FData: TCityList;
     FMediator: TtiModelMediator;
@@ -99,6 +99,7 @@ begin
   Name := 'CityListForm';
   SetPosition(412, 278, 421, 315);
   WindowTitle := 'City Listing';
+  Hint := '';
   ShowHint := True;
 
   bvlName1 := TfpgBevel.Create(self);
@@ -107,6 +108,8 @@ begin
     Name := 'bvlName1';
     SetPosition(0, 0, 420, 36);
     Anchors := [anLeft,anRight,anTop];
+    Hint := '';
+    Shape := bsSpacer;
     Shape := bsSpacer;
   end;
 
@@ -116,9 +119,11 @@ begin
     Name := 'btnAdd';
     SetPosition(12, 4, 52, 24);
     Text := 'Add';
-    FontDesc := '#Label1';
-    ImageName := '';
     Enabled := False;
+    FontDesc := '#Label1';
+    Hint := '';
+    ImageName := '';
+    TabOrder := 1;
   end;
 
   btnEdit := TfpgButton.Create(bvlName1);
@@ -128,6 +133,7 @@ begin
     SetPosition(68, 4, 52, 24);
     Text := 'Edit';
     FontDesc := '#Label1';
+    Hint := '';
     ImageName := '';
     TabOrder := 1;
     OnClick := @btnEditClicked;
@@ -139,10 +145,11 @@ begin
     Name := 'btnDelete';
     SetPosition(124, 4, 52, 24);
     Text := 'Delete';
+    Enabled := False;
     FontDesc := '#Label1';
+    Hint := '';
     ImageName := '';
     TabOrder := 2;
-    Enabled := False;
   end;
 
   grdName1 := TfpgStringGrid.Create(self);
@@ -150,21 +157,26 @@ begin
   begin
     Name := 'grdName1';
     SetPosition(8, 40, 404, 220);
+    BackgroundColor := TfpgColor($80000002);
     FontDesc := '#Grid';
     HeaderFontDesc := '#GridHeader';
+    Hint := '';
+    RowCount := 0;
+    RowSelect := False;
     TabOrder := 1;
   end;
 
-  btnCancel := TfpgButton.Create(self);
-  with btnCancel do
+  btnClose := TfpgButton.Create(self);
+  with btnClose do
   begin
-    Name := 'btnCancel';
+    Name := 'btnClose';
     SetPosition(332, 276, 80, 24);
-    Text := 'Cancel';
+    Text := 'Close';
     FontDesc := '#Label1';
+    Hint := '';
     ImageName := '';
-    TabOrder := 2;
     ModalResult := mrOK;
+    TabOrder := 2;
   end;
 
   {@VFD_BODY_END: CityListForm}
