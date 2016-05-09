@@ -2,9 +2,6 @@
 
   Platform: Unix }
 
-unit tiUtils_Impl;
-
-{$I tiDefines.inc}
 
 function tiGetTempFile(const AFileNameExtension : string): string;
 {$IFNDEF FPC}
