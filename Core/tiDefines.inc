@@ -86,7 +86,7 @@
 // Free Pascal
 {$IFDEF FPC}
   {$DEFINE DELPHI2010ORABOVE}
-  {$MODE DELPHI}{$H+}
+  {$MODE DELPHIUNICODE}{//$H+}
   {$ASMMODE intel}
   {$DEFINE DUNIT2ORFPC}
 {$ENDIF}
@@ -99,8 +99,8 @@
 {$IFDEF POSIX}
   {$DEFINE UNIX}
 {$ENDIF}
-  
-  
+
+
 {: Enable the conditional define REFERENCE_COUNTING to enable reference counting
    on TtiBaseObject}
 {$DEFINE REFERENCE_COUNTING}
