@@ -36,6 +36,7 @@ type
     constructor Create(ASuspended: boolean); virtual;
     destructor  Destroy; override;
     procedure   SetThreadName(const AName: string);
+    procedure   Start;
     procedure   WakeUp;
     procedure   WakeUpAndTerminate;
     property    ThreadInstanceID: Integer read FThreadInstanceID;
@@ -602,6 +603,17 @@ begin
   Result := (not Terminated) and (not Finished);
 end;
 
+{ We've implemented Start() here to help D2009 along, as Resume() was
+  only introduced in D2010. Adding Start() here also means we don't have to
+  riddle the tiOPF framework with IFDEF code all over the place. }
+procedure TtiSleepThread.Start;
+begin
+  {$IFDEF DELPHI2009}
+  Resume;
+  {$ELSE}
+  inherited Start;
+  {$ENDIF}
+end;
 
 procedure TtiSleepThread.Execute;
 begin
