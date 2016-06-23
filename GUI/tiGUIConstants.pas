@@ -8,9 +8,9 @@ uses
   Graphics;
 
 const
-  // RGB color values
+  // Color values in BBGGRR format
   clPaleBlue    = TColor($FEF5E9);
-  clError       = clYellow;
+  clError       = TColor($A0A0FF);  { a pink/red color - almost like salmon }
 
   // Default values
   cuiDefaultLabelWidth    = 80;
