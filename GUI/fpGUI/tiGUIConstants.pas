@@ -1,6 +1,6 @@
 unit tiGUIConstants;
 
-{$mode objfpc}{$H+}
+{$I tiDefines.inc}
 
 interface
 
@@ -9,7 +9,9 @@ uses
   ;
 
 const
-  clError = TfpgColor($FFA0A0);  { a pink/reddish color - almost like salmon }
+  // Color values in RRGGBB format
+  clPaleBlue  = TfpgColor($E9F5FE);
+  clError     = TfpgColor($FFA0A0);  { a pink/red color - almost like salmon }
 
 implementation
 
