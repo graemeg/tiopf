@@ -68,8 +68,12 @@ contains
   tiAutoMapSelect in '..\..\Core\tiAutoMapSelect.pas',
   tiGenericBase in '..\..\Core\tiGenericBase.pas',
   tiGenericList in '..\..\Core\tiGenericList.pas',
-  tiSemaphore in '..\..\Core\tiSemaphore.pas';
+  tiSemaphore in '..\..\Core\tiSemaphore.pas',
+  tiSmartPointer in '..\..\Core\tiSmartPointer.pas',
+  tiMime in '..\..\Core\tiMime.pas',
+  tiParams in '..\..\Core\tiParams.pas';
 
 {$I tiDefines.inc}
 
 end.
+
