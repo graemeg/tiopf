@@ -10,8 +10,8 @@ uses
   ,tiCriteria
 {$IFDEF DELPHI2010ORABOVE}
   ,tiGenericList
-{$ENDIF}
   ,tiSmartPointer
+{$ENDIF}
   ;
 
 type
