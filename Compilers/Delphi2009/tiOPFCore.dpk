@@ -66,7 +66,10 @@ contains
   tiModelMediator in '..\..\Core\tiModelMediator.pas',
   tiAutoMapSelect in '..\..\Core\tiAutoMapSelect.pas',
   tiGenericBase in '..\..\Core\tiGenericBase.pas',
-  tiGenericList in '..\..\Core\tiGenericList.pas';
+  tiGenericList in '..\..\Core\tiGenericList.pas',
+  tiSemaphore in '..\..\Core\tiSemaphore.pas',
+  tiMime in '..\..\Core\tiMime.pas',
+  tiParams in '..\..\Core\tiParams.pas';
 
 {$I tiDefines.inc}
 
