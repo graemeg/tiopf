@@ -28,6 +28,7 @@ type
     procedure SetData(const AValue: TCityList);
     procedure SetupMediators;
     procedure btnEditClicked(Sender: TObject);
+    procedure btnDeleteClicked(Sender: TObject);
   public
     procedure AfterCreate; override;
     property Data: TCityList read FData write SetData;
@@ -41,7 +42,7 @@ procedure ShowCities(const AList: TCityList);
 implementation
 
 uses
-  tiListMediators, frmCityMaint{, tiDialogs};
+  tiListMediators, frmCityMaint, tiDialogs;
 
 
 procedure ShowCities(const AList: TCityList);
@@ -84,6 +85,32 @@ begin
   begin
     // we can save contact here
   end;
+end;
+
+procedure TCityListForm.btnDeleteClicked(Sender: TObject);
+var
+  def: TtiPropertyLinkDef;
+  lData: TCity;
+begin
+  //if not ValidSelection then
+  //  Exit;
+
+  if tiAppConfirmation('Are you sure you want to delete this item?') then
+  begin
+    def := FMediator.FindByComponent(grdName1);
+    lData := TCity(TtiStringGridMediatorView(def.Mediator).SelectedObject);
+    if Assigned(lData) then
+    begin
+      lData.Deleted := True;
+      { If we used a database, this call would trigger the delete visitor.
+        The database referential integrity checks would also prevent the
+        deletion of a record is use. }
+      // lData.Save;
+      { If the Save() was successful, this call would remove and free the
+        object in memory. }
+      // Data.Remove(lData);
+    end;
+  end;  { if }
 end;
 
 procedure TCityListForm.SetData(const AValue: TCityList);
@@ -145,11 +172,11 @@ begin
     Name := 'btnDelete';
     SetPosition(124, 4, 52, 24);
     Text := 'Delete';
-    Enabled := False;
     FontDesc := '#Label1';
     Hint := '';
     ImageName := '';
     TabOrder := 2;
+    OnClick := @btnDeleteClicked;
   end;
 
   grdName1 := TfpgStringGrid.Create(self);
@@ -181,6 +208,7 @@ begin
 
   {@VFD_BODY_END: CityListForm}
 end;
+
 
 
 end.
