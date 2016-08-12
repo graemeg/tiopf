@@ -4,11 +4,13 @@
 
 unit tiopfLCL;
 
+{$warn 5023 off : no warning about unused units}
 interface
 
 uses
   tiMediators, tiListMediators, tiGUIINI, tiDialogs, tiGUIConstants, tiGUIUtils, tiLogToGUI, 
-  tiTreeBuildVisitor, tiGenericTreeViewMediator, tiImageMgr, tiListView;
+  tiTreeBuildVisitor, tiGenericTreeViewMediator, tiImageMgr, tiListView, FtiDialogAbs, FtiPerEditDialog, 
+  FtiPerAutoEditDialog;
 
 implementation
 

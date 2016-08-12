@@ -1,0 +1,21 @@
+object FormTiDialogAbs: TFormTiDialogAbs
+  Left = 363
+  Height = 217
+  Top = 146
+  Width = 269
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'FormTiDialogAbs'
+  ClientHeight = 217
+  ClientWidth = 269
+  Color = clBtnFace
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  Position = poMainFormCenter
+  LCLVersion = '1.6.0.4'
+  Visible = False
+end

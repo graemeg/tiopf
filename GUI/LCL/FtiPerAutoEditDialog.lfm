@@ -1,0 +1,2 @@
+inherited FormTIPerAutoEditDialog: TFormTIPerAutoEditDialog
+end
