@@ -19,8 +19,7 @@ type
 
 implementation
 uses
-   tiUtils
-  ,tiGUIINI
+  tiGUIINI
  ;
 
 

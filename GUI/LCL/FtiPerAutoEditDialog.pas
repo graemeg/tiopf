@@ -6,8 +6,7 @@ unit FtiPerAutoEditDialog;
 interface
 uses
   tiObject
-  , tiReadOnly
-  , FtiPerEditDialog
+  ,FtiPerEditDialog
  ;
 
 type
@@ -21,8 +20,7 @@ type
 
 implementation
 uses
-  tiUtils
-  ,Classes
+  Classes
   ,tiPerAwareCtrls
   ,TypInfo
   ,tiRTTI

@@ -54,11 +54,10 @@ type
 
 implementation
 uses
-   tiUtils
-  ,tiGUIINI
+  tiGUIINI
  ;
 
-{$R *.LFM}
+{$R *.lfm}
 
 class function TFormTIPerEditDialog.Execute(const AData: TtiObject; pReadOnly : boolean = false): boolean;
 var
