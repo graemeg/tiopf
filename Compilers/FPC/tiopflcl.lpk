@@ -26,7 +26,7 @@
     <License Value="Mozilla Public License 1.1 or Modified LGPL
 "/>
     <Version Major="2" Release="5"/>
-    <Files Count="11">
+    <Files Count="14">
       <Item1>
         <Filename Value="../../GUI/LCL/tiMediators.pas"/>
         <UnitName Value="tiMediators"/>
@@ -71,6 +71,18 @@
         <Filename Value="../../GUI/tiListView.pas"/>
         <UnitName Value="tiListView"/>
       </Item11>
+      <Item12>
+        <Filename Value="../../GUI/LCL/FtiDialogAbs.pas"/>
+        <UnitName Value="FtiDialogAbs"/>
+      </Item12>
+      <Item13>
+        <Filename Value="../../GUI/LCL/FtiPerEditDialog.pas"/>
+        <UnitName Value="FtiPerEditDialog"/>
+      </Item13>
+      <Item14>
+        <Filename Value="../../GUI/LCL/FtiPerAutoEditDialog.pas"/>
+        <UnitName Value="FtiPerAutoEditDialog"/>
+      </Item14>
     </Files>
     <LazDoc Paths="../../../Docs/xml/core;../../../Docs/xml/options;../../../Docs/xml/gui"/>
     <RequiredPkgs Count="2">
