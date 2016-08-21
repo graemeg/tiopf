@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+  tab-spaces="2"
+  begin-end-tabs="1"
+  visibility-tabs="0"
+  project-name="tiMAP sample"
+  enum-type="int"
+  outputdir="../src/">
+  <!-- Includes are added to this schema before build-time. -->
+<!--
+    <includes>
+        <item file-name="jobs_schema.xml"/>
+    </includes>
+-->
+  <!-- Units (pas) files that will be created along with defined types, classes, etc. -->
+  <project-units>
+    <unit name="book_autogen">
+      <references>
+        <reference name="Classes" />
+        <reference name="fpImage" />
+      </references>
+
+      <!-- BOM classes defined here -->
+      <classes>
+        <class
+          base-class="TBaseBook"
+          base-class-parent="TtiObject"
+          auto-map="false"
+          auto-create-list="true"
+          oid-type="string"
+          notify-observers="true">
+          <!-- class properties -->
+          <class-props>
+            <prop name="Name" type="string"/>
+            <prop name="Author" type="string"/>
+            <prop name="SomeIntProp" type="integer"/>
+            <prop name="ProcessedDate" type="TDateTime"/>
+            <prop name="Image" type="TfpCustomImage"/>
+          </class-props>
+          <!-- Mapping into the tiOPF framework -->
+          <mapping table="BOOK" pk="OID" pk-field="BK_OID" oid-type="string">
+            <prop-map prop="Name" field="BK_NAME" type="string"/>
+            <prop-map prop="Author" field="BK_AUTHOR" type="string"/>
+            <prop-map prop="SomeIntProp" field="BK_INTPROP" type="integer"/>
+            <prop-map prop="ProcessedDate" field="BK_DATE_PROCESSED" type="string"/>
+            <prop-map prop="Image" field="BK_IMAGE" type="blob" getter="GetImageAsStream" setter="SetImageAsStream"/>
+          </mapping>
+        </class>
+      </classes>
+    </unit>
+
+   <!--  other units can be defined here -->
+
+  </project-units>
+</project>
+
