@@ -9,9 +9,10 @@ object MainForm: TMainForm
   ClientWidth = 701
   Menu = MainMenu1
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   Position = poDesktopCenter
   ShowHint = True
-  LCLVersion = '1.5'
+  LCLVersion = '1.7'
   object ToolBar1: TToolBar
     Left = 0
     Height = 30

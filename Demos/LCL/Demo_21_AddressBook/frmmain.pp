@@ -34,6 +34,7 @@ type
     procedure CountryListClick(Sender: TObject);
     procedure DeleteContactClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure MIAddContactClick(Sender: TObject);
     procedure CityListClick(Sender: TObject);
     procedure MIAddressTypeListClick(Sender: TObject);
@@ -146,6 +147,11 @@ begin
   gContactManager.PopulateContacts;
   SetupMediators;
 //  GContacts.OnHeaderClick := @GContactsHeaderClick;
+end;
+
+procedure TMainForm.FormDestroy(Sender: TObject);
+begin
+  FDisplayList.Free;
 end;
 
 procedure TMainForm.CountryListClick(Sender: TObject);
