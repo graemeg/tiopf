@@ -9,7 +9,7 @@ object CityListForm: TCityListForm
   ClientHeight = 315
   ClientWidth = 420
   ShowHint = True
-  LCLVersion = '1.5'
+  LCLVersion = '1.7'
   object GCities: TStringGrid
     Left = 8
     Height = 224

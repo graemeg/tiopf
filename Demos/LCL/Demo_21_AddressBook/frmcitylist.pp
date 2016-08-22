@@ -99,11 +99,16 @@ begin
   M:=FMediator.FindByComponent(gCities).Mediator;
   c := TCity(TtiStringGridMediatorView(M).SelectedObject);
   if Assigned(c) then
-    begin
-    gContactManager.CityList.Extract(c);
-    M.ObjectToGui;
-    C.Deleted:=True;
-    end;
+  begin
+    c.Deleted := True;
+    { If we used a database, this call would trigger the delete visitor.
+      The database referential integrity checks would also prevent the
+      deletion of a record is use. }
+    // c.Save;
+    { If the Save() was successful, this call would remove and free the
+      object in memory. }
+    // Data.Remove(c);
+  end;
 end;
 
 procedure TCityListForm.SetData(const AValue: TCityList);
