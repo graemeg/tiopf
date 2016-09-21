@@ -24,7 +24,7 @@ program Demo_LoadPersistenceLayerUses;
     to tell Lazarus where find the tiOPF source code.
     Please edit the "Project Options" -> "Compiler Options" ->
     "Additions and Overrides" screen, and change the path
-    show in the 'tiopf' macro.
+    shown in the 'tiopf' macro.
 }
 uses
   SysUtils
