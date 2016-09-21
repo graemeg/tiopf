@@ -12,9 +12,9 @@ functional unit with business object and list object, including the
 four hard-coded visitors for Create, Read, Update and Delete functionality.
 
 The reason the XML defines "Base" objects, is because the application only
-uses descendants (see book.pas unit) of those classes. This allows use to
-tweak the XML schema file and regenerate the book_autogen.pas unit, without
-us looking any local modifications in TBook and TBookList.
+uses descendants (see book.pas unit) of those classes. This allows us to
+tweak the XML schema file and regenerate the book_autogen.pas unit - without
+us loosing any local modifications in TBook and TBookList.
 
 This demo also shows how multiple persistence layers can be used in a single
 project, and only a change in Compiler Defines switches between those
@@ -29,5 +29,13 @@ NOTE:
   you don't use Free Pascal, simply edit the schema file and remove the
   "Image" field and mapping information, then regenerate the autogen
   unit.
+
+
+REQUIRMENTS
+-----------
+  - Free Pascal as mentioned in the Note above.
+  - The mapper.pas unit from the tiOPFMapper application found in the
+    "tiopf_apps" code repository.
+
 
                  -------------[ end ]--------------
