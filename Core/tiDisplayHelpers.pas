@@ -105,6 +105,8 @@ begin
     if (FSubject.Count<>Count) or (FSubject.Count=0) then
       RebuildList;
   end
+  else if (AOperation=noReSort) then
+    RebuildList
   else
     inherited Update(ASubject, AOperation, AData);
 end;
