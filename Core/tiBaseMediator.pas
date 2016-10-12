@@ -412,7 +412,7 @@ const
   cFieldDelimiter = ';';
   cBrackets = '()';
   cRootFieldNameDelimiter = ':';
-  
+
 procedure MediatorError(Sender: TObject; const Msg: string); overload;
 var
   M : TtiMediatorView;
@@ -1562,24 +1562,29 @@ end;
 procedure TtiCustomListMediatorView.CreateSubMediators;
 var
   i: integer;
+  idx: integer;
   LItemMediator: TtiListItemMediator;
   lInclude : Boolean;
 begin
   CreateColumns;
+  idx := -1;
   for i := 0 to Model.Count - 1 do
-    begin
+  begin
     lInclude := True;
     if Assigned(FOnFilterData) then
       FOnFilterData(Model.Items[i], lInclude);
     if lInclude and ((not Model.Items[i].Deleted) or FShowDeleted) then
+    begin
+      inc(idx);
       if i < MediatorList.Count then
-        TtiListItemMediator(MediatorList[i]).Model := Model.Items[i]
+        TtiListItemMediator(MediatorList[idx]).Model := Model.Items[i]
       else
       begin
-        LItemMediator := DoCreateItemMediator(Model.Items[i], i);
+        LItemMediator := DoCreateItemMediator(Model.Items[i], idx);
         LItemMediator.ListMediator := Self;
       end;
     end;
+  end;
   for i := MediatorList.Count-1 downto Model.Count do
     DoDeleteItemMediator(I,TtiListItemMediator(MediatorList[i]));
   FListChanged:=False;
