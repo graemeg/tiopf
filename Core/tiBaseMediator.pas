@@ -1438,18 +1438,21 @@ end;
 procedure TtiCustomListMediatorView.CreateSubMediators;
 var
   i: integer;
+  idx: integer;
   LItemMediator: TtiListItemMediator;
 begin
   CreateColumns;
+  idx := -1;
   for i := 0 to Model.Count - 1 do
   begin
     if (not Model.Items[i].Deleted) or FShowDeleted then
     begin
+      inc(idx);
       if i < MediatorList.Count then
-        TtiListItemMediator(MediatorList[i]).Model := Model.Items[i]
+        TtiListItemMediator(MediatorList[idx]).Model := Model.Items[i]
       else
       begin
-        LItemMediator := DoCreateItemMediator(Model.Items[i], i);
+        LItemMediator := DoCreateItemMediator(Model.Items[i], idx);
         LItemMediator.ListMediator := Self;
       end;
     end;
