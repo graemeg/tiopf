@@ -43,15 +43,15 @@
         <IsPartOfProject Value="True"/>
       </Unit1>
       <Unit2>
-        <Filename Value="../Common/Model.pas"/>
+        <Filename Value="../../Common/Model.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit2>
       <Unit3>
-        <Filename Value="../Common/Model_View.pas"/>
+        <Filename Value="../../Common/Model_View.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit3>
       <Unit4>
-        <Filename Value="../Common/Constants.pas"/>
+        <Filename Value="../../Common/Constants.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit4>
     </Units>
