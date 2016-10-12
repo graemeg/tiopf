@@ -100,7 +100,6 @@ type
   { Composite mediator for TfpgListBox }
   TtiListBoxListMediatorView = class(TtiCustomListMediatorView)
   protected
-    procedure   CreateSubMediators; override;
     function    DoCreateItemMediator(AData: TtiObject; ARowIdx: integer): TtiListItemMediator; override;
     procedure   DoDeleteItemMediator(AIndex: Integer; AMediator: TtiListItemMediator); override;
     function    GetSelectedObject: TtiObject; override;
@@ -514,7 +513,6 @@ end;
 
 procedure TtiStringGridMediatorView.RebuildList;
 begin
-//  writeln('--- TStringGridMediator.RebuildList');
   { This rebuilds the whole list. Not very efficient. }
   View.BeginUpdate;
   try
@@ -614,33 +612,6 @@ end;
 
 { TtiListBoxListMediatorView }
 
-procedure TtiListBoxListMediatorView.CreateSubMediators;
-var
-  i: integer;
-  idx: integer;
-  LItemMediator: TtiListItemMediator;
-begin
-  CreateColumns;
-  idx := -1;
-  for i := 0 to Model.Count - 1 do
-  begin
-    if (not Model.Items[i].Deleted) or ShowDeleted then
-    begin
-      inc(idx);
-      if i < MediatorList.Count then
-        TtiListItemMediator(MediatorList[i]).Model := Model.Items[i]
-      else
-      begin
-        LItemMediator := DoCreateItemMediator(Model.Items[i], idx);
-        LItemMediator.ListMediator := Self;
-      end;
-    end;
-  end;
-  for i := MediatorList.Count-1 downto Model.Count do
-    DoDeleteItemMediator(I,TtiListItemMediator(MediatorList[i]));
-  FListChanged:=False;
-end;
-
 function TtiListBoxListMediatorView.DoCreateItemMediator(AData: TtiObject; ARowIdx: integer): TtiListItemMediator;
 var
   lFieldName: string;
@@ -712,7 +683,7 @@ begin
     SetupGUIandObject;
     if Assigned(MediatorList) then
       MediatorList.Clear;
-//    CreateColumns;
+//    CreateColumns;      // fpGUI's ListBox doesn't support columns yet
     CreateSubMediators;
   finally
     View.EndUpdate;
