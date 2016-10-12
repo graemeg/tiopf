@@ -247,7 +247,10 @@ begin
   S := GetSelectedObject;
   View.BeginUpdate;
   try
+    SetupGUIandObject;
     CreateColumns;
+    if Assigned(MediatorList) then
+      MediatorList.Clear;
     CreateSubMediators;
     if (S <> Nil) then
       SetSelectedObject(S);
@@ -541,7 +544,8 @@ begin
   View.BeginUpdate;
   try
     SetupGUIandObject;
-    MediatorList.Clear;
+    if Assigned(MediatorList) then
+      MediatorList.Clear;
     CreateSubMediators;
   finally
     View.EndUpdate;
