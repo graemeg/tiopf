@@ -200,7 +200,10 @@ begin
     this in your mediators to create a more optimised rebuild. }
   View.BeginUpdate;
   try
+    SetupGUIandObject;
     CreateColumns;
+    if Assigned(MediatorList) then
+      MediatorList.Clear;
     CreateSubMediators;
   finally
     View.EndUpdate;
@@ -474,7 +477,8 @@ begin
   View.BeginUpdate;
   try
     SetupGUIandObject;
-    MediatorList.Clear;
+    if Assigned(MediatorList) then
+      MediatorList.Clear;
     CreateSubMediators;
   finally
     View.EndUpdate;
