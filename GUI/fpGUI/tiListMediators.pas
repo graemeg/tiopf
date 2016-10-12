@@ -243,7 +243,11 @@ procedure TtiListViewMediatorView.RebuildList;
 begin
   View.BeginUpdate;
   try
+    SetupGUIandObject;
     CreateColumns;
+    // NOTE: One could comment out this call to .Clear() which could introduce a minor optimisation.
+    if Assigned(MediatorList) then
+      MediatorList.Clear;
     CreateSubMediators;
   finally
     View.EndUpdate;
@@ -517,7 +521,9 @@ begin
   View.BeginUpdate;
   try
     SetupGUIandObject;
-    MediatorList.Clear;
+    // NOTE: One could comment out this call to .Clear() which could introduce a minor optimisation.
+    if Assigned(MediatorList) then
+      MediatorList.Clear;
     CreateSubMediators;
   finally
     View.EndUpdate;
