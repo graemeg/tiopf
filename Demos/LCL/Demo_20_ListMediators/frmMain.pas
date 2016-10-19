@@ -109,15 +109,13 @@ var
   med: TtiMediatorView;
   i: integer;
 begin
-  //med := FMediator.FindByComponent(grdName1).Mediator;
-  //if not Assigned(TtiStringGridMediatorView(med).SelectedObject) then
-  //begin
-  //  tiAppError('You need to select a StringGrid item first');
-  //  Exit;
-  //end;
-  //TtiStringGridMediatorView(med).SelectedObject.Deleted := True;
-  for i :=  0 to FPersonList.Count-1 do
-    FPersonList[i].Deleted := True;
+  med := FMediator.FindByComponent(grdName1).Mediator;
+  if not Assigned(TtiStringGridMediatorView(med).SelectedObject) then
+  begin
+    tiAppError('You need to select a StringGrid item first');
+    Exit;
+  end;
+  TtiStringGridMediatorView(med).SelectedObject.Deleted := True;
   FPersonList.NotifyObservers;
 end;
 
