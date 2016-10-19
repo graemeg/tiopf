@@ -705,6 +705,15 @@ begin
   CheckEquals('abc', tiUtils.tiSubStr('xxxabcyyy','xxx','yyy'),   'Failed on 2');
   CheckEquals('abc', tiUtils.tiSubStr('xxx,abc;xxx',',',';'),     'Failed on 3');
   CheckEquals('abc', tiUtils.tiSubStr('<d>abc</d>','<d>','</d>'), 'Failed on 4');
+
+  // tests for the AIndex parameter
+  // AIndex should revert to 1.
+  CheckEquals('abc1', tiUtils.tiSubStr('<d>abc1</d> <d>abc2</d>','<d>','</d>', 0), 'Failed on 5');
+  CheckEquals('abc1', tiUtils.tiSubStr('<d>abc1</d> <d>abc2</d>','<d>','</d>', 1), 'Failed on 6');
+  CheckEquals('abc2', tiUtils.tiSubStr('<d>abc1</d> <d>abc2</d>','<d>','</d>', 2), 'Failed on 7');
+
+  // what is this going to do - AIndex is greater than sub string count
+  CheckEquals('', tiUtils.tiSubStr('<d>abc1</d> <d>abc2</d>','<d>','</d>', 3), 'Failed on 8');
 end;
 
 
