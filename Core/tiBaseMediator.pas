@@ -1399,21 +1399,16 @@ begin
 end;
 
 procedure TtiListItemMediator.SetModel(const AValue: TtiObject);
-var
-  B : Boolean;
 begin
   if AValue=FModel then
     Exit;
-  B := Assigned(FModel);
-  if B then
+  if Assigned(FModel) then
     FModel.DetachObserver(Self);
   FModel := AValue;
   if Assigned(FModel) then
-  begin
     FModel.AttachObserver(Self);
-    if B and Active then
-      Update(FModel,noChanged, nil);
-  end;
+  if Active then
+    Update(FModel,noChanged, nil);
 end;
 
 procedure TtiListItemMediator.StopObserving(ASubject: TtiObject);
@@ -1476,7 +1471,6 @@ begin
   end
   else
     ClearList;
-  FListChanged:=True;
   inherited SetSubject(AValue);
 end;
 
@@ -1576,7 +1570,7 @@ begin
     if lInclude and ((not Model.Items[i].Deleted) or FShowDeleted) then
     begin
       inc(idx);
-      if i < MediatorList.Count then
+      if idx < MediatorList.Count then
         TtiListItemMediator(MediatorList[idx]).Model := Model.Items[i]
       else
       begin
@@ -1585,9 +1579,8 @@ begin
       end;
     end;
   end;
-  for i := MediatorList.Count-1 downto Model.Count do
+  for i := MediatorList.Count-1 downto idx+1 do
     DoDeleteItemMediator(I,TtiListItemMediator(MediatorList[i]));
-  FListChanged:=False;
 end;
 
 function TtiCustomListMediatorView.DataAndPropertyValid(const AData: TtiObject): Boolean;
@@ -1652,27 +1645,15 @@ var
   M: TtiListItemMediator;
 begin
   // Do not call inherited, it will rebuild the list !!
-  Case AOperation of
+  case AOperation of
     noAddItem    : begin
-                     M := DoCreateItemMediator(AData,Model.Count-1); // always at the end...
+                     M := DoCreateItemMediator(AData, Model.Count-1); // always at the end...
                      M.ListMediator := Self;
                    end;
     noDeleteItem : ItemDeleted(AData);
     noFree       : if (ASubject = FSubject) then
                      Subject := nil;
-    noChanged    :
-                  begin
-                    if ShowDeleted then
-                    begin
-                      if FListChanged or (Model.Count<>MediatorList.Count) or (Model.Count=0) then // Safety measure
-                       RebuildList;
-                    end
-                    else
-                    begin
-                      if FListChanged or (Model.CountNotDeleted<>MediatorList.Count) or (Model.CountNotDeleted=0) then // Safety measure
-                       RebuildList;
-                    end;
-                  end;
+    noChanged    : RebuildList;
     noReSort     : RebuildList;
   end;
 end;

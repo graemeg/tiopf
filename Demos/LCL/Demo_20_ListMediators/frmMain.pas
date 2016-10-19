@@ -107,7 +107,6 @@ end;
 procedure TForm1.btnDeleteClick(Sender: TObject);
 var
   med: TtiMediatorView;
-  i: integer;
 begin
   med := FMediator.FindByComponent(grdName1).Mediator;
   if not Assigned(TtiStringGridMediatorView(med).SelectedObject) then
