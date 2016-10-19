@@ -374,7 +374,7 @@ const
   cFieldDelimiter = ';';
   cBrackets = '()';
   cRootFieldNameDelimiter = ':';
-  
+
 procedure MediatorError(Sender: TObject; const Msg: string); overload;
 var
   M : TtiMediatorView;
@@ -1450,8 +1450,9 @@ begin
       end;
     end;
   end;
+  // Free MediatorList Items we don't need any more
   for i := MediatorList.Count-1 downto idx+1 do
-    DoDeleteItemMediator(I,TtiListItemMediator(MediatorList[i]));
+    DoDeleteItemMediator(i, TtiListItemMediator(MediatorList[i]));
 end;
 
 function TtiCustomListMediatorView.DataAndPropertyValid(const AData: TtiObject): Boolean;
