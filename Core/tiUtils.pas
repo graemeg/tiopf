@@ -2538,16 +2538,21 @@ function  tiSubStr(const ASource, AStartDelim, AEndDelim : string; AIndex : inte
 var
   liStart : integer;
   liEnd  : integer;
+  i: integer;
 begin
-  Assert(AIndex = 1, 'Under development, AIndex not yet in use');
+  liStart := 0;
+  if AIndex < 1 then
+    AIndex := 1;
+
+  for i := 1 to AIndex do
+    liStart := PosEx(AStartDelim, ASource, liStart+1);
 
   result := '';
 
-  liStart := Pos(AStartDelim, ASource);
   if liStart <> 0 then
-    liStart := liStart + length(AStartDelim);
+    liStart := liStart + Length(AStartDelim);
 
-  liEnd := Pos(AEndDelim, ASource);
+  liEnd := PosEx(AEndDelim, ASource, liStart);
   if liEnd <> 0 then
     liEnd := liEnd - 1;
 
