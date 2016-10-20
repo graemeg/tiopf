@@ -71,11 +71,11 @@ procedure TBaseDisplayList.RebuildList;
 var
   i: integer;
 begin
+  BeginUpdate;
   Empty;  // empty ourselves
   for i := 0 to FSubject.Count-1 do
-  begin
     ItemAdded(FSubject.Items[i]);
-  end;
+  EndUpdate;
 end;
 
 constructor TBaseDisplayList.CreateCustom(ASubject: TtiObjectList);
@@ -99,12 +99,7 @@ begin
   else if (AOperation=noDeleteItem) then
     ItemDeleted(AData)
   else if (AOperation=noChanged) then
-  begin
-     { Safety measure: The displaylist could have been created after the
-       FSubject was populated. So would wouldn't have received noAddItem changes. }
-    if (FSubject.Count<>Count) or (FSubject.Count=0) then
-      RebuildList;
-  end
+    RebuildList
   else if (AOperation=noReSort) then
     RebuildList
   else
