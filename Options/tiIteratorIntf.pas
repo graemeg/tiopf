@@ -1,5 +1,5 @@
 {
-  See the "Iterator Pattern" article I write a couple years back. There
+  See the "Iterator Pattern" article I wrote a couple years back. There
   it explains the details, but its usage should be pretty self explanatory.
   [http://geldenhuys.co.uk/articles/]
   
