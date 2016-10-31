@@ -60,6 +60,7 @@ uses
   tiCompress,
   tiStreams,
   tiQueryDummy,
+  tiMime,
   RegularExpressions,
   tiExcept;
 
@@ -134,7 +135,7 @@ begin
     LCompress          := gCompressFactory.CreateInstance(cgsCompressZLib);
     tiStringToStream(AValue, LUnCompStream);
     LCompress.CompressStream(LUnCompStream, LCompStream);
-    tiStreams.MimeEncodeStream(LCompStream, LCompMimeEncStream);
+    MimeEncodeStream(LCompStream, LCompMimeEncStream);
 
     Result := tiStreamToString(LCompMimeEncStream);
   finally
@@ -160,7 +161,7 @@ begin
     LCompMimeEncStream := TMemoryStream.Create;
     LCompress          := gCompressFactory.CreateInstance(cgsCompressZLib);
     tiStringToStream(AValue, LCompMimeEncStream);
-    tiStreams.MimeDecodeStream(LCompMimeEncStream, LCompStream);
+    MimeDecodeStream(LCompMimeEncStream, LCompStream);
     LCompress.DecompressStream(LCompStream, LUnCompStream);
 
     Result := tiStreamToString(LUnCompStream);

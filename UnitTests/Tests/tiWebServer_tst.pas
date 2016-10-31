@@ -75,11 +75,9 @@ procedure RegisterTests;
 implementation
 uses
    tiUtils
-
   ,tiTestDependencies
   ,tiWebServerConfig
   ,tiWebServer
-
   ,tiWebServerClientConnectionDetails
   ,tiWebServerConstants
   ,tiWebServerVersion
@@ -92,7 +90,7 @@ uses
   ,tiConstants
   ,tiCRC32
   ,tiXML
-
+  ,tiMime
   ,SysUtils
   ,Classes
   ;

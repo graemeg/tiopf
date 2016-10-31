@@ -226,6 +226,7 @@ uses
   ,tiThread
   ,tiStreams
   ,tiRTTI
+  ,tiMime
  ;
 
 
