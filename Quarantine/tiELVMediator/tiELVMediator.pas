@@ -265,7 +265,7 @@ Function TtiEasyListViewMediatorView.PropNameFromCaption(Const pCaption : String
 Var
   lFieldInfo : TtiMediatorFieldInfo;
 Begin
-  lFieldInfo := FFieldsInfo.FieldInfoByName(pCaption);
+  lFieldInfo := FFieldsInfo.FieldInfoByCaption(pCaption);
   If Assigned(lFieldInfo) Then
     Result := lFieldInfo.PropName
   Else
@@ -371,7 +371,7 @@ Begin
   lColumn := lLV.Header.FirstColumnByPosition;
   While (lColumn <> Nil) Do
   Begin
-    lInfo := FieldsInfo.FieldInfoByName(lColumn.Caption);
+    lInfo := FieldsInfo.FieldInfoByCaption(lColumn.Caption);
     If Assigned(lInfo) Then
     Begin
      // Log('Found field info for %s!',[lColumn.Caption]);
@@ -401,7 +401,7 @@ Begin
   lColumn := lLV.Header.FirstColumnByPosition;
   While (lColumn <> Nil) Do
   Begin
-    lInfo := FieldsInfo.FieldInfoByName(lColumn.Caption);
+    lInfo := FieldsInfo.FieldInfoByCaption(lColumn.Caption);
     If Assigned(lInfo) Then
     Begin
       lValue := Model.PropValue[lInfo.PropName];
