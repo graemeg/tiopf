@@ -7,7 +7,7 @@ uses
   tiPersistenceLayers,
   tiQuery,
   Classes,
-{$IF CompilerVersion >= 20}
+{$IFDEF DELPHIXE6ORABOVE}
   IBX.IB,
   IBX.IBDatabase,
   IBX.IBSQL,
