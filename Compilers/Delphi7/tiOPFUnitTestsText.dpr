@@ -1,7 +1,9 @@
 program tiOPFUnitTestsText;
 {$APPTYPE CONSOLE}
 uses
-  FastMM4,
+  {$IFDEF FASTMM}
+    FastMM4,
+  {$ENDIF}
   SysUtils,
   TestFrameWork,
   TextTestRunner,
