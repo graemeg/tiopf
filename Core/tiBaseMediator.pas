@@ -197,7 +197,7 @@ type
     procedure Notify(Item: TCollectionItem;Action: TCollectionNotification); override;
     Property Mediator : TtiCustomListMediatorView read FMediator;
   public
-    function FieldInfoByName(const pCaption: String): TtiMediatorFieldInfo; deprecated 'Use FieldInfoByCaption instead.';
+    function FieldInfoByName(const pCaption: String): TtiMediatorFieldInfo; deprecated {$IFDEF FPC} 'Use FieldInfoByCaption instead.'{$ENDIF};
     function FieldInfoByCaption(const pCaption: String): TtiMediatorFieldInfo;
     function FieldInfoByPropName(const pPropName: String): TtiMediatorFieldInfo;
     function AddFieldInfo: TtiMediatorFieldInfo; overload;
