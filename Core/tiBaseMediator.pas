@@ -221,7 +221,9 @@ type
     procedure Notify(Item: TCollectionItem; Action: TCollectionNotification); override;
     Property Mediator : TtiCustomListMediatorView read FMediator;
   public
-    function FieldInfoByName(Const pName : String) : TtiMediatorFieldInfo;
+    function FieldInfoByName(const pCaption: String): TtiMediatorFieldInfo; deprecated 'Use FieldInfoByCaption instead.';
+    function FieldInfoByCaption(const pCaption: String): TtiMediatorFieldInfo;
+    function FieldInfoByPropName(const pPropName: String): TtiMediatorFieldInfo;
     function AddFieldInfo: TtiMediatorFieldInfo; overload;
     function AddFieldInfo (Const APropName : String; AFieldWidth : Integer) : TtiMediatorFieldInfo; overload;
     function AddFieldInfo (Const APropName,ACaption : String; AFieldWidth : Integer) : TtiMediatorFieldInfo; overload;
@@ -1364,16 +1366,36 @@ begin
 end;
 
 
-function TtiMediatorFieldInfoList.FieldInfoByName(const pName: String): TtiMediatorFieldInfo;
-Var
-  I : Integer;
+function TtiMediatorFieldInfoList.FieldInfoByName(const pCaption: String): TtiMediatorFieldInfo;
+begin
+  Result := FieldInfoByCaption(pCaption);
+end;
+
+function TtiMediatorFieldInfoList.FieldInfoByCaption(const pCaption: String): TtiMediatorFieldInfo;
+var
+  i: Integer;
 begin
   Result := nil;
-  for I := 0 To pred(Count) do
+  for i := 0 to Count-1 do
   begin
-    if (FieldInfo[I].Caption = pName) then
+    if (FieldInfo[i].Caption = pCaption) then
     begin
-      Result := FieldInfo[I];
+      Result := FieldInfo[i];
+      Break;
+    end;
+  end; { Loop }
+end;
+
+function TtiMediatorFieldInfoList.FieldInfoByPropName(const pPropName: String): TtiMediatorFieldInfo;
+var
+  i: Integer;
+begin
+  Result := nil;
+  for i := 0 to Count-1 do
+  begin
+    if (FieldInfo[i].PropName = pPropName) then
+    begin
+      Result := FieldInfo[i];
       Break;
     end;
   end; { Loop }
