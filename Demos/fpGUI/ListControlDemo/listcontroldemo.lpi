@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -33,38 +33,21 @@
         <MinVersion Major="2" Release="3" Valid="True"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="2">
       <Unit0>
         <Filename Value="listcontroldemo.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="listcontroldemo"/>
       </Unit0>
       <Unit1>
         <Filename Value="frmMain.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="frmMain"/>
       </Unit1>
-      <Unit2>
-        <Filename Value="../Common/Model_View.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="Model_View"/>
-      </Unit2>
-      <Unit3>
-        <Filename Value="../Common/Constants.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="Constants"/>
-      </Unit3>
-      <Unit4>
-        <Filename Value="../Common/Model.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="Model"/>
-      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
     <SearchPaths>
-      <OtherUnitFiles Value="../Common"/>
+      <OtherUnitFiles Value="../../Common"/>
       <UnitOutputDirectory Value="units/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
@@ -72,8 +55,5 @@
         <UseAnsiStrings Value="False"/>
       </SyntaxOptions>
     </Parsing>
-    <Other>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
 </CONFIG>

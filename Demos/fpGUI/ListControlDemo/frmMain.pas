@@ -59,7 +59,7 @@ implementation
 
 uses
   Model_View
-  ,fpgbase
+  ,fpg_base
   ,tiObject
   ,tiDialogs
   ;
