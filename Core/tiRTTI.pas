@@ -243,6 +243,11 @@ begin
           SetPropValue(LObject, LPropInfo^.Name, '[]')
         else
           SetPropValue(LObject, LPropInfo^.Name, APropValue);
+      tkFloat:
+        if VarIsStr(APropValue) and (VarToStr(APropValue) = '') then
+          SetPropValue(LObject, LPropInfo^.Name, 0)
+        else
+          SetPropValue(LObject, LPropInfo^.Name, APropValue);
     else
       SetPropValue(LObject, LPropInfo^.Name, APropValue);
     end;  { case }
