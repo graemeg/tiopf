@@ -31,7 +31,9 @@ type
     FLogMenuItem: TMenuItem;
     FViewLogMenuItem: TMenuItem;
     FWordWrapMenuItem: TMenuItem;
+    function    GetFontSize: integer;
     function    GetFormParent: TWinControl;
+    procedure   SetFontSize(AValue: integer);
     procedure   SetFormParent(const AValue: TWinControl);
     function    CreateForm: TForm;
     procedure   FormClearMenuItemClick(Sender: TObject);
@@ -51,6 +53,7 @@ type
     constructor Create; override;
     destructor  Destroy; override;
     property    FormParent: TWinControl read GetFormParent write SetFormParent;
+    property    FontSize: integer read GetFontSize write SetFontSize;
     procedure   Log(const ADateTime, AThreadID, AMessage: string; ASeverity: TtiLogSeverity); override;
   end;
 
@@ -201,6 +204,16 @@ end;
 function TtiLogToGUI.GetFormParent: TWinControl;
 begin
   result := FForm.Parent;
+end;
+
+function TtiLogToGUI.GetFontSize: integer;
+begin
+  Result:=FMemoLog.Font.Size;
+end;
+
+procedure TtiLogToGUI.SetFontSize(AValue: integer);
+begin
+  FMemoLog.Font.Size:=AValue;
 end;
 
 procedure TtiLogToGUI.Log(const ADateTime, AThreadID, AMessage: string; ASeverity: TtiLogSeverity);
