@@ -226,7 +226,14 @@ begin
       tkClass:
         if Assigned(LObject) then // Check that class property is assigned
           SetObjectProp(LObject, LPropInfo, TObject(Integer(APropValue)));
-      tkEnumeration{$IFDEF FPC},tkBool{$ENDIF}:
+      tkEnumeration
+      ,tkInteger
+      ,tkFloat
+      ,tkInt64
+      {$IFDEF FPC}
+      ,tkBool
+      ,tkQWord
+      {$ENDIF}:
         begin
           if VarIsStr(APropValue) and (VarToStr(APropValue) = '') then
             LValue:= 0
@@ -241,11 +248,6 @@ begin
       tkSet:
         if VarToStr(APropValue) = '' then
           SetPropValue(LObject, LPropInfo^.Name, '[]')
-        else
-          SetPropValue(LObject, LPropInfo^.Name, APropValue);
-      tkFloat:
-        if VarIsStr(APropValue) and (VarToStr(APropValue) = '') then
-          SetPropValue(LObject, LPropInfo^.Name, 0)
         else
           SetPropValue(LObject, LPropInfo^.Name, APropValue);
     else
