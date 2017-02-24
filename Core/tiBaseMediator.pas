@@ -822,11 +822,9 @@ begin
     if Assigned(FOnBeforeGUIToObject) then
       FOnBeforeGUIToObject(Self, View, Subject, B);
     if not B then
-    begin
       DoGUIToObject;
-      if Assigned(FOnAfterGUIToObject) then
-        FOnAfterGUIToObject(Self, View, Subject);
-    end;
+    if Assigned(FOnAfterGUIToObject) then
+      FOnAfterGUIToObject(Self, View, Subject);
   finally
     Dec(FCopyingCount);
   end;
