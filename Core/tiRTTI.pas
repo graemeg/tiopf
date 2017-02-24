@@ -220,10 +220,14 @@ begin
       tkClass:
         if Assigned(LObject) then // Check that class property is assigned
           SetObjectProp(LObject, LPropInfo, TObject(Integer(APropValue)));
-      tkInteger,
-      tkInt64,
-      tkFloat,
-      tkEnumeration{$IFDEF FPC},tkBool{$ENDIF}:
+      tkEnumeration
+      ,tkInteger
+      ,tkFloat
+      ,tkInt64
+      {$IFDEF FPC}
+      ,tkBool
+      ,tkQWord
+      {$ENDIF}:
         begin
           if VarIsStr(APropValue) and (VarToStr(APropValue) = '') then
             LValue:= 0
