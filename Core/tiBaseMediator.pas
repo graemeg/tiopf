@@ -1312,7 +1312,7 @@ begin
   FModel := AValue;
   if Assigned(FModel) then
     FModel.AttachObserver(Self);
-  if Active then
+  if Active and Assigned(FModel) then
     Update(FModel,noChanged, nil);
 end;
 
