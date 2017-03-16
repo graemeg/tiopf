@@ -115,6 +115,9 @@ type
                                            const ARetryCount:    Word;
                                            const ARetryInterval: Word);
 
+    procedure   DisconnectDatabase(        const ADatabaseAlias: string;
+                                           const ADatabaseName: string;
+                                           const APersistenceLayerName: string); overload;
     procedure   DisconnectDatabase(        const ADatabaseName: string;
                                            const APersistenceLayerName: string); overload;
     procedure   DisconnectDatabase(        const ADatabaseName : string); overload;
@@ -532,11 +535,8 @@ begin
   FActiveThreadList.Terminate;
 end;
 
-procedure TtiOPFManager.ExecInsertSQL(
-  const ATable: string;
-  const AFields: array of string;
-  const AValues: array of Const;
-  const ADBConnectionName, APersistenceLayerName: string);
+procedure TtiOPFManager.ExecInsertSQL(const ATable: string; const AFields: array of string;
+  const AValues: array of const; const ADBConnectionName: string; const APersistenceLayerName: string);
 
   procedure _PopulateParams(const AParams: TtiQueryParams; const AFields: array of string; const AValues: array of const);
   var
@@ -582,25 +582,6 @@ begin
   finally
     PersistenceLayers.UnLockDatabase(lDB, ADBConnectionName, LPersistenceLayerName);
   end;
-end;
-
-
-procedure TtiOPFManager.DisconnectDatabase(
-  const ADatabaseName : string;
-  const APersistenceLayerName: string);
-var
-  lRegPerLayer  : TtiPersistenceLayer;
-begin
-  Assert(ADatabaseName <> '', 'ADatabaseName not assigned');
-  Assert(APersistenceLayerName <> '', 'APersistenceLayerName not assigned');
-
-  lRegPerLayer := FPersistenceLayers.FindByPersistenceLayerName(APersistenceLayerName);
-  if lRegPerLayer = nil then
-    raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APersistenceLayerName]);
-
-  if (SameText(lRegPerLayer.DefaultDBConnectionName, ADatabaseName)) then
-    lRegPerLayer.DefaultDBConnectionName := '';
-  lRegPerLayer.DBConnectionPools.Disconnect(ADatabaseName);
 end;
 
 
@@ -761,9 +742,8 @@ begin
   FPersistenceLayers.DefaultPersistenceLayerName := AValue;
 end;
 
-procedure TtiOPFManager.ReadMetaDataFields(
-  pDBMetaDataTable: TtiDBMetaDataTable; const ADBConnectionName,
-  APersistenceLayerName: string);
+procedure TtiOPFManager.ReadMetaDataFields(pDBMetaDataTable: TtiDBMetaDataTable;
+  const ADBConnectionName: string; const APersistenceLayerName: string);
 var
   lDB : TtiDatabase;
 begin
@@ -777,8 +757,8 @@ begin
 end;
 
 
-procedure TtiOPFManager.ReadMetaDataTables(pDBMetaData: TtiDBMetaData;
-  const ADBConnectionName, APersistenceLayerName: string);
+procedure TtiOPFManager.ReadMetaDataTables(pDBMetaData: TtiDBMetaData; const ADBConnectionName: string;
+  const APersistenceLayerName: string);
 var
   lDB : TtiDatabase;
 begin
@@ -808,8 +788,8 @@ begin
     APassword, AParams, APersistenceLayerName);
 end;
 
-procedure TtiOPFManager.CreateDatabase(const ADatabaseName, AUserName,
-  pUserPassword, APersistenceLayerName: string);
+procedure TtiOPFManager.CreateDatabase(const ADatabaseName: string; const AUserName: string;
+  const pUserPassword: string; const APersistenceLayerName: string);
 var
   LPersistenceLayer: TtiPersistenceLayer;
 begin
@@ -819,8 +799,8 @@ begin
   LPersistenceLayer.DatabaseClass.CreateDatabase(ADatabaseName, AUserName, pUserPassword);
 end;
 
-procedure TtiOPFManager.DropDatabase(const ADatabaseName, AUserName,
-  AUserPassword, APersistenceLayerName: string);
+procedure TtiOPFManager.DropDatabase(const ADatabaseName: string; const AUserName: string;
+  const AUserPassword: string; const APersistenceLayerName: string);
 var
   LPersistenceLayer: TtiPersistenceLayer;
 begin
@@ -894,6 +874,41 @@ begin
 
 end;
 
+procedure TtiOPFManager.DisconnectDatabase(
+    const ADatabaseAlias: string;
+    const ADatabaseName: string;
+    const APersistenceLayerName: string);
+var
+  lRegPerLayer: TtiPersistenceLayer;
+begin
+  Assert(ADatabaseAlias <> '', 'ADatabaseAlias not assigned');
+  Assert(ADatabaseName <> '', 'ADatabaseName not assigned');
+
+  if APersistenceLayerName = '' then
+  begin
+    lRegPerLayer := DefaultPerLayer;
+    if lRegPerLayer = nil then
+      raise EtiOPFInternalException.Create(cErrorUnableToFindDefaultPerLayer);
+  end
+  else
+  begin
+    lRegPerLayer := FPersistenceLayers.FindByPersistenceLayerName(APersistenceLayerName);
+    if lRegPerLayer = nil then
+      raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APersistenceLayerName]);
+  end;
+
+  if (SameText(lRegPerLayer.DefaultDBConnectionName, ADatabaseName)) then
+    lRegPerLayer.DefaultDBConnectionName := '';
+  lRegPerLayer.DBConnectionPools.Disconnect(ADatabaseAlias);
+end;
+
+procedure TtiOPFManager.DisconnectDatabase(
+    const ADatabaseName : string;
+    const APersistenceLayerName: string);
+begin
+  DisconnectDatabase(ADatabaseName, ADatabaseName, APersistenceLayerName);
+end;
+
 procedure TtiOPFManager.DisconnectDatabase(const ADatabaseName: string);
 var
   LPersistenceLayer: TtiPersistenceLayer;
@@ -901,26 +916,47 @@ begin
   LPersistenceLayer := DefaultPerLayer;
   if LPersistenceLayer = nil then
     raise EtiOPFInternalException.Create(cErrorUnableToFindDefaultPerLayer);
-  DisconnectDatabase(ADatabaseName, LPersistenceLayer.PersistenceLayerName);
+  DisconnectDatabase(ADatabaseName, ADatabaseName, LPersistenceLayer.PersistenceLayerName);
 end;
 
-function TtiOPFManager.TestThenConnectDatabase(const ADatabaseName,
-  AUserName, APassword, AParams: string): boolean;
+procedure TtiOPFManager.DisconnectDatabase;
+var
+  LPersistenceLayer: TtiPersistenceLayer;
+  LDatabaseName: string;
+begin
+  LPersistenceLayer := DefaultPerLayer;
+  Assert(LPersistenceLayer <> nil, cErrorUnableToFindDefaultPerLayer);
+  LDatabaseName := LPersistenceLayer.DefaultDBConnectionName;
+  Assert(LDatabaseName <> '', cErrorUnableToFindDefaultDatabase);
+  DisconnectDatabase(LDatabaseName, LDatabaseName, LPersistenceLayer.PersistenceLayerName);
+end;
+
+function TtiOPFManager.TestThenConnectDatabase(
+    const ADatabaseName: string;
+    const AUserName: string;
+    const APassword: string;
+    const AParams: string): boolean;
 begin
   Result := TestThenConnectDatabase(ADatabaseName, AUserName, APassword, AParams, '');
 end;
 
 
-function TtiOPFManager.TestThenConnectDatabase(const ADatabaseName,
-  AUserName, APassword: string): boolean;
+function TtiOPFManager.TestThenConnectDatabase(
+    const ADatabaseName: string;
+    const AUserName: string;
+    const APassword: string): boolean;
 begin
   Result := TestThenConnectDatabase(ADatabaseName, AUserName, APassword, '');
 end;
 
 
-function TtiOPFManager.TestThenConnectDatabase(const ADatabaseAlias,
-  ADatabaseName, AUserName, APassword, AParams,
-  APersistenceLayerName: string): boolean;
+function TtiOPFManager.TestThenConnectDatabase(
+    const ADatabaseAlias: string;
+    const ADatabaseName: string;
+    const AUserName: string;
+    const APassword: string;
+    const AParams: string;
+    const APersistenceLayerName: string): boolean;
 var
   LPersistenceLayer  : TtiPersistenceLayer;
 begin
@@ -944,17 +980,6 @@ begin
       Result := false;
 end;
 
-procedure TtiOPFManager.DisconnectDatabase;
-var
-  LPersistenceLayer: TtiPersistenceLayer;
-  LDatabaseName: string;
-begin
-  LPersistenceLayer := DefaultPerLayer;
-  Assert(LPersistenceLayer <> nil, cErrorUnableToFindDefaultPerLayer);
-  LDatabaseName := LPersistenceLayer.DefaultDBConnectionName;
-  Assert(LDatabaseName <> '', cErrorUnableToFindDefaultDatabase);
-  DisconnectDatabase(LDatabaseName, LPersistenceLayer.PersistenceLayerName);
-end;
 
 
 initialization
