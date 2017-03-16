@@ -156,10 +156,10 @@ type
                                            const APoolTimeOut: integer); overload;
 
     procedure   DisconnectDatabase(        const ADatabaseAlias: string;
-                                           const ADatabaseName : string;
-                                           const APackageID   : string); overload;
-    procedure   DisconnectDatabase(        const ADatabaseName : string;
-                                           const APackageID   : string); overload;
+                                           const ADatabaseName: string;
+                                           const APersistenceLayerName: string); overload;
+    procedure   DisconnectDatabase(        const ADatabaseName: string;
+                                           const APersistenceLayerName: string); overload;
     procedure   DisconnectDatabase(        const ADatabaseName : string); overload;
     procedure   DisconnectDatabase; overload;
 
@@ -678,17 +678,15 @@ begin
 end;
 
 
-procedure TtiOPFManager.DisconnectDatabase(
-  const ADatabaseAlias: string;
-  const ADatabaseName: string;
-  const APackageID: string);
+procedure TtiOPFManager.DisconnectDatabase(const ADatabaseAlias: string; const ADatabaseName: string;
+    const APersistenceLayerName: string);
 var
   lRegPerLayer: TtiPersistenceLayer;
 begin
   Assert(ADatabaseAlias <> '', 'ADatabaseAlias not assigned');
   Assert(ADatabaseName <> '', 'ADatabaseName not assigned');
 
-  if APackageID = '' then
+  if APersistenceLayerName = '' then
   begin
     lRegPerLayer := DefaultPerLayer;
     if lRegPerLayer = nil then
@@ -696,9 +694,9 @@ begin
   end
   else
   begin
-    lRegPerLayer := FPersistenceLayers.FindByPersistenceLayerName(APackageID);
+    lRegPerLayer := FPersistenceLayers.FindByPersistenceLayerName(APersistenceLayerName);
     if lRegPerLayer = nil then
-      raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APackageID]);
+      raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APersistenceLayerName]);
   end;
 
   if (SameText(lRegPerLayer.DefaultDBConnectionName, ADatabaseName)) then
@@ -707,11 +705,9 @@ begin
 end;
 
 
-procedure TtiOPFManager.DisconnectDatabase(
-  const ADatabaseName : string;
-  const APackageID   : string);
+procedure TtiOPFManager.DisconnectDatabase(const ADatabaseName: string; const APersistenceLayerName: string);
 begin
-  DisconnectDatabase(ADatabaseName, ADatabaseName, APackageID);
+  DisconnectDatabase(ADatabaseName, ADatabaseName, APersistenceLayerName);
 end;
 
 
