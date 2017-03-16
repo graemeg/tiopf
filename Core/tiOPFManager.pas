@@ -115,8 +115,8 @@ type
                                            const ARetryCount:    Word;
                                            const ARetryInterval: Word);
 
-    procedure   DisconnectDatabase(        const ADatabaseName : string;
-                                           const APackageID   : string); overload;
+    procedure   DisconnectDatabase(        const ADatabaseName: string;
+                                           const APersistenceLayerName: string); overload;
     procedure   DisconnectDatabase(        const ADatabaseName : string); overload;
     procedure   DisconnectDatabase; overload;
 
@@ -587,16 +587,16 @@ end;
 
 procedure TtiOPFManager.DisconnectDatabase(
   const ADatabaseName : string;
-  const APackageID   : string);
+  const APersistenceLayerName: string);
 var
   lRegPerLayer  : TtiPersistenceLayer;
 begin
   Assert(ADatabaseName <> '', 'ADatabaseName not assigned');
-  Assert(APackageID <> '', 'APackageID not assigned');
+  Assert(APersistenceLayerName <> '', 'APersistenceLayerName not assigned');
 
-  lRegPerLayer := FPersistenceLayers.FindByPersistenceLayerName(APackageID);
+  lRegPerLayer := FPersistenceLayers.FindByPersistenceLayerName(APersistenceLayerName);
   if lRegPerLayer = nil then
-    raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APackageID]);
+    raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APersistenceLayerName]);
 
   if (SameText(lRegPerLayer.DefaultDBConnectionName, ADatabaseName)) then
     lRegPerLayer.DefaultDBConnectionName := '';
