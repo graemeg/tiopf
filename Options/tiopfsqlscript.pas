@@ -18,9 +18,7 @@ uses
 
 type
 
-  { TtiOPFSQLscript }
-
-  TtiOPFSQLscript = class (TCustomSQLScript)
+  TtiSQLScript = class (TCustomSQLScript)
   private
     FOnDirective: TSQLScriptDirectiveEvent;
     FQuery : TtiQuery;
@@ -45,6 +43,10 @@ type
     property UseDefines;
     property OnException;
   end;
+
+
+  TtiOPFSQLscript = class(TtiSQLScript)
+  end deprecated 'Use TtiSQLScript instead.';
 {$ENDIF}
 
 
@@ -55,34 +57,34 @@ implementation
 resourcestring
   sNoDatabase = 'No database assigned to script';
 
-{ TtiOPFSQLscript }
+{ TtiSQLScript }
 
-procedure TtiOPFSQLscript.CheckDatabase;
+procedure TtiSQLScript.CheckDatabase;
 begin
   if not assigned (FDatabase) then
     raise exception.create(sNoDatabase);
 end;
 
-procedure TtiOPFSQLscript.ExecuteStatement(Statement: TStrings;
+procedure TtiSQLScript.ExecuteStatement(Statement: TStrings;
   var StopExecution: Boolean);
 begin
   FQuery.SQLText:=Statement.text;
   FQuery.ExecSQL;
 end;
 
-procedure TtiOPFSQLscript.ExecuteDirective(Directive, Argument: String;
+procedure TtiSQLScript.ExecuteDirective(Directive, Argument: String;
   var StopExecution: Boolean);
 begin
   if assigned (FOnDirective) then
     FOnDirective (Self, Directive, Argument, StopExecution);
 end;
 
-procedure TtiOPFSQLscript.ExecuteCommit{$if FPC_FULLVERSION >= 20701}(CommitRetaining: boolean){$endif};
+procedure TtiSQLScript.ExecuteCommit{$if FPC_FULLVERSION >= 20701}(CommitRetaining: boolean){$endif};
 begin
   FDatabase.Commit;
 end;
 
-procedure TtiOPFSQLscript.Execute;
+procedure TtiSQLScript.Execute;
 begin
   CheckDatabase;
   FQuery := FDatabase.CreateAndAttachTIQuery;
