@@ -43,6 +43,7 @@ const
   cTIPersistUIB_FB        = 'UIB_FB';  // Firebird server
   cTIPersistUIB_IB        = 'UIB_IB';  // Interbase server
   cTIPersistNexusDB       = 'NexusDB';
+  cTIPersistNullObject    = 'NullObject';
 
   cDBProxyServerTimeOut   = 1; // Minute
 

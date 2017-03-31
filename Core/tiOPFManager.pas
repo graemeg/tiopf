@@ -276,6 +276,7 @@ uses
   {$IFDEF LINK_UIB_FB}          ,tiQueryUIB_FB        {$ENDIF}
   {$IFDEF LINK_UIB_IB}          ,tiQueryUIB_IB        {$ENDIF}
   {$IFDEF LINK_NEXUSDB}         ,tiQueryNexusDB       {$ENDIF}
+  {$IFDEF LINK_NULLOBJECT}      ,tiQueryNullObject    {$ENDIF}
  ;
 
 

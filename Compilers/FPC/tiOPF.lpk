@@ -45,7 +45,7 @@
     <License Value="Mozilla Public License 1.1 or Modified LGPL
 "/>
     <Version Major="2" Release="4"/>
-    <Files Count="67">
+    <Files Count="68">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>
         <UnitName Value="tiBaseObject"/>
@@ -314,6 +314,10 @@
         <Filename Value="../../Core/tiDisplayHelpers.pas"/>
         <UnitName Value="tiDisplayHelpers"/>
       </Item67>
+      <Item68>
+        <Filename Value="../../Options/tiQueryNullObject.pas"/>
+        <UnitName Value="tiQueryNullObject"/>
+      </Item68>
     </Files>
     <LazDoc Paths="../../../Docs/xml/core;../../../Docs/xml/options;../../../Docs/xml/gui"/>
     <UsageOptions>
