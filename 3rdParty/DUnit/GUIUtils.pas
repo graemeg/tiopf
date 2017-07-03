@@ -444,6 +444,8 @@ end;
 
 {$IFDEF MSWINDOWS}
 function GetTopmostWindowProc(AHwnd: HWND; ALParam: LPARAM): BOOL; stdcall;
+type
+  PINT_PTR = ^INT_PTR;
 var
   LdwProcessId: DWORD;
   LClassName: string;
