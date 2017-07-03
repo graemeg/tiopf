@@ -52,13 +52,14 @@ const
   ctkAll = ctkSimple + [tkClass, tkEnumeration];
 
   // These are the leftovers
-  // tkUnknown, tkMethod,
+  // tkUnknown, tkMethod, tkProcedure, tkPointer, tkClassRef,
   // tkSet, tkVariant, tkArray, tkRecord, tkInterface, tkDynArray
 
   // These are all the possibilities
   // tkUnknown, tkInteger, tkChar, tkEnumeration, tkFloat,
   // tkString, tkSet, tkClass, tkMethod, tkWChar, tkLString, tkWString,
-  // tkVariant, tkArray, tkRecord, tkInterface, tkInt64, tkDynArray);
+  // tkVariant, tkArray, tkRecord, tkInterface, tkInt64, tkDynArray, tkUString,
+  // tkClassRef, tkPointer, tkProcedure
 
 
 type
