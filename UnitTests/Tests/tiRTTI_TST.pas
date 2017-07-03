@@ -26,6 +26,7 @@ type
     procedure tiGetPropertyNamesObject;
     procedure tiGetPropertyNamesClass;
     procedure tiGetPropertyNamesEnum;
+    procedure tiGetPropertyNamesAll;
     procedure tiIsReadWritePropObject;
     procedure tiIsReadWritePropClass;
     procedure tiIsPublishedProp_Simple;
@@ -73,6 +74,7 @@ uses
   tiRTTI,
   tiBaseObject,
   tiExcept,
+  tiUtils,
   SysUtils,
   Variants,
   TypInfo;
@@ -130,6 +132,49 @@ begin
     CheckEquals(11, tiRTTI.tiGetPropertyCount(LObj, ctkString),  'ctkString');
   finally
     LObj.Free;
+  end;
+end;
+
+procedure TTesttiRTTI.tiGetPropertyNamesAll;
+var
+  sl: TStringList;
+begin
+  sl := TStringList.Create;
+  try
+    tiRTTI.tiGetPropertyNames(TTestGetPropNames, sl, ctkAll);
+    CheckEquals(25, sl.Count, 'Failed on 1');
+    CheckEquals('Caption' // from TtiVisited class
++ tiLineEnd + 'StringProp'
++ tiLineEnd + 'ShortStringProp'
++ tiLineEnd + 'WideStringProp'
++ tiLineEnd + 'CharProp'
++ tiLineEnd + 'WideCharProp'
++ tiLineEnd + 'IntProp'
++ tiLineEnd + 'Int64Prop'
++ tiLineEnd + 'BoolProp'
++ tiLineEnd + 'DateTimeProp'
++ tiLineEnd + 'FloatProp'
++ tiLineEnd + 'ObjectProp'
+//+ tiLineEnd + 'MethodProp'
++ tiLineEnd + 'EnumProp'
+//+ tiLineEnd + 'EnumSetProp'
++ tiLineEnd + 'ReadOnlyStringProp'
++ tiLineEnd + 'ReadOnlyShortStringProp'
++ tiLineEnd + 'ReadOnlyWideStringProp'
++ tiLineEnd + 'ReadOnlyCharProp'
++ tiLineEnd + 'ReadOnlyWideCharProp'
++ tiLineEnd + 'ReadOnlyIntProp'
++ tiLineEnd + 'ReadOnlyInt64Prop'
++ tiLineEnd + 'ReadOnlyBoolProp'
++ tiLineEnd + 'ReadOnlyDateTimeProp'
++ tiLineEnd + 'ReadOnlyFloatProp'
++ tiLineEnd + 'ReadOnlyObjectProp'
+//+ tiLineEnd + 'ReadOnlyMethodProp'
++ tiLineEnd + 'ReadOnlyEnumProp'
+//+ tiLineEnd + 'ReadOnlyEnumSetProp'
++ tiLineEnd, sl.Text, 'Failed on 2');
+  finally
+    sl.Free;
   end;
 end;
 
