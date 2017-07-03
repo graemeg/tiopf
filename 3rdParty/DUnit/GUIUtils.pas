@@ -106,8 +106,11 @@ implementation
 
 {$IFDEF MSWINDOWS}
 uses
-  Graphics,
-  pngimage;
+  Graphics
+  {$IFDEF DELPHIXE}
+  ,TypeHelpers
+  {$ENDIF}
+  ,pngimage;
 {$ENDIF}
 
 function FindControlInstance(const AComp: TComponent;

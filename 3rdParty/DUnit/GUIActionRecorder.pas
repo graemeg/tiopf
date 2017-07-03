@@ -371,6 +371,9 @@ uses
 // Debugging
   ,tiLog
 }
+  {$IFDEF DELPHIXE}
+  ,TypeHelpers
+  {$ENDIF}
   ;
 
 var
