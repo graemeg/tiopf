@@ -487,16 +487,17 @@ begin
 //  qfkLongString
 
     case pDataType of
-    ftString, ftWideString :                    result := qfkString  ;
-    ftSmallint, ftInteger, ftWord, ftLargeint : result := qfkInteger ;
-    ftBoolean :                                 result := qfkLogical ;
-    ftFloat, ftCurrency, ftBCD, ftFMTBcd :      result := qfkFloat   ;
-    ftDate, ftTime, ftDateTime :                result := qfkDateTime;
-    ftBlob, ftGraphic, ftVarBytes :             result := qfkBinary  ;
-    ftMemo, ftFmtMemo:                          result := qfkLongString;
-    {$ifdef DELPHI10ORABOVE}
-    ftWideMemo :                                result := qfkLongString;
-    {$endif}
+      ftString, ftWideString :                    result := qfkString  ;
+      ftSmallint, ftInteger, ftWord, ftLargeint,
+      ftAutoInc :                                 result := qfkInteger ;
+      ftBoolean :                                 result := qfkLogical ;
+      ftFloat, ftCurrency, ftBCD, ftFMTBcd :      result := qfkFloat   ;
+      ftDate, ftTime, ftDateTime :                result := qfkDateTime;
+      ftBlob, ftGraphic, ftVarBytes :             result := qfkBinary  ;
+      ftMemo, ftFmtMemo:                          result := qfkLongString;
+      {$ifdef DELPHI10ORABOVE}
+      ftWideMemo :                                result := qfkLongString;
+      {$endif}
     else
       raise Exception.Create('Invalid FQuery.Fields[ AIndex ].DataType <' +
                       GetEnumName(TypeInfo(TFieldType), Ord(pDataType)) +
