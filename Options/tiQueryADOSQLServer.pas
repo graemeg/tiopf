@@ -1,3 +1,8 @@
+{
+  Connection format:   <server>\<instance>:<database>
+    eg:    localhost\SQLExpress:panacee
+
+}
 unit tiQueryADOSQLServer;
 
 {$I tiDefines.inc}
