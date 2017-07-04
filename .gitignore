@@ -15,3 +15,13 @@ lib/
 *.diff
 *.zip
 *.tar.gz
+*.~*~
+*.local
+*.identcache
+__history
+*.drc
+*.map
+*.exe
+*.dll
+bin/*
+_bin/*
