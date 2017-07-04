@@ -272,7 +272,6 @@ type
 {$ELSE}
     FMediatorList: TObjectList;
 {$ENDIF IOS}
-    FListChanged : Boolean;
     FOnFilterData : TtiOnFilterDataEvent;
     function GetDisplayNames: string;
     function GetIsObserving: Boolean;
