@@ -4,3 +4,13 @@
 *.lps
 *.compiled
 *.bak*
+*.~*~
+*.local
+*.identcache
+__history
+*.drc
+*.map
+*.exe
+*.dll
+bin/*
+_bin/*
