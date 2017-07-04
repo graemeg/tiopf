@@ -357,7 +357,8 @@ begin
     ftSmallint,
     ftInteger,
     ftWord,
-    ftLargeint:
+    ftLargeint,
+    ftAutoInc:
         Result := qfkInteger;
 
     ftBoolean:
