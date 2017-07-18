@@ -7,12 +7,6 @@ unit tiOPFSqlScript;
 
 interface
 
-{$IF defined(FPC) and not defined(VER2_2)}
-{$define HAVESQLSCRIPT}
-{$endif}
-
-{ So we can compile with 2.2.x as well }
-{$IFDEF HAVESQLSCRIPT}
 uses
   Classes, SysUtils, sqlscript, tiQuery;
 
@@ -29,7 +23,7 @@ type
   protected
     procedure ExecuteStatement (Statement: TStrings; var StopExecution: Boolean); override;
     procedure ExecuteDirective (Directive, Argument: String; var StopExecution: Boolean); override;
-    procedure ExecuteCommit; override;
+    procedure ExecuteCommit(CommitRetaining: boolean=true); override;
   public
     procedure Execute; override;
     property  Database : TtiDatabase read FDatabase write FDatabase;
@@ -45,12 +39,10 @@ type
     property UseDefines;
     property OnException;
   end;
-{$ENDIF}
 
 
 implementation
 
-{$IFDEF HAVESQLSCRIPT}
 
 resourcestring
   sNoDatabase = 'No database assigned to script';
@@ -77,7 +69,7 @@ begin
     FOnDirective (Self, Directive, Argument, StopExecution);
 end;
 
-procedure TtiOPFSQLscript.ExecuteCommit;
+procedure TtiOPFSQLscript.ExecuteCommit(CommitRetaining: boolean);
 begin
   FDatabase.Commit;
 end;
@@ -92,7 +84,6 @@ begin
     FQuery.Free;
   end;
 end;
-{$ENDIF}
 
 end.
 
