@@ -754,9 +754,9 @@ begin
     //resize the last column to fill the grid.
     if i = FieldsInfo.Count - 1 then
       begin
-      if View.Width > (lColumnTotalWidth + lGridNonContentWidth) then
+      if View.ClientWidth > (lColumnTotalWidth + lGridNonContentWidth) then
       begin
-        lLastColumnWidth := View.Width - (lColumnTotalWidth + lGridNonContentWidth);
+        lLastColumnWidth := View.ClientWidth - (lColumnTotalWidth + lGridNonContentWidth);
         if lLastColumnWidth > 10 then
           View.ColWidths[i] := lLastColumnWidth;
       end;
