@@ -714,6 +714,7 @@ begin
   try
     if ARowIdx+1 = View.RowCount then // In case of add notification
       View.RowCount:=View.RowCount+1;
+
     result := TtiStringGridRowMediator.CreateCustom(AData, View,
         OnBeforeSetupField, FieldsInfo, ARowIdx+1, Active);
     View.Objects[0, ARowIdx+1] := result;   // set Object reference inside grid
@@ -767,6 +768,8 @@ begin
     View.RowCount := Model.Count+1
   else
     View.RowCount := Model.CountNotDeleted+1;
+  if View.RowCount > 1 then
+    View.FixedRows := 1;
 end;
 
 procedure TtiStringGridMediatorView.SetupGUIandObject;
