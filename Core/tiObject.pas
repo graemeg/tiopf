@@ -3823,7 +3823,7 @@ begin
       if (GTIOPFManager.DefaultOIDGenerator.OIDClass <> nil) then
         Write('OID=' +TtiObject(AVisited).OID.AsString)
       else
-        Write('OID=Null');
+        Write('OID=(nil)');
     {$ENDIF}
     Write(', ');
     LNewLineRequired:= True;
