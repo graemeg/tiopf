@@ -630,8 +630,11 @@ type
   TtiIntegerListItem = class(TtiBaseObject)
   private
     FValue: Int64;
+    procedure SetValue(const Value: Int64);
   public
-    property AValue: Int64 Read FValue Write FValue;
+    constructor CreateCustom(AValue: Int64);
+    property AValue: Int64 Read FValue Write SetValue; {$ifdef FPC} deprecated 'Use Value property instead'; {$endif}
+    property Value: Int64 Read FValue Write FValue;
   end;
 
   TtiIntegerList = class(TtiBaseObject)
@@ -664,8 +667,11 @@ type
   TtiRealListItem = class(TtiBaseObject)
   private
     FValue: Extended;
+    procedure SetValue(const Value: Extended);
   public
-    property AValue: Extended Read FValue Write FValue;
+    constructor CreateCustom(AValue: Extended);
+    property AValue: Extended Read FValue Write SetValue; {$ifdef FPC} deprecated 'Use Value property instead'; {$endif}
+    property Value: Extended Read FValue Write FValue;
   end;
 
   TtiRealList = class(TtiBaseObject)
@@ -4018,12 +4024,8 @@ end;
 { TtiIntegerList }
 
 procedure TtiIntegerList.Add(AValue: Int64);
-var
-  L: TtiIntegerListItem;
 begin
-  L:= TtiIntegerListItem.Create;
-  FList.Add(L);
-  L.AValue:= AValue;
+  FList.Add(TtiIntegerListItem.CreateCustom(AValue));
 end;
 
 
@@ -4450,12 +4452,8 @@ end;
 { TtiRealList }
 
 procedure TtiRealList.Add(AValue: Extended);
-var
-  L: TtiRealListItem;
 begin
-  L:= TtiRealListItem.Create;
-  FList.Add(L);
-  L.AValue:= AValue;
+  FList.Add(TtiRealListItem.CreateCustom(AValue));
 end;
 
 constructor TtiRealList.Create;
@@ -4520,5 +4518,37 @@ begin
 end;
 
 {$ENDIF IOS}
+
+{ TtiRealListItem }
+
+constructor TtiRealListItem.CreateCustom(AValue: Extended);
+begin
+  Create;
+  FValue := AValue;
+end;
+
+procedure TtiRealListItem.SetValue(const Value: Extended);
+var
+  YouAreUsingADeprecatedProperty: string; // GG: 2017-07-20
+begin
+  { WARNING: You are using a deprecated RealListItem.AValue property - use RealListItem.Value instead. }
+  FValue := Value;
+end;
+
+{ TtiIntegerListItem }
+
+constructor TtiIntegerListItem.CreateCustom(AValue: Int64);
+begin
+  Create;
+  FValue := AValue;
+end;
+
+procedure TtiIntegerListItem.SetValue(const Value: Int64);
+var
+  YouAreUsingADeprecatedProperty: string; // GG: 2017-07-20
+begin
+  { WARNING: You are using a deprecated IntergerListItem.AValue property - use IntegerListItem.Value instead. }
+  FValue := Value;
+end;
 
 end.
