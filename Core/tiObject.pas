@@ -53,7 +53,7 @@ type
 
   {: The possible values to be displayed by TtiObjectAsDebugString}
   TtiObjectAsDebugStringValues =
-    (adsData, adsClassName, adsObjectState, adsOID, adsCaption, adsDeleted, adsChildren);
+    (adsData, adsClassName, adsObjectState, adsOID, adsCaption, adsDeleted, adsChildren, adsChildCount);
 
   TtiObjectAsDebugStringValuesToShow = set of TtiObjectAsDebugStringValues;
 
@@ -62,7 +62,7 @@ type
 
 const
   CTIAsDebugStringDataAll =
-    [adsData, adsClassName, adsObjectState, adsOID, adsCaption, adsDeleted, adsChildren];
+    [adsData, adsClassName, adsObjectState, adsOID, adsCaption, adsDeleted, adsChildren, adsChildCount];
 
   CTIAsDebugStringDataAndChildren =
     [adsData, adsChildren];
@@ -4077,6 +4077,16 @@ begin
     LNewLineRequired:= True;
   end;
 
+  if adsChildCount in ToShow then
+  begin
+    if (AVisited is TtiObjectList) then
+    begin
+      Write('Count=' + IntToStr(TtiObjectList(AVisited).Count));
+      Write(', ');
+    end;
+    LNewLineRequired:= True;
+  end;
+
   if adsOID in ToShow then
   begin
     {$IFDEF OID_AS_INT64}
@@ -4136,8 +4146,7 @@ begin
   end;
 
   if not( adsChildren in ToShow) then
-    ContinueVisiting:= False;
-
+    ContinueVisiting := False;
 end;
 
 
