@@ -307,7 +307,7 @@ type
     property Text: string read GetText;
   end;
 
-  {** @exclude A visitor to count the number of instances of each class owned 
+  {** @exclude A visitor to count the number of instances of each class owned
       by the passed object}
   TVisClassCount = class(TtiVisitor)
   private
@@ -947,11 +947,18 @@ var
   LVisitorMappingGroup: TtiVisitorMappingGroup;
   LVisitorController: TtiVisitorController;
   LVisitors: TObjectList;
+  lLogMsg: string;
 begin
   Assert(AGroupName<>'', 'AGroupName not assigned');
   Assert(AVisited.TestValid, CTIErrorInvalidObject);
   Assert(AVisitorControllerConfig.TestValid, CTIErrorInvalidObject);
-  Log('About to process visitors for <' + AGroupName + '>', lsVisitor);
+  if Assigned(AVisited) then
+    lLogMsg := 'About to process visitors for <' + AGroupName +
+               '> Visited: ' + AVisited.ClassName + ' (' + AVisited.Caption + ')'
+  else
+    lLogMsg := 'About to process visitors for <' + AGroupName +
+               ' > Visited: (nil)';
+  Log(lLogMsg, lsVisitor);
   LVisitors := TObjectList.Create;
   try
     LVisitorMappingGroup := FindVisitorMappingGroup(AGroupName);
@@ -977,7 +984,13 @@ begin
   finally
     LVisitors.Free;
   end;
-  Log('Finished process visitors for <' + AGroupName + '>', lsVisitor);
+  if Assigned(AVisited) then
+    lLogMsg := 'Finished process visitors for <' + AGroupName +
+               '> Visited: ' + AVisited.ClassName + ' (' + AVisited.Caption + ')'
+  else
+    lLogMsg := 'Finished process visitors for <' + AGroupName +
+               ' > Visited: (nil)';
+  Log(lLogMsg, lsVisitor);
 end;
 
 
