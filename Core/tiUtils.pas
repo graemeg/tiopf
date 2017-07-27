@@ -630,7 +630,7 @@ type
   TtiIntegerListItem = class(TtiBaseObject)
   private
     FValue: Int64;
-    procedure SetValue(const Value: Int64);
+    procedure SetValue(const Value: Int64); deprecated 'The AValue property is deprecated. Please use the Value property instead.';
   public
     constructor CreateCustom(AValue: Int64);
     property AValue: Int64 Read FValue Write SetValue; {$ifdef FPC} deprecated 'Use Value property instead'; {$endif}
@@ -667,7 +667,7 @@ type
   TtiRealListItem = class(TtiBaseObject)
   private
     FValue: Extended;
-    procedure SetValue(const Value: Extended);
+    procedure SetValue(const Value: Extended); deprecated 'The AValue property is deprecated. Please use the Value property instead.';
   public
     constructor CreateCustom(AValue: Extended);
     property AValue: Extended Read FValue Write SetValue; {$ifdef FPC} deprecated 'Use Value property instead'; {$endif}
@@ -4528,10 +4528,7 @@ begin
 end;
 
 procedure TtiRealListItem.SetValue(const Value: Extended);
-var
-  YouAreUsingADeprecatedProperty: string; // GG: 2017-07-20
 begin
-  { WARNING: You are using a deprecated RealListItem.AValue property - use RealListItem.Value instead. }
   FValue := Value;
 end;
 
@@ -4544,10 +4541,7 @@ begin
 end;
 
 procedure TtiIntegerListItem.SetValue(const Value: Int64);
-var
-  YouAreUsingADeprecatedProperty: string; // GG: 2017-07-20
 begin
-  { WARNING: You are using a deprecated IntergerListItem.AValue property - use IntegerListItem.Value instead. }
   FValue := Value;
 end;
 
