@@ -135,7 +135,8 @@ type
   // Show the contents of a stream
   procedure tiShowStream(const AValue : TStream; const pHeading : string = 'Show stream');
 
-  procedure tiProcessing(const AMessage : String);
+  procedure tiProcessing(const AMessage: string);
+  procedure tiProcessingUpdate(const AMessage: string);
   procedure tiEndProcessing;
 
 implementation
@@ -284,6 +285,24 @@ begin
   pWorkingForm.Show;
   pWorkingForm.Invalidate;
   Application.ProcessMessages;
+end;
+
+procedure tiProcessingUpdate(const AMessage: string);
+var
+  i: integer;
+begin
+  if Assigned(pWorkingForm) then
+  begin
+    for i := 0 to pWorkingForm.ComponentCount-1 do
+    begin
+      if pWorkingForm.Components[i] is TLabel then
+      begin
+        TLabel(pWorkingForm.Components[i]).Caption := AMessage;
+        Application.ProcessMessages;
+        exit;
+      end;
+    end;
+  end;
 end;
 
 procedure tiEndProcessing;
