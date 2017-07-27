@@ -258,7 +258,7 @@ begin
   pWorkingForm.Position := poScreenCenter;
   pWorkingForm.BorderIcons := [];
   pWorkingForm.BorderStyle := bsNone;
-  pWorkingForm.Height := 150;
+  pWorkingForm.Height := 100;
   pWorkingForm.Width := 400;
   pWorkingForm.Color := clBtnHighlight;
   shape := TShape.Create(pWorkingForm);
