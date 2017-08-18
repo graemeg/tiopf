@@ -4449,7 +4449,7 @@ begin
     Check(lList.OwnsObjects, 'failed on OwnsObjects = true');
     lList.OwnsObjects := false;
     Check(not lList.OwnsObjects, 'failed on OwnsObjects = false');
-    lList.OwnsObjects := true;        
+    lList.OwnsObjects := true;
     Check(lList.OwnsObjects, 'failed on OwnsObjects = true');
   finally
     lList.Free;
@@ -5026,11 +5026,17 @@ begin
   { The TtiMediatorView implementes the ItiObserverHandlesErrorState interface,
     so it is interested in IsValid results. }
   lMediator := TtiMediatorView.Create;
-  lItem.AttachObserver(lMediator);
+  try
+    lItem.AttachObserver(lMediator);
 
-  CheckEquals(0, lItem.IsValidCallCount, 'Failed on 3');
-  lItem.Name := 'BBBBB';
-  CheckEquals(1, lItem.IsValidCallCount, 'Failed on 4');
+    CheckEquals(0, lItem.IsValidCallCount, 'Failed on 3');
+    lItem.Name := 'BBBBB';
+    CheckEquals(1, lItem.IsValidCallCount, 'Failed on 4');
+  finally
+    FreeAndNil(lItem);
+    FreeAndNil(lMediator);
+    FreeAndNil(lObserver);
+  end;
 end;
 
 { TtstSubject }
