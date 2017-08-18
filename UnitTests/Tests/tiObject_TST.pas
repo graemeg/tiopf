@@ -413,9 +413,9 @@ var
   LO3: TtstAsDebugStringObject;
 
 const
-  // ToDo: Remove the trailing space after OID=X, 
+  // ToDo: Remove the trailing space after OID=X,
   CAll =
-    'TtstAsDebugStringObjectList, Class name for TtstAsDebugStringObjectList, posEmpty, OID=1, **Dirty**' + cLineEnding +
+    'TtstAsDebugStringObjectList, Class name for TtstAsDebugStringObjectList, posEmpty, Count=2, OID=1, **Dirty**' + cLineEnding +
     '  Prop1 = test prop 1' + cLineEnding +
     '  TtstAsDebugStringObject, posEmpty, OID=2, ' + cLineEnding +
     '    Prop2 = test prop 2' + cLineEnding +
@@ -425,7 +425,7 @@ const
     '    Prop2 = test prop 4';
 
   CDeleted =
-    'TtstAsDebugStringObjectList, Class name for TtstAsDebugStringObjectList, posEmpty, OID=1, **Dirty**' + cLineEnding +
+    'TtstAsDebugStringObjectList, Class name for TtstAsDebugStringObjectList, posEmpty, Count=2, OID=1, **Dirty**' + cLineEnding +
     '  Prop1 = test prop 1' + cLineEnding +
     '  TtstAsDebugStringObject, posEmpty, OID=2, ' + cLineEnding +
     '    Prop2 = test prop 2' + cLineEnding +
