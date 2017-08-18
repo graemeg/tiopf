@@ -433,6 +433,10 @@ const
     '    Prop2 = test prop 4';
 
   CChildren =
+    'TtstAsDebugStringObjectList, Class name for TtstAsDebugStringObjectList, posEmpty, Count=2, OID=1, **Dirty**' + cLineEnding +
+    '  Prop1 = test prop 1';
+
+  CChildrenCount =  // No Count= output
     'TtstAsDebugStringObjectList, Class name for TtstAsDebugStringObjectList, posEmpty, OID=1, **Dirty**' + cLineEnding +
     '  Prop1 = test prop 1';
 
@@ -488,6 +492,7 @@ begin
     CheckEquals(CObjectState, LL.AsDebugString([adsObjectState]));
     CheckEquals(COID, LL.AsDebugString([adsOID]));
     CheckEquals(CCaption, LL.AsDebugString([adsCaption]));
+    CheckEquals(CChildrenCount, ll.AsDebugString(CTIAsDebugStringDataAll-[adsChildren, adsChildCount]));
 
   finally
     LL.Free;
