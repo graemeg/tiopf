@@ -289,6 +289,7 @@ var
   end;
 
 begin
+  Result := '';
   FAppendBegin := '';
   FAppendEnd := '';
   if ACriterias.Count = 0 then
