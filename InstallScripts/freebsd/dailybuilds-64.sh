@@ -8,7 +8,7 @@ BASEDIR="/data/devel"
 TIOPF="$BASEDIR/tiopf_dailybuilds/tiopf"              # tiOPF root directory
 FBLIB="$BASEDIR/tiopf_dailybuilds/fblib"
 SCRIPTS="$TIOPF/InstallScripts/freebsd"       # scripts directory
-FPC="$BASEDIR/fpc-2.6.4/x86_64-freebsd/bin/fpc"
+FPC="$BASEDIR/fpc-3.0.4/x86_64-freebsd/bin/fpc"
 #REV=`svnversion -n $TIOPF/`
 
 cd $TIOPF

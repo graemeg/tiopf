@@ -7,7 +7,7 @@ TIOPF="$BASEDIR/tiopf_dailybuilds/tiopf"
 FBLIB="$BASEDIR/tiopf_dailybuilds/fblib/src"
 ZEOS="$BASEDIR/opensource/zeos_svn"
 FPTEST="$BASEDIR/fptest"
-FPC="$BASEDIR/fpc-2.6.4/$TARGET/bin/ppcx64"
+FPC="$BASEDIR/fpc-3.0.4/$TARGET/bin/fpc"
 
 # NOTE: Must use /bin/bash for this to work
 
