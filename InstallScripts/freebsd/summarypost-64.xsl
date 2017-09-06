@@ -22,7 +22,6 @@ Git commit:
 <xsl:call-template name="elapsed_time"/>
 <xsl:call-template name="summary"/>
 
-<xsl:text>&#10;</xsl:text>
 <xsl:text>Details:&#10;</xsl:text>
 <xsl:text>  http://geldenhuys.co.uk/tiopf/unittests/freebsd64.html&#10;</xsl:text>
 <xsl:text>&#10;</xsl:text>
@@ -40,7 +39,7 @@ Git commit:
 <xsl:template name="elapsed_time">
 <xsl:text>Elapsed time:&#10;</xsl:text>
 <xsl:text>   </xsl:text><xsl:value-of select="/TestResults/TotalElapsedTime"/>
-<xsl:text>&#10;</xsl:text>
+<xsl:text>&#10;&#10;</xsl:text>
 </xsl:template>
 
 
@@ -52,8 +51,7 @@ Git commit:
 <xsl:text>   Note:
     FAILURES are anticipated and checked for with assertions.
     ERRORS are unexpected results.</xsl:text>
-<xsl:text>&#10;</xsl:text>
-
+<xsl:text>&#10;&#10;</xsl:text>
 </xsl:template>
 
 </xsl:stylesheet>
