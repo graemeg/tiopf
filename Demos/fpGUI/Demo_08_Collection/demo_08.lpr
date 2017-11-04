@@ -38,7 +38,7 @@ begin
   // ** Remote connection
   //gTIOPFManager.ConnectDatabase('192.168.0.54|/home/graemeg/programming/data/tiopf.fdb', 'sysdba', 'masterkey');
   // ** Local connection
-  gTIOPFManager.ConnectDatabase('/home/graemeg/devel/data/tiopf.fdb', 'sysdba', 'masterkey');
+  gTIOPFManager.ConnectDatabase('/data/devel/data/tiopf.fdb', 'sysdba', 'masterkey');
 
 
   { Which persistence mechanism do you want to use? Uncomment one. }
