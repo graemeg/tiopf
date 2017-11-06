@@ -2,6 +2,8 @@ unit tiVisitorDBAutoGen;
 
 interface
 
+{$I tiDefines.inc}
+
 uses
   tiQuery
   ,tiVisitorDB
