@@ -4,8 +4,10 @@
 {$IFNDEF VER200}
  {$IFNDEF VER210}
   {$IFNDEF VER220}
-   {$IFNDEF VER230}
+   {$IFNDEF VER230}  // XE2
+   {$IFNDEF VER240}  // XE3
    Defines to suppress compiler warnings are out of date with the compiler version
+   {$ENDIF}
    {$ENDIF}
   {$ENDIF}
  {$ENDIF}
