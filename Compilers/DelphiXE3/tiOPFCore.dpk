@@ -1,0 +1,79 @@
+package tiOPFCore;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 1}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA OFF}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST ON}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$ENDIF IMPLICITBUILDING}
+{$LIBSUFFIX 'XE3'}
+{$RUNONLY}
+{$IMPLICITBUILD OFF}
+
+requires
+  vcl,
+  rtl;
+
+contains
+  tiBaseObject in '..\..\Core\tiBaseObject.pas',
+  tiParams in '..\..\Core\tiParams.pas',
+  tiCommandLineParams in '..\..\Core\tiCommandLineParams.pas',
+  tiCompress in '..\..\Core\tiCompress.pas',
+  tiConstants in '..\..\Core\tiConstants.pas',
+  tiDBConnectionPool in '..\..\Core\tiDBConnectionPool.pas',
+  tiEncrypt in '..\..\Core\tiEncrypt.pas',
+  tiExcept in '..\..\Core\tiExcept.pas',
+  tiLog in '..\..\Core\tiLog.pas',
+  tiLogToFile in '..\..\Core\tiLogToFile.pas',
+  tiObject in '..\..\Core\tiObject.pas',
+  tiOID in '..\..\Core\tiOID.pas',
+  tiOPFManager in '..\..\Core\tiOPFManager.pas',
+  tiPool in '..\..\Core\tiPool.pas',
+  tiQuery in '..\..\Core\tiQuery.pas',
+  tiPersistenceLayers in '..\..\Core\tiPersistenceLayers.pas',
+  tiStreams in '..\..\Core\tiStreams.pas',
+  tiSyncObjs in '..\..\Core\tiSyncObjs.pas',
+  tiThread in '..\..\Core\tiThread.pas',
+  tiUtils in '..\..\Core\tiUtils.pas',
+  tiVisitor in '..\..\Core\tiVisitor.pas',
+  tiVisitorDB in '..\..\Core\tiVisitorDB.pas',
+  tiVisitorDBAutoGen in '..\..\Core\tiVisitorDBAutoGen.pas',
+  tiCriteria in '..\..\Core\tiCriteria.pas',
+  tiVisitorCriteria in '..\..\Core\tiVisitorCriteria.pas',
+  tiTokenLibrary in '..\..\Core\tiTokenLibrary.pas',
+  tiINI in '..\..\Core\tiINI.pas',
+  tiAutoMap in '..\..\Core\tiAutoMap.pas',
+  tiRTTI in '..\..\Core\tiRTTI.pas',
+  tiFilteredObjectList in '..\..\Core\tiFilteredObjectList.pas',
+  tiWin32 in '..\..\Core\tiWin32.pas',
+  tiOIDGUID in '..\..\Core\tiOIDGUID.pas',
+  tiBaseMediator in '..\..\Core\tiBaseMediator.pas',
+  tiModelMediator in '..\..\Core\tiModelMediator.pas',
+  tiAutoMapSelect in '..\..\Core\tiAutoMapSelect.pas',
+  tiSmartPointer in '..\..\Core\tiSmartPointer.pas',
+  tiGenericBase in '..\..\Core\tiGenericBase.pas',
+  tiGenericList in '..\..\Core\tiGenericList.pas',
+  tiSemaphore in '..\..\Core\tiSemaphore.pas',
+  tiMime in '..\..\Core\tiMime.pas';
+
+{$I tiDefines.inc}
+
+end.
