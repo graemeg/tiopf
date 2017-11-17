@@ -14,3 +14,8 @@ __history
 *.dll
 bin/*
 _bin/*
+*.dsk
+*.tvsconfig
+Compilers/DelphiXE/*.res
+Compilers/DelphiXE2/*.res
+Compilers/DelphiXE3/*.res
