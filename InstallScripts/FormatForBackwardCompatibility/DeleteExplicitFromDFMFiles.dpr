@@ -27,7 +27,7 @@ begin
         begin
           lFound := false;
           lFileName := lFiles.Strings[i];
-          Write(IntToStr(i) + '  ' + lFileName);
+          Write(IntToStr(i+1) + '  ' + lFileName);
           lFile.LoadFromFile(lFileName);
           for j := lFile.Count - 1 downto 0 do
           begin
