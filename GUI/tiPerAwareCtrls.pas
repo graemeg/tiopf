@@ -1548,6 +1548,10 @@ end;
 
 
 procedure TtiPerAwareDateTimePicker.DataToWinControl;
+{$IFDEF FPC}
+var
+  d: double;
+{$ENDIF}
 begin
   if not DataAndPropertyValid then
     Exit; //==>
@@ -1556,8 +1560,10 @@ begin
   TDateTimePicker(FWinControl).DateTime :=
     Trunc(GetPropValue(FData, FsFieldName, True));
   {$ELSE}
-  TDateTimePicker(FWinControl).Date :=
-    Trunc(GetPropValue(FData, FsFieldName, True));
+  { For some odd reason FPC Win64 can't determain overloaded Trunc() method.
+    Assign the result to d: Double first, fixed the issue. }
+  d := GetPropValue(FData, FsFieldName, True);
+  TDateTimePicker(FWinControl).Date := Trunc(d);
   {$ENDIF}
   SetOnChangeActive(true);
 end;
