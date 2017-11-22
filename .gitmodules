@@ -1,0 +1,3 @@
+[submodule "3rdParty/DUnit2"]
+	path = 3rdParty/DUnit2
+	url = git://github.com/graemeg/dunit2.git
