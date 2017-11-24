@@ -163,13 +163,8 @@ begin
     StartTransaction;
     try
       lQuery.AttachDatabase(Self);
-      { SQL Views are now also included }
-      lQuery.SQLText :=
-        'SELECT RDB$RELATION_NAME as Table_Name ' +
-        '  FROM RDB$RELATIONS ' +
-        'WHERE ((RDB$SYSTEM_FLAG = 0) OR (RDB$SYSTEM_FLAG IS NULL)) ' +
-//        '  AND (RDB$VIEW_SOURCE IS NULL) ' +
-        'ORDER BY RDB$RELATION_NAME ';
+      { SQL Views are also included }
+      lQuery.SQLText := 'select TABLE_NAME from INFORMATION_SCHEMA.TABLES';
       lQuery.Open;
       while not lQuery.EOF do
       begin
@@ -195,23 +190,8 @@ var
   lQuery: TtiQuery;
   lTable: TtiDBMetaDataTable;
   lField: TtiDBMetaDataField;
-  lFieldType: integer;
+  lFieldType: string;
   lFieldLength: integer;
-const
-  cIBField_SHORT     = 7;
-  cIBField_LONG      = 8;
-  cIBField_FLOAT     = 10;
-  cIBField_DATE      = 12;
-  cIBField_TIME      = 13;
-  cIBField_TEXT      = 14;
-  cIBField_BIGINT    = 16;
-  cIBField_DOUBLE    = 27;
-  cIBField_TIMESTAMP = 35;
-  cIBField_VARYING   = 37;
-  cIBField_BLOB      = 261;
-{ cIBField_QUAD      = 9;
-  cIBField_CSTRING   = 40;
-  cIBField_BLOB_ID   = 45;}
 begin
   lTable     := (AData as TtiDBMetaDataTable);
   lTableName := UpperCase(lTable.Name);
@@ -221,58 +201,51 @@ begin
     try
       lQuery.AttachDatabase(Self);
       lQuery.SQLText :=
-        '  select ' +
-        '    r.rdb$field_name     as field_name ' +
-        '    ,rdb$field_type      as field_type ' +
-        '    ,rdb$field_sub_type  as field_sub_type ' +
-        '    ,rdb$field_length    as field_length ' +
-        '  from ' +
-        '    rdb$relation_fields r ' +
-        '    ,rdb$fields f ' +
-        '  where ' +
-        '      r.rdb$relation_name = ''' + lTableName + '''' +
-        '  and f.rdb$field_name = r.rdb$field_source ';
+        'select COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH ' +
+        'from INFORMATION_SCHEMA.COLUMNS ' +
+        'where TABLE_NAME = ''' + lTableName + ''' order by ORDINAL_POSITION';
 
       lQuery.Open;
       while not lQuery.EOF do
       begin
         lField       := TtiDBMetaDataField.Create;
-        lField.Name  := Trim(lQuery.FieldAsString['field_name']);
-        lFieldType   := lQuery.FieldAsInteger['field_type'];
-        lFieldLength := lQuery.FieldAsInteger['field_length'];
+        lField.Name  := Trim(lQuery.FieldAsString['COLUMN_NAME']);
+        lFieldType   := lQuery.FieldAsString['DATA_TYPE'];
+        lFieldLength := lQuery.FieldAsInteger['CHARACTER_MAXIMUM_LENGTH'];
 
         lField.Width := 0;
 
-        case lFieldType of
-          cIBField_SHORT,
-          cIBField_LONG,
-          cIBField_BIGINT:  lField.Kind := qfkInteger;
-          cIBField_DOUBLE,
-          cIBField_FLOAT:   lField.Kind := qfkFloat;
-          cIBField_TIMESTAMP,
-          cIBField_DATE,
-          cIBField_TIME:    lField.Kind := qfkDateTime;
-          cIBField_VARYING,
-          cIBField_TEXT:
-          begin
-            lField.Kind  := qfkString;
-            lField.Width := lFieldLength;
-          end;
-          cIBField_BLOB:
-          begin
-            Assert(not lQuery.FieldIsNull['field_sub_type'], 'field_sub_type is null');
-            if lQuery.FieldAsInteger['field_sub_type'] = 1 then
-              lField.Kind := qfkLongString
-            else if lQuery.FieldAsInteger['field_sub_type'] = 0 then
-              lField.Kind := qfkBinary
-            else
-              raise EtiOPFInternalException.Create(
-                'Invalid field_sub_type <' + IntToStr(lQuery.FieldAsInteger['field_sub_type']) + '>');
-          end;
-          else
-            raise EtiOPFInternalException.Create(
-              'Invalid Interbase FieldType <' + IntToStr(lFieldType) + '>');
-        end;
+        if  (lFieldType = 'char') or
+            (lFieldType = 'varchar') or
+            (lFieldType = 'nchar') or
+            (lFieldType = 'nvarchar') or
+            (lFieldType = 'xml') then
+          lField.Kind := qfkString
+        else if (lFieldType = 'int') or
+            (lFieldType = 'smallint') or
+            (lFieldType = 'tinyint') or
+            (lFieldType = 'bigint') or
+            (lFieldType = 'uniqueidentifier') then
+          lField.Kind := qfkInteger
+        else if (lFieldType = 'bit') then
+          lField.Kind := qfkLogical
+        else if (lFieldType = 'datetime') or
+            (lFieldType = 'date') or
+            (lFieldType = 'time') then
+          lField.Kind := qfkDateTime
+        else if (lFieldType = 'decimal') or
+            (lFieldType = 'float') or
+            (lFieldType = 'money') or
+            (lFieldType = 'real') or
+            (lFieldType = 'numeric') then
+          lField.Kind := qfkFloat
+        else if (lFieldType = 'image') or
+            (lFieldType = 'varbinary') then
+          lField.Kind := qfkBinary
+        else
+          raise EtiOPFInternalException.Create(
+              'Unhandled FieldType <' + lFieldType + '> in persistence layer');
+
         lField.ObjectState := posClean;
         lTable.Add(lField);
         lQuery.Next;
