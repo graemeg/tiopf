@@ -3916,7 +3916,11 @@ begin
   if not ADeepCheck then
   begin
     { Here we do a "lite" comparison of OID values only }
-    Result := OID.Equals(AData.OID);
+    {$IFDEF OID_AS_INT64}
+      Result := OID = AData.OID
+    {$ELSE}
+      Result := OID.Equals(AData.OID);
+    {$ENDIF}
   end
   else
   begin
