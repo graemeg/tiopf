@@ -2287,7 +2287,7 @@ begin
   {$IFDEF OID_AS_INT64}
     OID := OIDGenerator.NextOID;
   {$ELSE}
-    OIDGenerator.AssignNextOID(OID);
+    OIDGenerator.AssignNextOID(OID, ADatabaseName, APersistenceLayerName);
   {$ENDIF}
 end;
 
@@ -3924,7 +3924,7 @@ begin
   {$IFDEF OID_AS_INT64}
     OID := OIDGenerator.NextOID;
   {$ELSE}
-    OIDGenerator.AssignNextOID(OID);
+    OIDGenerator.AssignNextOID(OID, ADatabaseName, APersistenceLayerName);
   {$ENDIF}
   ObjectState := posCreate;
 end;
