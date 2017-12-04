@@ -2774,8 +2774,7 @@ procedure TPerObjFactory.RegisterClass(const AClassName: string; AClass : TtiCla
 var
   lPerObjClassMapping : TPerObjClassMapping;
 begin
-  lPerObjClassMapping := FindByClassName(AClassName);
-  Assert(lPerObjClassMapping = nil,
+  Assert(FindByClassName(AClassName) = nil,
           'Attempt to register duplicate class mapping <' +
           AClassName + '>');
   lPerObjClassMapping := TPerObjClassMapping.Create;
