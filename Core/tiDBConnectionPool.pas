@@ -102,6 +102,9 @@ type
 
 implementation
 uses
+  {$IFNDEF FPC}
+  Types,  // gets rid of Delphi H2443 compiler hint
+  {$ENDIF}
   tiLog,
   tiUtils,
   tiConstants,

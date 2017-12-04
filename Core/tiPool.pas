@@ -117,6 +117,9 @@ uses
   tiLog,
   tiExcept,
   tiConstants,
+  {$IFNDEF FPC}
+  Types,  // gets rid of Delphi H2443 compiler hint
+  {$ENDIF}
   SysUtils;
 
 const

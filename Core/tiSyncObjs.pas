@@ -46,6 +46,9 @@ implementation
 uses
   tiUtils
   ,SysUtils    // used for Sleep under Free Pascal
+  {$IFNDEF FPC}
+  ,Types  // gets rid of Delphi H2443 compiler hint
+  {$ENDIF}
  ;
 
 var

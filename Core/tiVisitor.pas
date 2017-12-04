@@ -387,6 +387,9 @@ uses
   tiOPFManager,
   tiConstants,
   tiExcept,
+  {$IFNDEF FPC}
+  Types,  // gets rid of Delphi H2443 compiler hint
+  {$ENDIF}
   tiRTTI;
 
 procedure VisStreamToFile(const AData: TtiVisited; const AFileName: string;

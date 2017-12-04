@@ -152,6 +152,9 @@ uses
   {$IFDEF FPC}
   ,LCLType
   {$ENDIF}
+  {$IFNDEF FPC}
+  ,UITypes  // gets rid of Delphi H2443 compiler hint
+  {$ENDIF}
   ,tiGUIConstants
  ;
   

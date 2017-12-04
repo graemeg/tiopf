@@ -1007,6 +1007,9 @@ uses
   {$IFNDEF VER130}
    ,Variants
   {$ENDIF}
+  {$IFNDEF FPC}
+  ,Types  // gets rid of Delphi H2443 compiler hint
+  {$ENDIF}
  ;
 
 function ObjectStateToString(AObjectState : TPerObjectState): string;
