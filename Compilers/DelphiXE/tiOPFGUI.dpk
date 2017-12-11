@@ -89,7 +89,8 @@ contains
   tiMediators in '..\..\GUI\VCL\tiMediators.pas',
   tiListMediators in '..\..\GUI\VCL\tiListMediators.pas',
   tiVTSearch in '..\..\GUI\tiVTSearch.pas',
-  tiVTAccessibilityFactory in '..\..\GUI\tiVTAccessibilityFactory.pas';
+  tiVTAccessibilityFactory in '..\..\GUI\tiVTAccessibilityFactory.pas',
+  tiGUISupport in '..\..\GUI\tiGUISupport.pas';
 
 {$I tiDefines.inc}
 
