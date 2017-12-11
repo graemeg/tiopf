@@ -1,3 +1,30 @@
+{
+  Usage is as follows:
+
+    uses
+      tiGUISupport;
+
+      TtiGUIPackageCommand<Name> = class(TtiGUIPackageCommand)
+      public
+        constructor Create; override;
+      end;
+
+    constructor TtiGUIPackageCommand<Name>.Create;
+    begin
+      inherited;
+      CommandMenuItems.AddMenuItem(cTIGUICommandNameFile);
+      CommandMenuItems.AddMenuItem('Enter Command Name', 100);
+      CommandHint     := '';
+      CommandShortCut := '';
+      CommandBitmap   := '';
+      FormClass       := nil;
+      FormInstance    := fiSingle;
+    end;
+
+    initialization
+      gGUIPackageMgr.RegisterCommand(TtiGUIPackageCommand<Name>);
+
+}
 unit tiGUISupport;
 
 {$I tiDefines.inc}
@@ -17,36 +44,6 @@ uses
  ;
 
 type
-
-{
-
-// Useage..
-
-uses
-  tiGUISupport;
-
-  TtiGUIPackageCommand<Name> = class(TtiGUIPackageCommand)
-  public
-    constructor Create; override;
-  end;
-
-constructor TtiGUIPackageCommand<Name>.Create;
-begin
-  inherited;
-  CommandMenuItems.AddMenuItem(cTIGUICommandNameFile);
-  CommandMenuItems.AddMenuItem('Enter Command Name', 100);
-  CommandHint    := '';
-  CommandShortCut := '';
-  CommandBitmap  := '';
-  FormClass      := nil;
-  FormInstance   := fiSingle;
-end;
-
-initialization
-  gGUIPackageMgr.RegisterCommand(TtiGUIPackageCommand<Name>);
-
-}
-
 
   TtiGUIPackageMgr = class;
   TtiGUIPackageMenuItem = class;
@@ -90,6 +87,7 @@ initialization
 
   TtiGUIFormInstance = (fiUnknown, fiSingle, fiMultiple, fiModal);
 
+
   TtiGUIPackageCommand = class(TtiObject)
   private
     FCommandMenuItems: TtiGUIPackageMenuItems;
@@ -105,7 +103,6 @@ initialization
     FPackageName: TFileName;
     function  GetCommandName: string;
     function  GetCommandIndex: integer;
-    // FindForm assumes an MIDForm, which may not be the case. Fix.
   protected
     function  CreateSingleInstanceForm(pFormClass : TFormClass) :TForm;
     function  CreateMultipleInstanceForm(pFormClass : TFormClass): TForm;
@@ -170,9 +167,10 @@ initialization
   end;
 
   // Move the mouse cursor to a button
-  procedure tiMouseToButton(      pSender : TControl);
+  procedure tiMouseToButton(pSender: TControl); deprecated 'Use tiMouseToControl() instead';
+  procedure tiMouseToControl(pSender: TControl);
   // Return a control's parent form
-  function  tiGetParentForm(      pControl : TControl): TForm;
+  function  tiGetParentForm(pControl: TControl): TForm;
   // Find an MDI form if one is already created
   function  tiFindMDIForm(pFormClass: TFormClass): TForm;
   // Create and show a MDI form. If it already exists, then bring it to the frount.
@@ -215,14 +213,18 @@ begin
   FreeAndNil(uGUIPackageMgr);
 end;
 
-procedure tiMouseToButton(pSender : TControl);
+procedure tiMouseToButton(pSender: TControl);
+begin
+  tiMouseToControl(pSender);
+end;
+
+procedure tiMouseToControl(pSender: TControl);
 var
   Mpt: TPoint;
 begin
-  Mpt := point(pSender.Width div 2,
-                pSender.Height div 2);
+  Mpt := point(pSender.Width div 2, pSender.Height div 2);
   Mpt := pSender.ClientToScreen(Mpt);
-  setCursorPos(Mpt.x, Mpt.y);
+  SetCursorPos(Mpt.x, Mpt.y);
 end;
 
 function tiGetParentForm(pControl : TControl): TForm;
@@ -680,7 +682,7 @@ begin
   inherited SetOwner(AValue);
 end;
 
-// FindForm assumes an MIDForm, which may not be the case. Fix.
+// TODO: FindForm assumes an MDIForm, which may not be the case. Fix.
 function TtiGUIPackageCommand.FindForm(pFormClass: TFormClass): TForm;
 var
   i : integer;
