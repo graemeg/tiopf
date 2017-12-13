@@ -330,8 +330,8 @@ procedure LogValue(const AIdentifier: string; const ARect: TRect); overload;
 procedure LogValue(const AIdentifier: string; const APoint: TPoint); overload;
 procedure LogValue(const AIdentifier: string; const AValue: TDateTime); overload;
 procedure LogValue(const AIdentifier: string; const AValue: Currency); overload;
-
-function LogMethodTrace(const AMethodName: string): IInterface;
+procedure LogSeparator;
+function  LogMethodTrace(const AMethodName: string): IInterface;
 
 function LogSeverityToString(const ALogSeverity: TtiLogSeverity): string;
 function StringToLogSeverity(const AValue: string; out ALogSeverity: TtiLogSeverity): boolean;
@@ -675,6 +675,11 @@ procedure LogValue(const AIdentifier: string; const AValue: Currency);
 begin
 //  Log(AIdentifier + ' = ' + CurrToStrF(AValue, ffCurrency, 4), lsDebug);
   Log(AIdentifier + ' = ' + FormatFloat('¤ #,##0.0000', AValue), lsDebug);
+end;
+
+procedure LogSeparator;
+begin
+  Log('-=-=-=-=-=-=-=-=-=-=-=-', lsDebug);
 end;
 
 function LogMethodTrace(const AMethodName: string): IInterface;
