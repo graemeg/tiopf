@@ -288,6 +288,16 @@ type
   end;
 
 
+  TtiLogMethodTrace = class(TInterfacedObject)
+  private
+    FMethodName: string;
+  public
+    constructor Create(const AMethodName: string);
+    destructor Destroy; override;
+  end;
+
+
+
 // The log object is a singleton
 function  GLog : TtiLog;
 procedure ReleaseLog; //Allow testing to fully close then re-open Log; Peterm
@@ -320,6 +330,8 @@ procedure LogValue(const AIdentifier: string; const ARect: TRect); overload;
 procedure LogValue(const AIdentifier: string; const APoint: TPoint); overload;
 procedure LogValue(const AIdentifier: string; const AValue: TDateTime); overload;
 procedure LogValue(const AIdentifier: string; const AValue: Currency); overload;
+
+function LogMethodTrace(const AMethodName: string): IInterface;
 
 function LogSeverityToString(const ALogSeverity: TtiLogSeverity): string;
 function StringToLogSeverity(const AValue: string; out ALogSeverity: TtiLogSeverity): boolean;
@@ -663,6 +675,11 @@ procedure LogValue(const AIdentifier: string; const AValue: Currency);
 begin
 //  Log(AIdentifier + ' = ' + CurrToStrF(AValue, ffCurrency, 4), lsDebug);
   Log(AIdentifier + ' = ' + FormatFloat('¤ #,##0.0000', AValue), lsDebug);
+end;
+
+function LogMethodTrace(const AMethodName: string): IInterface;
+begin
+  Result := TtiLogMethodTrace.Create(AMethodName);
 end;
 
 function LogSeverityToString(const ALogSeverity: TtiLogSeverity): string;
@@ -1537,6 +1554,21 @@ begin
   SevToLog := LSevToLog;
 end;
 
+
+{ TtiLogMethodTrace }
+
+constructor TtiLogMethodTrace.Create(const AMethodName: string);
+begin
+  inherited Create;
+  FMethodName := AMethodName;
+  Log('>> ' + FMethodName, lsDebug);
+end;
+
+destructor TtiLogMethodTrace.Destroy;
+begin
+  Log('<< ' + FMethodName, lsDebug);
+  inherited;
+end;
 
 initialization
   UFinalization := false;
