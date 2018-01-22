@@ -355,12 +355,14 @@ uses
 {$IFDEF MACOS}
   ,Posix.Pthread
 {$ENDIF MACOS}
+  ,StrUtils
  ;
 
 
 var
   ULog : TtiLog;
   UFinalization : boolean;
+  uTraceIndent: Integer = 0;
 
 
 const
@@ -1566,12 +1568,14 @@ constructor TtiLogMethodTrace.Create(const AMethodName: string);
 begin
   inherited Create;
   FMethodName := AMethodName;
-  Log('>> ' + FMethodName, lsDebug);
+  Log(DupeString(' ', uTraceIndent) + '>> ' + FMethodName, lsDebug);
+  Inc(uTraceIndent, 2);
 end;
 
 destructor TtiLogMethodTrace.Destroy;
 begin
-  Log('<< ' + FMethodName, lsDebug);
+  Dec(uTraceIndent, 2);
+  Log(DupeString(' ', uTraceIndent) + '<< ' + FMethodName, lsDebug);
   inherited;
 end;
 
