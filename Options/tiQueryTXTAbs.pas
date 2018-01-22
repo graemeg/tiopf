@@ -195,6 +195,7 @@ uses
   ,tiObject
   ,tiUtils
   ,TypInfo
+  ,Types  // used to remove Delphi's H2443 inline function hint
   ,tiConstants
   ,tiExcept
   {$IFDEF MSWINDOWS}

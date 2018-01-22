@@ -89,7 +89,7 @@ uses
   ,tiLog
   ,tiExcept
   ,SysUtils
-
+  ,Contnrs  // used to remove Delphi's H2443 inline function hint
  ;
 
 procedure RegisterPersistenceLayer(const APersistenceLayers: TtiPersistenceLayers);

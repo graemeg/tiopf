@@ -162,14 +162,16 @@ procedure FreeAndNilStatefulDBConnectionPool;
 
 implementation
 uses
-  tiLog,
-  tiXML,
-  tiUtils,
-  tiExcept,
-  tiMadExcept,
-  tiOPFManager,
-  Variants,
-  SysUtils;
+  tiLog
+  ,tiXML
+  ,tiUtils
+  ,tiExcept
+  ,tiMadExcept
+  ,tiOPFManager
+  ,Variants
+  ,SysUtils
+  ,Types  // used to remove Delphi's H2443 inline function hint
+  ;
 
 var
   UStatefulDBConnectionPool : TtiStatefulDBConnectionPool;

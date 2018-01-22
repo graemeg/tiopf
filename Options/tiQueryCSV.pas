@@ -46,6 +46,8 @@ uses
   ,tiXML
   ,tiExcept
   ,SysUtils
+  ,Classes  // used to remove Delphi's H2443 inline function hint
+  ,Contnrs  // used to remove Delphi's H2443 inline function hint
  ;
 
 

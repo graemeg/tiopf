@@ -41,7 +41,8 @@ procedure RegisterTests;
 implementation
 
 uses
-   tiTestDependencies
+  Contnrs  // used to remove Delphi's H2443 inline function hint
+  ,tiTestDependencies
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF}

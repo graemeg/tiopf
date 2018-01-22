@@ -293,10 +293,9 @@ begin
 end;
 
 procedure tiDUnitForceRemoveDir(const ADirectory : string);
-var
-  LResult: DWord;
-  LOutput: string;
-
+//var
+//  LResult: DWord;
+//  LOutput: string;
 begin
   tiUtils.tiForceRemoveDir(ADirectory);
 (*

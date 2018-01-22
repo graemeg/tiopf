@@ -36,7 +36,6 @@ end;
 procedure TTestTIObjectError.TestAdd;
 var
   LErrors: TtiObjectErrors;
-  LError: TtiObjectError;
 begin
   GC.Add(LErrors, TtiObjectErrors.Create);
   CheckEquals(0, LErrors.Count, 'initially empty');

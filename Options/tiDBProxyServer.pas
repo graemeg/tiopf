@@ -136,6 +136,7 @@ uses
   ,tiWebServerVersion
   ,SysUtils
   ,Math
+  ,Contnrs  // used to remove Delphi's H2443 inline function hint
   {$IFDEF MADEXCEPT_STACK_TRACE} ,madExcept, madStackTrace {$ENDIF}
   {$IFDEF JCL_STACK_TRACE} ,JclDebug {$ENDIF}
 ;
@@ -157,7 +158,6 @@ begin
   ServerActions.Add(TtiDBPS_ForceException.Create(  Self, 16));
   ServerActions.Add(TtiDBPS_StackTrace.Create(      Self, 17));
   Sort;
-
 end;
 
 destructor TtiDBProxyServer.Destroy;

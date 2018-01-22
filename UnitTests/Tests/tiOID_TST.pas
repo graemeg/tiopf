@@ -135,6 +135,7 @@ procedure RegisterTests;
 implementation
 
 uses
+  Contnrs,  // used to remove Delphi's H2443 inline function hint
   tiOPFManager,
   tiObject,
   SysUtils,
