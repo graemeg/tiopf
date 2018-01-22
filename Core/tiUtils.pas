@@ -630,10 +630,8 @@ type
   TtiIntegerListItem = class(TtiBaseObject)
   private
     FValue: Int64;
-    procedure SetValue(const Value: Int64); deprecated 'The AValue property is deprecated. Please use the Value property instead.';
   public
     constructor CreateCustom(AValue: Int64);
-    property AValue: Int64 Read FValue Write SetValue; {$ifdef FPC} deprecated 'Use Value property instead'; {$endif}
     property Value: Int64 Read FValue Write FValue;
   end;
 
@@ -667,11 +665,9 @@ type
   TtiRealListItem = class(TtiBaseObject)
   private
     FValue: Extended;
-    procedure SetValue(const Value: Extended); deprecated 'The AValue property is deprecated. Please use the Value property instead.';
   public
     constructor CreateCustom(AValue: Extended);
-    property AValue: Extended Read FValue Write SetValue; {$ifdef FPC} deprecated 'Use Value property instead'; {$endif}
-    property Value: Extended Read FValue Write FValue;
+    property    Value: Extended Read FValue Write FValue;
   end;
 
   TtiRealList = class(TtiBaseObject)
@@ -4061,7 +4057,7 @@ end;
 
 function TtiIntegerList.GetItems(i: Integer): Int64;
 begin
-  Result := (FList.Items[i] as TtiIntegerListItem).AValue;
+  Result := (FList.Items[i] as TtiIntegerListItem).Value;
 end;
 
 
@@ -4070,7 +4066,7 @@ var
   i: Integer;
 begin
   for i:= 0 to FList.Count-1 do
-    if (FList.Items[i] as TtiIntegerListItem).AValue = AValue then
+    if (FList.Items[i] as TtiIntegerListItem).Value = AValue then
     begin
       Result:= i;
       Exit; //==>
@@ -4095,7 +4091,7 @@ end;
 
 procedure TtiIntegerList.SetItems(i: Integer; const AValue: Int64);
 begin
-  (FList.Items[i] as TtiIntegerListItem).AValue := AValue;
+  (FList.Items[i] as TtiIntegerListItem).Value := AValue;
 end;
 
 
@@ -4103,8 +4099,8 @@ function _DoSort(Item1, Item2: Pointer): Integer;
 begin
   result:=
     CompareValue(
-      TtiIntegerListItem(Item1).AValue,
-      TtiIntegerListItem(Item2).AValue);
+      TtiIntegerListItem(Item1).Value,
+      TtiIntegerListItem(Item2).Value);
 end;
 
 procedure TtiIntegerList.Sort;
@@ -4479,12 +4475,12 @@ end;
 
 function TtiRealList.GetItems(i: Integer): Extended;
 begin
-  Result := (FList.Items[i] as TtiRealListItem).AValue;
+  Result := (FList.Items[i] as TtiRealListItem).Value;
 end;
 
 procedure TtiRealList.SetItems(i: Integer; const AValue: Extended);
 begin
-  (FList.Items[i] as TtiRealListItem).AValue := AValue;
+  (FList.Items[i] as TtiRealListItem).Value := AValue;
 end;
 
 {$IFDEF IOS}
@@ -4527,11 +4523,6 @@ begin
   FValue := AValue;
 end;
 
-procedure TtiRealListItem.SetValue(const Value: Extended);
-begin
-  FValue := Value;
-end;
-
 { TtiIntegerListItem }
 
 constructor TtiIntegerListItem.CreateCustom(AValue: Int64);
@@ -4540,9 +4531,5 @@ begin
   FValue := AValue;
 end;
 
-procedure TtiIntegerListItem.SetValue(const Value: Int64);
-begin
-  FValue := Value;
-end;
 
 end.
