@@ -32,7 +32,7 @@ begin
           for j := lFile.Count - 1 downto 0 do
           begin
             lLine1 := lFile.Strings[j];
-            if Pos('Explicit', lLine1) > 0 then
+            if (Pos('ExplicitWidth', lLine1) > 0) or (Pos('ExplicitHeight', lLine1) > 0) or (Pos('ExplicitTop', lLine1) > 0) or (Pos('ExplicitLeft', lLine1) > 0) then
             begin
               lFile.Delete(j);
               Write('*');
