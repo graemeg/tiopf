@@ -2,6 +2,9 @@
   Connection format:   <server>\<instance>:<database>
     eg:    localhost\SQLExpress:panacee
 
+    If you have Windows Authentication set up for your system, then you can set the username to 'NULL'
+    and the password blank (''), then it will trigger Windows Authentication to the SQL Server.
+
 }
 unit tiQueryADOSQLServer;
 
