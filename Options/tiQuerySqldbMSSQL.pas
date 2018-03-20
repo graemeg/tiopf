@@ -140,7 +140,7 @@ begin
     qfkBinary:
         Result := 'Blob sub_type 0';
     qfkLongString:
-        Result := 'Blob sub_type 1';
+        Result := 'Blob sub_type 1'; // or maybe Varchar(max) ???
     else
       raise EtiOPFInternalException.Create('Invalid FieldKind');
   end;
@@ -211,8 +211,6 @@ begin
         lField       := TtiDBMetaDataField.Create;
         lField.Name  := Trim(lQuery.FieldAsString['COLUMN_NAME']);
         lFieldType   := lQuery.FieldAsString['DATA_TYPE'];
-        lFieldLength := lQuery.FieldAsInteger['CHARACTER_MAXIMUM_LENGTH'];
-
         lField.Width := 0;
 
         if  (lFieldType = 'char') or
@@ -245,6 +243,14 @@ begin
         else
           raise EtiOPFInternalException.Create(
               'Unhandled FieldType <' + lFieldType + '> in persistence layer');
+
+        lFieldLength := lQuery.FieldAsInteger['CHARACTER_MAXIMUM_LENGTH'];
+        if (lField.Kind = qfkString) then
+        begin
+          lField.Width := lFieldLength;
+          if (lFieldType = 'xml') or (lFieldLength = -1) then // ie: XML or varchar(max)
+            lField.Kind := qfkLongString;
+        end;
 
         lField.ObjectState := posClean;
         lTable.Add(lField);
