@@ -32,7 +32,7 @@ resourcestring
   CErrorDefaultOIDGeneratorNotAssigned = 'Default OIDGenerator not assigned. You must register an instance of TOIDGenerator with the global GTIOPFManager.';
   cError = 'Error: ';
   CErrorInvalidDate = 'A DateTime was passed when a Date was expected. DateTime="%s"';
-  
+
 type
 
   TPerObjectState = (
@@ -1112,7 +1112,7 @@ end;
   i)  What if our object contains a pointer to another object that it owns
   ii) What if our object contains a list of other objects
   If we are to be creating new instances of owned objects, we must work out
-  what to do about ObjectState and OIDs 
+  what to do about ObjectState and OIDs
 
   Creates a cloned instance of the object. This method must be overridden and
   typecast if you are going to use it. }
@@ -1407,7 +1407,7 @@ begin
 end;
 
 
-{ TtiObjectList } 
+{ TtiObjectList }
 
 constructor TtiObjectList.Create;
 begin
@@ -1444,16 +1444,16 @@ begin
   end;
 end;
 
-{: Call Delete to remove the object at Index from the list. (The first object 
-  is indexed as 0, the second object is indexed as 1, and so forth.) After an 
+{: Call Delete to remove the object at Index from the list. (The first object
+  is indexed as 0, the second object is indexed as 1, and so forth.) After an
   object is deleted, all the objects that follow it are moved up in index
   position and Count is decremented.
 
-  To use an object reference (rather than an index position) to specify the 
+  To use an object reference (rather than an index position) to specify the
   object to be removed, call Remove.
 
-  If OwnsObjects is True, Delete frees the object in addition to removing it 
-  from the list. To remove an object from the list without freeing it, call 
+  If OwnsObjects is True, Delete frees the object in addition to removing it
+  from the list. To remove an object from the list without freeing it, call
   Extract. }
 procedure TtiObjectList.Delete(i: integer);
 begin
@@ -1514,7 +1514,7 @@ function TtiObjectList.Last: TtiObject;
 begin
   // TList can't handle this. Strange!
   if FList.Count > 0 then
-// Under some circumstances, this will AV. Why?  
+// Under some circumstances, this will AV. Why?
 //    result := TtiObject(FList.Last)
     result := TtiObject(FList.Items[FList.Count-1])
   else
@@ -1553,7 +1553,7 @@ begin
 end;
 
 { TPerStream }
- 
+
 constructor TPerStream.Create;
 begin
   inherited Create;
@@ -1609,17 +1609,17 @@ begin
   FStream.WriteBuffer(lpcText^, length(lpcText));
 end;
 
-{: Call Remove to delete a specific object from the list when its index is 
-  unknown. The value returned is the index of the object in the Items array 
-  before it was removed. If the specified object is not found on the list, 
-  Remove returns -1. If OwnsObjects is True, Remove frees the object in 
-  addition to removing it from the list. After an object is deleted, all the 
-  objects that follow it are moved up in index position and Count is 
-  decremented. If an object appears more than once on the list, Remove deletes 
-  only the first appearance. Hence, if OwnsObjects is True, removing an object 
-  that appears more than once results in empty object references later in the 
-  list. To use an index position (rather than an object reference) to specify 
-  the object to be removed, call Delete. To remove an object from the list 
+{: Call Remove to delete a specific object from the list when its index is
+  unknown. The value returned is the index of the object in the Items array
+  before it was removed. If the specified object is not found on the list,
+  Remove returns -1. If OwnsObjects is True, Remove frees the object in
+  addition to removing it from the list. After an object is deleted, all the
+  objects that follow it are moved up in index position and Count is
+  decremented. If an object appears more than once on the list, Remove deletes
+  only the first appearance. Hence, if OwnsObjects is True, removing an object
+  that appears more than once results in empty object references later in the
+  list. To use an index position (rather than an object reference) to specify
+  the object to be removed, call Delete. To remove an object from the list
   without freeing it, call Extract. }
 function TtiObjectList.Remove(const AObject: TtiObject):integer;
 begin
@@ -1631,7 +1631,7 @@ begin
 end;
 
 {: Call Extract to remove an object from the list without freeing the object
-  itself. After an object is removed, all the objects that follow it are moved 
+  itself. After an object is removed, all the objects that follow it are moved
   up in index position and Count is decremented.}
 procedure TtiObjectList.Extract(const AObject: TtiObject);
 begin
@@ -1672,7 +1672,7 @@ end;
 
 
 { TVisPerObjFindByOID }
- 
+
 function TVisPerObjFindByOID.AcceptVisitor: boolean;
 begin
   result := (Visited is TtiObject) and
@@ -1818,7 +1818,7 @@ end;
 
 { By default, IsUnique will check all objects in the collection (from
   the current object down the tree) for uniqueness by OID. Override
-  DoFindAllNotUnique to change the properties that are tested. } 
+  DoFindAllNotUnique to change the properties that are tested. }
 function TtiObject.IsUnique(const AObject: TtiObject): boolean;
 var
   lList : TList;
@@ -1997,7 +1997,7 @@ function TtiObject.GetIndex: integer;
 begin
   Assert(Owner <> nil,
           'Owner not assigned');
-  Assert(Owner is TtiObjectList,              
+  Assert(Owner is TtiObjectList,
           'Owner not a TtiObjectList, it''s a ' + Owner.ClassName);
   result := TtiObjectList(Owner).IndexOf(self);
 end;
@@ -2669,8 +2669,8 @@ end;
 procedure TtiObjectList.AssignPublicProps(ASource: TtiObject);
 begin
   inherited AssignPublicProps(ASource);
-  
-// Don't set these here, they will be set in a classes constructor  
+
+// Don't set these here, they will be set in a classes constructor
 //  OwnsObjects := TtiObjectList(ASource).OwnsObjects;
 //  AutoSetItemOwner := TtiObjectList(ASource).AutoSetItemOwner;
 end;
@@ -2928,7 +2928,7 @@ begin
   AStrings.Text := lMessage;
 end;
 
-function TtiObject.IsValid(const AStrings : TStrings; AAppend : boolean): boolean; 
+function TtiObject.IsValid(const AStrings : TStrings; AAppend : boolean): boolean;
 var
   lsl : TStringList;
   i  : integer;
@@ -3889,7 +3889,7 @@ constructor TVisTIObjectAsDebugString.Create(
 begin
   Create;
   ToShow:= AValuesToShow;
-end;                           
+end;
 
 function TtiObject.AsDebugString(
   const AValuesToShow: TtiObjectAsDebugStringValuesToShow): string;
