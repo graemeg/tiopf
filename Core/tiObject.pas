@@ -1142,9 +1142,9 @@ begin
           ClassName +
           ' are not assignment compatable');
 
+  AssignClassProps(    ASource);
   AssignPublicProps(   ASource);
   AssignPublishedProps(ASource);
-  AssignClassProps(    ASource);
 
   // When you create a concrete class that contains object type properties
   // you will have to override AssignClassProps() and implement
