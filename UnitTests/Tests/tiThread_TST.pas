@@ -66,7 +66,7 @@ procedure TTestTIThread.tiActiveThreadList;
 //  LThread: TtiThreadForTesting;
 begin
   Check(True);
-  // See not in TtiActiveThreadList.WaitForAll for description of problems with
+  // See note in TtiActiveThreadList.WaitForAll for description of problems with
   // this method
 //  AllowedMemoryLeakSize:= 152;
 //  CheckEquals(0, GTIOPFManager.ActiveThreadList.Count);
@@ -103,7 +103,7 @@ procedure TTestTIThread.tiThreadExplicitFree;
 //var
 //  LThread: TtiThreadForTesting;
 begin
-  // See not in TtiActiveThreadList.WaitForAll for description of problems that
+  // See note in TtiActiveThreadList.WaitForAll for description of problems that
   // relates to this method
   Check(True);
 //  if GTIOPFManager.ActiveThreadList.Count > 0 then
