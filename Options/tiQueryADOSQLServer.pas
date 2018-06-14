@@ -90,7 +90,7 @@ begin
     qfkFloat     : result := 'float';
     qfkDateTime  : result := 'datetime';
     qfkLogical   : result := 'bit';
-    qfkBinary    : result := 'Image';
+    qfkBinary    : result := 'varbinary(max)'; // the 'image' data type is considered deprecated by Microsoft
     qfkLongString : result := 'text';
   else
     raise Exception.Create('Invalid FieldKind');
