@@ -1133,11 +1133,7 @@ begin
           tkWChar      : LValue := IntToStr(GetOrdProp(LData, LFieldName));
           tkString     : LValue := GetStrProp(LData, LFieldName);
           tkLString    : LValue := GetStrProp(LData, LFieldName);
-{$IFDEF IOS}
           tkWString    : LValue := GetStrProp(LData, LFieldName);
-{$ELSE}
-          tkWString    : LValue := GetWideStrProp(LData, LFieldName);
-{$ENDIF IOS}
           {$IFDEF FPC}
           tkAString    : LValue := GetStrProp(LData, LFieldName);
           {$ENDIF}
@@ -1334,11 +1330,7 @@ begin
       tkWChar      : SetOrdProp(Self, APropName, GetOrdProp(ASource, APropName));
       tkString     : SetStrProp(Self, APropName, GetStrProp(ASource, APropName));
       tkLString    : SetStrProp(Self, APropName, GetStrProp(ASource, APropName));
-{$IFDEF IOS}
       tkWString    : SetStrProp(Self, APropName, GetStrProp(ASource, APropName));
-{$ELSE}
-      tkWString    : SetWideStrProp(Self, APropName, GetWideStrProp(ASource, APropName));
-{$ENDIF IOS}
       {$IFDEF FPC}
       tkAString    : SetStrProp(Self, APropName, GetStrProp(ASource, APropName));
       {$ENDIF}
@@ -3958,11 +3950,7 @@ begin
         tkWChar      : LValue := IntToStr(GetOrdProp(Self, LFieldName));
         tkString     : LValue := GetStrProp(Self, LFieldName);
         tkLString    : LValue := GetStrProp(Self, LFieldName);
-{$IFDEF IOS}
         tkWString    : LValue := GetStrProp(Self, LFieldName);
-{$ELSE}
-        tkWString    : LValue := GetWideStrProp(Self, LFieldName);
-{$ENDIF IOS}
         {$IFDEF FPC}
         tkAString    : LValue := GetStrProp(Self, LFieldName);
         {$ENDIF}
