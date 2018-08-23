@@ -3,11 +3,27 @@
 //Delphi 2009 or later
 {$IFNDEF VER200}
  {$IFNDEF VER210}
-  {$IFNDEF VER220}
+  {$IFNDEF VER220} // XE
    {$IFNDEF VER230}  // XE2
-   {$IFNDEF VER240}  // XE3
-   Defines to suppress compiler warnings are out of date with the compiler version
-   {$ENDIF}
+    {$IFNDEF VER240}  // XE3
+      {$IFNDEF VER250}  // XE4
+        {$IFNDEF VER260}  // XE5
+          {$IFNDEF VER270}  // XE6
+            {$IFNDEF VER280}  // XE7
+              {$IFNDEF VER290}  // XE8
+                {$IFNDEF VER300}  // XE10.0
+                  {$IFNDEF VER310}  // XE10.1
+                    {$IFNDEF VER320}  // XE10.2
+Defines to suppress compiler warnings are out of date with the compiler version
+                    {$ENDIF}
+                  {$ENDIF}
+                {$ENDIF}
+              {$ENDIF}
+            {$ENDIF}
+          {$ENDIF}
+        {$ENDIF}
+      {$ENDIF}
+    {$ENDIF}
    {$ENDIF}
   {$ENDIF}
  {$ENDIF}
