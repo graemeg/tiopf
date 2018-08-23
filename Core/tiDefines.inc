@@ -163,6 +163,9 @@ new release.
   {.$DEFINE ThirdPartyRegex}
 {$ENDIF}
 
+// Enable if you have Delphi and JCL installed. Used by tiOPF test suite.
+{.$DEFINE USE_JEDI_JCL}
+
 // Use these defines, along with tiCompileTimeLinkPerLayers.pas to force static linking
 // at compile time of a persistence layer. These defines must be kept in
 // sync with tiCompileTimeLinkPerLayers.pas

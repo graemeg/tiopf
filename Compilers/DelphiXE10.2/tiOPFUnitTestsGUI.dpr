@@ -1,10 +1,14 @@
 program tiOPFUnitTestsGUI;
 
 uses
-  {$IFNDEF FPC}{$IFDEF FASTMM}
-  FastMM4,
-  {$ENDIF}{$ENDIF}
-  jclDebug,
+  {$IFNDEF FPC}
+    {$IFDEF FASTMM}
+    FastMM4,
+    {$ENDIF}
+    {$IFDEF USE_JEDI_JCL}
+    jclDebug,
+    {$ENDIF}
+  {$ENDIF}
   tiBaseObject,
   tiLog,
   Forms,
