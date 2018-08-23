@@ -421,8 +421,7 @@ begin
     tiAddTrailingSlash(tiGetEXEPath) +
     cTIPersistPackageRootName +
     APackageID +
-    cPackageSuffix +
-    '.bpl';
+    cPackageSuffix + cPackageExtension;
 end;
 
 {
