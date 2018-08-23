@@ -1,87 +1,76 @@
-
-//Delphi 20 (XE6)
-{$IFDEF VER270}
-  {$DEFINE DELPHIXE6ORABOVE}
-  {$DEFINE DELPHIXE5ORABOVE}
-  {$DEFINE DELPHIXE4ORABOVE}
-  {$DEFINE DELPHIXE3ORABOVE}
-  {$DEFINE DELPHIXE2ORABOVE}
-  {$DEFINE DELPHIXEORABOVE}
-  {$DEFINE DELPHI2010ORABOVE}
-  {$DEFINE DELPHI2009ORABOVE}
-  {$DEFINE DELPHIXE6}
-  {$DEFINE GENERICS}
-{$ENDIF}
-
-//Delphi 19 (XE5)
-{$IFDEF VER260}
-  {$DEFINE DELPHIXE5ORABOVE}
-  {$DEFINE DELPHIXE4ORABOVE}
-  {$DEFINE DELPHIXE3ORABOVE}
-  {$DEFINE DELPHIXE2ORABOVE}
-  {$DEFINE DELPHIXEORABOVE}
-  {$DEFINE DELPHI2010ORABOVE}
-  {$DEFINE DELPHI2009ORABOVE}
-  {$DEFINE DELPHIXE5}
-  {$DEFINE GENERICS}
-{$ENDIF}
-
-//Delphi 18 (XE4)
-{$IFDEF VER250}
-  {$DEFINE DELPHIXE4ORABOVE}
-  {$DEFINE DELPHIXE3ORABOVE}
-  {$DEFINE DELPHIXE2ORABOVE}
-  {$DEFINE DELPHIXEORABOVE}
-  {$DEFINE DELPHI2010ORABOVE}
-  {$DEFINE DELPHI2009ORABOVE}
-  {$DEFINE DELPHIXE4}
-  {$DEFINE GENERICS}
-{$ENDIF}
-
-//Delphi 17 (XE3)
-{$IFDEF VER240}
-  {$DEFINE DELPHIXE3ORABOVE}
-  {$DEFINE DELPHIXE2ORABOVE}
-  {$DEFINE DELPHIXEORABOVE}
-  {$DEFINE DELPHI2010ORABOVE}
-  {$DEFINE DELPHI2009ORABOVE}
-  {$DEFINE DELPHIXE3}
-  {$DEFINE GENERICS}
-{$ENDIF}
-
-//Delphi 16 (XE2)
-{$IFDEF VER230}
-  {$DEFINE DELPHIXE2ORABOVE}
-  {$DEFINE DELPHIXEORABOVE}
-  {$DEFINE DELPHI2010ORABOVE}
-  {$DEFINE DELPHI2009ORABOVE}
-  {$DEFINE DELPHIXE2}
-  {$DEFINE GENERICS}
-{$ENDIF}
-
-//Delphi 15 (XE)
-{$IFDEF VER220}
-  {$DEFINE DELPHIXEORABOVE}
-  {$DEFINE DELPHI2010ORABOVE}
-  {$DEFINE DELPHI2009ORABOVE}
-  {$DEFINE DELPHIXE}
-  {$DEFINE GENERICS}
-{$ENDIF}
-
-//Delphi 14 (2010)
-{$IFDEF VER210}
-  {$DEFINE DELPHI2010ORABOVE}
-  {$DEFINE DELPHI2009ORABOVE}
-  {$DEFINE DELPHI2010}
-  {$DEFINE GENERICS}
-{$ENDIF}
-
-//Delphi 12 (2009)
-{$IFDEF VER200}
-  {$DEFINE DELPHI2009ORABOVE}
-  {$DEFINE DELPHI2009}
-  {$DEFINE GENERICS}
-{$ENDIF}
+{$IFNDEF FPC} // Delphi compiler
+  {$IF CompilerVersion >= 20}
+    {$DEFINE DELPHI2009ORABOVE}  // RAD Studio 2009 (14; BDS 6)
+    {$DEFINE DELPHI2009}
+    {$DEFINE GENERICS}
+    {$IF CompilerVersion >= 21}
+      {$DEFINE DELPHI2010ORABOVE}  // RAD Studio 2010 (15; BDS 7)
+      {$UNDEF DELPHI2009}
+      {$DEFINE DELPHI2010}
+      {$IF CompilerVersion >= 22}
+        {$DEFINE DELPHIXEORABOVE}  // RAD Studio XE 1 (16; BDS 8)
+        {$UNDEF DELPHI2010}
+        {$DEFINE DELPHIXE}
+        {$IF CompilerVersion >= 23}
+          {$DEFINE DELPHIXE2ORABOVE}  // RAD Studio XE 2 (17; BDS 9)
+          {$UNDEF DELPHIXE}
+          {$DEFINE DELPHIXE2}
+          {$IF CompilerVersion >= 24}
+            {$DEFINE DELPHIXE3ORABOVE}  // RAD Studio XE 3 (18; BDS 10)
+            {$UNDEF DELPHIXE2}
+            {$DEFINE DELPHIXE3}
+            {$IF CompilerVersion >= 25}
+              {$DEFINE DELPHIXE4ORABOVE}  // RAD Studio XE 4 (19; BDS 11)
+              {$UNDEF DELPHIXE3}
+              {$DEFINE DELPHIXE4}
+              {$IF CompilerVersion >= 26}
+                {$DEFINE DELPHIXE5ORABOVE}  // RAD Studio XE 5 (20; BDS 12)
+                {$UNDEF DELPHIXE4}
+                {$DEFINE DELPHIXE5}
+                {$IF CompilerVersion >= 27}
+                  {$DEFINE DELPHIXE6ORABOVE}  // RAD Studio XE 6 (21; BDS 14)
+                  {$UNDEF DELPHIXE5}
+                  {$DEFINE DELPHIXE6}
+                  {$IF CompilerVersion >= 28}
+                    {$DEFINE DELPHIXE7ORABOVE}  // RAD Studio XE 7 (22; BDS 15)
+                    {$UNDEF DELPHIXE6}
+                    {$DEFINE DELPHIXE7}
+                    {$IF CompilerVersion >= 29}
+                      {$DEFINE DELPHIXE8ORABOVE}  // RAD Studio XE 8 (23; BDS 16)
+                      {$UNDEF DELPHIXE7}
+                      {$DEFINE DELPHIXE8}
+                      {$IF CompilerVersion >= 30}
+                        {$DEFINE DELPHIXE10ORABOVE}  // RAD Studio 10 Seattle (24; BDS 17)
+                        {$UNDEF DELPHIXE8}
+                        {$DEFINE DELPHIXE10}
+                        {$IF CompilerVersion >= 31}
+                          {$DEFINE DELPHIXE101ORABOVE}  // RAD Studio 10.1 Berlin (25; BDS 18)
+                          {$UNDEF DELPHIXE10}
+                          {$DEFINE DELPHIXE101}
+                          {$IF CompilerVersion >= 32}
+                            {$DEFINE DELPHIXE102ORABOVE}  // RAD Studio 10.2 Tokyo (26; BDS 19)
+                            {$UNDEF DELPHIXE101}
+                            {$DEFINE DELPHIXE102}
+                            {$IF CompilerVersion >= 33}
+Unsupported Delphi version.
+If you get here, you are probably trying to compile tiOPF with a new Delphi release.
+Please notify the tiOPF developers or if you can, supply a patch to support the
+new release.
+                            {$ENDIF}
+                          {$ENDIF} // XE 10.2 Tokyo
+                        {$ENDIF} // XE 10.1 Berlin
+                      {$ENDIF} // XE10 Seattle
+                    {$ENDIF} // XE8
+                  {$ENDIF} // XE7
+                {$ENDIF} // XE6
+              {$ENDIF} // XE5
+            {$ENDIF} // XE4
+          {$ENDIF} // XE3
+        {$ENDIF} //XE2
+      {$ENDIF} // XE
+    {$ENDIF} // 2010
+  {$ENDIF} // 2009
+{$ENDIF} // Delphi versions
 
 // Free Pascal
 {$IFDEF FPC}
