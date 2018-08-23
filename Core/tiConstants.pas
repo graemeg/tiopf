@@ -5,9 +5,7 @@ unit tiConstants;
 interface
 
 const
-  // Got problems setting this to 2.00 for the time being. Have a dependency in the XML files. Will fix.
-  //cTIOPFVersion          = '2.000';
-  cTIOPFVersion           = '1.405';
+  cTIOPFVersion           = '3.000';
   // There are quite a few of these now, so keep them sorted in alapha order
   cTIPersistADOAccess     = 'ADOAccess';
   cTIPersistADOSQLServer  = 'ADOSQLServer';
