@@ -5339,7 +5339,7 @@ begin
     vaLString, vaString:
       SetText(Reader.ReadString);
   else
-    SetText(Reader.ReadWideString);
+    SetText(Reader.ReadString);
   end;
 end;
 
@@ -5550,7 +5550,7 @@ end;
 
 procedure TWideStrings.WriteData(Writer: TWriter);
 begin
-  Writer.WriteWideString(GetTextStr);
+  Writer.WriteString(GetTextStr);
 end;
 
 //=== { TWideStringList } ====================================================
