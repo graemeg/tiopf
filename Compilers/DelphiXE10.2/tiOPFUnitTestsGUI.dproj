@@ -24,6 +24,12 @@
         <CfgParent>Base</CfgParent>
         <Base>true</Base>
     </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_1)'=='true') or '$(Cfg_1_Win32)'!=''">
+        <Cfg_1_Win32>true</Cfg_1_Win32>
+        <CfgParent>Cfg_1</CfgParent>
+        <Cfg_1>true</Cfg_1>
+        <Base>true</Base>
+    </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_2)'!=''">
         <Cfg_2>true</Cfg_2>
         <CfgParent>Base</CfgParent>
@@ -40,7 +46,7 @@
         <Manifest_File>None</Manifest_File>
         <VerInfo_Locale>3081</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
-        <DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
+        <DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;System.Win;Xml;Data;Datasnap;Web;Soap;WinAPI;$(DCC_Namespace)</DCC_Namespace>
         <DCC_UNSAFE_CAST>true</DCC_UNSAFE_CAST>
         <DCC_CVT_WIDENING_STRING_LOST>true</DCC_CVT_WIDENING_STRING_LOST>
         <DCC_UNSAFE_CODE>true</DCC_UNSAFE_CODE>
@@ -49,7 +55,7 @@
         <DCC_EXPLICIT_STRING_CAST>true</DCC_EXPLICIT_STRING_CAST>
         <DCC_EXPLICIT_STRING_CAST_LOSS>true</DCC_EXPLICIT_STRING_CAST_LOSS>
         <DCC_MapFile>3</DCC_MapFile>
-        <DCC_Define>DUNIT2;LINK_XMLLIGHT;LINK_XML;LINK_CSV;LINK_TAB;LINK_ADOACCESS;LINK_IBX;LINK_ADOSQLSERVERx;LINK_REMOTEx;LINK_DOAx;$(DCC_Define)</DCC_Define>
+        <DCC_Define>DUNIT2;LINK_XMLLIGHT;LINK_XML;LINK_CSV;LINK_TAB;LINK_ADOACCESS;LINK_IBX;LINK_ADOSQLSERVERx;LINK_REMOTEx;LINK_DOAx;EnableMemoryLeakReportingX;FastMMx;$(DCC_Define)</DCC_Define>
         <DCC_UnitSearchPath>..\..\UnitTests\Common;..\..\UnitTests\Tests;..\..\Core;..\..\Options;..\..\GUI;..\..\GUI\VCL;..\..\GUI\VCLForms;..\..\ApplicationServer;..\..\ApplicationServer\tiDBProxyServerExtension;$(tiOPF3_3rdParty)\JCL\common;$(tiOPF3_3rdParty)\JCL\include;$(tiOPF3_3rdParty)\JCL\include\jedi;$(tiOPF3_3rdParty)\JCL\windows;$(DUnit2)\src;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_DependencyCheckOutputName>..\..\_bin\tiOPFUnitTestsGUI.exe</DCC_DependencyCheckOutputName>
         <DCC_ImageBase>00400000</DCC_ImageBase>
@@ -66,7 +72,6 @@
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_UsePackage>OTAUtils;$(DCC_UsePackage)</DCC_UsePackage>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
@@ -78,13 +83,17 @@
         <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
         <DCC_DebugInformation>0</DCC_DebugInformation>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
+    </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
-        <Manifest_File>None</Manifest_File>
         <DCC_DebugDCUs>true</DCC_DebugDCUs>
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <DCC_Define>EnableMemoryLeakReporting;FastMMx;$(DCC_Define)</DCC_Define>
+        <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
