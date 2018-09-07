@@ -260,7 +260,7 @@ type
   { Base class to handle TcxRadioGroup controls }
   TticxRadioGroupBoxMediatorView = class(TtiMediatorView)
   protected
-    procedure DoObjectToGUI; override;
+    procedure SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment); override;
   public
     constructor Create; override;
     class function ComponentClass: TClass; override;
@@ -270,10 +270,8 @@ type
   { base class to handle TcxProgresBar }
   TticxProgressbarMediatorView = class(TtiMediatorView)
   private
-    procedure ProgressBarMouseDown(Sender: TObject; Button: TMouseButton;
-        Shift: TShiftState; X, Y: Integer);
-    procedure ProgressBarMouseMove(Sender: TObject; Shift: TShiftState; X, Y:
-        Integer);
+    procedure ProgressBarMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure ProgressBarMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure SetProgressBarBasedOnMouse(X: Integer);
   protected
     procedure DoObjectToGUI; override;
@@ -949,15 +947,21 @@ begin
   Result := TcxRadioGroup;
 end;
 
-procedure TticxRadioGroupBoxMediatorView.DoObjectToGUI;
-var
-  iValue: Integer;
+procedure TticxRadioGroupBoxMediatorView.SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment);
 begin
-  iValue := GetOrdProp(Subject, FieldName);
-  if iValue < View.Properties.Items.Count then
-    View.ItemIndex := iValue
-  else
-    View.ItemIndex := -1;
+  inherited SetObjectUpdateMoment(AValue);
+  if View <> nil then
+  begin
+    if ObjectUpdateMoment in [ouOnChange,ouCustom,ouDefault] then
+      View.Properties.OnChange := DoOnChange
+    else
+      View.OnExit := DoOnChange;
+    if ObjectUpdateMoment in [ouNone] then
+    begin
+      View.Properties.OnChange := nil;
+      View.OnExit := nil;
+    end;
+  end;
 end;
 
 function TticxRadioGroupBoxMediatorView.View: TcxRadioGroup;
