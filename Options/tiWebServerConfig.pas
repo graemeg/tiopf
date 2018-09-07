@@ -74,7 +74,7 @@ uses
   ,tiLogToFile
   ,tiUtils
   ,SysUtils
-  ,Registry
+  ,System.Win.Registry
   ,Windows
  ;
 

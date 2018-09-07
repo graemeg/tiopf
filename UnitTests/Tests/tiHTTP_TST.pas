@@ -118,7 +118,7 @@ uses
   ,tiWebServer
   ,TestFramework
   ,SysUtils
-  ,Registry
+  ,System.Win.Registry
   ,Windows
   ,tiHTTPIndy
   ,tiHTTPMSXML

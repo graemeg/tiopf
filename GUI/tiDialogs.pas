@@ -17,7 +17,7 @@ uses
   ,Buttons
   {$IFDEF MSWINDOWS}
   ,shellAPI
-  ,registry
+  ,System.Win.Registry
   ,windows  // needed for HWnd under FPC
   {$ENDIF}
   {$IFDEF UNIX}

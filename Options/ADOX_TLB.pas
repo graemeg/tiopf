@@ -47,7 +47,7 @@ unit ADOX_TLB;
 
 interface
 
-uses Windows, ActiveX, Classes, Graphics, OleServer, StdVCL, Variants;
+uses Windows, ActiveX, Classes, Graphics, OleServer, System.Win.StdVCL, Variants;
   
 
 // *********************************************************************//
@@ -1457,7 +1457,8 @@ resourcestring
 
 implementation
 
-uses ComObj;
+uses
+  System.Win.ComObj;
 
 class function CoTable.Create: _Table;
 begin

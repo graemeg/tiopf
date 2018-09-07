@@ -5,7 +5,7 @@ unit tiQueryADOAccess;
 interface
 uses
   Classes
-  ,ADODb
+  ,Data.Win.ADODb
   ,tiQueryADOAbs
   ,tiQuery
   ,tiPersistenceLayers

@@ -47,7 +47,7 @@ uses
   ,tiWebServerConstants
   ,SysUtils
   ,Math
-  ,ComObj
+  ,System.Win.ComObj
   ,Variants
  ;
 
