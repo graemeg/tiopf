@@ -19,7 +19,7 @@ uses
   cxGridBandedTableView, cxGridLevel, cxClasses, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
   cxEditRepositoryItems, cxTL, cxTLdxBarBuiltInMenu, cxInplaceContainer,
-  cxTLData;
+  cxTLData, cxLookAndFeels, dxCore, cxDateUtils, cxNavigator;
 
 type
 
@@ -31,6 +31,7 @@ type
   published
     property Description: string read FDescription write FDescription;
   end;
+
   TLookupItemList = class(TtiObjectList);
 
   TTestObject = class(TtiObject)
@@ -63,7 +64,6 @@ type
   end;
 
   TTestObjectList = class(TtiObjectList)
-
   end;
 
   TTestTreeObject = class(TtiObjectList)
@@ -214,22 +214,19 @@ begin
     // Currency controls
     AddProperty('TestCurrency', cxCurrencyEdit1);
   end;
-
-  tiModelMediator2.AddComposite('TestString;TestBoolean;TestInteger;TestDateTime;TestDouble;TestCurrency;TestColor', cxgbtvTest);
-  tiModelMediator3.AddComposite('TestString;TestBoolean;TestInteger;TestDateTime;TestDouble;TestCurrency;TestColor', cxvtlTest);
-
-
-  FGridMediator := TticxGridTableViewMediatorView.CreateCustom(cxgtvTest, FTestObjectList, 'TestString;TestBoolean;TestInteger;TestDateTime;TestDouble;TestCurrency;TestColor', TTestObject);
-  FTreeMediator := TticxVirtualTreeListMediatorView.CreateCustom(cxvtlTest2, FTestTreeObject, 'TestString;TestBoolean;TestInteger;TestDateTime;TestDouble;TestCurrency;TestColor', TTestTreeObject);
-
   tiModelMediator1.Subject := FData;
   tiModelMediator1.Active := True;
 
+  tiModelMediator2.AddComposite('TestString;TestBoolean;TestInteger;TestDateTime;TestDouble;TestCurrency;TestColor', cxgbtvTest);
   tiModelMediator2.Subject := FTestObjectList;
   tiModelMediator2.Active := True;
 
   tiModelMediator3.Subject := FTestTreeObject;
   tiModelMediator3.Active := True;
+  tiModelMediator3.AddComposite('TestString;TestBoolean;TestInteger;TestDateTime;TestDouble;TestCurrency;TestColor', cxvtlTest);
+
+  FGridMediator := TticxGridTableViewMediatorView.CreateCustom(cxgtvTest, FTestObjectList, 'TestString;TestBoolean;TestInteger;TestDateTime;TestDouble;TestCurrency;TestColor', TTestObject);
+  FTreeMediator := TticxVirtualTreeListMediatorView.CreateCustom(cxvtlTest2, FTestTreeObject, 'TestString;TestBoolean;TestInteger;TestDateTime;TestDouble;TestCurrency;TestColor', TTestTreeObject);
 end;
 
 procedure TForm1.SetupTestData;
@@ -348,116 +345,149 @@ end;
 { TTestObject }
 
 procedure TTestObject.SetTestBoolean(const Value: Boolean);
-var
-  Notify: ItiNotifyObserversHelper;
 begin
-  Notify := NotifyObserversHelper;
+  if FTestBoolean = Value then
+    Exit;
+  BeginUpdate;
   FTestBoolean := Value;
+  EndUpdate;
 end;
 
 procedure TTestObject.SetTestColor(const Value: TColor);
-var
-  Notify: ItiNotifyObserversHelper;
 begin
-  Notify := NotifyObserversHelper;
+  if FTestColor = Value then
+    Exit;
+  BeginUpdate;
   FTestColor := Value;
+  EndUpdate;
 end;
 
 procedure TTestObject.SetTestCurrency(const Value: Currency);
-var
-  Notify: ItiNotifyObserversHelper;
 begin
-  Notify := NotifyObserversHelper;
+  if FTestCurrency = Value then
+    Exit;
+  BeginUpdate;
   FTestCurrency := Value;
+  EndUpdate;
 end;
 
 procedure TTestObject.SetTestDateTime(const Value: TDateTime);
-var
-  Notify: ItiNotifyObserversHelper;
 begin
-  Notify := NotifyObserversHelper;
+  if FTestDateTime = Value then
+    Exit;
+  BeginUpdate;
   FTestDateTime := Value;
+  EndUpdate;
 end;
 
 procedure TTestObject.SetTestDouble(const Value: Double);
-var
-  Notify: ItiNotifyObserversHelper;
 begin
-  Notify := NotifyObserversHelper;
+  if FTestDouble = Value then
+    Exit;
+  BeginUpdate;
   FTestDouble := Value;
+  EndUpdate;
 end;
 
 procedure TTestObject.SetTestInteger(const Value: Integer);
-var
-  Notify: ItiNotifyObserversHelper;
 begin
-  Notify := NotifyObserversHelper;
+  if FTestInteger = Value then
+    Exit;
+  BeginUpdate;
   FTestInteger := Value;
+  EndUpdate;
 end;
 
 procedure TTestObject.SetTestLookupItem(const Value: TLookupItem);
-var
-  Notify: ItiNotifyObserversHelper;
 begin
-  Notify := NotifyObserversHelper;
+  if FTestLookupItem = Value then
+    Exit;
+  BeginUpdate;
   FTestLookupItem := Value;
+  EndUpdate;
 end;
 
 procedure TTestObject.SetTestString(const Value: string);
-var
-  Notify: ItiNotifyObserversHelper;
 begin
-  Notify := NotifyObserversHelper;
+  if FTestString = Value then
+    Exit;
+  BeginUpdate;
   FTestString := Value;
+  EndUpdate;
 end;
 
 { TTestTreeObject }
 
 procedure TTestTreeObject.SetTestBoolean(const Value: Boolean);
 begin
+  if FTestBoolean = Value then
+    Exit;
+  BeginUpdate;
   FTestBoolean := Value;
-  NotifyObserversHelper;
+  EndUpdate;
 end;
 
 procedure TTestTreeObject.SetTestColor(const Value: TColor);
 begin
+  if FTestColor = Value then
+    Exit;
+  BeginUpdate;
   FTestColor := Value;
-  NotifyObserversHelper;
+  EndUpdate;
 end;
 
 procedure TTestTreeObject.SetTestCurrency(const Value: Currency);
 begin
+  if FTestCurrency = Value then
+    Exit;
+  BeginUpdate;
   FTestCurrency := Value;
-  NotifyObserversHelper;
+  EndUpdate;
 end;
 
 procedure TTestTreeObject.SetTestDateTime(const Value: TDateTime);
 begin
+  if FTestDateTime = Value then
+    Exit;
+  BeginUpdate;
   FTestDateTime := Value;
-  NotifyObserversHelper;
+  EndUpdate;
 end;
 
 procedure TTestTreeObject.SetTestDouble(const Value: Double);
 begin
+  if FTestDouble = Value then
+    Exit;
+  BeginUpdate;
   FTestDouble := Value;
-  NotifyObserversHelper;
+  EndUpdate;
 end;
 
 procedure TTestTreeObject.SetTestInteger(const Value: Integer);
 begin
+  if FTestInteger = Value then
+    Exit;
+  BeginUpdate;
   FTestInteger := Value;
-  NotifyObserversHelper;
+  EndUpdate;
 end;
 
 procedure TTestTreeObject.SetTestLookupItem(const Value: TLookupItem);
 begin
-  NotifyObserversHelper;
+  if FTestLookupItem = Value then
+    Exit;
+  BeginUpdate;
+  FTestLookupItem := Value;
+  EndUpdate;
 end;
 
 procedure TTestTreeObject.SetTestString(const Value: string);
 begin
+  if FTestString = Value then
+    Exit;
+  BeginUpdate;
   FTestString := Value;
-  NotifyObserversHelper;
+  EndUpdate;
 end;
 
 end.
