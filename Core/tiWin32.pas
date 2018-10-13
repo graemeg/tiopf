@@ -71,7 +71,7 @@ uses
   tiConstants,
   tiExcept,
   tiLog,
-  System.Win.ComObj,
+  ComObj,
   ActiveX,
   Classes,
   SyncObjs,

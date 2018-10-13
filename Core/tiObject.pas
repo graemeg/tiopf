@@ -3692,7 +3692,13 @@ var
   LSign: Shortint;
   LWhole: string;
   LFrac: string;
+  {$IF Defined(DELPHI2009) or Defined(DELPHI2010)}
+    FormatSettings: TFormatSettings;
+  {$IFEND}
 begin
+  {$IF Defined(DELPHI2009) or Defined(DELPHI2010)}
+    GetLocaleFormatSettings(LOCALE_SYSTEM_DEFAULT, FormatSettings);
+  {$IFEND}
   LValue:= UpperCase(Trim(AValue));
   if (LValue = '') or (LValue = 'NIL') then
   begin
