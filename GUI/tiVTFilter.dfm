@@ -15,6 +15,9 @@ object frmLVFilter: TfrmLVFilter
   Position = poScreenCenter
   OnCreate = FormCreate
   OnShow = FormShow
+  DesignSize = (
+    376
+    414)
   PixelsPerInch = 96
   TextHeight = 13
   object Bevel1: TBevel
@@ -143,7 +146,6 @@ object frmLVFilter: TfrmLVFilter
     Width = 145
     Height = 21
     Style = csDropDownList
-    ItemHeight = 0
     TabOrder = 7
   end
   object cmbOperator: TComboBox
@@ -152,7 +154,6 @@ object frmLVFilter: TfrmLVFilter
     Width = 145
     Height = 21
     Style = csDropDownList
-    ItemHeight = 0
     TabOrder = 8
   end
   object edValue: TEdit
@@ -168,7 +169,6 @@ object frmLVFilter: TfrmLVFilter
     Width = 65
     Height = 21
     Style = csDropDownList
-    ItemHeight = 0
     TabOrder = 10
   end
   object btnAdd: TButton

@@ -5,6 +5,8 @@ interface
 
 {$I tiDefines.inc}
 
+{$IFDEF VIRTUAL_TREEVIEW}
+
 uses
 {.$IFDEF _PROFILE}
    Classes
@@ -126,7 +128,6 @@ type
 
   TtiVTClearSortEvent     = procedure(pVT : TtiCustomVirtualTree) of object;
   TtiVTOnFilterDataEvent  = procedure(AData  : TtiObject; var pInclude : boolean) of object;
-
 
   //TtiVTEvent              = procedure(pVT : TtiCustomVirtualTree) of object;
   TtiVTItemEvent          = procedure(pVT : TtiCustomVirtualTree; AData : TtiObject; AItem : PVirtualNode) of object;
@@ -943,7 +944,11 @@ function tiVTExportRegistry: TtiVTExportRegistry;
 
 function tiVTDisplayMaskFromDataType(const AValue : TvtTypeKind): string;
 
+{$ENDIF}
+
 implementation
+
+{$IFDEF VIRTUAL_TREEVIEW}
 
 uses
    Math
@@ -4448,6 +4453,8 @@ initialization
 finalization
 
   utiVTExportRegistry.Free;
+
+{$ENDIF}
 
 end.
 

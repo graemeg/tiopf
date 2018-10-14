@@ -3,6 +3,9 @@ unit tiVTTreeView;
 {$I tiDefines.inc}
 
 interface
+
+{$IFDEF VIRTUAL_TREEVIEW}
+
 uses
 {$IFNDEF FPC}
   Windows
@@ -326,7 +329,12 @@ type
     property OnNodeCheckboxClick: TtiVTTVNodeCheckboxClickEvent read FOnNodeCheckboxClick write FOnNodeCheckboxClick;
   end;
 
+{$ENDIF}
+
 implementation
+
+{$IFDEF VIRTUAL_TREEVIEW}
+
 uses
    tiConstants
   ,tiImageMgr
@@ -1675,6 +1683,8 @@ end;
 procedure TtiVTTVDataMappings.Assign(Source: TPersistent);
 begin
 end;
+
+{$ENDIF}
 
 end.
 

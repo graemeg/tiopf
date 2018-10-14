@@ -20,6 +20,8 @@ unit tiVTAccessibilityFactory;
 
 interface
 
+{$IFDEF VIRTUAL_TREEVIEW}
+
 uses
   {$ifndef COMPILER_10_UP}
     MSAAIntf // MSAA support for Delphi up to 2005
@@ -49,7 +51,11 @@ type
 
 function GetAccessibilityFactory: TVTAccessibilityFactory;
 
+{$ENDIF}
+
 implementation
+
+{$IFDEF VIRTUAL_TREEVIEW}
 
 var
   VTAccessibleFactory: TVTAccessibilityFactory = nil;
@@ -168,5 +174,7 @@ initialization
 
 finalization
   VTAccessibleFactory.Free;
+
+{$ENDIF}
 
 end.

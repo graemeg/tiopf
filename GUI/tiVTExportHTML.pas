@@ -2,6 +2,8 @@ unit tiVTExportHTML;
 
 interface
 
+{$IFDEF VIRTUAL_TREEVIEW}
+
 uses
   tiVTListView
   ;
@@ -23,7 +25,11 @@ type
     class function ImageName: string; override;
   end;
 
+{$ENDIF}
+
 implementation
+
+{$IFDEF VIRTUAL_TREEVIEW}
 
 uses
   SysUtils
@@ -162,5 +168,8 @@ end;
 
 initialization
   tiVTExportRegistry.RegisterExport(TtiVTExportHTML);
+
+{$ENDIF}
+
 end.
 
