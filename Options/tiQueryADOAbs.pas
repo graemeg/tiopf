@@ -5,7 +5,7 @@ uses
    tiQuery
   ,Classes
   ,Windows
-  ,Data.Win.ADODb
+  ,ADODb
   ,tiQueryDataset
   ,DB
  ;
