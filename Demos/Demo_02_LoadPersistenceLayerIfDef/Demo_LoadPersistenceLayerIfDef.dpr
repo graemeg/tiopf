@@ -6,9 +6,9 @@ program Demo_LoadPersistenceLayerIfDef;
 //
 // When you run this demo, a dialog will show listing
 // the loaded persistence layers. (Note, the dialog will
-// say the database is not connected - wich is correct.)
+// say the database is not connected - which is correct.)
 
-// Take a look at tiOPFManager about line 215 you will see how
+// Take a look at tiOPFManager about line 1131 you will see how
 // this the defines are implemented.
 
 {$R *.res}
