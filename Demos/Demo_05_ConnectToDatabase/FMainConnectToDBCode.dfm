@@ -5,23 +5,6 @@ inherited FormMainConnectToDBCode: TFormMainConnectToDBCode
   PixelsPerInch = 96
   TextHeight = 13
   inherited GroupBox1: TGroupBox
-    Left = 8
-    Width = 712
-    inherited sbDefaultToPresetValues: TtiSpeedButton
-      Left = 551
-    end
-    inherited paePersistenceLayer: TtiPerAwareEdit
-      Width = 536
-    end
-    inherited paeDatabaseName: TtiPerAwareEdit
-      Width = 536
-    end
-    inherited paeUserName: TtiPerAwareEdit
-      Width = 536
-    end
-    inherited paePassword: TtiPerAwareEdit
-      Width = 536
-    end
   end
   object btnConnectToDatabase: TButton [1]
     Left = 8

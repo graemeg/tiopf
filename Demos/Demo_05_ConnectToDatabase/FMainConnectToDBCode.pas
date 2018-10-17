@@ -4,8 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  FPickDatabase, StdCtrls, ExtCtrls, tiFocusPanel, tiPerAwareCtrls,
-  tiMemoReadOnly, ActnList, Menus, Buttons, tiSpeedButton;
+  FPickDatabase, StdCtrls, ExtCtrls, ActnList, Menus, Buttons;
 
 type
   TFormMainConnectToDBCode = class(TFormPickDatabase)

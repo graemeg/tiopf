@@ -28,6 +28,24 @@ object FormMainCreateTable: TFormMainCreateTable
     Font.Style = [fsBold]
     ParentFont = False
   end
+  object Info: TLabel
+    Left = 8
+    Top = 30
+    Width = 184
+    Height = 156
+    Caption = 
+      'This demo will:'#13#10 +
+      'a) Create a table called Client with the following structure'#13#10 +
+      '  OID String( 36 )'#13#10 +
+      '  Client_Name String( 200 )'#13#10 +
+      '  Client_ID String( 9 )'#13#10 +
+      #13#10 +
+      'b) Test if a table called Client exists'#13#10 +
+      #13#10 +
+      'c) Show metadata for the Client table'#13#10 +
+      ''#13#10 +
+      'd) Drop the client table'
+  end
   object btnCreateTable: TButton
     Left = 284
     Top = 28
@@ -63,26 +81,5 @@ object FormMainCreateTable: TFormMainCreateTable
     Caption = 'Table exists?'
     TabOrder = 1
     OnClick = btnTableExistsClick
-  end
-  object tiMemoReadOnly1: TtiMemoReadOnly
-    Left = 8
-    Top = 30
-    Width = 265
-    Height = 177
-    TabStop = False
-    Lines.Strings = (
-      'This demo will:'
-      ''
-      'a) Create a table called  Client with the '
-      'following structure'
-      '  OID String( 36 )'
-      '  Client_Name String( 200 ) '
-      '  Client_ID String( 9 )'
-      ''
-      'b) Test if a table called Client exists'
-      ''
-      'c) Show metadata for the Client table'
-      ''
-      'd) Drop the client table')
   end
 end
