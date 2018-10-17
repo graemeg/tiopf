@@ -4,7 +4,7 @@ program Demo_LoadPersistenceLayerUses;
 // persistence layer to be loaded.
 // When you run this demo, a dialog will show listing
 // the loaded persistence layers. (Note, the dialog will
-// say the database is not connected - wich is correct.)
+// say the database is not connected - which is correct.)
 uses
   DemoDBUtils in '..\Common\DemoDBUtils.pas',
   tiQueryIBX,
