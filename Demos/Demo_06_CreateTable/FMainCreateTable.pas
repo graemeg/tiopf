@@ -6,7 +6,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Variants, tiMemoReadOnly;
+  Dialogs, StdCtrls, Variants;
 
 type
   TFormMainCreateTable = class(TForm)
@@ -14,7 +14,7 @@ type
     btnDropTable: TButton;
     btnShowMetaData: TButton;
     btnTableExists: TButton;
-    tiMemoReadOnly1: TtiMemoReadOnly;
+    Info: TLabel;
     lblConnectedTo: TLabel;
     procedure btnCreateTableClick(Sender: TObject);
     procedure btnDropTableClick(Sender: TObject);

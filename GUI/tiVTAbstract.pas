@@ -3,6 +3,9 @@ unit tiVTAbstract;
 {$I tiDefines.inc}
 
 interface
+
+{$IFDEF VIRTUAL_TREEVIEW}
+
 uses
   VirtualTrees,
   tiVirtualTreesNEW,
@@ -117,7 +120,11 @@ type
     property SP: TtiVTSearchPanel read FSP;
   end;
 
+{$ENDIF}
+
 implementation
+
+{$IFDEF VIRTUAL_TREEVIEW}
 
 uses
   SysUtils,
@@ -509,6 +516,8 @@ begin
     AHintText := AHintText;
   end;
 end;
+
+{$ENDIF}
 
 end.
 

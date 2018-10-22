@@ -26,7 +26,7 @@ object FormPickDatabase: TFormPickDatabase
     Anchors = [akLeft, akTop, akRight]
     Caption = ' Database connection details '
     TabOrder = 0
-    object sbDefaultToPresetValues: TtiSpeedButton
+    object sbDefaultToPresetValues: TSpeedButton
       Left = 555
       Top = 20
       Width = 146
@@ -42,95 +42,62 @@ object FormPickDatabase: TFormPickDatabase
       Font.Style = [fsUnderline]
       ParentFont = False
       OnClick = sbDefaultToPresetValuesClick
-      ImageRes = tiRINone
     end
-    object paePersistenceLayer: TtiPerAwareEdit
+    object PersistenceLayerLabel: TLabel
       Left = 8
       Top = 20
-      Width = 540
-      Height = 23
-      Anchors = [akLeft, akTop, akRight]
-      Constraints.MinHeight = 23
-      TabOrder = 0
-      LabelLayout = tlTop
+      Width = 109
+      Height = 13
       Caption = 'P&ersistence layer name'
-      LabelWidth = 120
-      LabelFont.Charset = DEFAULT_CHARSET
-      LabelFont.Color = clBlack
-      LabelFont.Height = -11
-      LabelFont.Name = 'MS Sans Serif'
-      LabelFont.Style = []
-      LabelParentFont = False
-      ReadOnly = False
-      MaxLength = 0
-      CharCase = ecNormal
-      PasswordChar = #0
     end
-    object paeDatabaseName: TtiPerAwareEdit
+    object DatabaseNameLabel: TLabel
       Left = 8
       Top = 48
-      Width = 540
-      Height = 23
-      Anchors = [akLeft, akTop, akRight]
-      Constraints.MinHeight = 23
-      TabOrder = 1
-      LabelLayout = tlTop
+      Width = 75
+      Height = 13
       Caption = '&Database name'
-      LabelWidth = 120
-      LabelFont.Charset = DEFAULT_CHARSET
-      LabelFont.Color = clBlack
-      LabelFont.Height = -11
-      LabelFont.Name = 'MS Sans Serif'
-      LabelFont.Style = []
-      LabelParentFont = False
-      ReadOnly = False
-      MaxLength = 0
-      CharCase = ecNormal
-      PasswordChar = #0
     end
-    object paeUserName: TtiPerAwareEdit
+    object UserNameLabel: TLabel
       Left = 8
       Top = 76
-      Width = 540
-      Height = 23
-      Anchors = [akLeft, akTop, akRight]
-      Constraints.MinHeight = 23
-      TabOrder = 2
-      LabelLayout = tlTop
+      Width = 51
+      Height = 13
       Caption = '&User name'
-      LabelWidth = 120
-      LabelFont.Charset = DEFAULT_CHARSET
-      LabelFont.Color = clBlack
-      LabelFont.Height = -11
-      LabelFont.Name = 'MS Sans Serif'
-      LabelFont.Style = []
-      LabelParentFont = False
-      ReadOnly = False
-      MaxLength = 0
-      CharCase = ecNormal
-      PasswordChar = #0
     end
-    object paePassword: TtiPerAwareEdit
+    object PasswordLabel: TLabel
       Left = 8
       Top = 104
-      Width = 540
-      Height = 23
-      Anchors = [akLeft, akTop, akRight]
-      Constraints.MinHeight = 23
-      TabOrder = 3
-      LabelLayout = tlTop
+      Width = 46
+      Height = 13
       Caption = '&Password'
-      LabelWidth = 120
-      LabelFont.Charset = DEFAULT_CHARSET
-      LabelFont.Color = clBlack
-      LabelFont.Height = -11
-      LabelFont.Name = 'MS Sans Serif'
-      LabelFont.Style = []
-      LabelParentFont = False
-      ReadOnly = False
-      MaxLength = 0
-      CharCase = ecNormal
-      PasswordChar = #0
+    end
+    object PersistenceLayerEdit: TEdit
+      Left = 136
+      Top = 20
+      Width = 404
+      Height = 21
+      TabOrder = 0
+    end
+    object DatabaseNameEdit: TEdit
+      Left = 136
+      Top = 48
+      Width = 404
+      Height = 21
+      TabOrder = 1
+    end
+    object UserNameEdit: TEdit
+      Left = 136
+      Top = 76
+      Width = 404
+      Height = 21
+      TabOrder = 2
+    end
+    object PasswordEdit: TEdit
+      Left = 136
+      Top = 104
+      Width = 404
+      Height = 21
+      TabOrder = 3
     end
   end
   object PM: TPopupMenu

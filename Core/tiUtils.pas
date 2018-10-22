@@ -1542,9 +1542,16 @@ end;
 
 function tiFloatToCurrency(const AValue: Extended): string;
 var
+  {$IF Defined(DELPHI2009) or Defined(DELPHI2010)}
+    FormatSettings: TFormatSettings;
+  {$IFEND}
   e: Extended;
 begin
   try
+    {$IF Defined(DELPHI2009) or Defined(DELPHI2010)}
+      GetLocaleFormatSettings(LOCALE_SYSTEM_DEFAULT, FormatSettings);
+    {$IFEND}
+
     // FPC's FormatFloat uses Bankers Rounding which differs from Delphi.
     // Setting the precision resolves this issue.
     e := tiSetPrecision(AValue, 2);

@@ -4,6 +4,8 @@ Unit tiVTFilter;
 
 Interface
 
+{$IFDEF VIRTUAL_TREEVIEW}
+
 Uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls, StdCtrls, ActnList, tiObject, tiVTListView;
@@ -59,7 +61,11 @@ Type
     Class Function EditFilter(pObject : TtiObject; pFilters : TList) : Boolean;
   End;
 
-Implementation
+{$ENDIF}
+
+implementation
+
+{$IFDEF VIRTUAL_TREEVIEW}
 
 Uses TypInfo;
 
@@ -219,6 +225,8 @@ begin
       Strings[I] := TLVFilter(Objects[I]).StringExpression;
   End;
 end;
+
+{$ENDIF}
 
 End.
 

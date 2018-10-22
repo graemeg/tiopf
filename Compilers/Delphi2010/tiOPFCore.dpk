@@ -32,6 +32,7 @@ requires
 
 contains
   tiBaseObject in '..\..\Core\tiBaseObject.pas',
+  tiParams in '..\..\Core\tiParams.pas',
   tiCommandLineParams in '..\..\Core\tiCommandLineParams.pas',
   tiCompress in '..\..\Core\tiCompress.pas',
   tiConstants in '..\..\Core\tiConstants.pas',
@@ -65,8 +66,11 @@ contains
   tiBaseMediator in '..\..\Core\tiBaseMediator.pas',
   tiModelMediator in '..\..\Core\tiModelMediator.pas',
   tiAutoMapSelect in '..\..\Core\tiAutoMapSelect.pas',
+  tiSmartPointer in '..\..\Core\tiSmartPointer.pas',
   tiGenericBase in '..\..\Core\tiGenericBase.pas',
-  tiGenericList in '..\..\Core\tiGenericList.pas';
+  tiGenericList in '..\..\Core\tiGenericList.pas',
+  tiSemaphore in '..\..\Core\tiSemaphore.pas',
+  tiMime in '..\..\Core\tiMime.pas';
 
 {$I tiDefines.inc}
 

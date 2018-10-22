@@ -1,4 +1,9 @@
 {$IFNDEF FPC} // Delphi compiler
+  // allow compiler to use old IFEND
+  {$IF CompilerVersion >= 24.0 }
+    {$LEGACYIFEND ON}
+  {$IFEND}
+  
   {$IF CompilerVersion >= 20}
     {$DEFINE DELPHI2009ORABOVE}  // RAD Studio 2009 (14; BDS 6)
     {$DEFINE DELPHI2009}
@@ -56,20 +61,20 @@ Unsupported Delphi version.
 If you get here, you are probably trying to compile tiOPF with a new Delphi release.
 Please notify the tiOPF developers or if you can, supply a patch to support the
 new release.
-                            {$ENDIF}
-                          {$ENDIF} // XE 10.2 Tokyo
-                        {$ENDIF} // XE 10.1 Berlin
-                      {$ENDIF} // XE10 Seattle
-                    {$ENDIF} // XE8
-                  {$ENDIF} // XE7
-                {$ENDIF} // XE6
-              {$ENDIF} // XE5
-            {$ENDIF} // XE4
-          {$ENDIF} // XE3
-        {$ENDIF} //XE2
-      {$ENDIF} // XE
-    {$ENDIF} // 2010
-  {$ENDIF} // 2009
+                            {$IFEND}
+                          {$IFEND} // XE 10.2 Tokyo
+                        {$IFEND} // XE 10.1 Berlin
+                      {$IFEND} // XE10 Seattle
+                    {$IFEND} // XE8
+                  {$IFEND} // XE7
+                {$IFEND} // XE6
+              {$IFEND} // XE5
+            {$IFEND} // XE4
+          {$IFEND} // XE3
+        {$IFEND} //XE2
+      {$IFEND} // XE
+    {$IFEND} // 2010
+  {$IFEND} // 2009
 {$ENDIF} // Delphi versions
 
 // Free Pascal

@@ -5,9 +5,10 @@ unit FPickDatabase;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, tiFocusPanel, tiPerAwareCtrls, Buttons,
-  tiSpeedButton, ActnList, Menus, tiPersistenceLayers, Contnrs, Variants;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, ExtCtrls, Buttons, ActnList, Menus, Contnrs, Variants,
+  { tiOPF }
+  tiPersistenceLayers;
 
 const
   cINIIdentLastPerLayer = 'LastPerLayer';
@@ -15,13 +16,17 @@ const
 type
   TFormPickDatabase = class(TForm)
     GroupBox1: TGroupBox;
-    paePersistenceLayer: TtiPerAwareEdit;
-    paeDatabaseName: TtiPerAwareEdit;
-    paeUserName: TtiPerAwareEdit;
-    paePassword: TtiPerAwareEdit;
+    PersistenceLayerLabel: TLabel;
+    PersistenceLayerEdit: TEdit;
+    DatabaseNameLabel: TLabel;    
+    DatabaseNameEdit: TEdit;
+    UserNameLabel: TLabel;
+    UserNameEdit: TEdit;
+    PasswordLabel: TLabel;
+    PasswordEdit: TEdit;
     PM: TPopupMenu;
     AL: TActionList;
-    sbDefaultToPresetValues: TtiSpeedButton;
+    sbDefaultToPresetValues: TSpeedButton;
     Action1: TAction;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -105,7 +110,9 @@ end;
 
 procedure TFormPickDatabase.sbDefaultToPresetValuesClick(Sender: TObject);
 begin
-  sbDefaultToPresetValues.ShowPopupMenu(PM);
+  if Sender is TSpeedButton then
+    with TSpeedButton(Sender).ClientToScreen(Point(0, TSpeedButton(Sender).Height)) do
+      PM.Popup(X, Y);
 end;
 
 procedure TFormPickDatabase.DoActionExecute(ASender: TObject);
@@ -139,47 +146,47 @@ begin
     LDefaults:= TtiPersistenceLayerDefaults.Create;
     try
       LPL.AssignPersistenceLayerDefaults(LDefaults);
-      paePersistenceLayer.Value:= LDefaults.PersistenceLayerName;
-      paeDatabaseName.Value:= ExpandFileName(GetDataDir + LDefaults.DatabaseName);
-      paeUserName.Value:= LDefaults.UserName;
-      paePassword.Value:= LDefaults.Password;
+      PersistenceLayerEdit.Text := LDefaults.PersistenceLayerName;
+      DatabaseNameEdit.Text := ExpandFileName(GetDataDir + LDefaults.DatabaseName);
+      UserNameEdit.Text := LDefaults.UserName;
+      PasswordEdit.Text := LDefaults.Password;
       gINI.WriteString(Name, cINIIdentLastPerLayer, LDefaults.PersistenceLayerName);
     finally
       LDefaults.Free;
     end;
   end else
   begin
-    paePersistenceLayer.Value:= '';
-    paeDatabaseName.Value:= '';
-    paeUserName.Value:= '';
-    paePassword.Value:= '';
+    PersistenceLayerEdit.Text := '';
+    DatabaseNameEdit.Text := '';
+    UserNameEdit.Text := '';
+    PasswordEdit.Text := '';
   end;
 end;
 
 function TFormPickDatabase.GetDatabaseName: string;
 begin
-  result:= paeDatabaseName.Value;
+  Result:= DatabaseNameEdit.Text;
 end;
 
 function TFormPickDatabase.GetPassword: string;
 begin
-  result:= paePassword.Value;
+  Result:= PasswordEdit.Text;
 end;
 
 function TFormPickDatabase.GetPersistenceLayerName: string;
 begin
-  result:= paePersistenceLayer.Value;
+  Result:= PersistenceLayerEdit.Text;
 end;
 
 function TFormPickDatabase.GetUserName: string;
 begin
-  result:= paeUserName.Value;
+  Result:= UserNameEdit.Text;
 end;
 
 procedure TFormPickDatabase.FormDestroy(Sender: TObject);
 begin
   FSingleUserPersistenceLayers.Free;
-  gINI.WriteString(Name, cINIIdentLastPerLayer, paePersistenceLayer.Value);
+  gINI.WriteString(Name, cINIIdentLastPerLayer, PersistenceLayerEdit.Text);
 end;
 
 end.

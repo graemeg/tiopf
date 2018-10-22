@@ -2,6 +2,8 @@ unit tiVTExportCSV;
 
 interface
 
+{$IFDEF VIRTUAL_TREEVIEW}
+
 uses
   tiVTListView
   ;
@@ -17,7 +19,11 @@ type
     class function ImageName: string; override;
   end;
 
+{$ENDIF}
+
 implementation
+
+{$IFDEF VIRTUAL_TREEVIEW}
 
 uses
   tiResources
@@ -61,6 +67,8 @@ end;
 initialization
 
   tiVTExportRegistry.RegisterExport(TtiVTExportCSV);
+
+{$ENDIF}
 
 end.
 
