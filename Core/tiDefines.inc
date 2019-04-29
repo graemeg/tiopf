@@ -57,10 +57,15 @@
                             {$UNDEF DELPHIXE101}
                             {$DEFINE DELPHIXE102}
                             {$IF CompilerVersion >= 33}
+                              {$DEFINE DELPHIXE103ORABOVE}
+                              {$UNDEF DELPHIXE102}
+                              {$DEFINE DELPHIXE103}
+                              {$IF CompilerVersion >= 34}
 Unsupported Delphi version.
 If you get here, you are probably trying to compile tiOPF with a new Delphi release.
 Please notify the tiOPF developers or if you can, supply a patch to support the
 new release.
+                              {$IFEND}
                             {$IFEND}
                           {$IFEND} // XE 10.2 Tokyo
                         {$IFEND} // XE 10.1 Berlin
