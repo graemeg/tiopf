@@ -30,20 +30,20 @@
 <xsl:template match="/">
   <html>
   <head>
-    <title>DUnit2 Results</title>
+    <title>FPTest Results</title>
       <link href="{$param-scripts-directory}fpcunit.css" rel="stylesheet" type="text/css"/>
       <script src="{$param-scripts-directory}treeview.js" language="javascript" type="text/javascript"/>
   </head>
   <body>
 
   <a name="Summary"/>
-  <h2>DUnit2 Results</h2>
+  <h2>FPTest Results</h2>
   <xsl:apply-templates/>
 
-  
+
   <address>
-    <a href="http://opensoft.homeip.net:8080">DUnit2 Report</a> 0.4.1 &#169; 2006-2010 by 
-    <a href="mailto:graemeg@gmail.com?subject=Comments about FPCUnit Report">Graeme Geldenhuys</a>.<br/>
+    <a href="http://geldenhuys.co.uk">FPTest Report</a> 0.4.1 &#169; 2006-2019 by 
+    <a href="mailto:graemeg@gmail.com?subject=Comments about FPTest Report">Graeme Geldenhuys</a>.<br/>
     Licensed under the <a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a>.<br/>
   </address>
 
@@ -63,6 +63,7 @@
   <xsl:variable name="errorCount" select="NumberOfErrors"/>
   <xsl:variable name="elapsedTime" select="TotalElapsedTime"/>
   <xsl:variable name="dateRan" select="DateTimeRan"/>
+  <xsl:variable name="title" select="Title"/>
 
   <h3>Summary</h3>
   <!--  Summary Table -->

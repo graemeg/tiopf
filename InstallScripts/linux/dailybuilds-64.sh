@@ -1,14 +1,18 @@
 #!/bin/sh
 # Full daily builds script for tiOPF.
-# created 2009-04-30
+# created 2019-05-28
 # Created by Graeme Geldenhuys <graemeg@gmail.com>
 
 #export USERNAME=graemeg
-BASEDIR="/home/graemeg/devel"
-TIOPF="$BASEDIR/tiOPF2/dailybuilds/tiopf"              # tiOPF root directory
-SCRIPTS="$TIOPF/InstallScripts/linux"       # linux scripts directory
-FPC="$BASEDIR/fpc-2.6.0/x86_64-linux/bin/ppcx64"
-REV=`svnversion -n $TIOPF/`
+BASEDIR="/data/devel"
+TIOPF="$BASEDIR/tiopf_dailybuilds/tiopf"              # tiOPF root directory
+FBLIB="$BASEDIR/tiopf_dailybuilds/fblib"
+SCRIPTS="$TIOPF/InstallScripts/linux"       # scripts directory
+FPC="$BASEDIR/fpc-3.0.4/x86_64-linux/bin/fpc"
+
+cd $TIOPF
+REV=`/usr/bin/git log --pretty="%h" --abbrev-commit -1`
+
 FPCVER=`$FPC -iV`
 FPCCPU=`$FPC -iTP`
 FPCHOST=`$FPC -iTO`
@@ -22,15 +26,13 @@ fi
 # clean out old files and recompile
 cd $SCRIPTS
 ./cleanup.sh
-rm /tmp/DUnitReportShort${FPCVER}.txt
+if [ -f /tmp/DUnitReportShort${FPCVER}.txt ]; then
+  rm /tmp/DUnitReportShort${FPCVER}.txt
+fi
 
-# compile tiOPF library
-cd $TIOPF/Compilers/FPC
-$SCRIPTS/opf_package-64.run
-
-# compile Text Test Runner application
-/bin/rm -f $TIOPF/UnitTests/Text/textrunner
-$SCRIPTS/textrunner_dunit2-64.run
+# compile frameworks and Console Test Runner application
+/bin/rm -f $TIOPF/Compilers/FPC/tiOPFUnitTestsConsole
+./textrunner_dunit2-64.run
 
 
 # Restore the Firebird database to make sure we have a clean/empty one every time
@@ -44,20 +46,17 @@ $SCRIPTS/textrunner_dunit2-64.run
 #/bin/chown graemeg:firebird /opt/data/tiopf/fblib_dunit2.fdb
 
 # run the tests
-#./fpcUnitTIOPFText.exe -a > results.xml
-#./fpcUnitTIOPFText.exe -a --file=results.xml
-#rm ./results.xml
-cd $TIOPF/UnitTests/Text/
-./textrunner64 -xml
+cd $TIOPF/Compilers/FPC
+./tiOPFUnitTestsConsole -xml
 
 # Do we have test results?
-if ! [ -f ./textrunner64.xml ]; then
+if ! [ -f ./tiOPFUnitTestsConsole.xml ]; then
   exit 0
 fi
 
 # generate the result in text and html format
-cp textrunner64.xml $BASEDIR/tiOPF2/dailybuilds/results/results64.xml
-cd $BASEDIR/tiOPF2/dailybuilds/results/
+cp tiOPFUnitTestsConsole.xml $BASEDIR/tiopf_dailybuilds/results/results64.xml
+cd $BASEDIR/tiopf_dailybuilds/results/
 /usr/bin/xsltproc -o index.html $SCRIPTS/fpcunit2.xsl results64.xml
 /usr/bin/xsltproc -o msg.txt $SCRIPTS/summarypost-64.xsl results64.xml
 
@@ -68,6 +67,8 @@ sed "s/#FPCCPU/$FPCCPU-$FPCHOST/g" msg2.txt > msg3.txt
 cat msg3.txt divider.txt /tmp/DUnitReportShort${FPCVER}.txt > msg4.txt
 
 # post text result to tiopf.dailybuilds newsgroup
-/usr/local/bin/rpost opensoft.homeip.net < msg4.txt
+# The 'rpost' utility is included in the "suck" Linux package.
+/usr/bin/rpost geldenhuys.co.uk < msg4.txt
 # copy html results to web server
-scp -q -i /home/graemeg/.ssh/id_rsa index.html graemeg@192.168.0.5:/usr/local/www/opensoft.homeip.net/tiopf/fpcunit/index64.html
+scp -q -i /home/graemeg/.ssh/id_rsa index.html graemeg@192.168.0.5:/usr/local/www/geldenhuys.co.uk/tiopf/unittests/linux64.html
+
