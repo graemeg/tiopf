@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 # Build script for tiOPF's Console Test Runner using 64-bit Free Pascal Compiler
 
 BASEDIR="/data/devel"

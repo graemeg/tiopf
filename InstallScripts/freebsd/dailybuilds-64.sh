@@ -27,11 +27,13 @@ fi
 # clean out old files and recompile
 cd $SCRIPTS
 ./cleanup.sh
-rm /tmp/DUnitReportShort${FPCVER}.txt
+if [ -f /tmp/DUnitReportShort${FPCVER}.txt ]; then
+  rm /tmp/DUnitReportShort${FPCVER}.txt
+fi
 
 # compile frameworks and Console Test Runner application
 /bin/rm -f $TIOPF/Compilers/FPC/tiOPFUnitTestsConsole
-$SCRIPTS/textrunner_dunit2-64.run
+./textrunner_dunit2-64.run
 
 
 # Restore the Firebird database to make sure we have a clean/empty one every time
@@ -66,6 +68,7 @@ sed "s/#FPCCPU/$FPCCPU-$FPCHOST/g" msg2.txt > msg3.txt
 cat msg3.txt divider.txt /tmp/DUnitReportShort${FPCVER}.txt > msg4.txt
 
 # post text result to tiopf.dailybuilds newsgroup
+# The 'rpost' utility is included in the "suck" FreeBSD package.
 /usr/local/bin/rpost geldenhuys.co.uk < msg4.txt
 # copy html results to web server
 scp -q -i /home/graemeg/.ssh/id_rsa index.html graemeg@192.168.0.5:/usr/local/www/geldenhuys.co.uk/tiopf/unittests/freebsd64.html
