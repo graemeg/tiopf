@@ -69,7 +69,7 @@ begin
   try
     {lRatio :=} lCompress.CompressFile(  lFileNameBefore,
                                          lFileNameAfter);
-    //Log([ 'Compression ration for file', pCompressionType, lRatio ]);
+    //Log([ 'Compression ratio for file', pCompressionType, lRatio ]);
     tiDeleteFile(lFileNameBefore);
     lCompress.DecompressFile(lFileNameAfter,
                               lFileNameBefore);
@@ -102,7 +102,7 @@ begin
     lCompress := gCompressFactory.CreateInstance(pCompressionType);
     try
       {lRatio :=} lCompress.CompressStream(lBefore, lCompressed);
-      //Log([ 'Compression ration for stream', pCompressionType, lRatio ]);
+      //Log([ 'Compression ratio for stream', pCompressionType, lRatio ]);
       lCompress.DecompressStream(lCompressed, lAfter);
       Check(lBefore.DataString = lAfter.DataString,
              'Compression failed. Streams are not the same.');
