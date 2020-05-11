@@ -420,7 +420,7 @@ begin
     cTIPersistPackageRootName +
     APackageID +
     cPackageSuffix +
-    '.bpl';
+    cPackageExtension;
 end;
 
 {
