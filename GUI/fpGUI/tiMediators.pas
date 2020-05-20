@@ -188,6 +188,7 @@ type
     FExternalOnChange: TNotifyEvent;
     function    GetDisplayFieldName: string;
     procedure   InternalListRefresh;
+    procedure   SetDisplayFieldName(AValue: string);
   protected
     procedure   SetListObject(const AValue: TtiObjectList); override;
     procedure   SetOnChangeActive(AValue: Boolean); virtual;
@@ -197,7 +198,7 @@ type
   public
     procedure   RefreshList; virtual;
     procedure   Update(ASubject: TtiObject; AOperation: TNotifyOperation); override;
-    property    DisplayFieldName: string read GetDisplayFieldName write FDisplayFieldName;
+    property    DisplayFieldName: string read GetDisplayFieldName write SetDisplayFieldName;
   end;
   
 
@@ -709,6 +710,12 @@ begin
       RaiseMediatorError(cErrorAddingItemToCombobox,[E.message, FieldName]);
   end;
   ObjectToGui;
+end;
+
+procedure TtiDynamicComboBoxMediatorView.SetDisplayFieldName(AValue: string);
+begin
+  FDisplayFieldName := AValue;
+  InternalListRefresh;
 end;
 
 function TtiDynamicComboBoxMediatorView.GetDisplayFieldName: string;
