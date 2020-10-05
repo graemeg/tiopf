@@ -413,6 +413,8 @@ begin
   WindowTitle := 'Show String';
   Hint := '';
   WindowPosition := wpScreenCenter;
+  MinWidth := 227;
+  MinHeight := 110;
 
   Memo1 := TfpgMemo.Create(self);
   with Memo1 do
