@@ -519,9 +519,13 @@ begin
       LIdentLong := 'report_long_d2007';
       LIdentShort := 'report_short_d2007';
     {$ENDIF}
+    {$IFDEF FPC}
+      LIdentLong := 'report_long_fpc';
+      LIdentShort := 'report_short_fpc';
+    {$ENDIF}
 
     if (LIdentLong = '') or (LIdentShort = '') then
-      EtiOPFDUnitException.Create('Unknown Delphi version');
+      EtiOPFDUnitException.Create('Unknown Delphi or FPC version');
     lINIFile.WriteString('Report_Long',  lIdentLong, LLong);
     lINIFile.WriteString('Report_Short', lIdentShort, LShort);
   finally
