@@ -14,7 +14,7 @@ uses
   Classes, SysUtils, TestFrameworkProxyIfaces;
 
 type
-    TTextProgressTestListener = class(TInterfacedObject, ITestListener)
+    TTextProgressTestListener = class(TInterfacedObject, ITestListener, ITestListenerX)
     private
       // IStatusListener
       procedure Status(const ATest: ITestProxy; AMessage: string);
@@ -28,6 +28,9 @@ type
       procedure EndTest(Test: ITestProxy);
       procedure TestingEnds(TestResult: ITestResult);
       function  ShouldRunTest(const ATest: ITestProxy):Boolean;
+      // ITestListenerX
+      procedure StartSuite(Suite: ITestProxy);
+      procedure EndSuite(Suite: ITestProxy);
     end;
 
 implementation
@@ -61,18 +64,18 @@ end;
 
 procedure TTextProgressTestListener.TestingStarts;
 begin
-  writeln('Testing Starts ==================================');
+
 end;
 
 procedure TTextProgressTestListener.StartTest(Test: ITestProxy);
 begin
   if Test.IsTestMethod then
-    writeln(Test.Name);
+    write(Test.Name);
 end;
 
 procedure TTextProgressTestListener.EndTest(Test: ITestProxy);
 begin
-
+  WriteLn();
 end;
 
 procedure TTextProgressTestListener.TestingEnds(TestResult: ITestResult);
@@ -81,6 +84,16 @@ begin
 end;
 
 function TTextProgressTestListener.ShouldRunTest(const ATest: ITestProxy): Boolean;
+begin
+  Result := not ATest.Excluded;
+end;
+
+procedure TTextProgressTestListener.StartSuite(Suite: ITestProxy);
+begin
+  WriteLn('===[ ' + Suite.Name + ' ]===');
+end;
+
+procedure TTextProgressTestListener.EndSuite(Suite: ITestProxy);
 begin
 
 end;
