@@ -1129,7 +1129,7 @@ begin
   LPosition:= FStream.Position;
   FStream.Position := 0;
   SetLength(Result,  FDataSize);
-  FStream.Read(Result[1], FDataSize);
+  FStream.Read(Result[1], Integer(FDataSize));
   FStream.Position:= LPosition;
 end;
 
