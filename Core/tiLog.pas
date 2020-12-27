@@ -1047,8 +1047,11 @@ end;
 
 procedure TtiLogToCacheAbs.Terminate;
 begin
-  FThrdLog.Terminate;
-  FThrdLog.WaitFor;
+  if Assigned(FThrdLog) then
+    FThrdLog.Terminate;
+  if Assigned(FThrdLog) then
+    FThrdLog.WaitFor;
+  inherited Terminate;
 end;
 
 
