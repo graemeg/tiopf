@@ -492,6 +492,7 @@ procedure TTesttiRTTI.tiIsPublishedProp_PropertyPath;
 var
   c: TtiRTTITestClass;
   s1: TtiOPFTestItemWithClassProp;
+  s1BackupReference: TtiOPFTestItemWithClassProp;
 begin
   c := TtiRTTITestClass.Create;
   try
@@ -515,7 +516,8 @@ begin
     CheckTrue(tiIsPublishedProp(s1, 'ClassField.BoolField'), 'Failed on 11');
 
     // with instances
-    s1.ClassField := TtiOPFTestItemWithClassProp.Create;
+    s1BackupReference := TtiOPFTestItemWithClassProp.Create;
+    s1.ClassField := s1BackupReference;
     CheckTrue(tiIsPublishedProp(s1, 'ClassField.ClassField.IntField'), 'Failed on 12');
     s1.ClassField.ClassField := TtiOPFTestItemWithClassProp.Create;
     CheckTrue(tiIsPublishedProp(s1, 'ClassField.ClassField.ClassField.FloatField'), 'Failed on 13');
@@ -523,11 +525,12 @@ begin
     CheckTrue(tiIsPublishedProp(s1, 'ClassField.ClassField.ClassField.ClassField.DateField'), 'Failed on 14');
 
     // nil instances
-    s1.ClassField := TtiOPFTestItemWithClassProp.Create;
+    s1.ClassField := TtiOPFTestItemWithClassProp.Create; // overwriten previous reference - hence the backup
     CheckTrue(tiIsPublishedProp(s1, 'ClassField.ClassField.IntField'), 'Failed on 15');
     CheckTrue(tiIsPublishedProp(s1, 'ClassField.ClassField.ClassField.FloatField'), 'Failed on 16');
     CheckTrue(tiIsPublishedProp(s1, 'ClassField.ClassField.ClassField.ClassField.DateField'), 'Failed on 17');
   finally
+    s1BackupReference.Free;
     s1.Free;
   end;
 
