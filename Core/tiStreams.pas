@@ -34,9 +34,9 @@ type
     constructor Create(AInitialSize, AGrowBy : Int64);
     destructor  Destroy; override;
     procedure   Clear;
-    procedure   Write(const AStr: ansistring);
+    procedure   Write(const AStr: string);
     procedure   WriteLn(const AStr: string = '');
-    function    AsString: ansistring;
+    function    AsString: string;
     procedure   SaveToFile(const AFileName: string);
     property    Size: Int64 read FDataSize;
     property    Position: Int64 read GetPosition;
@@ -54,8 +54,8 @@ type
     constructor CreateReadWrite(const AFileName : string; pOverwrite : boolean = false);
     constructor CreateReadOnly( const AFileName : string);
     property    LineDelim : string read GetLineDelim write SetLineDelim;
-    procedure   Write(const AString : ansistring); reintroduce;
-    procedure   WriteLn(const AString : ansistring = '');
+    procedure   Write(const AString : string); reintroduce;
+    procedure   WriteLn(const AString : string = '');
     function    ReadLn : ansistring;
     function    EOF : boolean;
   end;
@@ -79,7 +79,6 @@ type
     procedure   WriteLn(const AString : string = '');
     function    ReadLn: string;
     function    Seek(const Offset: Int64; Origin: TSeekOrigin): Int64;
-
     property    Stream: TStream read FStream;
     property    LineDelim: string read GetLineDelim write SetLineDelim;
     property    Position: Int64 read GetPosition write SetPosition;
@@ -1080,12 +1079,12 @@ begin
   Result := tiStreamReadToNextToken(Self, LineDelim);
 end;
 
-procedure TtiFileStream.Write(const AString: AnsiString);
+procedure TtiFileStream.Write(const AString: String);
 begin
   tiAppendStringToStream(AString, Self);
 end;
 
-procedure TtiFileStream.WriteLn(const AString: ansistring = '');
+procedure TtiFileStream.WriteLn(const AString: string = '');
 begin
   Write(AString + LineDelim);
 end;
@@ -1122,7 +1121,7 @@ begin
   Create(AFileName, fmOpenRead or fmShareDenyNone);
 end;
 
-function TtiPreSizedStream.AsString: AnsiString;
+function TtiPreSizedStream.AsString: String;
 var
   LPosition: Cardinal;
 begin
@@ -1171,7 +1170,7 @@ begin
   FStream.Seek(0, soFromEnd);
 end;
 
-procedure TtiPreSizedStream.Write(const AStr: ansistring);
+procedure TtiPreSizedStream.Write(const AStr: string);
 var
   lPC : Pointer;
   lLen : Integer;
